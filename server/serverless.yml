@@ -1,0 +1,92 @@
+service: myserver
+useDotenv: true
+ 
+frameworkVersion: '2'
+ 
+plugins:
+  - serverless-esbuild
+  - serverless-offline
+  - serverless-s3-sync
+ 
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  region: eu-north-1
+  httpApi:
+    cors: true
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:eu-north-1:*:table/MainTable"
+
+ 
+custom:
+  esbuild:
+    target: es2019
+    tsconfig: ./tsconfig.json
+    minify: true
+ 
+  httpApi:
+    payload: '1.0'
+
+  s3Sync:
+    - bucketName: testbucketforbachelor2021
+      localDir: ../clients/client/dist
+      deleteRemoved: true
+      acl: public-read
+      followSymlinks: true
+      defaultContentType: text/html
+      params:
+        - index.html:
+            CacheControl: 'no-cache'
+        - "*.js":
+            CacheControl: 'public, max-age=31536000'
+
+functions:
+  getCustomers:
+    handler: src/getCustomers.handler
+    events:
+      - httpApi:
+          path: /customers
+          method: get
+  insertCustomers:
+    handler: src/insertCustomer.handler
+    events:
+      - httpApi:
+          path: /insertcustomers
+          method: put
+
+resources:
+  Resources:
+    WebSiteBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: testbucketforbachelor2021
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: error.html
+    MainDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+          - AttributeName: sk
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: 'MainTable'

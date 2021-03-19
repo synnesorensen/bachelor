@@ -1,0 +1,28 @@
+{
+  "name": "bachelor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "offline": "node --max-old-space-size=4096 node_modules/serverless/bin/serverless.js offline start",
+    "deploy": "node --max-old-space-size=4096 node_modules/serverless/bin/serverless deploy"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.863.0",
+    "middy": "^0.36.0",
+    "serverless": "^2.29.0",
+    "serverless-esbuild": "^1.9.0",
+    "serverless-offline": "^6.8.0",
+    "serverless-s3-sync": "^1.16.1",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.3"
+  },
+  "devDependencies": {
+    "@serverless/typescript": "^2.29.0",
+    "@types/aws-lambda": "^8.10.72",
+    "@types/node": "^14.14.34"
+  }
+}
