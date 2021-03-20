@@ -6,7 +6,7 @@ frameworkVersion: '2'
 plugins:
   - serverless-esbuild
   - serverless-offline
-  - serverless-s3-sync
+  #- serverless-s3-sync
  
 provider:
   name: aws
@@ -62,6 +62,12 @@ functions:
       - httpApi:
           path: /insertcustomers
           method: put
+  deleteCustomer:
+    handler: src/deleteCustomer.handler
+    events:
+      - httpApi:
+          path: /deletecustomers
+          method: delete
 
 resources:
   Resources:
