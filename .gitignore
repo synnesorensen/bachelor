@@ -2,4 +2,4 @@ server/node_modules
 clients/webclient/node_modules
 server/.esbuild
 server/.serverless
-
+.env
