@@ -62,19 +62,13 @@ functions:
       - httpApi:
           path: /insertcustomers
           method: put
-  deleteCustomer:
-    handler: src/deleteCustomer.handler
-    events:
-      - httpApi:
-          path: /deletecustomers
-          method: delete
 
 resources:
   Resources:
     WebSiteBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: testbucketforbachelor2021
+        BucketName: ${env:STACK_PREFIX}testbucketforbachelor2021
         AccessControl: PublicRead
         WebsiteConfiguration:
           IndexDocument: index.html
