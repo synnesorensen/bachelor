@@ -56,12 +56,12 @@ functions:
       - httpApi:
           path: /customers
           method: get
-  insertCustomers:
-    handler: src/insertCustomer.handler
+  customerSubscription:
+    handler: src/customerSubscription.handler
     events:
       - httpApi:
-          path: /insertcustomers
-          method: put
+          path: /c/subscription
+          method: *
   deleteCustomer:
     handler: src/deleteCustomer.handler
     events:
@@ -74,7 +74,7 @@ resources:
     WebSiteBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: testbucketforbachelor2021
+        BucketName: ${env:STACK_PREFIX}testbucketforbachelor2021
         AccessControl: PublicRead
         WebsiteConfiguration:
           IndexDocument: index.html
