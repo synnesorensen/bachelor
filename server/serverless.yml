@@ -56,12 +56,18 @@ functions:
       - httpApi:
           path: /customers
           method: get
-  insertCustomers:
-    handler: src/insertCustomer.handler
+  customerSubscription:
+    handler: src/customerSubscription.handler
     events:
       - httpApi:
-          path: /insertcustomers
-          method: put
+          path: /c/subscription
+          method: *
+  deleteCustomer:
+    handler: src/deleteCustomer.handler
+    events:
+      - httpApi:
+          path: /deletecustomers
+          method: delete
 
 resources:
   Resources:

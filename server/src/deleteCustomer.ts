@@ -10,16 +10,13 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     
     let params = {
         TableName: 'MainTable',
-        Item: {
-            'pk' : {S: 'v#lunsjpaahjul'},
-            'sk' : {S: 'c#synne@cool.no#2021#03#23#10'},
-            'Entity_Type' : {S: 'Delivery'},
-            'menu' : {S: 'Lunch'},
-            'date' : {N: '210323'}
+        Key: {
+            'pk': {S: 'synne'},
+            'sk': {S: 'synne'}
         }
     };
 
-    database.putItem(params, function(err, data) {
+    database.deleteItem(params, function(err, data) {
         if (err) {
           console.log("Error", err);
         } else {
@@ -29,7 +26,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
       return {
         statusCode: 200,
-        body: JSON.stringify(params.Item)
+        body: JSON.stringify(params.Key)
       };
 
 }
