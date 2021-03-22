@@ -29,19 +29,12 @@
 <script lang="ts">
   import Vue from 'vue'
   import Component from 'vue-class-component'
-  import {hello} from '../api/hello'
   import {getCustomers} from '../api/getCustomers'
 
 @Component
 export default class Customer extends Vue {
   private hallai = "Norway";
   private customers = "No customers";
-
-  async runLambda() {
-    let h = await hello();
-    console.log(h);
-    this.hallai = h.hello;
-  }
 
   async runCustomers() {
     let i = await getCustomers();
