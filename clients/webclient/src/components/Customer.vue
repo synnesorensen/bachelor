@@ -12,11 +12,12 @@
 
       <v-col class="mb-4">
         <h1 class="display-2 font-weight-bold mb-3">
-          Vælkommin te Lønsj på hjul!
+          Eg vil skrive her!
         </h1>
         <h2> Innmari godt lizm! From all over the {{hallai}}
         </h2>
         <p>Customers: {{customers}} </p>
+        <p>Ingrid var her</p>
         <br>
         <v-btn color="primary" @click="runLambda()">Press me</v-btn>
         <v-btn color="primary" @click="runCustomers()">Get customers</v-btn>
