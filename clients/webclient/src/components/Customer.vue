@@ -16,6 +16,7 @@
         </h1>
         <h2> Innmari godt lizm! From all over the {{hallai}}
         </h2>
+        <p>Toril var her</p>
         <p>Customers: {{customers}} </p>
         <br>
         <v-btn color="primary" @click="runLambda()">Press me</v-btn>
