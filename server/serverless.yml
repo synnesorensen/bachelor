@@ -61,7 +61,7 @@ functions:
     events:
       - httpApi:
           path: /c/subscription
-          method: *
+          method: any
   deleteCustomer:
     handler: src/deleteCustomer.handler
     events:
@@ -74,7 +74,7 @@ resources:
     WebSiteBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${env:STACK_PREFIX}testbucketforbachelor2021
+        BucketName: testbucketforbachelor2021
         AccessControl: PublicRead
         WebsiteConfiguration:
           IndexDocument: index.html
