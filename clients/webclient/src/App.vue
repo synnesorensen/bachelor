@@ -24,30 +24,42 @@
           width="100"
         />
       </div>
-
       <v-spacer></v-spacer>
-
     </v-app-bar>
 
     <v-main>
-      <Customer/>
+      <v-tabs v-model="tab" align-with-title>
+        <v-tab>Customer</v-tab>
+        <v-tab>Login</v-tab>
+        <v-tab>Profil</v-tab>
+        <v-tab>Oversiktsside</v-tab>
+        <v-tab>Faktura</v-tab>
+      </v-tabs>
+      <v-tabs-items v-model="tab">
+        <v-tab-item><Customer/></v-tab-item>
+        <v-tab-item></v-tab-item>
+        <v-tab-item></v-tab-item>
+        <v-tab-item></v-tab-item>
+        <v-tab-item></v-tab-item>
+      </v-tabs-items>
+
     </v-main>
   </v-app>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import Component from 'vue-class-component';
 import Customer from './components/Customer.vue';
 
-export default Vue.extend({
-  name: 'App',
-
+@Component({
   components: {
-    Customer,
-  },
+    Customer
+  }
+})
 
-  data: () => ({
-    //
-  }),
-});
+export default class App extends Vue {
+  private tab = 0;
+
+}
 </script>
