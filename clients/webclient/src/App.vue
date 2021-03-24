@@ -26,7 +26,6 @@
       </div>
       <v-spacer></v-spacer>
     </v-app-bar>
-
     <v-main>
       <v-tabs v-model="tab" align-with-title>
         <v-tab>Customer</v-tab>
@@ -37,12 +36,11 @@
       </v-tabs>
       <v-tabs-items v-model="tab">
         <v-tab-item><Customer/></v-tab-item>
-        <v-tab-item></v-tab-item>
-        <v-tab-item></v-tab-item>
-        <v-tab-item></v-tab-item>
-        <v-tab-item></v-tab-item>
+        <v-tab-item>Her kommer siden for login</v-tab-item>
+        <v-tab-item>Her kommer profilsiden til kunden</v-tab-item>
+        <v-tab-item>Her kommer oversiktssiden med kalender</v-tab-item>
+        <v-tab-item>Her kommer faktuainfo</v-tab-item>
       </v-tabs-items>
-
     </v-main>
   </v-app>
 </template>
