@@ -55,8 +55,8 @@ async function deleteCustomer(event: APIGatewayProxyEvent): Promise<APIGatewayPr
   let params = {
     TableName: 'MainTable',
     Key: {
-      'pk': { S: 'synne' },
-      'sk': { S: 'synne' }
+      'pk': { S: 'c#' + customerId },
+      'sk': { S: 'c#' + customerId}
     }
   };
 
