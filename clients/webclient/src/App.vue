@@ -34,10 +34,12 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import Customer from './components/Customer.vue';
+import CustomerLogin from './components/CustomerLogin.vue';
 
 @Component({
   components: {
-    Customer
+    Customer,
+    CustomerLogin
   }
 })
 
