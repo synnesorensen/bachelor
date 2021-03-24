@@ -50,24 +50,18 @@ custom:
             CacheControl: 'public, max-age=31536000'
 
 functions:
-  getCustomers:
-    handler: src/getCustomers.handler
+  customers:
+    handler: src/customer.handler
     events:
       - httpApi:
-          path: /customers
-          method: get
+          path: /customer
+          method: any
   customerSubscription:
     handler: src/customerSubscription.handler
     events:
       - httpApi:
           path: /c/subscription
           method: any
-  deleteCustomer:
-    handler: src/deleteCustomer.handler
-    events:
-      - httpApi:
-          path: /deletecustomers
-          method: delete
 
 resources:
   Resources:

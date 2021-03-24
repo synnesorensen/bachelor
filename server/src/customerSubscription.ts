@@ -2,9 +2,12 @@ import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { DynamoDB } from 'aws-sdk';
+import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 
 
 const database = new DynamoDB({ region: 'eu-north-1' });
+const documentClient = new DocumentClient({ region: 'eu-north-1' });
+// TODO: Make variable for region.
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
 
@@ -29,11 +32,43 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
 export const mainHandler = middy(handler).use(cors());
 
+let customerId = "synne@birthdaygirl.yay";
+// TODO: Fetch customerId from JWT
+
 async function getCustomerSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-  throw new Error('Function not implemented.');
+  // TODO: Tester og masse feilhåndtering!
+  
+  let vendorId = event.queryStringParameters["vendorId"];
+  
+  let params = {
+    TableName : 'MainTable',
+    KeyConditionExpression: "#pk = :vendor and #sk = :customerId",
+    ExpressionAttributeNames:{
+        "#pk": "pk",
+        "#sk": "sk"
+    },
+    ExpressionAttributeValues: {
+        ":vendor": "v#" + vendorId,
+        ":customerId": "c#" + customerId
+    }
+  }
+
+  let dbResult = await documentClient.query(params).promise();
+
+  let subscription = {
+    vendorId,
+    customerId,
+    approved: dbResult.Items[0].approved,
+    paused: dbResult.Items[0].paused,
+    schedule: dbResult.Items[0].schedule
+  }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(subscription)
+  };
 }
-
-
+  
 async function putCustomerSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
 
   if (!event.queryStringParameters) {
@@ -51,9 +86,6 @@ async function putCustomerSubscription(event: APIGatewayProxyEvent): Promise<API
       body: '{ "message" : "Missing parameter vendorId" }'
     }; 
   } 
-
-  let customerId = "synne@birthdaygirl.yay";
-  // TODO: Fetch customerId from JWT
 
   let body = JSON.parse(event.body);
 
@@ -98,12 +130,8 @@ async function putCustomerSubscription(event: APIGatewayProxyEvent): Promise<API
     "ReturnValues": "ALL_NEW"
   };
 
-  console.log(params);
-
   try {
     let dbItem = await database.updateItem(params).promise();
-
-    console.log(dbItem);
 
     let subscription = {
       vendorId,
@@ -124,7 +152,6 @@ async function putCustomerSubscription(event: APIGatewayProxyEvent): Promise<API
     };
   } 
 }
-
 
 async function deleteCustomerSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   throw new Error('Function not implemented.');
