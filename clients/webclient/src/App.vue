@@ -38,12 +38,14 @@
 <script lang="ts">
 import Vue from 'vue';
 import Customer from './components/Customer.vue';
+import CustomerLogin from './components/CustomerLogin.vue';
 
 export default Vue.extend({
   name: 'App',
 
   components: {
     Customer,
+    CustomerLogin,
   },
 
   data: () => ({
