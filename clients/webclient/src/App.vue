@@ -20,7 +20,7 @@
 				<v-tab-item><CustomerLogin /></v-tab-item>
 				<v-tab-item><CustomerOrder /></v-tab-item>
 				<v-tab-item><CustomerProfile /></v-tab-item>
-				<v-tab-item>Her kommer faktuainfo</v-tab-item>
+				<v-tab-item><CustomerInvoice /></v-tab-item>
 			</v-tabs-items>
 		</v-main>
 	</v-app>
@@ -33,6 +33,7 @@ import CustomerOverview from './components/CustomerOverview.vue';
 import CustomerLogin from './components/CustomerLogin.vue';
 import CustomerOrder from './components/CustomerOrder.vue';
 import CustomerProfile from './components/CustomerProfile.vue';
+import CustomerInvoice from './components/CustomerInvoice.vue';
 
 @Component({
 	components: {
@@ -40,6 +41,7 @@ import CustomerProfile from './components/CustomerProfile.vue';
 		CustomerLogin,
 		CustomerOrder,
 		CustomerProfile,
+		CustomerInvoice,
 	},
 })
 export default class App extends Vue {
