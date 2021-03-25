@@ -11,22 +11,22 @@ const documentClient = new DocumentClient({ region: 'eu-north-1' });
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
 
-  if (event.httpMethod == "GET") {
-    return getCustomerSubscription(event);
-  }
+    if (event.httpMethod == "GET") {
+        return getCustomerSubscription(event);
+    }
 
-  if (event.httpMethod == "PUT") {
-    return putCustomerSubscription(event);
-  }
+    if (event.httpMethod == "PUT") {
+        return putCustomerSubscription(event);
+    }
 
-  if (event.httpMethod == "DELETE") {
-    return deleteCustomerSubscription(event);
-  }
+    if (event.httpMethod == "DELETE") {
+        return deleteCustomerSubscription(event);
+    }
 
-  return {
-    statusCode: 405,
-    body: '{ "message" : "Method not allowed" }'
-  };
+    return {
+        statusCode: 405,
+        body: '{ "message" : "Method not allowed" }'
+    };
 
 }
 
@@ -36,123 +36,143 @@ let customerId = "synne@birthdaygirl.yay";
 // TODO: Fetch customerId from JWT
 
 async function getCustomerSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-  // TODO: Tester og masse feilhåndtering!
-  
-  let vendorId = event.queryStringParameters["vendorId"];
-  
-  let params = {
-    TableName : 'MainTable',
-    KeyConditionExpression: "#pk = :vendor and #sk = :customerId",
-    ExpressionAttributeNames:{
-        "#pk": "pk",
-        "#sk": "sk"
-    },
-    ExpressionAttributeValues: {
-        ":vendor": "v#" + vendorId,
-        ":customerId": "c#" + customerId
+    // TODO: Tester og masse feilhåndtering!
+
+    if (!event.queryStringParameters) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter vendorId" }'
+        };
     }
-  }
 
-  let dbResult = await documentClient.query(params).promise();
+    let vendorId = event.queryStringParameters["vendorId"];
 
-  let subscription = {
-    vendorId,
-    customerId,
-    approved: dbResult.Items[0].approved,
-    paused: dbResult.Items[0].paused,
-    schedule: dbResult.Items[0].schedule
-  }
+    if (!vendorId) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter vendorId" }'
+        };
+    }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(subscription)
-  };
+    let params = {
+        TableName: 'MainTable',
+        KeyConditionExpression: "#pk = :vendor and #sk = :customerId",
+        ExpressionAttributeNames: {
+            "#pk": "pk",
+            "#sk": "sk"
+        },
+        ExpressionAttributeValues: {
+            ":vendor": "v#" + vendorId,
+            ":customerId": "c#" + customerId
+        }
+    }
+
+    try {
+        let dbResult = await documentClient.query(params).promise();
+
+        let subscription = {
+            vendorId,
+            customerId,
+            approved: dbResult.Items[0].approved,
+            paused: dbResult.Items[0].paused,
+            schedule: dbResult.Items[0].schedule
+        }
+
+        return {
+            statusCode: 200,
+            body: JSON.stringify(subscription)
+        };
+    } catch (err) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify(err)
+        };
+    } 
 }
-  
+
 async function putCustomerSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
 
-  if (!event.queryStringParameters) {
-    return {
-      statusCode: 400,
-      body: '{ "message" : "Missing parameter vendorId" }'
-    }; 
-  }
-
-  let vendorId = event.queryStringParameters["vendorId"];
-
-  if (!vendorId) {
-    return {
-      statusCode: 400,
-      body: '{ "message" : "Missing parameter vendorId" }'
-    }; 
-  } 
-
-  let body = JSON.parse(event.body);
-
-  if (!body || body.vendorId != vendorId) {
-    return {
-      statusCode: 400,
-      body: '{ "message" : "body is missing or vendorId is not matching query parameter" }'
-    };
-  }
-
-  if (body.customerId != customerId) {
-    return {
-      statusCode: 403,
-      body: '{ "message" : "customerId in body is not matching authenticated user" }'
-    };
-  }
-
-  let UpdateExpression = "set EntityType = :EntityType, approved = if_not_exists(approved, :approved)";
-  let ExpressionAttributeValues:any = {
-    ":EntityType" : {S: 'Subscription'},
-    ":approved" : {BOOL: false}
-  };
-
-  if (body.paused != undefined) {
-    UpdateExpression = UpdateExpression + ", paused = :paused",
-    ExpressionAttributeValues[":paused"] = {BOOL: body.paused}
-  }
-
-  if (body.schedule != undefined) {
-    UpdateExpression += ", schedule = :schedule",
-    ExpressionAttributeValues[":schedule"] = {SS: body.schedule}
-  }
-
-  let params = {
-    TableName: 'MainTable',
-    Key: {
-      "pk" : {S: "v#" + vendorId},
-      "sk" : {S: "c#" + customerId}
-    },
-    UpdateExpression,
-    ExpressionAttributeValues,
-    "ReturnValues": "ALL_NEW"
-  };
-
-  try {
-    let dbItem = await database.updateItem(params).promise();
-
-    let subscription = {
-      vendorId,
-      customerId,
-      approved: dbItem.Attributes.approved?.BOOL || false,
-      paused: dbItem.Attributes.paused.BOOL,
-      schedule: dbItem.Attributes.schedule.SS
+    if (!event.queryStringParameters) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter vendorId" }'
+        };
     }
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(subscription)
+    let vendorId = event.queryStringParameters["vendorId"];
+
+    if (!vendorId) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter vendorId" }'
+        };
+    }
+
+    let body = JSON.parse(event.body);
+
+    if (!body || body.vendorId != vendorId) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "body is missing or vendorId is not matching query parameter" }'
+        };
+    }
+
+    if (body.customerId != customerId) {
+        return {
+            statusCode: 403,
+            body: '{ "message" : "customerId in body is not matching authenticated user" }'
+        };
+    }
+
+    let UpdateExpression = "set EntityType = :EntityType, approved = if_not_exists(approved, :approved)";
+    let ExpressionAttributeValues: any = {
+        ":EntityType": { S: 'Subscription' },
+        ":approved": { BOOL: false }
     };
-  } catch (err) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify(err)
+
+    if (body.paused != undefined) {
+        UpdateExpression = UpdateExpression + ", paused = :paused",
+            ExpressionAttributeValues[":paused"] = { BOOL: body.paused }
+    }
+
+    if (body.schedule != undefined) {
+        UpdateExpression += ", schedule = :schedule",
+            ExpressionAttributeValues[":schedule"] = { SS: body.schedule }
+    }
+
+    let params = {
+        TableName: 'MainTable',
+        Key: {
+            "pk": { S: "v#" + vendorId },
+            "sk": { S: "c#" + customerId }
+        },
+        UpdateExpression,
+        ExpressionAttributeValues,
+        "ReturnValues": "ALL_NEW"
     };
-  } 
+
+    try {
+        let dbItem = await database.updateItem(params).promise();
+
+        let subscription = {
+            vendorId,
+            customerId,
+            approved: dbItem.Attributes.approved?.BOOL || false,
+            paused: dbItem.Attributes.paused.BOOL,
+            schedule: dbItem.Attributes.schedule.SS
+        }
+        return {
+            statusCode: 200,
+            body: JSON.stringify(subscription)
+        };
+    } catch (err) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify(err)
+        };
+    }
 }
 
 async function deleteCustomerSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-  throw new Error('Function not implemented.');
+    throw new Error('Function not implemented.');
 }
