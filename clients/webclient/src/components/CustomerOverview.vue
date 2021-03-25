@@ -12,7 +12,7 @@
 
       <v-col class="mb-4">
         <h1 class="display-2 font-weight-bold mb-3">
-          Eg vil skrive her!
+          Her e overssiktssiden din!
         </h1>
         <h2> Innmari godt lizm! From all over the {{hallai}}
         </h2>
