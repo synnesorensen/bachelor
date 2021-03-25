@@ -70,6 +70,13 @@ async function getCustomerSubscription(event: APIGatewayProxyEvent): Promise<API
     try {
         let dbResult = await documentClient.query(params).promise();
 
+        if (dbResult.Count < 1) {
+            return {
+                statusCode: 404,
+                body: '{ "message" : "No subscription for vendorId: ' + vendorId + '"}'
+            };
+        }
+
         let subscription = {
             vendorId,
             customerId,
@@ -77,7 +84,7 @@ async function getCustomerSubscription(event: APIGatewayProxyEvent): Promise<API
             paused: dbResult.Items[0].paused,
             schedule: dbResult.Items[0].schedule
         }
-
+        
         return {
             statusCode: 200,
             body: JSON.stringify(subscription)
