@@ -14,9 +14,9 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
         return getCustomer(event);
     }
 
-    // if (event.httpMethod == "PUT") {
-    //   return putCustomer(event);
-    // }
+    if (event.httpMethod == "PUT") {
+      return putCustomer(event);
+    }
 
     if (event.httpMethod == "DELETE") {
         return deleteCustomer(event);
@@ -41,13 +41,23 @@ async function getCustomer(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
             ":customerId": "c#" + customerId
         }
     }
+    try {
+        let customer = await documentClient.query(params).promise();
 
-    let customer = await documentClient.query(params).promise();
+        return {
+            statusCode: 200,
+            body: JSON.stringify(customer.Items)
+        };
+    } catch (err) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify(err)
+        }
+    }
+}
 
-    return {
-        statusCode: 200,
-        body: JSON.stringify(customer.Items)
-    };
+async function putCustomer(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    throw new Error('Function not implemented.');
 }
 
 async function deleteCustomer(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -60,16 +70,22 @@ async function deleteCustomer(event: APIGatewayProxyEvent): Promise<APIGatewayPr
         }
     };
 
-    database.deleteItem(params, function (err, data) {
-        if (err) {
-            console.log("Error", err);
-        } else {
-            console.log("Success", data);
+    try {
+        database.deleteItem(params, function (err, data) {
+            if (err) {
+                console.log("Error", err);
+            } else {
+                console.log("Success", data);
+            }
+        });
+        return {
+            statusCode: 200,
+            body: JSON.stringify(params.Key)
+        };
+    } catch (err) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify(err)
         }
-    });
-
-    return {
-        statusCode: 200,
-        body: JSON.stringify(params.Key)
-    };
+    }
 }
