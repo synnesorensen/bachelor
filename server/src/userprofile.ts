@@ -11,15 +11,15 @@ const documentClient = new DocumentClient({ region: 'eu-north-1' });
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
 
     if (event.httpMethod == "GET") {
-        return getCustomer(event);
+        return getUserprofile(event);
     }
 
     if (event.httpMethod == "PUT") {
-      return putCustomer(event);
+      return putUserprofile(event);
     }
 
     if (event.httpMethod == "DELETE") {
-        return deleteCustomer(event);
+        return deleteUserprofile(event);
     }
 }
 
@@ -28,7 +28,7 @@ export const mainHandler = middy(handler).use(cors());
 let customerId = "synne@birthdaygirl.yay";
 // TODO: Fetch customerId from JWT
 
-async function getCustomer(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+async function getUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
 
     let params = {
         TableName: 'MainTable',
@@ -56,11 +56,11 @@ async function getCustomer(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
     }
 }
 
-async function putCustomer(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+async function putUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     throw new Error('Function not implemented.');
 }
 
-async function deleteCustomer(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+async function deleteUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
 
     let params = {
         TableName: 'MainTable',
@@ -71,13 +71,7 @@ async function deleteCustomer(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     };
 
     try {
-        database.deleteItem(params, function (err, data) {
-            if (err) {
-                console.log("Error", err);
-            } else {
-                console.log("Success", data);
-            }
-        });
+        database.deleteItem(params).promise;
         return {
             statusCode: 200,
             body: JSON.stringify(params.Key)
