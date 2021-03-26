@@ -11,16 +11,16 @@
 			<v-tabs v-model="tab" align-with-title>
 				<v-tab>Kundeoversikt</v-tab>
 				<v-tab>Login</v-tab>
+				<v-tab>Bestilling</v-tab>
 				<v-tab>Profil</v-tab>
-				<v-tab>Oversiktsside</v-tab>
 				<v-tab>Faktura</v-tab>
 			</v-tabs>
 			<v-tabs-items v-model="tab">
 				<v-tab-item><CustomerOverview /></v-tab-item>
 				<v-tab-item><CustomerLogin /></v-tab-item>
 				<v-tab-item><CustomerOrder /></v-tab-item>
-				<v-tab-item>Her kommer profilsiden til kunden</v-tab-item>
-				<v-tab-item>Her kommer faktuainfo</v-tab-item>
+				<v-tab-item><CustomerProfile /></v-tab-item>
+				<v-tab-item><CustomerInvoice /></v-tab-item>
 			</v-tabs-items>
 		</v-main>
 	</v-app>
@@ -32,12 +32,16 @@ import Component from 'vue-class-component';
 import CustomerOverview from './components/CustomerOverview.vue';
 import CustomerLogin from './components/CustomerLogin.vue';
 import CustomerOrder from './components/CustomerOrder.vue';
+import CustomerProfile from './components/CustomerProfile.vue';
+import CustomerInvoice from './components/CustomerInvoice.vue';
 
 @Component({
 	components: {
 		CustomerOverview,
 		CustomerLogin,
 		CustomerOrder,
+		CustomerProfile,
+		CustomerInvoice,
 	},
 })
 export default class App extends Vue {
