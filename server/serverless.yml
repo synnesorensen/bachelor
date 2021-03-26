@@ -51,10 +51,10 @@ custom:
 
 functions:
   customers:
-    handler: src/customer.handler
+    handler: src/userprofile.handler
     events:
       - httpApi:
-          path: /customer
+          path: /userprofile
           method: any
   customerSubscription:
     handler: src/customerSubscription.handler
