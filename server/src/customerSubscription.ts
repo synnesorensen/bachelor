@@ -155,7 +155,7 @@ async function putCustomerSubscription(event: APIGatewayProxyEvent): Promise<API
         },
         UpdateExpression,
         ExpressionAttributeValues,
-        "ReturnValues": "ALL_NEW"
+        ReturnValues: "ALL_NEW"
     };
 
     try {
@@ -181,5 +181,41 @@ async function putCustomerSubscription(event: APIGatewayProxyEvent): Promise<API
 }
 
 async function deleteCustomerSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    throw new Error('Function not implemented.');
+    if (!event.queryStringParameters) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter vendorId" }'
+        };
+    }
+
+    let vendorId = event.queryStringParameters["vendorId"];
+
+    if (!vendorId) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter vendorId" }'
+        };
+    }
+
+    let params = {
+        TableName: 'MainTable',
+        Key: {
+            'pk': { S: 'v#' + vendorId },
+            'sk': { S: 'c#' + customerId }  
+        }
+    };
+
+    try {
+        await database.deleteItem(params).promise();
+        
+        return {
+            statusCode: 200,
+            body: '{ "message" : "Deletion succeeded" }'
+        };
+    } catch (err) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify(err)
+        };
+    } 
 }
