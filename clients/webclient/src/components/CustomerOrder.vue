@@ -5,6 +5,14 @@
 				<h3>Dette er CustomerOrder-komponenten</h3>
 			</v-col>
 		</v-row>
+		<v-row>
+			<v-col cols="12">
+				<input placeholder="first name">
+			</v-col>
+			<v-col cols="12">
+				<input placeholder="last name">
+			</v-col>
+		</v-row>
 	</v-container>
 </template>
 
