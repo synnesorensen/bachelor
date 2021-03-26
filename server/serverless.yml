@@ -50,17 +50,17 @@ custom:
             CacheControl: 'public, max-age=31536000'
 
 functions:
-  customers:
+  userprofile:
     handler: src/userprofile.handler
     events:
       - httpApi:
           path: /userprofile
           method: any
-  customerSubscription:
-    handler: src/customerSubscription.handler
+  userSubscription:
+    handler: src/userSubscription.handler
     events:
       - httpApi:
-          path: /c/subscription
+          path: /u/subscription
           method: any
 
 resources:

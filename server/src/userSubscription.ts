@@ -12,15 +12,15 @@ const documentClient = new DocumentClient({ region: 'eu-north-1' });
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
 
     if (event.httpMethod == "GET") {
-        return getCustomerSubscription(event);
+        return getUserSubscription(event);
     }
 
     if (event.httpMethod == "PUT") {
-        return putCustomerSubscription(event);
+        return putUserSubscription(event);
     }
 
     if (event.httpMethod == "DELETE") {
-        return deleteCustomerSubscription(event);
+        return deleteUserSubscription(event);
     }
 
     return {
@@ -32,11 +32,10 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
 export const mainHandler = middy(handler).use(cors());
 
-let customerId = "synne@birthdaygirl.yay";
+let userId = "synne@birthdaygirl.yay";
 // TODO: Fetch customerId from JWT
 
-async function getCustomerSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    // TODO: Tester og masse feilhåndtering!
+async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
 
     if (!event.queryStringParameters) {
         return {
@@ -56,14 +55,14 @@ async function getCustomerSubscription(event: APIGatewayProxyEvent): Promise<API
 
     let params = {
         TableName: 'MainTable',
-        KeyConditionExpression: "#pk = :vendor and #sk = :customerId",
+        KeyConditionExpression: "#pk = :vendor and #sk = :userId",
         ExpressionAttributeNames: {
             "#pk": "pk",
             "#sk": "sk"
         },
         ExpressionAttributeValues: {
             ":vendor": "v#" + vendorId,
-            ":customerId": "c#" + customerId
+            ":userId": "u#" + userId
         }
     }
 
@@ -79,7 +78,7 @@ async function getCustomerSubscription(event: APIGatewayProxyEvent): Promise<API
 
         let subscription = {
             vendorId,
-            customerId,
+            userId,
             approved: dbResult.Items[0].approved,
             paused: dbResult.Items[0].paused,
             schedule: dbResult.Items[0].schedule
@@ -97,7 +96,7 @@ async function getCustomerSubscription(event: APIGatewayProxyEvent): Promise<API
     } 
 }
 
-async function putCustomerSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
 
     if (!event.queryStringParameters) {
         return {
@@ -124,10 +123,10 @@ async function putCustomerSubscription(event: APIGatewayProxyEvent): Promise<API
         };
     }
 
-    if (body.customerId != customerId) {
+    if (body.userId != userId) {
         return {
             statusCode: 403,
-            body: '{ "message" : "customerId in body is not matching authenticated user" }'
+            body: '{ "message" : "userId in body is not matching authenticated user" }'
         };
     }
 
@@ -138,20 +137,20 @@ async function putCustomerSubscription(event: APIGatewayProxyEvent): Promise<API
     };
 
     if (body.paused != undefined) {
-        UpdateExpression = UpdateExpression + ", paused = :paused",
-            ExpressionAttributeValues[":paused"] = { BOOL: body.paused }
+        UpdateExpression += ", paused = :paused",
+            ExpressionAttributeValues[":paused"] = { BOOL: body.paused };
     }
 
     if (body.schedule != undefined) {
         UpdateExpression += ", schedule = :schedule",
-            ExpressionAttributeValues[":schedule"] = { SS: body.schedule }
+            ExpressionAttributeValues[":schedule"] = { SS: body.schedule };
     }
 
     let params = {
         TableName: 'MainTable',
         Key: {
             "pk": { S: "v#" + vendorId },
-            "sk": { S: "c#" + customerId }
+            "sk": { S: "c#" + userId }
         },
         UpdateExpression,
         ExpressionAttributeValues,
@@ -163,11 +162,11 @@ async function putCustomerSubscription(event: APIGatewayProxyEvent): Promise<API
 
         let subscription = {
             vendorId,
-            customerId,
+            userId,
             approved: dbItem.Attributes.approved?.BOOL || false,
             paused: dbItem.Attributes.paused.BOOL,
             schedule: dbItem.Attributes.schedule.SS
-        }
+        };
         return {
             statusCode: 200,
             body: JSON.stringify(subscription)
@@ -180,7 +179,7 @@ async function putCustomerSubscription(event: APIGatewayProxyEvent): Promise<API
     }
 }
 
-async function deleteCustomerSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+async function deleteUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -201,7 +200,7 @@ async function deleteCustomerSubscription(event: APIGatewayProxyEvent): Promise<
         TableName: 'MainTable',
         Key: {
             'pk': { S: 'v#' + vendorId },
-            'sk': { S: 'c#' + customerId }  
+            'sk': { S: 'u#' + userId }  
         }
     };
 
