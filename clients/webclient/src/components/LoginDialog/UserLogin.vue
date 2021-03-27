@@ -8,7 +8,7 @@
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary">Logg inn</v-btn>
+            <v-btn color="success">Logg inn</v-btn>
             <v-btn color="error" @click="cancel()">Avbryt</v-btn>
         </v-card-actions>
 

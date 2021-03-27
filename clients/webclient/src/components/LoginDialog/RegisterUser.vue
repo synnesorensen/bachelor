@@ -7,7 +7,7 @@
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary">Registrer</v-btn>
+            <v-btn color="success">Registrer</v-btn>
             <v-btn color="error" @click="cancel()">Avbryt</v-btn>
         </v-card-actions>
     </v-container>
