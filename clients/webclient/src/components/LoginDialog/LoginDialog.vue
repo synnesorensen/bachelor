@@ -14,9 +14,9 @@
                         <v-tab>Glemt passord</v-tab>
                     </v-tabs>
                     <v-tabs-items v-model="tab">
-				        <v-tab-item :transition="false" :reverse-transition="false"><UserLogin  @cancel="closeBox" /></v-tab-item>
-				        <v-tab-item :transition="false" :reverse-transition="false"><RegisterUser @cancel="closeBox" /></v-tab-item>
-			    	    <v-tab-item :transition="false" :reverse-transition="false"><ForgottenPassword  @cancel="closeBox" /></v-tab-item>
+				        <v-tab-item :transition="false" :reverse-transition="false"><TabLogin  @cancel="closeBox" /></v-tab-item>
+				        <v-tab-item :transition="false" :reverse-transition="false"><TabRegister @cancel="closeBox" /></v-tab-item>
+			    	    <v-tab-item :transition="false" :reverse-transition="false"><TabPassword  @cancel="closeBox" /></v-tab-item>
 			        </v-tabs-items>
                 </v-card>
             </v-dialog>
@@ -27,15 +27,15 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import UserLogin from "./UserLogin.vue"
-import RegisterUser from "./RegisterUser.vue"
-import ForgottenPassword from "./ForgottenPassword.vue"
+import TabLogin from "./TabLogin.vue"
+import TabRegister from "./TabRegister.vue"
+import TabPassword from "./TabPassword.vue"
 
 @Component({
 	components: {
-        UserLogin,
-		RegisterUser,
-        ForgottenPassword
+        TabLogin,
+		TabRegister,
+        TabPassword
 	},
 })
 

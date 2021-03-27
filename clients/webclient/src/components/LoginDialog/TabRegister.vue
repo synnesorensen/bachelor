@@ -21,7 +21,7 @@ import Component from "vue-class-component";
 
 @Component
 
-export default class RegisterUser extends Vue {
+export default class TabRegister extends Vue {
 
     cancel() {
         this.$emit("cancel");
