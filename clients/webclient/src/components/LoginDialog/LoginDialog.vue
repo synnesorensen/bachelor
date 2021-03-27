@@ -14,9 +14,9 @@
                         <v-tab>Glemt passord</v-tab>
                     </v-tabs>
                     <v-tabs-items v-model="tab">
-				        <v-tab-item :transition="false" :reverse-transition="false"><UserLogin /></v-tab-item>
-				        <v-tab-item :transition="false" :reverse-transition="false"><RegisterUser /></v-tab-item>
-			    	    <v-tab-item :transition="false" :reverse-transition="false"><ForgottenPassword /></v-tab-item>
+				        <v-tab-item :transition="false" :reverse-transition="false"><UserLogin  @cancel="closeBox" /></v-tab-item>
+				        <v-tab-item :transition="false" :reverse-transition="false"><RegisterUser @cancel="closeBox" /></v-tab-item>
+			    	    <v-tab-item :transition="false" :reverse-transition="false"><ForgottenPassword  @cancel="closeBox" /></v-tab-item>
 			        </v-tabs-items>
                 </v-card>
             </v-dialog>
@@ -40,11 +40,16 @@ import ForgottenPassword from "./ForgottenPassword.vue"
 })
 
 export default class LoginDialog extends Vue {
-    private showDialog = false;
+
+    public showDialog = false;
     private tab = 0;
 
     openBox() {
         this.showDialog = true;
+    }
+
+    closeBox() {
+        this.showDialog = false;
     }
 }
 </script>

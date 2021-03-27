@@ -6,8 +6,8 @@
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="showDialog = false">Send</v-btn>
-            <v-btn color="red" @click="showDialog = false">Avbryt</v-btn>
+            <v-btn color="primary">Send</v-btn>
+            <v-btn color="error" @click="cancel()">Avbryt</v-btn>
         </v-card-actions>
 
     </v-container>
@@ -16,9 +16,17 @@
 
 
 
+<script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
 
-<script>
-export default {
+@Component
+
+export default class ForgottenPassword extends Vue {
+    
+    cancel() {
+        this.$emit("cancel");
+    }
 
 }
 </script>
