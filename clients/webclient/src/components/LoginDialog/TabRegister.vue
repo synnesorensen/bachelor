@@ -3,7 +3,8 @@
         <v-card-title class="headline">Registrer konto</v-card-title>
         <v-card-text>
             <v-text-field label="Fyll inn epost-adresse" required></v-text-field>
-            <v-text-field label="Passord" required></v-text-field>
+            <v-text-field label="Velg et passord" required></v-text-field>
+            <v-text-field label="Gjenta passord" required></v-text-field>
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
