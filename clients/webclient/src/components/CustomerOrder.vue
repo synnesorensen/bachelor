@@ -109,9 +109,6 @@
                 <v-chip filter outlined>
                     Gjenbruksbokser (depositum kr. 218)
                 </v-chip>
-                <v-chip filter outlined>
-                    Åtte uker (kr. 137 per levering)
-                </v-chip>
             </v-chip-group>
         </v-row>
         <v-row>
