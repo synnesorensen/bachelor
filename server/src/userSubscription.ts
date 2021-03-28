@@ -150,7 +150,7 @@ async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
         TableName: 'MainTable',
         Key: {
             "pk": { S: "v#" + vendorId },
-            "sk": { S: "c#" + userId }
+            "sk": { S: "u#" + userId }
         },
         UpdateExpression,
         ExpressionAttributeValues,

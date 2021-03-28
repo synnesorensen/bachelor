@@ -64,14 +64,9 @@ async function putUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayPr
         ":EntityType": { S: "Userprofile" }
     };
 
-    if (body.firstname != undefined) {
-        UpdateExpression += ", firstname = :firstname",
-            ExpressionAttributeValues[":firstname"] = { S: body.firstname };
-    }
-
-    if (body.lastname != undefined) {
-        UpdateExpression += ", lastname = :lastname",
-            ExpressionAttributeValues[":lastname"] = { S: body.lastname };
+    if (body.fullname != undefined) {
+        UpdateExpression += ", fullname = :fullname",
+            ExpressionAttributeValues[":fullname"] = { S: body.fullname };
     }
 
     if (body.address != undefined) {
@@ -104,8 +99,7 @@ async function putUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayPr
         let dbItem = await database.updateItem(params).promise();
 
         let userprofile = {
-            firstname: dbItem.Attributes.firstname,
-            lastname: dbItem.Attributes.lastname,
+            fullname: dbItem.Attributes.fullname,
             address: dbItem.Attributes.address,
             phone: dbItem.Attributes.phone,
             email: dbItem.Attributes.email
