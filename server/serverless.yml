@@ -62,6 +62,12 @@ functions:
       - httpApi:
           path: /u/subscription
           method: any
+  vendorSubscription:
+    handler: src/vendorSubscription.handler
+    events:
+      - httpApi:
+          path: /v/subscription
+          method: any
 
 resources:
   Resources:
