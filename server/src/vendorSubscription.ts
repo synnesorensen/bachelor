@@ -35,7 +35,7 @@ export const mainHandler = middy(handler).use(cors());
 let vendorId = "lunsj@hjul.no";
 // TODO: Fetch customerId from JWT
 
-async function getUserSubscription(event: APIGatewayProxyEvent): APIGatewayProxyResult | PromiseLike<APIGatewayProxyResult> {
+async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     
     if (!event.queryStringParameters) {
         return {
@@ -78,7 +78,6 @@ async function getUserSubscription(event: APIGatewayProxyEvent): APIGatewayProxy
             approved: dbResult.Items[0].approved,
             paused: dbResult.Items[0].paused,
             schedule: dbResult.Items[0].schedule, 
-
         }
 
         return {
