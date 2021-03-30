@@ -1,52 +1,32 @@
+import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { DynamoDB } from 'aws-sdk';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-
-const database = new DynamoDB({ region: 'eu-north-1' });
-const documentClient = new DocumentClient({ region: 'eu-north-1' });
-// TODO: Make variable for region.
+import { deleteUserprofileInDb, getUserprofileFromDb, putUserprofileInDb } from './dbUtils';
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-
     if (event.httpMethod == "GET") {
-        return getUserprofile(event);
+        return getUserprofile();
     }
-
     if (event.httpMethod == "PUT") {
       return putUserprofile(event);
     }
-
     if (event.httpMethod == "DELETE") {
-        return deleteUserprofile(event);
+        return deleteUserprofile();
     }
 }
-
 export const mainHandler = middy(handler).use(cors());
 
 let userId = "synne@birthdaygirl.yay";
 // TODO: Fetch customerId from JWT
 
-async function getUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-
-    let params = {
-        TableName: 'MainTable',
-        KeyConditionExpression: "#pk = :userId and #sk = :userId",
-        ExpressionAttributeNames: {
-            "#pk": "pk",
-            "#sk": "sk"
-        },
-        ExpressionAttributeValues: {
-            ":userId": "u#" + userId
-        }
-    }
+async function getUserprofile(): Promise<APIGatewayProxyResult> {
     try {
-        let userprofile = await documentClient.query(params).promise();
+        let userprofile = await getUserprofileFromDb(userId);
 
         return {
             statusCode: 200,
-            body: JSON.stringify(userprofile.Items)
+            body: JSON.stringify(userprofile)
         };
     } catch (err) {
         return {
@@ -57,53 +37,10 @@ async function getUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 }
 
 async function putUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    let body = JSON.parse(event.body);
-
-    let UpdateExpression = "set EntityType = :EntityType";
-    let ExpressionAttributeValues: any = {
-        ":EntityType": { S: "Userprofile" }
-    };
-
-    if (body.fullname != undefined) {
-        UpdateExpression += ", fullname = :fullname",
-            ExpressionAttributeValues[":fullname"] = { S: body.fullname };
-    }
-
-    if (body.address != undefined) {
-        UpdateExpression += ", address = :address",
-            ExpressionAttributeValues[":address"] = { S: body.address };
-    }
-
-    if (body.phone != undefined) {
-        UpdateExpression += ", phone = :phone",
-            ExpressionAttributeValues[":phone"] = { N: body.phone };
-    }
-
-    if (body.phone != undefined) {
-        UpdateExpression += ", email = :email",
-            ExpressionAttributeValues[":email"] = { S: body.email };
-    }
-
-    let params = {
-        TableName: "MainTable",
-        Key: {
-            "pk": { S: "u#" + userId },
-            "sk": { S: "u#" + userId }
-        },
-        UpdateExpression,
-        ExpressionAttributeValues,
-        ReturnValues: "ALL_NEW"
-    };
-
+    let body = JSON.parse(event.body); 
     try {
-        let dbItem = await database.updateItem(params).promise();
+        let userprofile = await putUserprofileInDb(body, userId);
 
-        let userprofile = {
-            fullname: dbItem.Attributes.fullname,
-            address: dbItem.Attributes.address,
-            phone: dbItem.Attributes.phone,
-            email: dbItem.Attributes.email
-        };
         return {
             statusCode: 200,
             body: JSON.stringify(userprofile)
@@ -116,21 +53,12 @@ async function putUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     }
 }
 
-async function deleteUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-
-    let params = {
-        TableName: 'MainTable',
-        Key: {
-            'pk': { S: 'u#' + userId },
-            'sk': { S: 'u#' + userId }
-        }
-    };
-
+async function deleteUserprofile(): Promise<APIGatewayProxyResult> {
     try {
-        database.deleteItem(params).promise;
+        deleteUserprofileInDb(userId);
         return {
             statusCode: 200,
-            body: JSON.stringify(params.Key)
+            body: '{ "message" : "Deletion succeeded" }'
         };
     } catch (err) {
         return {

@@ -31,7 +31,8 @@ custom:
   esbuild:
     target: es2019
     tsconfig: ./tsconfig.json
-    minify: true
+    minify: false
+    sourcemap: inline
  
   httpApi:
     payload: '1.0'
@@ -51,23 +52,29 @@ custom:
 
 functions:
   userprofile:
-    handler: src/userprofile.handler
+    handler: src/userprofile.mainHandler
     events:
       - httpApi:
           path: /userprofile
           method: any
   userSubscription:
-    handler: src/userSubscription.handler
+    handler: src/userSubscription.mainHandler
     events:
       - httpApi:
           path: /u/subscription
           method: any
   vendorSubscription:
-    handler: src/vendorSubscription.handler
+    handler: src/vendorSubscription.mainHandler
     events:
       - httpApi:
           path: /v/subscription
           method: any
+  vendorSubscriptions:
+    handler: src/vendorSubscriptions.mainHandler
+    events: 
+      - httpApi:
+          path: /v/subscriptions
+          method: get
 
 resources:
   Resources:
