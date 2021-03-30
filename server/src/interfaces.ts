@@ -9,7 +9,7 @@ export interface Subscription {
 export interface Userprofile {
     fullname: string,
     address: string,
-    phone: number,
+    phone: string,
     email: string
 }
 
@@ -21,7 +21,7 @@ export interface UserSubscription {
     schedule: string[],
     fullname: string,
     address: string,
-    phone: number,
+    phone: string,
     email: string
 }
 
@@ -34,7 +34,7 @@ export interface Delivery {
 export interface Vendor {
     fullname: string,
     address: string,
-    phone: number,
+    phone: string,
     schedule: string[]
 }
 

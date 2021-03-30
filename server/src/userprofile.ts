@@ -3,7 +3,7 @@ import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { getUserprofileFromDb } from './dbUtils';
+import { deleteUserprofileInDb, getUserprofileFromDb, putUserprofileInDb } from './dbUtils';
 
 const database = new DynamoDB({ region: 'eu-north-1' });
 const documentClient = new DocumentClient({ region: 'eu-north-1' });
@@ -44,51 +44,9 @@ async function getUserprofile(): Promise<APIGatewayProxyResult> {
 async function putUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     let body = JSON.parse(event.body);
 
-    let UpdateExpression = "set EntityType = :EntityType";
-    let ExpressionAttributeValues: any = {
-        ":EntityType": { S: "Userprofile" }
-    };
-
-    if (body.fullname != undefined) {
-        UpdateExpression += ", fullname = :fullname",
-            ExpressionAttributeValues[":fullname"] = { S: body.fullname };
-    }
-
-    if (body.address != undefined) {
-        UpdateExpression += ", address = :address",
-            ExpressionAttributeValues[":address"] = { S: body.address };
-    }
-
-    if (body.phone != undefined) {
-        UpdateExpression += ", phone = :phone",
-            ExpressionAttributeValues[":phone"] = { N: body.phone };
-    }
-
-    if (body.phone != undefined) {
-        UpdateExpression += ", email = :email",
-            ExpressionAttributeValues[":email"] = { S: body.email };
-    }
-
-    let params = {
-        TableName: "MainTable",
-        Key: {
-            "pk": { S: "u#" + userId },
-            "sk": { S: "u#" + userId }
-        },
-        UpdateExpression,
-        ExpressionAttributeValues,
-        ReturnValues: "ALL_NEW"
-    };
-
     try {
-        let dbItem = await database.updateItem(params).promise();
+        let userprofile = await putUserprofileInDb;
 
-        let userprofile = {
-            fullname: dbItem.Attributes.fullname,
-            address: dbItem.Attributes.address,
-            phone: dbItem.Attributes.phone,
-            email: dbItem.Attributes.email
-        };
         return {
             statusCode: 200,
             body: JSON.stringify(userprofile)
@@ -102,20 +60,11 @@ async function putUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 }
 
 async function deleteUserprofile(): Promise<APIGatewayProxyResult> {
-
-    let params = {
-        TableName: 'MainTable',
-        Key: {
-            'pk': { S: 'u#' + userId },
-            'sk': { S: 'u#' + userId }
-        }
-    };
-
     try {
-        database.deleteItem(params).promise;
+        deleteUserprofileInDb(userId);
         return {
             statusCode: 200,
-            body: JSON.stringify(params.Key)
+            body: '{ "message" : "Deletion succeeded" }'
         };
     } catch (err) {
         return {

@@ -108,6 +108,47 @@ export async function getUserprofileFromDb(userId): Promise<Userprofile> {
     };  
 }
 
+export async function putUserprofileInDb(userprofile: Userprofile, userId: string): Promise<Userprofile> {
+    let UpdateExpression = "set EntityType = :EntityType, fullname = :fullname, address = :address, phone = :phone, email = :email";
+    let ExpressionAttributeValues: any = {
+        ":EntityType": { S: 'Subscription' },
+        ":fullname": { S: userprofile.fullname },
+        ":address": { S: userprofile.address },
+        ":phone": { S: userprofile.phone },
+        ":email": { S: userprofile.email }
+    }; 
+
+    let params = {
+        TableName: "MainTable",
+        Key: {
+            "pk": { S: "u#" + userId },
+            "sk": { S: "u#" + userId }
+        },
+        UpdateExpression,
+        ExpressionAttributeValues,
+        ReturnValues: "ALL_NEW"
+    };
+
+    let dbItem = await database.updateItem(params).promise();
+    return {
+        fullname: dbItem.Attributes.fullname.S,
+        address: dbItem.Attributes.address.S,
+        phone: dbItem.Attributes.phone.S,
+        email: dbItem.Attributes.email.S,
+    }
+} 
+
+export async function deleteUserprofileInDb(userId: string): Promise<void> {
+    let params = {
+        TableName: 'MainTable',
+        Key: {
+            'pk': { S: 'u#' + userId },
+            'sk': { S: 'u#' + userId }
+        }
+    };
+    database.deleteItem(params).promise;
+}
+
 export async function getVendorSubscriptionsFromDb(vendorId: string): Promise<Subscription[]> {
     let params = {
         TableName: 'MainTable',
