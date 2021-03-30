@@ -40,7 +40,7 @@ async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
         };
     }    
     try {
-        let subscription = getUserSubscriptionFromDb(vendorId, userId);
+        let subscription = await getUserSubscriptionFromDb(vendorId, userId);
 
         if (!subscription) {
             return {
@@ -115,7 +115,6 @@ async function deleteUserSubscription(event: APIGatewayProxyEvent): Promise<APIG
     }
     try {
         deleteUserSubscriptionInDb(vendorId, userId);
-        
         return {
             statusCode: 200,
             body: '{ "message" : "Deletion succeeded" }'
