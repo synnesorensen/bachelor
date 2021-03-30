@@ -110,7 +110,7 @@ export async function getUserprofileFromDb(userId): Promise<Userprofile> {
 export async function putUserprofileInDb(userprofile: Userprofile, userId: string): Promise<Userprofile> {
     let UpdateExpression = "set EntityType = :EntityType, fullname = :fullname, address = :address, phone = :phone, email = :email";
     let ExpressionAttributeValues: any = {
-        ":EntityType": { S: 'Subscription' },
+        ":EntityType": { S: 'Userprofile' },
         ":fullname": { S: userprofile.fullname },
         ":address": { S: userprofile.address },
         ":phone": { S: userprofile.phone },
@@ -145,7 +145,7 @@ export async function deleteUserprofileInDb(userId: string): Promise<void> {
             'sk': { S: 'u#' + userId }
         }
     };
-    database.deleteItem(params).promise;
+    await database.deleteItem(params).promise();
 }
 
 export async function getVendorSubscriptionsFromDb(vendorId: string): Promise<Subscription[]> {
