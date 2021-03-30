@@ -14,7 +14,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
         return getUserprofile();
     }
     if (event.httpMethod == "PUT") {
-      return putUserprofile(event);
+      return putUserprofile();
     }
     if (event.httpMethod == "DELETE") {
         return deleteUserprofile();
@@ -41,8 +41,7 @@ async function getUserprofile(): Promise<APIGatewayProxyResult> {
     }
 }
 
-async function putUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    let body = JSON.parse(event.body);
+async function putUserprofile(): Promise<APIGatewayProxyResult> {
 
     try {
         let userprofile = await putUserprofileInDb;
