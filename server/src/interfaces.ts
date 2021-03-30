@@ -1,5 +1,5 @@
 export interface Subscription {
-    vendorId: string,
+    vendorId?: string,
     userId: string,
     approved?: boolean,
     paused?: boolean,

@@ -23,7 +23,6 @@ export async function getUserSubscriptionFromDb(vendorId: string, userId: string
         return undefined;
     }
     return {
-        vendorId,
         userId,
         approved: dbResult.Items[0].approved? dbResult.Items[0].approved : false,
         paused: dbResult.Items[0].paused,
@@ -37,25 +36,25 @@ export async function putSubscriptionInDb(subscription: Subscription): Promise<S
         ":EntityType": { S: 'Subscription' }
     }; 
 
-    if (subscription.approved) {
+    if (subscription.approved != undefined) {
         UpdateExpression += ", approved = :approved";
         ExpressionAttributeValues[":approved"] = { BOOL: subscription.approved };
     }
 
-    if (subscription.paused) {
+    if (subscription.paused != undefined) {
         UpdateExpression += ", paused = :paused";
         ExpressionAttributeValues[":paused"] = { BOOL: subscription.paused };
     }
 
     if (subscription.schedule) {
         UpdateExpression += ", schedule = :schedule";
-        ExpressionAttributeValues[":schedule"] = { BOOL: subscription.schedule };
+        ExpressionAttributeValues[":schedule"] = { SS: subscription.schedule };
     }
 
     let params = {
         TableName: 'MainTable',
         Key: {
-            "pk": { S: "u#" + subscription.vendorId },
+            "pk": { S: "v#" + subscription.vendorId },
             "sk": { S: "u#" + subscription.userId }
         },
         UpdateExpression,

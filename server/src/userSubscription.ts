@@ -77,12 +77,6 @@ async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
     }
     let body = JSON.parse(event.body);
 
-    if (!body || body.vendorId != vendorId) {
-        return {
-            statusCode: 400,
-            body: '{ "message" : "body is missing or vendorId is not matching query parameter" }'
-        };
-    }
     if (body.userId != userId) {
         return {
             statusCode: 403,
@@ -90,7 +84,7 @@ async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
         };
     }
     try {
-        let subscription = await putSubscriptionInDb(body);
+        let subscription = await putSubscriptionInDb({...body, vendorId});
 
         return {
             statusCode: 200,
