@@ -3,50 +3,35 @@ import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { getUserprofileFromDb } from './dbUtils';
 
 const database = new DynamoDB({ region: 'eu-north-1' });
 const documentClient = new DocumentClient({ region: 'eu-north-1' });
 // TODO: Make variable for region.
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-
     if (event.httpMethod == "GET") {
-        return getUserprofile(event);
+        return getUserprofile();
     }
-
     if (event.httpMethod == "PUT") {
       return putUserprofile(event);
     }
-
     if (event.httpMethod == "DELETE") {
-        return deleteUserprofile(event);
+        return deleteUserprofile();
     }
 }
-
 export const mainHandler = middy(handler).use(cors());
 
 let userId = "synne@birthdaygirl.yay";
 // TODO: Fetch customerId from JWT
 
-async function getUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-
-    let params = {
-        TableName: 'MainTable',
-        KeyConditionExpression: "#pk = :userId and #sk = :userId",
-        ExpressionAttributeNames: {
-            "#pk": "pk",
-            "#sk": "sk"
-        },
-        ExpressionAttributeValues: {
-            ":userId": "u#" + userId
-        }
-    }
+async function getUserprofile(): Promise<APIGatewayProxyResult> {
     try {
-        let userprofile = await documentClient.query(params).promise();
+        let userprofile = getUserprofileFromDb(userId);
 
         return {
             statusCode: 200,
-            body: JSON.stringify(userprofile.Items)
+            body: JSON.stringify(userprofile)
         };
     } catch (err) {
         return {
@@ -116,7 +101,7 @@ async function putUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     }
 }
 
-async function deleteUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+async function deleteUserprofile(): Promise<APIGatewayProxyResult> {
 
     let params = {
         TableName: 'MainTable',
