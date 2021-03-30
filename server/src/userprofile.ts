@@ -1,13 +1,7 @@
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { DynamoDB } from 'aws-sdk';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { deleteUserprofileInDb, getUserprofileFromDb, putUserprofileInDb } from './dbUtils';
-
-const database = new DynamoDB({ region: 'eu-north-1' });
-const documentClient = new DocumentClient({ region: 'eu-north-1' });
-// TODO: Make variable for region.
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     if (event.httpMethod == "GET") {
