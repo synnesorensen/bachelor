@@ -1,3 +1,4 @@
+import 'source-map-support/register'
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Subscription, UserSubscription, Userprofile, Delivery, Vendor } from './interfaces';
@@ -148,8 +149,8 @@ export async function deleteUserprofileInDb(userId: string): Promise<void> {
     await database.deleteItem(params).promise();
 }
 
-export async function getVendorSubscriptionsFromDb(vendorId: string): Promise<Subscription[]> {
-    let params = {
+export async function getVendorSubscriptionsFromDb(vendorId: string): Promise<UserSubscription[]> {
+    let subparams = {
         TableName: 'MainTable',
         KeyConditionExpression: "#pk = :vendor and begins_with(#sk, :prefix)",
         ExpressionAttributeNames: {
@@ -158,19 +159,60 @@ export async function getVendorSubscriptionsFromDb(vendorId: string): Promise<Su
         },
         ExpressionAttributeValues: {
             ":vendor": "v#" + vendorId,
-            ":prefix": "c#"
+            ":prefix": "u#"
         }
     };
 
-    let dbResult = await documentClient.query(params).promise();
-    return dbResult.Items.map((item) => {
+    let dbResult = await documentClient.query(subparams).promise();
+    let subs = dbResult.Items.map((item) => {
         return {
             vendorId,
-            userId: item.sk.substr(2),
+            userId: item.sk,
             approved: item.approved,
             paused:item.paused,
             schedule: item.schedule
         }
     });
 
+    let keys = dbResult.Items.map((item) => {
+        return {
+            "pk": {S: item.sk},         // her må sk fra subscription brukes for å finne
+            "sk": {S: item.sk}          // userprofile sin composite key
+        }
+    });
+
+    let usersubparams = {
+        RequestItems: {
+            "MainTable": {
+                Keys: keys,
+                ProjectionExpression: "sk, fullname, address, phone, email"
+            }
+        }
+    };
+    console.log("keys", keys);
+    let users = await database.batchGetItem(usersubparams).promise();
+    
+    let subshash = new Map<string, Subscription>();
+
+    subs.forEach((sub) => {
+        subshash.set(sub.userId, sub);
+    });
+
+    console.log(users.Responses.MainTable);
+    let result:UserSubscription[] = users.Responses.MainTable.map(user => {
+        console.log(user);
+        let sub = subshash.get(user.sk.S);
+        return {
+            vendorId: sub.vendorId,
+            userId: sub.userId.substr(2),
+            approved: sub.approved,
+            paused: sub.paused,
+            schedule: sub.schedule,
+            fullname: user.fullname?.S,
+            address: user.address?.S,
+            phone: user.phone?.S,
+            email: user.email?.S
+        }
+    });
+    return result;
 }
