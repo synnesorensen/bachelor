@@ -10,24 +10,19 @@ const documentClient = new DocumentClient({ region: 'eu-north-1' });
 // TODO: Make variable for region.
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-
     if (event.httpMethod == "GET") {
         return getUserSubscription(event);
     }
-
     if (event.httpMethod == "PUT") {
         return putUserSubscription(event);
     }
-
     if (event.httpMethod == "DELETE") {
         return deleteUserSubscription(event);
     }
-
     return {
         statusCode: 405,
         body: '{ "message" : "Method not allowed" }'
     };
-
 }
 
 export const mainHandler = middy(handler).use(cors());
