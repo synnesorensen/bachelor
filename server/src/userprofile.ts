@@ -8,7 +8,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
         return getUserprofile();
     }
     if (event.httpMethod == "PUT") {
-      return putUserprofile();
+      return putUserprofile(event);
     }
     if (event.httpMethod == "DELETE") {
         return deleteUserprofile();
@@ -21,7 +21,7 @@ let userId = "synne@birthdaygirl.yay";
 
 async function getUserprofile(): Promise<APIGatewayProxyResult> {
     try {
-        let userprofile = getUserprofileFromDb(userId);
+        let userprofile = await getUserprofileFromDb(userId);
 
         return {
             statusCode: 200,
@@ -35,10 +35,10 @@ async function getUserprofile(): Promise<APIGatewayProxyResult> {
     }
 }
 
-async function putUserprofile(): Promise<APIGatewayProxyResult> {
-
+async function putUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let body = JSON.parse(event.body); 
     try {
-        let userprofile = await putUserprofileInDb;
+        let userprofile = await putUserprofileInDb(body, userId);
 
         return {
             statusCode: 200,
