@@ -1,4 +1,3 @@
-import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyResult } from 'aws-lambda'

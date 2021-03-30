@@ -31,7 +31,8 @@ custom:
   esbuild:
     target: es2019
     tsconfig: ./tsconfig.json
-    minify: true
+    minify: false
+    sourcemap: inline
  
   httpApi:
     payload: '1.0'
