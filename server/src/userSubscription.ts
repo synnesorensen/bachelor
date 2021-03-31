@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { deleteUserSubscriptionInDb, getUserSubscriptionFromDb, putSubscriptionInDb } from './dbUtils'
+import { deleteSubscriptionInDb, getSubscriptionFromDb, putSubscriptionInDb } from './dbUtils'
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     if (event.httpMethod == "GET") {
@@ -41,7 +41,7 @@ async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
         };
     }    
     try {
-        let subscription = await getUserSubscriptionFromDb(vendorId, userId);
+        let subscription = await getSubscriptionFromDb(vendorId, userId);
 
         if (!subscription) {
             return {
@@ -85,7 +85,7 @@ async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
         };
     }
     try {
-        let subscription = await putSubscriptionInDb({...body, vendorId});
+        let subscription = await putSubscriptionInDb({...body, vendorId});  // TODO: Fjerne mulighet til å endre på approved
 
         return {
             statusCode: 200,
@@ -115,7 +115,7 @@ async function deleteUserSubscription(event: APIGatewayProxyEvent): Promise<APIG
         };
     }
     try {
-        deleteUserSubscriptionInDb(vendorId, userId);
+        deleteSubscriptionInDb(vendorId, userId);
         return {
             statusCode: 200,
             body: '{ "message" : "Deletion succeeded" }'
