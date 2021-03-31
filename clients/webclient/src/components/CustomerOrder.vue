@@ -2,7 +2,7 @@
 	<v-container> 
 		<v-row>
 			<v-col>
-				<h3>Bestill lunsj</h3>
+				<h1>Bestill lunsj</h1>
 			</v-col>
 		</v-row>
 		<v-row class="text-center">
@@ -144,6 +144,9 @@
         </v-row>
         <v-row>
             <v-text-field label="Annen informasjon du vil legge til?" v-model="Annet"></v-text-field>
+        </v-row>
+        <v-row>
+            <v-btn>Send</v-btn>
         </v-row>
 	</v-container>
 </template>
