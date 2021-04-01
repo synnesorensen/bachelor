@@ -1,15 +1,10 @@
+import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { DynamoDB } from 'aws-sdk';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { deleteSubscriptionInDb, getSubscriptionFromDb, putSubscriptionInDb } from './dbUtils'
 
-
-const database = new DynamoDB({ region: 'eu-north-1' });
-const documentClient = new DocumentClient({ region: 'eu-north-1' });
-// TODO: Make variable for region.
-
-export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     if (event.httpMethod == "GET") {
         return getUserSubscription(event);
     }
@@ -31,7 +26,6 @@ let vendorId = "lunsj@hjul.no";
 // TODO: Fetch customerId from JWT
 
 async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -48,38 +42,19 @@ async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
         };
     }
 
-    let params = {
-        TableName: "MainTable",
-        KeyConditionExpression: "#pk = :vendor and #sk = :userId",
-        ExpressionAttributeValues: {
-            ":vendor": "v#" + vendorId,
-            ":userId": "u#" + userId
-        }
-    }
-
     try {
-        let dbResult = await documentClient.query(params).promise();
+        let subscription = await getSubscriptionFromDb(vendorId, userId);
 
-        if (dbResult.Count < 1) {
+        if (!subscription) {
             return {
                 statusCode: 404,
-                body: '{ "message": "No subscription for vendorId: ' + vendorId + '"}'
+                body: '{ "message" : "No subscription for vendorId: ' + vendorId + '"}'
             };
-        } 
-        
-        let subscription = {
-            vendorId,
-            userId,
-            approved: dbResult.Items[0].approved,
-            paused: dbResult.Items[0].paused,
-            schedule: dbResult.Items[0].schedule, 
         }
-
         return {
             statusCode: 200,
             body: JSON.stringify(subscription)
         };
-
     } catch (err) {
         return {
             statusCode: 500, 
@@ -88,11 +63,63 @@ async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
     }
 }
 
-function putUserSubscription(event: APIGatewayProxyEvent): APIGatewayProxyResult | PromiseLike<APIGatewayProxyResult> {
-    throw new Error('Function not implemented.');
+async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    if (!event.queryStringParameters) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter userId" }'
+        };
+    }
+    let userId = event.queryStringParameters["userId"];
+
+    if (!userId) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter userId" }'
+        };
+    }
+    let body = JSON.parse(event.body);
+
+    try {
+        let subscription = await putSubscriptionInDb({...body, vendorId});
+
+        return {
+            statusCode: 200,
+            body: JSON.stringify(subscription)
+        };
+    } catch (err) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify(err)
+        };
+    }
 }
 
-function deleteUserSubscription(event: APIGatewayProxyEvent): APIGatewayProxyResult | PromiseLike<APIGatewayProxyResult> {
-    throw new Error('Function not implemented.');
-}
+async function deleteUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    if (!event.queryStringParameters) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter userId" }'
+        };
+    }
+    let userId = event.queryStringParameters["userId"];
 
+    if (!userId) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter userId" }'
+        };
+    }
+    try {
+        deleteSubscriptionInDb(vendorId, userId);
+        return {
+            statusCode: 200,
+            body: '{ "message" : "Deletion succeeded" }'
+        };
+    } catch (err) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify(err)
+        };
+    }
+}
