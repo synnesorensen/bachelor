@@ -4,7 +4,7 @@ import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { deleteSubscriptionInDb, getSubscriptionFromDb, putSubscriptionInDb } from './dbUtils'
 
-export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     if (event.httpMethod == "GET") {
         return getUserSubscription(event);
     }
