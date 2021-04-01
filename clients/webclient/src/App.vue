@@ -9,15 +9,15 @@
 		</v-app-bar>
 		<v-main>
 			<v-tabs v-model="tab" align-with-title>
-				<v-tab>Kundeoversikt</v-tab>
 				<v-tab>Login</v-tab>
+                <v-tab>Kundeoversikt</v-tab>
 				<v-tab>Bestilling</v-tab>
 				<v-tab>Profil</v-tab>
 				<v-tab>Faktura</v-tab>
 			</v-tabs>
 			<v-tabs-items v-model="tab">
+                <v-tab-item><LoginDialog /></v-tab-item>
 				<v-tab-item><CustomerOverview /></v-tab-item>
-				<v-tab-item><CustomerLogin /></v-tab-item>
 				<v-tab-item><CustomerOrder /></v-tab-item>
 				<v-tab-item><CustomerProfile /></v-tab-item>
 				<v-tab-item><CustomerInvoice /></v-tab-item>
@@ -29,16 +29,16 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
+import LoginDialog from './components/LoginDialog/LoginDialog.vue';
 import CustomerOverview from './components/CustomerOverview.vue';
-import CustomerLogin from './components/CustomerLogin.vue';
 import CustomerOrder from './components/CustomerOrder.vue';
 import CustomerProfile from './components/CustomerProfile.vue';
 import CustomerInvoice from './components/CustomerInvoice.vue';
 
 @Component({
 	components: {
+        LoginDialog,
 		CustomerOverview,
-		CustomerLogin,
 		CustomerOrder,
 		CustomerProfile,
 		CustomerInvoice,
