@@ -85,7 +85,12 @@ async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
         };
     }
     try {
-        let subscription = await putSubscriptionInDb({...body, vendorId});  // TODO: Fjerne mulighet til å endre på approved
+        let subscription = await putSubscriptionInDb({
+            vendorId,
+            userId,
+            paused: body.paused,
+            schedule: body.schedule
+        });
 
         return {
             statusCode: 200,
