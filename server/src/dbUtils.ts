@@ -6,7 +6,7 @@ import { Subscription, UserSubscription, Userprofile, Delivery, Vendor } from '.
 const database = new DynamoDB({ region: 'eu-north-1' });
 const documentClient = new DocumentClient({ region: 'eu-north-1' });
 
-export async function getUserSubscriptionFromDb(vendorId: string, userId: string): Promise<Subscription | undefined> {
+export async function getSubscriptionFromDb(vendorId: string, userId: string): Promise<Subscription | undefined> {
     let params = {
         TableName: 'MainTable',
         KeyConditionExpression: "#pk = :vendor and #sk = :userId",
@@ -73,7 +73,7 @@ export async function putSubscriptionInDb(subscription: Subscription): Promise<S
     };
 }
 
-export async function deleteUserSubscriptionInDb(vendorId: string, userId: string): Promise<void> {
+export async function deleteSubscriptionInDb(vendorId: string, userId: string): Promise<void> {
     let params = {
         TableName: 'MainTable',
         Key: {

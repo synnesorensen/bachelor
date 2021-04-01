@@ -63,6 +63,12 @@ functions:
       - httpApi:
           path: /u/subscription
           method: any
+  vendorSubscription:
+    handler: src/vendorSubscription.mainHandler
+    events:
+      - httpApi:
+          path: /v/subscription
+          method: any
   vendorSubscriptions:
     handler: src/vendorSubscriptions.mainHandler
     events: 
