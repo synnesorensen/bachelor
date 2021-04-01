@@ -76,7 +76,7 @@ functions:
           path: /v/subscriptions
           method: get
   userSubscriptions:
-    handler: src/userrSubscriptions.mainHandler
+    handler: src/userSubscriptions.mainHandler
     events: 
       - httpApi:
           path: /u/subscriptions
