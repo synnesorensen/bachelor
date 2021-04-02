@@ -2,13 +2,14 @@ import 'source-map-support/register'
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Subscription, UserSubscription, Userprofile, Delivery, Vendor } from './interfaces';
+import * as settings from './settings';
 
-const database = new DynamoDB({ region: 'eu-north-1' });
-const documentClient = new DocumentClient({ region: 'eu-north-1' });
+const database = new DynamoDB({ region: settings.REGION });
+const documentClient = new DocumentClient({ region: settings.REGION });
 
 export async function getSubscriptionFromDb(vendorId: string, userId: string): Promise<Subscription | undefined> {
     let params = {
-        TableName: 'MainTable',
+        TableName: settings.TABLENAME,
         KeyConditionExpression: "#pk = :vendor and #sk = :userId",
         ExpressionAttributeNames: {
             "#pk": "pk",
@@ -52,8 +53,14 @@ export async function putSubscriptionInDb(subscription: Subscription): Promise<S
         ExpressionAttributeValues[":schedule"] = { SS: subscription.schedule };
     }
 
+    UpdateExpression += ", GSI1_pk = :userId";
+    ExpressionAttributeValues[":userId"] = { S: "u#" + subscription.userId };
+
+    UpdateExpression += ", GSI1_sk = :vendorId";
+    ExpressionAttributeValues[":vendorId"] = { S: "v#" + subscription.vendorId };
+
     let params = {
-        TableName: 'MainTable',
+        TableName: settings.TABLENAME,
         Key: {
             "pk": { S: "v#" + subscription.vendorId },
             "sk": { S: "u#" + subscription.userId }
@@ -69,13 +76,13 @@ export async function putSubscriptionInDb(subscription: Subscription): Promise<S
         userId: subscription.userId,
         approved: dbItem.Attributes.approved?.BOOL || false,
         paused: dbItem.Attributes.paused?.BOOL || false,
-        schedule: dbItem.Attributes.schedule?.SS || []
+        schedule: dbItem.Attributes.schedule?.SS || [],
     };
 }
 
 export async function deleteSubscriptionInDb(vendorId: string, userId: string): Promise<void> {
     let params = {
-        TableName: 'MainTable',
+        TableName: settings.TABLENAME,
         Key: {
             'pk': { S: 'v#' + vendorId },
             'sk': { S: 'u#' + userId }  
@@ -86,7 +93,7 @@ export async function deleteSubscriptionInDb(vendorId: string, userId: string): 
 
 export async function getUserprofileFromDb(userId): Promise<Userprofile> {
     let params = {
-        TableName: 'MainTable',
+        TableName: settings.TABLENAME,
         KeyConditionExpression: "#pk = :userId and #sk = :userId",
         ExpressionAttributeNames: {
             "#pk": "pk",
@@ -119,7 +126,7 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
     }; 
 
     let params = {
-        TableName: "MainTable",
+        TableName: settings.TABLENAME,
         Key: {
             "pk": { S: "u#" + userId },
             "sk": { S: "u#" + userId }
@@ -140,7 +147,7 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
 
 export async function deleteUserprofileInDb(userId: string): Promise<void> {
     let params = {
-        TableName: 'MainTable',
+        TableName: settings.TABLENAME,
         Key: {
             'pk': { S: 'u#' + userId },
             'sk': { S: 'u#' + userId }
@@ -151,7 +158,7 @@ export async function deleteUserprofileInDb(userId: string): Promise<void> {
 
 export async function getVendorSubscriptionsFromDb(vendorId: string): Promise<UserSubscription[]> {
     let subparams = {
-        TableName: 'MainTable',
+        TableName: settings.TABLENAME,
         KeyConditionExpression: "#pk = :vendor and begins_with(#sk, :prefix)",
         ExpressionAttributeNames: {
             "#pk": "pk",
@@ -183,13 +190,12 @@ export async function getVendorSubscriptionsFromDb(vendorId: string): Promise<Us
 
     let usersubparams = {
         RequestItems: {
-            "MainTable": {
+            [settings.TABLENAME]: {
                 Keys: keys,
                 ProjectionExpression: "sk, fullname, address, phone, email"
             }
         }
     };
-    console.log("keys", keys);
     let users = await database.batchGetItem(usersubparams).promise();
     
     let subshash = new Map<string, Subscription>();
@@ -198,9 +204,7 @@ export async function getVendorSubscriptionsFromDb(vendorId: string): Promise<Us
         subshash.set(sub.userId, sub);
     });
 
-    console.log(users.Responses.MainTable);
     let result:UserSubscription[] = users.Responses.MainTable.map(user => {
-        console.log(user);
         let sub = subshash.get(user.sk.S);
         return {
             vendorId: sub.vendorId,
@@ -215,4 +219,32 @@ export async function getVendorSubscriptionsFromDb(vendorId: string): Promise<Us
         }
     });
     return result;
+}
+
+export async function getUserSubscriptionsFromDb(userId: string): Promise<Subscription[]> {
+    let params = {
+        TableName: settings.TABLENAME,
+        IndexName: "GSI1",
+        KeyConditionExpression: "#GSI1_pk = :user and begins_with(#GSI1_sk, :prefix)",
+        ExpressionAttributeNames: {
+            "#GSI1_pk": "GSI1_pk",
+            "#GSI1_sk": "GSI1_sk"
+        },
+        ExpressionAttributeValues: {
+            ":user": "u#" + userId,
+            ":prefix": "v#"
+        }
+    };
+
+    let result = await documentClient.query(params).promise();
+    let vendors:Subscription[] = result.Items.map((vendor) => {
+        return {
+            vendorId: vendor.vendorId,
+            userId: vendor.sk,
+            approved: vendor.approved,
+            paused: vendor.paused,
+            schedule: vendor.schedule
+        }
+    });
+    return vendors;
 }
