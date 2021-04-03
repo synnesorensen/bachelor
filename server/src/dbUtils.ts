@@ -32,16 +32,21 @@ export async function getSubscriptionFromDb(vendorId: string, userId: string): P
     };   
 }
 
-export async function putSubscriptionInDb(subscription: Subscription): Promise<Subscription> {
+export async function putSubscriptionInDb(subscription: Subscription, isVendor: boolean): Promise<Subscription> {
     let UpdateExpression = "set EntityType = :EntityType";
     let ExpressionAttributeValues: any = {
         ":EntityType": { S: 'Subscription' }
     }; 
 
-    if (subscription.approved != undefined) {
-        UpdateExpression += ", approved = :approved";
-        ExpressionAttributeValues[":approved"] = { BOOL: subscription.approved };
-    }
+    if (isVendor) {
+        if (subscription.approved != undefined) {
+            UpdateExpression += ", approved = :approved";
+            ExpressionAttributeValues[":approved"] = { BOOL: subscription.approved };
+        }
+    } else {
+        UpdateExpression += ", approved = if_not_exists(approved, :approved)";
+        ExpressionAttributeValues[":approved"] = { BOOL: false };
+    }    
 
     if (subscription.paused != undefined) {
         UpdateExpression += ", paused = :paused";
