@@ -90,7 +90,7 @@ async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
             userId,
             paused: body.paused,
             schedule: body.schedule
-        });
+        }, false);
 
         return {
             statusCode: 200,
