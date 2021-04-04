@@ -289,3 +289,30 @@ export async function getSubscriptionsForUser(userId: string): Promise<CompanySu
     });
     return result;
 }
+
+export async function getUsersDeliveries(vendorId: string, userId: string, startDate: string, endDate: string): Promise<Delivery[]> {
+    let params = {
+        TableName: settings.TABLENAME,
+        KeyConditionExpression: "#pk = :vendor and #sk BETWEEN :prefix1 and :prefix2",
+        ExpressionAttributeNames: {
+            "#pk": "pk",
+            "#sk": "sk"
+        },
+        ExpressionAttributeValues: {
+            ":vendor": "v#" + vendorId,
+            ":prefix1": "u#" + userId + "#" + startDate,
+            ":prefix2": "u#" + userId + "#" + endDate
+        }
+    };
+
+    let dbResult = await documentClient.query(params).promise();
+    console.log(dbResult)
+    let deliveries = dbResult.Items.map((del) => {
+        return {
+            time: del.date,
+            menu: del.menu,
+            cancelled: del.cancelled
+        }
+    });
+    return deliveries;
+}

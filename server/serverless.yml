@@ -81,6 +81,12 @@ functions:
       - http:
           path: /u/subscriptions
           method: get
+  userDeliveries:
+    handler: src/userDeliveries.mainHandler
+    events: 
+      - http: 
+          path: /u/deliveries
+          method: get
 
 resources:
   Resources:
