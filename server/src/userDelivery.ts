@@ -20,7 +20,7 @@ export const mainHandler = middy(handler).use(cors());
 let userId = "synne@birthdaygirl.yay";
 // TODO: Get userId from JWT
 
-function getDelivery(event: APIGatewayProxyEvent): APIGatewayProxyResult | PromiseLike<APIGatewayProxyResult> {
+async function getDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult | PromiseLike<APIGatewayProxyResult>> {
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -43,7 +43,7 @@ function getDelivery(event: APIGatewayProxyEvent): APIGatewayProxyResult | Promi
         };
     }
     try {
-        let delivery = getDeliveryFromDb(vendorId, userId, time);
+        let delivery = await getDeliveryFromDb(vendorId, userId, time);
 
         return {
             statusCode: 200,
@@ -57,7 +57,7 @@ function getDelivery(event: APIGatewayProxyEvent): APIGatewayProxyResult | Promi
     }
 }
 
-function putDelivery(event: APIGatewayProxyEvent): APIGatewayProxyResult | PromiseLike<APIGatewayProxyResult> {
+async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -83,7 +83,7 @@ function putDelivery(event: APIGatewayProxyEvent): APIGatewayProxyResult | Promi
     let body = JSON.parse(event.body); 
 
     try {
-        let delivery = putDeliveryInDb(vendorId, userId, body);
+        let delivery = await putDeliveryInDb(vendorId, userId, body);
 
         return {
             statusCode: 200,
