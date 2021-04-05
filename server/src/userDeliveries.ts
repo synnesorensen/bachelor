@@ -15,6 +15,8 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
         };
     }
     let vendorId = event.queryStringParameters["vendorId"];
+    let start = event.queryStringParameters["start"];
+    let end = event.queryStringParameters["end"];
 
     if (!vendorId) {
         return {
@@ -22,9 +24,18 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
             body: '{ "message" : "Missing parameter vendorId" }'
         };
     } 
-
-    let start = event.queryStringParameters["start"];
-    let end = event.queryStringParameters["end"];
+    if (!start) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter start time" }'
+        };
+    }
+    if (!end) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter end time" }'
+        };
+    }
 
     try {
         let deliveries = await getUsersDeliveries(vendorId, userId, start, end);
