@@ -87,6 +87,18 @@ functions:
       - http: 
           path: /u/deliveries
           method: get
+  userDelivery:
+    handler: src/userDelivery.mainHandler
+    events:
+      - http:
+          path: /u/delivery
+          method: any
+  vendorDelivery:
+    handler: src/vendorDelivery.mainHandler
+    events:
+      - http:
+          path: /v/delivery
+          method: any
 
 resources:
   Resources:

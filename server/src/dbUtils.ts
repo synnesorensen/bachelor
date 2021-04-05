@@ -316,3 +316,63 @@ export async function getUsersDeliveries(vendorId: string, userId: string, start
     });
     return deliveries;
 }
+
+export async function getDeliveryFromDb(vendorId: string, userId: string, time: string) {
+    let params = {
+        TableName: settings.TABLENAME,
+        KeyConditionExpression: "#pk = :vendor and begins_with(#sk, :prefix)",
+        ExpressionAttributeNames: {
+            "#pk": "pk",
+            "#sk": "sk"
+        },
+        ExpressionAttributeValues: {
+            ":vendor": "v#" + vendorId,
+            ":prefix": "u#" + userId + "#" + time
+        }
+    };
+    let dbResult = await documentClient.query(params).promise();
+    if (dbResult.Items.length == 0) {
+        return undefined;
+    }
+    return {
+        time: dbResult.Items[0].time,
+        menu: dbResult.Items[0].menu,
+        cancelled: dbResult.Items[0].cancelled
+    };
+}
+
+export async function putDeliveryInDb(vendorId: string, userId: string, delivery: Delivery) {
+    let UpdateExpression = "set cancelled = :cancelled";
+    let ExpressionAttributeValues: any = {
+        ":cancelled": { BOOL: delivery.cancelled}
+    }
+
+    let params = {
+        TableName: settings.TABLENAME,
+        Key: {
+            "pk": { S: "v#" + vendorId },
+            "sk": { S: "u#" + userId + "#" + delivery.time}
+        },
+        UpdateExpression,
+        ExpressionAttributeValues,
+        ReturnValues: "ALL_NEW"
+    };
+
+    let dbItem = await database.updateItem(params).promise();
+    return {
+        time: dbItem.Attributes.time.S,
+        menu: dbItem.Attributes.menu.S,
+        cancelled: dbItem.Attributes.cancelled.BOOL
+    }
+}
+
+export async function deleteDeliveryInDb(vendorId: string, userId: string, time: string) {
+    let params = {
+        TableName: settings.TABLENAME,
+        Key: {
+            "pk": { S: "v#" + vendorId },
+            "sk": { S: "u#" + userId + "#" + time}
+        }
+    };
+    await database.deleteItem(params).promise();
+}
