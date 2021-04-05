@@ -44,7 +44,6 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
             body: JSON.stringify(deliveries)
         };
     } catch (err) {
-        console.log(err);
         return {
             statusCode: 500,
             body: JSON.stringify(err)

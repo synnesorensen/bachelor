@@ -269,7 +269,6 @@ export async function getSubscriptionsForUser(userId: string): Promise<CompanySu
     };
 
     let vendors = await database.batchGetItem(params2).promise();
-    console.log(vendors);
 
     let subhash = new Map<String, Subscription>();
 
@@ -306,7 +305,7 @@ export async function getUsersDeliveries(vendorId: string, userId: string, start
     };
 
     let dbResult = await documentClient.query(params).promise();
-    console.log(dbResult)
+
     let deliveries = dbResult.Items.map((del) => {
         return {
             time: del.date,

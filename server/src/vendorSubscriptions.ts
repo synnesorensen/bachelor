@@ -16,7 +16,6 @@ async function handler(): Promise<APIGatewayProxyResult> {
             body: JSON.stringify(userSubscriptions)
         };
     } catch (err) {
-        console.log(err);
         return {
             statusCode: 500,
             body: JSON.stringify(err)
