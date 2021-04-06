@@ -96,7 +96,7 @@ export async function deleteSubscriptionInDb(vendorId: string, userId: string): 
     await database.deleteItem(params).promise();
 }
 
-export async function getUserprofileFromDb(userId): Promise<Userprofile> {
+export async function getUserprofileFromDb(userId: string): Promise<Userprofile> {
     let params = {
         TableName: settings.TABLENAME,
         KeyConditionExpression: "#pk = :userId and #sk = :userId",
@@ -316,7 +316,7 @@ export async function getUsersDeliveries(vendorId: string, userId: string, start
     return deliveries;
 }
 
-export async function getDeliveryFromDb(vendorId: string, userId: string, time: string) {
+export async function getDeliveryFromDb(vendorId: string, userId: string, time: string): Promise<Delivery> {
     let params = {
         TableName: settings.TABLENAME,
         KeyConditionExpression: "#pk = :vendor and begins_with(#sk, :prefix)",
@@ -340,7 +340,7 @@ export async function getDeliveryFromDb(vendorId: string, userId: string, time: 
     };
 }
 
-export async function putDeliveryInDb(vendorId: string, userId: string, delivery: Delivery) {
+export async function putDeliveryInDb(vendorId: string, userId: string, delivery: Delivery): Promise<Delivery> {
     let UpdateExpression = "set cancelled = :cancelled";
     let ExpressionAttributeValues: any = {
         ":cancelled": { BOOL: delivery.cancelled}
@@ -365,7 +365,7 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
     }
 }
 
-export async function deleteDeliveryInDb(vendorId: string, userId: string, time: string) {
+export async function deleteDeliveryInDb(vendorId: string, userId: string, time: string): Promise<void> {
     let params = {
         TableName: settings.TABLENAME,
         Key: {
