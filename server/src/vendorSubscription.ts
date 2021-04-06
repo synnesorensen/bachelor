@@ -22,24 +22,26 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
 
 export const mainHandler = middy(handler).use(cors());
 
-let userId = "synne@birthdaygirl.yay";
+let vendorId = "lunsj@hjul.no";
 // TODO: Fetch customerId from JWT
 
 async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
-            body: '{ "message" : "Missing parameter vendorId" }'
+            body: '{ "message" : "Missing parameter userId" }'
         };
     }
-    let vendorId = event.queryStringParameters["vendorId"];
 
-    if (!vendorId) {
+    let userId = event.queryStringParameters["userId"];
+
+    if (!userId) {
         return {
             statusCode: 400,
-            body: '{ "message" : "Missing parameter vendorId" }'
+            body: '{ "message" : "Missing parameter userId" }'
         };
-    }    
+    }
+
     try {
         let subscription = await getSubscriptionFromDb(vendorId, userId);
 
@@ -55,42 +57,31 @@ async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
         };
     } catch (err) {
         return {
-            statusCode: 500,
+            statusCode: 500, 
             body: JSON.stringify(err)
-        };
-    } 
+        };  
+    }
 }
 
 async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
-            body: '{ "message" : "Missing parameter vendorId" }'
+            body: '{ "message" : "Missing parameter userId" }'
         };
     }
-    let vendorId = event.queryStringParameters["vendorId"];
+    let userId = event.queryStringParameters["userId"];
 
-    if (!vendorId) {
+    if (!userId) {
         return {
             statusCode: 400,
-            body: '{ "message" : "Missing parameter vendorId" }'
+            body: '{ "message" : "Missing parameter userId" }'
         };
     }
     let body = JSON.parse(event.body);
 
-    if (body.userId != userId) {
-        return {
-            statusCode: 403,
-            body: '{ "message" : "userId in body is not matching authenticated user" }'
-        };
-    }
     try {
-        let subscription = await putSubscriptionInDb({
-            vendorId,
-            userId,
-            paused: body.paused,
-            schedule: body.schedule
-        });
+        let subscription = await putSubscriptionInDb({...body, vendorId});
 
         return {
             statusCode: 200,
@@ -108,15 +99,15 @@ async function deleteUserSubscription(event: APIGatewayProxyEvent): Promise<APIG
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
-            body: '{ "message" : "Missing parameter vendorId" }'
+            body: '{ "message" : "Missing parameter userId" }'
         };
     }
-    let vendorId = event.queryStringParameters["vendorId"];
+    let userId = event.queryStringParameters["userId"];
 
-    if (!vendorId) {
+    if (!userId) {
         return {
             statusCode: 400,
-            body: '{ "message" : "Missing parameter vendorId" }'
+            body: '{ "message" : "Missing parameter userId" }'
         };
     }
     try {
@@ -130,5 +121,5 @@ async function deleteUserSubscription(event: APIGatewayProxyEvent): Promise<APIG
             statusCode: 500,
             body: JSON.stringify(err)
         };
-    } 
+    }
 }
