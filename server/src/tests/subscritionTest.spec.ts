@@ -1,6 +1,6 @@
 require('dotenv').config();
 import 'source-map-support/register';
-import { getSubscriptionFromDb, putSubscriptionInDb } from '../dbUtils';
+import { deleteSubscriptionInDb, getSubscriptionFromDb, putSubscriptionInDb } from '../dbUtils';
 import { expect } from 'chai';
 import 'mocha';
 
@@ -27,5 +27,9 @@ describe('Subscription test', () => {
         expect(getResult.approved).to.equal(false);
         expect(getResult.paused).to.equal(true);
         expect(getResult.schedule).to.eql(["1", "2"]);
+
+        await deleteSubscriptionInDb("testVendorId", "testUserId");
+        const newResult = await getSubscriptionFromDb("testVendorId", "testUserId");
+        expect(newResult).to.equal(undefined);
     });
 });
