@@ -269,7 +269,6 @@ export async function getSubscriptionsForUser(userId: string): Promise<CompanySu
     };
 
     let vendors = await database.batchGetItem(params2).promise();
-    console.log(vendors);
 
     let subhash = new Map<String, Subscription>();
 
@@ -288,4 +287,91 @@ export async function getSubscriptionsForUser(userId: string): Promise<CompanySu
         }
     });
     return result;
+}
+
+export async function getUsersDeliveries(vendorId: string, userId: string, startDate: string, endDate: string): Promise<Delivery[]> {
+    let params = {
+        TableName: settings.TABLENAME,
+        KeyConditionExpression: "#pk = :vendor and #sk BETWEEN :prefix1 and :prefix2",
+        ExpressionAttributeNames: {
+            "#pk": "pk",
+            "#sk": "sk"
+        },
+        ExpressionAttributeValues: {
+            ":vendor": "v#" + vendorId,
+            ":prefix1": "u#" + userId + "#" + startDate,
+            ":prefix2": "u#" + userId + "#" + endDate
+        }
+    };
+
+    let dbResult = await documentClient.query(params).promise();
+
+    let deliveries = dbResult.Items.map((del) => {
+        return {
+            time: del.date,
+            menu: del.menu,
+            cancelled: del.cancelled
+        }
+    });
+    return deliveries;
+}
+
+export async function getDeliveryFromDb(vendorId: string, userId: string, time: string) {
+    let params = {
+        TableName: settings.TABLENAME,
+        KeyConditionExpression: "#pk = :vendor and begins_with(#sk, :prefix)",
+        ExpressionAttributeNames: {
+            "#pk": "pk",
+            "#sk": "sk"
+        },
+        ExpressionAttributeValues: {
+            ":vendor": "v#" + vendorId,
+            ":prefix": "u#" + userId + "#" + time
+        }
+    };
+    let dbResult = await documentClient.query(params).promise();
+    if (dbResult.Items.length == 0) {
+        return undefined;
+    }
+    return {
+        time: dbResult.Items[0].time,
+        menu: dbResult.Items[0].menu,
+        cancelled: dbResult.Items[0].cancelled
+    };
+}
+
+export async function putDeliveryInDb(vendorId: string, userId: string, delivery: Delivery) {
+    let UpdateExpression = "set cancelled = :cancelled";
+    let ExpressionAttributeValues: any = {
+        ":cancelled": { BOOL: delivery.cancelled}
+    }
+
+    let params = {
+        TableName: settings.TABLENAME,
+        Key: {
+            "pk": { S: "v#" + vendorId },
+            "sk": { S: "u#" + userId + "#" + delivery.time}
+        },
+        UpdateExpression,
+        ExpressionAttributeValues,
+        ReturnValues: "ALL_NEW"
+    };
+
+    let dbItem = await database.updateItem(params).promise();
+    return {
+        time: dbItem.Attributes.time.S,
+        menu: dbItem.Attributes.menu.S,
+        cancelled: dbItem.Attributes.cancelled.BOOL
+    }
+}
+
+export async function deleteDeliveryInDb(vendorId: string, userId: string, time: string) {
+    let params = {
+        TableName: settings.TABLENAME,
+        Key: {
+            "pk": { S: "v#" + vendorId },
+            "sk": { S: "u#" + userId + "#" + time}
+        }
+    };
+    await database.deleteItem(params).promise();
 }
