@@ -2,18 +2,18 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyResult } from 'aws-lambda'
-import { getSubscriptionsForVendor } from './dbUtils';
+import { getSubscriptionsForUser } from './dbUtils';
 
 async function handler(): Promise<APIGatewayProxyResult> {
-    let vendorId = "lunsj@hjul.no";
-    // TODO: Get vendorId from JWT
-
+    let userId = "synne@birthdaygirl.yay";
+    // TODO: Get userId from JWT
+    
     try {
-        let userSubscriptions = await getSubscriptionsForVendor(vendorId);
+        let vendorSubscriptions = await getSubscriptionsForUser(userId);
 
         return {
             statusCode: 200,
-            body: JSON.stringify(userSubscriptions)
+            body: JSON.stringify(vendorSubscriptions)
         };
     } catch (err) {
         console.log(err);
@@ -21,7 +21,7 @@ async function handler(): Promise<APIGatewayProxyResult> {
             statusCode: 500,
             body: JSON.stringify(err)
         }
-    }; 
+    };
 }
 
 export const mainHandler = middy(handler).use(cors());

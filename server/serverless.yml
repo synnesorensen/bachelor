@@ -24,7 +24,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:eu-north-1:*:table/MainTable"
+      Resource: "arn:aws:dynamodb:eu-north-1:*:table/${env:TABLENAME}"
 
  
 custom:
@@ -54,26 +54,32 @@ functions:
   userprofile:
     handler: src/userprofile.mainHandler
     events:
-      - httpApi:
+      - http:
           path: /userprofile
           method: any
   userSubscription:
     handler: src/userSubscription.mainHandler
     events:
-      - httpApi:
+      - http:
           path: /u/subscription
           method: any
   vendorSubscription:
     handler: src/vendorSubscription.mainHandler
     events:
-      - httpApi:
+      - http:
           path: /v/subscription
           method: any
   vendorSubscriptions:
     handler: src/vendorSubscriptions.mainHandler
     events: 
-      - httpApi:
+      - http:
           path: /v/subscriptions
+          method: get
+  userSubscriptions:
+    handler: src/userSubscriptions.mainHandler
+    events: 
+      - http:
+          path: /u/subscriptions
           method: get
 
 resources:
@@ -94,12 +100,23 @@ resources:
             AttributeType: S
           - AttributeName: sk
             AttributeType: S
+          - AttributeName: GSI1_pk
+            AttributeType: S
+          - AttributeName: GSI1_sk
+            AttributeType: S
         KeySchema:
           - AttributeName: pk
             KeyType: HASH
           - AttributeName: sk
             KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: 'MainTable'
+        TableName: ${env:TABLENAME}
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes: 
+          - IndexName: GSI1
+            KeySchema:
+              - AttributeName: GSI1_pk
+                KeyType: HASH
+              - AttributeName: GSI1_sk
+                KeyType: RANGE
+            Projection:
+              ProjectionType: "ALL"

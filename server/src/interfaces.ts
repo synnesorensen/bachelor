@@ -25,6 +25,14 @@ export interface UserSubscription {
     email: string
 }
 
+export interface CompanySubscription {
+    vendorId: string,
+    company: string,
+    approved: boolean,
+    paused: boolean,
+    schedule: string[]
+}
+
 export interface Delivery {
     time: string,
     menu: string,
@@ -32,6 +40,7 @@ export interface Delivery {
 }
 
 export interface Vendor {
+    company: string,
     fullname: string,
     address: string,
     phone: string,
