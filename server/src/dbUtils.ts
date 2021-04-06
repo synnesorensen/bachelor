@@ -28,7 +28,7 @@ export async function getSubscriptionFromDb(vendorId: string, userId: string): P
         userId,
         approved: dbResult.Items[0].approved? dbResult.Items[0].approved : false,
         paused: dbResult.Items[0].paused,
-        schedule: dbResult.Items[0].schedule
+        schedule: dbResult.Items[0].schedule.values
     };   
 }
 
