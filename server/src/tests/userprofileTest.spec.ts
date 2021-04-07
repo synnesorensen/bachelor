@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import 'mocha';
 
 describe('User profile test', () => {
-    it('Putting, getting and deleting a user', async () => {
+    it('Putting, getting and deleting a userprofile', async () => {
         let userprofile = {
             fullname: "Navn",
             address: "Skogen",
