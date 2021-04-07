@@ -116,18 +116,20 @@ export async function getUserprofileFromDb(userId): Promise<Userprofile> {
         fullname: dbResult.Items[0].fullname,
         address: dbResult.Items[0].address,
         phone: dbResult.Items[0].phone,
-        email: dbResult.Items[0].email
+        email: dbResult.Items[0].email, 
+        allergies: dbResult.Items[0].allergies
     };  
 }
 
 export async function putUserprofileInDb(userprofile: Userprofile, userId: string): Promise<Userprofile> {
-    let UpdateExpression = "set EntityType = :EntityType, fullname = :fullname, address = :address, phone = :phone, email = :email";
+    let UpdateExpression = "set EntityType = :EntityType, fullname = :fullname, address = :address, phone = :phone, email = :email, allergies = :allergies";
     let ExpressionAttributeValues: any = {
         ":EntityType": { S: 'Userprofile' },
         ":fullname": { S: userprofile.fullname },
         ":address": { S: userprofile.address },
         ":phone": { S: userprofile.phone },
-        ":email": { S: userprofile.email }
+        ":email": { S: userprofile.email },
+        ":allergies": { SS: userprofile.allergies}
     }; 
 
     let params = {
@@ -147,6 +149,7 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
         address: dbItem.Attributes.address.S,
         phone: dbItem.Attributes.phone.S,
         email: dbItem.Attributes.email.S,
+        allergies: dbItem.Attributes.allergies.SS
     }
 } 
 
@@ -197,7 +200,7 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
         RequestItems: {
             [settings.TABLENAME]: {
                 Keys: keys,
-                ProjectionExpression: "sk, fullname, address, phone, email"
+                ProjectionExpression: "sk, fullname, address, phone, email, allergies"
             }
         }
     };
@@ -220,7 +223,8 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
             fullname: user.fullname?.S,
             address: user.address?.S,
             phone: user.phone?.S,
-            email: user.email?.S
+            email: user.email?.S,
+            allergies: user.allergies?.SS
         }
     });
     return result;
