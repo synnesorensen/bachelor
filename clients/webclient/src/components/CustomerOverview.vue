@@ -1,7 +1,8 @@
 <template>
 	<v-sheet height="600">
         <v-calendar
-          color="primary"
+			locale="no"
+        	color="primary"
         ></v-calendar>
       </v-sheet>
 </template>
@@ -12,6 +13,7 @@
 
 @Component
 export default class Customer extends Vue {
+
 }
 
 </script>
