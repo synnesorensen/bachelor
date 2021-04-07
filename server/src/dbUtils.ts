@@ -182,7 +182,7 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
             userId: item.sk,
             approved: item.approved,
             paused:item.paused,
-            schedule: item.schedule
+            schedule: item.schedule.values
         }
     });
 
