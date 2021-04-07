@@ -96,15 +96,15 @@ export async function deleteSubscriptionInDb(vendorId: string, userId: string): 
     await database.deleteItem(params).promise();
 }
 
-export async function getVendorFromDb(vendorId: string) {
+export async function getVendorFromDb(vendorId: string): Promise<Vendor> {
     throw new Error('Function not implemented.');
 }
 
-export async function putVendorInDb(vendor: Vendor, vendorId: string) {
+export async function putVendorInDb(vendor: Vendor, vendorId: string): Promise<Vendor> {
     throw new Error('Function not implemented.');
 }
 
-export async function deleteVendorInDb(vendorId: string) {
+export async function deleteVendorInDb(vendorId: string): Promise<void> {
     throw new Error('Function not implemented.');
 }
 
