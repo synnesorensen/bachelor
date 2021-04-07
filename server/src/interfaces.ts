@@ -23,7 +23,8 @@ export interface UserSubscription {
     fullname: string,
     address: string,
     phone: string,
-    email: string
+    email: string, 
+    allergies: string[]
 }
 
 export interface CompanySubscription {

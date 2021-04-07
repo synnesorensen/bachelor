@@ -117,7 +117,7 @@ export async function getUserprofileFromDb(userId: string): Promise<Userprofile>
         address: dbResult.Items[0].address,
         phone: dbResult.Items[0].phone,
         email: dbResult.Items[0].email, 
-        allergies: dbResult.Items[0].allergies
+        allergies: dbResult.Items[0].allergies.values
     };  
 }
 

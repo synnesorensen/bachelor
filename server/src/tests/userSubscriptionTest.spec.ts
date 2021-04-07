@@ -17,7 +17,8 @@ describe('Test of user subscriptions', () => {
             fullname: "Navn Navnesen",
             address: "Skogen 110",
             phone: "123456",
-            email: "gjøk@skogen.no"
+            email: "gjøk@skogen.no", 
+            allergies: [""]
         };
         const sub2 = {
             vendorId: "testVendorId",
@@ -30,7 +31,8 @@ describe('Test of user subscriptions', () => {
             fullname: "Name Nameson",
             address: "Viken 84",
             phone: "456789",
-            email: "party@viken.no"
+            email: "party@viken.no",
+            allergies: ["melk"]
         };
 
         await putUserprofileInDb(user1, "testUserId1");
@@ -46,6 +48,7 @@ describe('Test of user subscriptions', () => {
         expect(res1.address).to.equal("Skogen 110");
         expect(res1.phone).to.equal("123456");
         expect(res1.email).to.equal("gjøk@skogen.no");
+        expect(res1.allergies).to.eql([""]);
         expect(res1.approved).to.equal(false);
         expect(res1.paused).to.equal(false);
         expect(res1.schedule).to.eql(["1", "2"]);
@@ -55,6 +58,7 @@ describe('Test of user subscriptions', () => {
         expect(res2.address).to.equal("Viken 84");
         expect(res2.phone).to.equal("456789");
         expect(res2.email).to.equal("party@viken.no");
+        expect(res2.allergies).to.eql(["melk"]);
         expect(res2.approved).to.equal(false);
         expect(res2.paused).to.equal(true);
         expect(res2.schedule).to.eql(["2", "3"]);

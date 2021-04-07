@@ -10,7 +10,8 @@ describe('User profile test', () => {
             fullname: "Navn",
             address: "Skogen",
             phone: "12345",
-            email: "hallo@post.no"
+            email: "hallo@post.no",
+            allergies: ["løk"]
         };
 
         const putResult = await putUserprofileInDb(userprofile, "testUserId");
@@ -18,12 +19,14 @@ describe('User profile test', () => {
         expect(putResult.address).to.equal("Skogen");
         expect(putResult.phone).to.equal("12345");
         expect(putResult.email).to.equal("hallo@post.no");
+        expect(putResult.allergies).to.eql(["løk"]);
 
         const getResult = await getUserprofileFromDb("testUserId");
         expect(getResult.fullname).to.equal("Navn");
         expect(getResult.address).to.equal("Skogen");
         expect(getResult.phone).to.equal("12345");
         expect(getResult.email).to.equal("hallo@post.no");
+        expect(getResult.allergies).to.eql(["løk"]);
 
         await deleteUserprofileInDb("testUserId");
         const newResult = await getUserprofileFromDb("testUserId");
