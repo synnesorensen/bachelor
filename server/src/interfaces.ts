@@ -10,7 +10,8 @@ export interface Userprofile {
     fullname: string,
     address: string,
     phone: string,
-    email: string
+    email: string, 
+    allergies: string[]
 }
 
 export interface UserSubscription {
