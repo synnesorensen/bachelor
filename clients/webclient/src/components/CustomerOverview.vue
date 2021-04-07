@@ -12,7 +12,7 @@
   import Component from 'vue-class-component'
 
 @Component
-export default class Customer extends Vue {
+export default class CustomerOverview extends Vue {
 
 }
 
