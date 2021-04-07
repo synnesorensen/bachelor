@@ -1,6 +1,6 @@
 require('dotenv').config();
 import 'source-map-support/register';
-import { getSubscriptionsForVendor, putSubscriptionInDb, putUserprofileInDb } from '../dbUtils';
+import { deleteSubscriptionInDb, deleteUserprofileInDb, getSubscriptionsForVendor, putSubscriptionInDb, putUserprofileInDb } from '../dbUtils';
 import { expect } from 'chai';
 import 'mocha';
 
@@ -12,7 +12,7 @@ describe('Test of user subscriptions', () => {
             approved: true,
             paused: false,
             schedule: ["1", "2"]
-        }
+        };
         const user1 = {
             fullname: "Navn Navnesen",
             address: "Skogen 110",
@@ -26,7 +26,7 @@ describe('Test of user subscriptions', () => {
             approved: false,
             paused: true,
             schedule: ["2", "3"]
-        }
+        };
         const user2 = {
             fullname: "Name Nameson",
             address: "Viken 84",
@@ -62,6 +62,11 @@ describe('Test of user subscriptions', () => {
         expect(res2.approved).to.equal(false);
         expect(res2.paused).to.equal(true);
         expect(res2.schedule).to.eql(["2", "3"]);
+
+        await deleteUserprofileInDb("testUserId1");
+        await deleteUserprofileInDb("testUserId2");
+        await deleteSubscriptionInDb("testVendorId", "testUserId1");
+        await deleteSubscriptionInDb("testVendorId", "testUserId2"); 
     });
 
 });
