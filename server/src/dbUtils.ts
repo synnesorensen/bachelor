@@ -324,7 +324,7 @@ export async function getUsersDeliveries(vendorId: string, userId: string, start
 
     let deliveries = dbResult.Items.map((del) => {
         return {
-            time: del.deliverytime,
+            deliverytime: del.deliverytime,
             menu: del.menu,
             cancelled: del.cancelled
         }
@@ -350,7 +350,7 @@ export async function getDeliveryFromDb(vendorId: string, userId: string, time: 
         return undefined;
     }
     return {
-        time: dbResult.Items[0].time,
+        deliverytime: dbResult.Items[0].deliverytime,
         menu: dbResult.Items[0].menu,
         cancelled: dbResult.Items[0].cancelled
     };
@@ -372,16 +372,16 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
         ExpressionAttributeValues[":menu"] = { S: delivery.menu};
     }
 
-    if (delivery.time != undefined) {
+    if (delivery.deliverytime != undefined) {
         UpdateExpression += ", deliverytime = :time";
-        ExpressionAttributeValues[":time"] = { S: delivery.time};
+        ExpressionAttributeValues[":time"] = { S: delivery.deliverytime};
     }
 
     let params = {
         TableName: settings.TABLENAME,
         Key: {
             "pk": { S: "v#" + vendorId },
-            "sk": { S: "d#" + userId + "#" + delivery.time}
+            "sk": { S: "d#" + userId + "#" + delivery.deliverytime}
         },
         UpdateExpression,
         ExpressionAttributeValues,
@@ -390,7 +390,7 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
 
     let dbItem = await database.updateItem(params).promise();
     return {
-        time: dbItem.Attributes.deliverytime.S,
+        deliverytime: dbItem.Attributes.deliverytime.S,
         menu: dbItem.Attributes.menu.S,
         cancelled: dbItem.Attributes.cancelled.BOOL
     }
