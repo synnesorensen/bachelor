@@ -315,8 +315,8 @@ export async function getUsersDeliveries(vendorId: string, userId: string, start
         },
         ExpressionAttributeValues: {
             ":vendor": "v#" + vendorId,
-            ":prefix1": "u#" + userId + "#" + startDate,
-            ":prefix2": "u#" + userId + "#" + endDate
+            ":prefix1": "d#" + userId + "#" + startDate,
+            ":prefix2": "d#" + userId + "#" + endDate
         }
     };
 
@@ -324,7 +324,7 @@ export async function getUsersDeliveries(vendorId: string, userId: string, start
 
     let deliveries = dbResult.Items.map((del) => {
         return {
-            time: del.date,
+            time: del.deliverytime,
             menu: del.menu,
             cancelled: del.cancelled
         }
@@ -342,7 +342,7 @@ export async function getDeliveryFromDb(vendorId: string, userId: string, time: 
         },
         ExpressionAttributeValues: {
             ":vendor": "v#" + vendorId,
-            ":prefix": "u#" + userId + "#" + time
+            ":prefix": "d#" + userId + "#" + time
         }
     };
     let dbResult = await documentClient.query(params).promise();
@@ -357,16 +357,31 @@ export async function getDeliveryFromDb(vendorId: string, userId: string, time: 
 }
 
 export async function putDeliveryInDb(vendorId: string, userId: string, delivery: Delivery): Promise<Delivery> {
-    let UpdateExpression = "set cancelled = :cancelled";
+    let UpdateExpression = "set EntityType = :EntityType";
     let ExpressionAttributeValues: any = {
-        ":cancelled": { BOOL: delivery.cancelled}
+        ":EntityType": { S: "Delivery"}
+    }
+
+    if (delivery.cancelled != undefined) {
+        UpdateExpression += ", cancelled = :cancelled";
+        ExpressionAttributeValues[":cancelled"] = { BOOL: delivery.cancelled};
+    }
+
+    if (delivery.menu != undefined) {
+        UpdateExpression += ", menu = :menu";
+        ExpressionAttributeValues[":menu"] = { S: delivery.menu};
+    }
+
+    if (delivery.time != undefined) {
+        UpdateExpression += ", deliverytime = :time";
+        ExpressionAttributeValues[":time"] = { S: delivery.time};
     }
 
     let params = {
         TableName: settings.TABLENAME,
         Key: {
             "pk": { S: "v#" + vendorId },
-            "sk": { S: "u#" + userId + "#" + delivery.time}
+            "sk": { S: "d#" + userId + "#" + delivery.time}
         },
         UpdateExpression,
         ExpressionAttributeValues,
@@ -375,7 +390,7 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
 
     let dbItem = await database.updateItem(params).promise();
     return {
-        time: dbItem.Attributes.time.S,
+        time: dbItem.Attributes.deliverytime.S,
         menu: dbItem.Attributes.menu.S,
         cancelled: dbItem.Attributes.cancelled.BOOL
     }
@@ -386,8 +401,14 @@ export async function deleteDeliveryInDb(vendorId: string, userId: string, time:
         TableName: settings.TABLENAME,
         Key: {
             "pk": { S: "v#" + vendorId },
-            "sk": { S: "u#" + userId + "#" + time}
+            "sk": { S: "d#" + userId + "#" + time}
         }
     };
     await database.deleteItem(params).promise();
 }
+
+export async function postDeliveriesToDb(deliveries: Delivery[], userId: string, vendorId: string): Promise<Delivery[]> {
+    throw new Error('Function not implemented.');
+}
+
+
