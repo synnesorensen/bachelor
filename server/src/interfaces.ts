@@ -36,6 +36,7 @@ export interface CompanySubscription {
 }
 
 export interface Delivery {
+    userId: string,
     deliverytime: string,
     menu: string,
     cancelled: boolean

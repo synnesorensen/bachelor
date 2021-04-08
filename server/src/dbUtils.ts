@@ -324,6 +324,7 @@ export async function getUsersDeliveries(vendorId: string, userId: string, start
 
     let deliveries = dbResult.Items.map((del) => {
         return {
+            userId,
             deliverytime: del.deliverytime,
             menu: del.menu,
             cancelled: del.cancelled
@@ -350,6 +351,7 @@ export async function getDeliveryFromDb(vendorId: string, userId: string, time: 
         return undefined;
     }
     return {
+        userId,
         deliverytime: dbResult.Items[0].deliverytime,
         menu: dbResult.Items[0].menu,
         cancelled: dbResult.Items[0].cancelled
@@ -390,6 +392,7 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
 
     let dbItem = await database.updateItem(params).promise();
     return {
+        userId,
         deliverytime: dbItem.Attributes.deliverytime.S,
         menu: dbItem.Attributes.menu.S,
         cancelled: dbItem.Attributes.cancelled.BOOL
@@ -407,7 +410,7 @@ export async function deleteDeliveryInDb(vendorId: string, userId: string, time:
     await database.deleteItem(params).promise();
 }
 
-export async function postDeliveriesToDb(deliveries: Delivery[], userId: string, vendorId: string): Promise<Delivery[]> {
+export async function postDeliveriesToDb(deliveries: Delivery[], vendorId: string, userId: string): Promise<Delivery[]> {
     throw new Error('Function not implemented.');
 }
 
