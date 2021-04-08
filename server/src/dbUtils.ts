@@ -97,15 +97,74 @@ export async function deleteSubscriptionInDb(vendorId: string, userId: string): 
 }
 
 export async function getVendorFromDb(vendorId: string): Promise<Vendor> {
-    throw new Error('Function not implemented.');
+    let params = {
+        TableName: settings.TABLENAME,
+        KeyConditionExpression: "#pk = :vendorId and #sk = :vendorId",
+        ExpressionAttributeNames: {
+            "#pk": "pk",
+            "#sk": "sk"
+        },
+        ExpressionAttributeValues: {
+            ":vendorId": "v#" + vendorId
+        }
+    };
+    let dbResult = await documentClient.query(params).promise();
+    if (dbResult.Items.length == 0) {
+        return undefined;
+    }
+    return {
+        company: dbResult.Items[0].company,
+        fullname: dbResult.Items[0].fullname,
+        address: dbResult.Items[0].address,
+        phone: dbResult.Items[0].phone,
+        email: dbResult.Items[0].email,
+        schedule: dbResult.Items[0].schedule.values
+    };
 }
 
 export async function putVendorInDb(vendor: Vendor, vendorId: string): Promise<Vendor> {
-    throw new Error('Function not implemented.');
+    let UpdateExpression = "set EntityType = :EntityType, company = :company, fullname = :fullname, address = :address, phone = :phone, email = :email, allergies = :allergies";
+    let ExpressionAttributeValues: any = {
+        ":EntityType": { S: 'Vendor' },
+        ":company": { S: vendor.company},
+        ":fullname": { S: vendor.fullname },
+        ":address": { S: vendor.address },
+        ":phone": { S: vendor.phone },
+        ":email": { S: vendor.email },
+        ":allergies": { SS: vendor.schedule}
+    }; 
+
+    let params = {
+        TableName: settings.TABLENAME,
+        Key: {
+            "pk": { S: "v#" + vendorId },
+            "sk": { S: "v#" + vendorId }
+        },
+        UpdateExpression,
+        ExpressionAttributeValues,
+        ReturnValues: "ALL_NEW"
+    };
+
+    let dbItem = await database.updateItem(params).promise();
+    return {
+        company: dbItem.Attributes.company.S,
+        fullname: dbItem.Attributes.fullname.S,
+        address: dbItem.Attributes.address.S,
+        phone: dbItem.Attributes.phone.S,
+        email: dbItem.Attributes.email.S,
+        schedule: dbItem.Attributes.schedule.SS
+    };
 }
 
 export async function deleteVendorInDb(vendorId: string): Promise<void> {
-    throw new Error('Function not implemented.');
+    let params = {
+        TableName: settings.TABLENAME,
+        Key: {
+            'pk': { S: 'v#' + vendorId },
+            'sk': { S: 'v#' + vendorId }
+        }
+    };
+    await database.deleteItem(params).promise();
 }
 
 export async function getUserprofileFromDb(userId: string): Promise<Userprofile> {
@@ -119,7 +178,7 @@ export async function getUserprofileFromDb(userId: string): Promise<Userprofile>
         ExpressionAttributeValues: {
             ":userId": "u#" + userId
         }
-    }
+    };
     let dbResult = await documentClient.query(params).promise();
     if (dbResult.Items.length == 0) {
         return undefined;
