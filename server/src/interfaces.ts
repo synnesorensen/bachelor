@@ -23,7 +23,8 @@ export interface UserSubscription {
     fullname: string,
     address: string,
     phone: string,
-    email: string
+    email: string, 
+    allergies: string[]
 }
 
 export interface CompanySubscription {
@@ -35,7 +36,8 @@ export interface CompanySubscription {
 }
 
 export interface Delivery {
-    time: string,
+    userId: string,
+    deliverytime: string,
     menu: string,
     cancelled: boolean
 }
