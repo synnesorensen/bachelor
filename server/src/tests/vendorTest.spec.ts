@@ -11,20 +11,21 @@ describe('Vendor profile test', () => {
             fullname: "Bakermester Harepus",
             address: "Hakkebakkeskogen",
             phone: "6688552",
+            email: "harepus@skogen.no",
             schedule: ["5", "6", "7"]
         };
 
         const putResult = await putVendorInDb(vendor, "testVendorId");
         expect(putResult.company).to.equal("Delikatessen");
-        expect(putResult.fullname).to.equal("Bakermester Harepud");
-        expect(putResult.address).to.equal("Skogen");
+        expect(putResult.fullname).to.equal("Bakermester Harepus");
+        expect(putResult.address).to.equal("Hakkebakkeskogen");
         expect(putResult.phone).to.equal("6688552");
         expect(putResult.schedule).to.eql(["5", "6", "7"]);
 
         const getResult = await getVendorFromDb("testVendorId");
         expect(getResult.company).to.equal("Delikatessen");
-        expect(getResult.fullname).to.equal("Bakermester Harepud");
-        expect(getResult.address).to.equal("Skogen");
+        expect(getResult.fullname).to.equal("Bakermester Harepus");
+        expect(getResult.address).to.equal("Hakkebakkeskogen");
         expect(getResult.phone).to.equal("6688552");
         expect(getResult.schedule).to.eql(["5", "6", "7"]);
 

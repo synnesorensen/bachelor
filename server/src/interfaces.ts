@@ -47,6 +47,7 @@ export interface Vendor {
     fullname: string,
     address: string,
     phone: string,
+    email: string,
     schedule: string[]
 }
 

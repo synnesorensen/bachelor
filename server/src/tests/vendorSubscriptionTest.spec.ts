@@ -33,6 +33,7 @@ describe('Test of vendor subscriptions', () => {
             fullname: "Bakemester Harepus",
             address: "Hakkebakkeskogen",
             phone: "448866",
+            email: "harepus@skogen.no",
             schedule: ["1", "2", "3", "4", "5"]
         };
         const vendor2 = {
@@ -40,6 +41,7 @@ describe('Test of vendor subscriptions', () => {
             fullname: "Kim Lee",
             address: "Osloveien 45",
             phone: "48523",
+            email: "fusion@asia.com",
             schedule: ["3", "4", "5", "6", "7"] 
         };
 
@@ -71,8 +73,6 @@ describe('Test of vendor subscriptions', () => {
         await deleteUserprofileInDb("testUserId");
         const newGet1 = await getUserprofileFromDb("testUserId");
         expect(newGet1).to.equal(undefined);
-        console.log(newGet2);
-
         await deleteVendorInDb("testVendorId1");
         await deleteVendorInDb("testVendorId2");
     });
