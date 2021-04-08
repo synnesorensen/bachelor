@@ -123,7 +123,7 @@ export async function getVendorFromDb(vendorId: string): Promise<Vendor> {
 }
 
 export async function putVendorInDb(vendor: Vendor, vendorId: string): Promise<Vendor> {
-    let UpdateExpression = "set EntityType = :EntityType, company = :company, fullname = :fullname, address = :address, phone = :phone, email = :email, allergies = :allergies";
+    let UpdateExpression = "set EntityType = :EntityType, company = :company, fullname = :fullname, address = :address, phone = :phone, email = :email, schedule = :schedule";
     let ExpressionAttributeValues: any = {
         ":EntityType": { S: 'Vendor' },
         ":company": { S: vendor.company},
@@ -131,7 +131,7 @@ export async function putVendorInDb(vendor: Vendor, vendorId: string): Promise<V
         ":address": { S: vendor.address },
         ":phone": { S: vendor.phone },
         ":email": { S: vendor.email },
-        ":allergies": { SS: vendor.schedule}
+        ":schedule": { SS: vendor.schedule}
     }; 
 
     let params = {
@@ -317,13 +317,16 @@ export async function getSubscriptionsForUser(userId: string): Promise<CompanySu
     };
 
     let dbResult = await documentClient.query(params).promise();
+    if (dbResult.Items.length == 0) {
+        return undefined;
+    }
     let subs = dbResult.Items.map((item) => {
         return {
             vendorId: item.pk,
             userId,
             approved: item.approved,
             paused: item.paused,
-            schedule: item.schedule
+            schedule: item.schedule.values
         }
     });
 
@@ -333,7 +336,6 @@ export async function getSubscriptionsForUser(userId: string): Promise<CompanySu
             "sk": {S: item.pk}
         }
     }); 
-
     let params2 = {
         RequestItems: {
             [settings.TABLENAME]: {
@@ -344,7 +346,6 @@ export async function getSubscriptionsForUser(userId: string): Promise<CompanySu
     };
 
     let vendors = await database.batchGetItem(params2).promise();
-
     let subhash = new Map<String, Subscription>();
 
     subs.forEach((sub) => {
