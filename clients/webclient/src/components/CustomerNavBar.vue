@@ -1,55 +1,53 @@
 <template>
 	<v-header>
-		<v-app-bar app color="primary" dark class="appbar">
+		<v-app-bar app flat color="primary" dark class="appbar">
 			<div class="d-flex align-center">
 				<v-icon class="pr-8" x-large color="white">mdi-bike</v-icon>
 				<v-toolbar-title class="titleName">Lunsj på midlertidige hjul</v-toolbar-title>
-				<v-toolbar-items class="navbar">
-					<!-- TODO: Buttons must be converted into router-link to="" -->
-					<v-spacer></v-spacer>
-                    <router-link>
-						<v-btn text class="navbtn">Brukerprofil</v-btn>
-					</router-link>
-					<router-link>
-						<v-btn text class="navbtn">Oversikt</v-btn>
-					</router-link>
-                    <router-link>
-					<v-btn text class="navbtn">Faktura</v-btn>
-					</router-link>
-                    <router-link>
-						<v-btn text class="navbtn">Bestilling</v-btn>
-					</router-link>
-				</v-toolbar-items>
-                <v-spacer></v-spacer>
-				<v-toolbar-items class="logout">
-					<router-link>
-						<v-btn text class="logoutbtn">Logg ut</v-btn>
-					</router-link>
-				</v-toolbar-items>
 			</div>
+            <!-- TODO: Change these to use router at some point -->
+			<v-tabs v-model="tab" align-with-title>
+				<v-tab>Login</v-tab>
+				<v-tab>Kundeoversikt</v-tab>
+				<v-tab>Bestilling</v-tab>
+				<v-tab>Profil</v-tab>
+				<v-tab>Faktura</v-tab>
+			</v-tabs>
 		</v-app-bar>
+		<v-main>
+			<v-tabs-items v-model="tab">
+				<v-tab-item><LoginDialog /></v-tab-item>
+				<v-tab-item><CustomerOverview /></v-tab-item>
+				<v-tab-item><CustomerOrder /></v-tab-item>
+				<v-tab-item><CustomerProfile /></v-tab-item>
+				<v-tab-item><CustomerInvoice /></v-tab-item>
+			</v-tabs-items>
+		</v-main>
 	</v-header>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
+import LoginDialog from './LoginDialog/LoginDialog.vue';
+import CustomerOverview from './CustomerOverview.vue';
+import CustomerOrder from './CustomerOrder.vue';
+import CustomerProfile from './CustomerProfile.vue';
+import CustomerInvoice from './CustomerInvoice.vue';
 
-// TODO: Must be implemented in a separate .ts file
-// import CustomerInvoice from './CustomerInvoice.vue';
-// import CustomerProfile from './CustomerProfile.vue';
-// import { createRouter, createWebHistory } from 'vue-router';
-
-// const router = createRouter({
-// 	history: createWebHistory(),
-// 	routes: [
-// 		{ path: './profile', name: 'Customer profile', component: CustomerProfile },
-// 		{ path: './invoice', component: CustomerInvoice },
-// 	],
-// });
-
-@Component
-export default class CustomerNavBar extends Vue {}
+@Component({
+	components: {
+		LoginDialog,
+		CustomerOverview,
+		CustomerOrder,
+		CustomerProfile,
+		CustomerInvoice,
+		CustomerNavBar,
+	},
+})
+export default class CustomerNavBar extends Vue {
+	private tab = 0;
+}
 </script>
 
 <style scoped>
@@ -58,11 +56,11 @@ export default class CustomerNavBar extends Vue {}
 }
 
 .titleName {
-	width: 30%;
+	width: 100%;
 }
 
 .navbar {
-	width: 50%;
+	width: 100%;
 }
 
 .navbtn {
@@ -71,7 +69,7 @@ export default class CustomerNavBar extends Vue {}
 
 .logout {
 	display: block;
-	width: 20%;
+	width: 100%;
 }
 
 .logoutbtn {
