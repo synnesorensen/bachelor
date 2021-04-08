@@ -411,4 +411,6 @@ export async function postDeliveriesToDb(deliveries: Delivery[], userId: string,
     throw new Error('Function not implemented.');
 }
 
-
+export async function getAllDeliveriesFromAllSubscribers(vendorId: string, startTime: string, endTime: string): Promise<Delivery[]> {
+    throw new Error('Function not implemented.');
+}
