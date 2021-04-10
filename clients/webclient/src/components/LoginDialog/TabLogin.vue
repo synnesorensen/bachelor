@@ -19,7 +19,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import Auth from "@aws-amplify/auth";
+import getAuth from "./auth";
 
 @Component
 
@@ -32,15 +32,7 @@ export default class TabLogin extends Vue {
     }
 
     async login() {
-        const config = {
-            region: "eu-north-1",
-            userPoolId: "eu-north-1_T0CZQQ1dX",
-            userPoolWebClientId: "4c4g5j647lbdm1kn07i54nl425",
-            mandatorySignIn: true,
-            authenticationFlowType: 'USER_SRP_AUTH',
-        };
-        
-        Auth.configure(config);
+        const Auth = getAuth();
         let user = await Auth.signIn(this.username, this.password);
         console.log(user);
     }
