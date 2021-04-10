@@ -80,9 +80,7 @@ export default class TabRegister extends Vue {
     private showCodeVerification = false;
     private Auth = getAuth();
 
-    cancel() {
-        this.$emit("cancel");
-    }
+    // Rules:
 
     checkPassword(pass1: string) {
         return pass1.length > 6 || "Passord må være minst 6 bokstaver";
@@ -115,6 +113,10 @@ export default class TabRegister extends Vue {
         } catch (err) {
             this.errorMsg2 = err.message;
         }
+    }
+
+    cancel() {
+        this.$emit("cancel");
     }
 }
 </script>
