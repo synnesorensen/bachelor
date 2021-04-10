@@ -5,6 +5,7 @@
             <p>Vennligst oppgi brukernavn og passord</p>
             <v-text-field v-model="username" label="Brukernavn" required></v-text-field>
             <v-text-field v-model="password" label="Passord" required></v-text-field>
+            <p style="color:red;">{{errorMsg}}</p>
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
@@ -26,6 +27,7 @@ import getAuth from "./auth";
 export default class TabLogin extends Vue {
     private username = "";
     private password = "";
+    private errorMsg = "";
 
     cancel() {
         this.$emit("cancel");
@@ -33,9 +35,13 @@ export default class TabLogin extends Vue {
 
     async login() {
         const Auth = getAuth();
-        let user = await Auth.signIn(this.username, this.password);
-        console.log(user);
+        try {
+            let user = await Auth.signIn(this.username, this.password);
+            console.log(user );
+            // TODO: Lukk dialogboks og få tak i token
+        } catch (err) {
+            this.errorMsg = "Feil brukernavn eller passord."
+        }
     }
-
 }
 </script>
