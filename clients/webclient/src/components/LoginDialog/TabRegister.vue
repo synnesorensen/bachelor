@@ -24,7 +24,7 @@
                 :rules="[checkEqual]"
             >
             </v-text-field>
-            <p color="red"> {{errorMsg1}}</p>
+            <p style="color:red;"> {{errorMsg1}}</p>
             <v-text-field 
             v-if="showCodeVerification"
             label="Fyll inn kode fra epost" 
@@ -32,7 +32,7 @@
             v-model="code"
             >
             </v-text-field>
-            <p color="red"> {{errorMsg2}}</p>
+            <p style="color:red;"> {{errorMsg2}}</p>
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
@@ -108,9 +108,9 @@ export default class TabRegister extends Vue {
         try {
             let confirmedSignUp = await this.Auth.confirmSignUp(this.username, this.code);
             if (confirmedSignUp === "SUCCESS") {
-                console.log("Alt ok");
                 let signIn = await this.Auth.signIn(this.username, this.password2);
-                console.dir(signIn)
+                console.dir(signIn);
+                // TODO: Lukke dialogboks og redirect til profilside
             }
         } catch (err) {
             this.errorMsg2 = err.message;
