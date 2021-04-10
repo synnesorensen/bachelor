@@ -47,16 +47,14 @@
                 v-else
                 color="success" 
                 @click="verifyPassword"
+                :disabled = "check()"
             >
             Send
             </v-btn>
             <v-btn color="error" @click="cancel()">Avbryt</v-btn>
         </v-card-actions>
-
     </v-container>
 </template>
-
-
 
 
 <script lang="ts">
@@ -83,6 +81,10 @@ export default class TabPassword extends Vue {
         return pass2 === this.password1 || "Passordene er ikke like"
     }
 
+    check() {
+        return this.password1!=this.password2 || this.code == "";
+    }
+
     sendPassword() {
         this.Auth.forgotPassword(this.username);
         this.showVerification = true;
@@ -90,8 +92,10 @@ export default class TabPassword extends Vue {
 
     async verifyPassword() {
         try {
-            let forgotten = await this.Auth.forgotPasswordSubmit(this.username, this.code, this.password2);
-            console.dir(forgotten)  // Denne blir undefined...
+            await this.Auth.forgotPasswordSubmit(this.username, this.code, this.password2);
+            await this.Auth.signIn(this.username, this.password2);
+
+            // TODO: Lukke dialogboks og logge inn 
         } catch (err) {
             this.errorMsg = err.message;
         }

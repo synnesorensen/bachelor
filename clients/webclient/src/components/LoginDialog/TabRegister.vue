@@ -40,6 +40,7 @@
                 v-if="!showCodeVerification"
                 color="success" 
                 @click="register"
+                :disabled = "check1()"
             >
             Registrer
             </v-btn>
@@ -47,6 +48,7 @@
                 v-else
                 color="success" 
                 @click="verifyCode"
+                :disabled = "check2()"
             >
             Verifiser
             </v-btn>
@@ -89,6 +91,14 @@ export default class TabRegister extends Vue {
         return pass2 === this.password1 || "Passordene er ikke like"
     }
 
+    check1() {
+        return this.password1!=this.password2;
+    }
+
+    check2() {
+        return this.code == "";
+    }
+
     async register() {
         let params = {
             username: this.username,
@@ -108,7 +118,7 @@ export default class TabRegister extends Vue {
             if (confirmedSignUp === "SUCCESS") {
                 let signIn = await this.Auth.signIn(this.username, this.password2);
                 console.dir(signIn);
-                // TODO: Lukke dialogboks og redirect til profilside
+                // TODO: Lukke dialogboks og logge inn
             }
         } catch (err) {
             this.errorMsg2 = err.message;
