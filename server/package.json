@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "offline": "node --max-old-space-size=4096 node_modules/serverless/bin/serverless.js offline start",
-    "deploy": "node --max-old-space-size=4096 node_modules/serverless/bin/serverless deploy"
+    "deploy": "node --max-old-space-size=4096 node_modules/serverless/bin/serverless deploy",
+    "test": "ts-mocha -p ./tsconfig.json src/**/*.spec.ts -w --extension ts"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +14,8 @@
     "@middy/http-cors": "^1.5.2",
     "aws-cognito-idp-userpool-domain": "^0.1.5",
     "aws-sdk": "^2.863.0",
+    "chai": "^4.3.4",
+    "dotenv": "^8.2.0",
     "middy": "^0.36.0",
     "serverless": "^2.30.3",
     "serverless-esbuild": "^1.9.0",
@@ -26,6 +28,10 @@
   "devDependencies": {
     "@serverless/typescript": "^2.29.0",
     "@types/aws-lambda": "^8.10.72",
-    "@types/node": "^14.14.34"
+    "@types/chai": "^4.2.16",
+    "@types/expect": "^24.3.0",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^14.14.34",
+    "ts-mocha": "^8.0.0"
   }
 }
