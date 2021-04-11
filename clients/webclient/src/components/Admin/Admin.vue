@@ -7,12 +7,12 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import AdminNavBar from './AdminNavBar.vue'
+import AdminNavBar from './AdminNavBar.vue';
 
 @Component({
 	components: {
-        AdminNavBar, 
-    },
+		AdminNavBar,
+	},
 })
-export default class App extends Vue {}
+export default class Admin extends Vue {}
 </script>

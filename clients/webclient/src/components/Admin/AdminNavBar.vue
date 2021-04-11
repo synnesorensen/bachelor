@@ -9,14 +9,14 @@
 			<v-tabs v-model="tab" align-with-title>
 				<v-tab>Login</v-tab>
 				<v-tab>Oversikt</v-tab>
-                <v-tab>Fakturering</v-tab>
+				<v-tab>Fakturering</v-tab>
 			</v-tabs>
 		</v-app-bar>
 		<v-main>
 			<v-tabs-items v-model="tab">
 				<v-tab-item><LoginDialog /></v-tab-item>
 				<v-tab-item><AdminOverview /></v-tab-item>
-                <v-tab-item><AdminInvoicing /></v-tab-item>
+				<v-tab-item><AdminInvoicing /></v-tab-item>
 			</v-tabs-items>
 		</v-main>
 	</v-header>
