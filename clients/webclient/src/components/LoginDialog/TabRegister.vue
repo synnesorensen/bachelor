@@ -13,6 +13,7 @@
                 label="Velg et passord" 
                 required
                 v-model="password1"
+                type="password"
                 :rules="[checkPassword]"
             >
             </v-text-field>
@@ -21,6 +22,7 @@
                 label="Gjenta passord" 
                 required
                 v-model="password2"
+                type="password"
                 :rules="[checkEqual]"
             >
             </v-text-field>
@@ -52,17 +54,9 @@
             >
             Verifiser
             </v-btn>
-            <v-btn 
-                color="error" 
-                @click="cancel"
-            >  
-            Avbryt
-            </v-btn>
         </v-card-actions>
-        
     </v-container>
 </template>
-
 
 
 <script lang="ts">
@@ -116,9 +110,9 @@ export default class TabRegister extends Vue {
         try {
             let confirmedSignUp = await this.Auth.confirmSignUp(this.username, this.code);
             if (confirmedSignUp === "SUCCESS") {
-                let signIn = await this.Auth.signIn(this.username, this.password2);
-                console.dir(signIn);
-                // TODO: Lukke dialogboks og logge inn
+                let signedInUser = await this.Auth.signIn(this.username, this.password2);
+                this.$emit("loggedIn", signedInUser.signInUserSession.accessToken.jwtToken);
+                this.cancel();
             }
         } catch (err) {
             this.errorMsg2 = err.message;

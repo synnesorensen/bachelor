@@ -3,14 +3,33 @@
         <v-card-title class="headline">Logg inn til din konto</v-card-title>
         <v-card-text>
             <p>Vennligst oppgi brukernavn og passord</p>
-            <v-text-field v-model="username" label="Brukernavn" required></v-text-field>
-            <v-text-field v-model="password" label="Passord" required></v-text-field>
-            <p style="color:red;">{{errorMsg}}</p>
+            <v-text-field 
+                v-model="username" 
+                label="Brukernavn" 
+                required
+                >
+            </v-text-field>
+            <v-text-field 
+                v-model="password" 
+                label="Passord" 
+                required
+                type="password"
+                >
+            </v-text-field>
+            <p 
+                style="color:red;"
+                >
+                {{errorMsg}}
+            </p>
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="success" @click="login">Logg inn</v-btn>
-            <v-btn color="error" @click="cancel()">Avbryt</v-btn>
+            <v-btn 
+                color="success" 
+                @click="login"
+                >
+                Logg inn
+            </v-btn>
         </v-card-actions>
 
     </v-container>
@@ -29,19 +48,20 @@ export default class TabLogin extends Vue {
     private password = "";
     private errorMsg = "";
 
-    cancel() {
-        this.$emit("cancel");
-    }
-
     async login() {
         const Auth = getAuth();
         try {
-            let user = await Auth.signIn(this.username, this.password);
-            console.log(user );
-            // TODO: Lukk dialogboks og få tak i token
+            let signedInUser = await Auth.signIn(this.username, this.password);
+            this.$emit("loggedIn", signedInUser.signInUserSession.accessToken.jwtToken);
+            this.cancel();
+
         } catch (err) {
             this.errorMsg = "Feil brukernavn eller passord."
         }
+    }
+
+    cancel() {
+        this.$emit("cancel");
     }
 }
 </script>

@@ -21,6 +21,7 @@
                 label="Fyll inn nytt passord" 
                 required
                 v-model="password1"
+                type="password"
                 :rules="[checkPassword]"
                 >
             </v-text-field>
@@ -29,6 +30,7 @@
                 label="Gjenta nytt passord" 
                 required
                 v-model="password2"
+                type="password"
                 :rules="[checkEqual]"
                 >
             </v-text-field>
@@ -51,7 +53,6 @@
             >
             Send
             </v-btn>
-            <v-btn color="error" @click="cancel()">Avbryt</v-btn>
         </v-card-actions>
     </v-container>
 </template>
@@ -93,9 +94,9 @@ export default class TabPassword extends Vue {
     async verifyPassword() {
         try {
             await this.Auth.forgotPasswordSubmit(this.username, this.code, this.password2);
-            await this.Auth.signIn(this.username, this.password2);
-
-            // TODO: Lukke dialogboks og logge inn 
+            let signedInUser = await this.Auth.signIn(this.username, this.password2);
+            this.$emit("loggedIn", signedInUser.signInUserSession.accessToken.jwtToken);
+            this.cancel();
         } catch (err) {
             this.errorMsg = err.message;
         }
