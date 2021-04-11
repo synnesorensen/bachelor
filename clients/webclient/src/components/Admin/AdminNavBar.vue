@@ -36,7 +36,7 @@ import AdminInvoicing from './AdminInvoicing.vue';
 		AdminInvoicing,
 	},
 })
-export default class CustomerNavBar extends Vue {
+export default class AdminNavBar extends Vue {
 	private tab = 0;
 }
 </script>
