@@ -51,10 +51,13 @@ custom:
             CacheControl: 'public, max-age=31536000'
 
 functions:
+  authorizer:
+    handler: src/auth/authorizer.authorizer
   userprofile:
     handler: src/userprofile.mainHandler
     events:
       - http:
+          authorizer: authorizer
           path: /userprofile
           method: any
   userSubscription:

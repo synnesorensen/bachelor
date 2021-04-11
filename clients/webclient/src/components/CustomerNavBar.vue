@@ -23,7 +23,7 @@
 			<v-tabs-items v-if="verifiedUser" v-model="tab">
 				<v-tab-item><CustomerOverview /></v-tab-item>
 				<v-tab-item><CustomerOrder /></v-tab-item>
-				<v-tab-item><CustomerProfile /></v-tab-item>
+				<v-tab-item><CustomerProfile /> <v-btn @click="getVendorFromApi">Press me </v-btn> </v-tab-item>
 				<v-tab-item><CustomerInvoice /></v-tab-item>
 			</v-tabs-items>
             <LoginDialog @loggedIn="loggedIn" />
@@ -40,6 +40,7 @@ import CustomerOrder from './CustomerOrder.vue';
 import CustomerProfile from './CustomerProfile.vue';
 import CustomerInvoice from './CustomerInvoice.vue';
 import getAuth from './LoginDialog/auth';
+import {setApiBearerToken, getVendor, apiAxios} from '../api/api'
 
 @Component({
 	components: {
@@ -57,6 +58,7 @@ export default class CustomerNavBar extends Vue {
     
     loggedIn(jwtToken: string) {
         this.jwtToken = jwtToken;
+        setApiBearerToken(this.jwtToken);
     }
 
     get verifiedUser() {
@@ -70,7 +72,10 @@ export default class CustomerNavBar extends Vue {
         this.jwtToken = "";
     }
 
+    getVendorFromApi() {
+        getVendor();
+    }
+
 }
 </script>
-
 
