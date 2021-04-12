@@ -10,6 +10,7 @@
 				<v-tab>Bestilling</v-tab>
 				<v-tab>Profil</v-tab>
 				<v-tab>Faktura</v-tab>
+                <v-tab>Admin</v-tab>
 			</v-tabs>
             <v-spacer />
             <v-btn 
@@ -25,6 +26,7 @@
 				<v-tab-item><CustomerOrder /></v-tab-item>
 				<v-tab-item><CustomerProfile /> <v-btn @click="getVendorFromApi">Press me </v-btn> </v-tab-item>
 				<v-tab-item><CustomerInvoice /></v-tab-item>
+                <v-tab-item><Admin /></v-tab-item>
 			</v-tabs-items>
             <LoginDialog @loggedIn="loggedIn" />
 		</v-main>
@@ -41,6 +43,7 @@ import CustomerProfile from './CustomerProfile.vue';
 import CustomerInvoice from './CustomerInvoice.vue';
 import getAuth from './LoginDialog/auth';
 import {setApiBearerToken, getVendor, apiAxios} from '../api/api'
+import Admin from './Admin/Admin.vue';
 
 @Component({
 	components: {
@@ -50,6 +53,7 @@ import {setApiBearerToken, getVendor, apiAxios} from '../api/api'
 		CustomerProfile,
 		CustomerInvoice,
 		CustomerNavBar,
+        Admin
 	},
 })
 export default class CustomerNavBar extends Vue {
