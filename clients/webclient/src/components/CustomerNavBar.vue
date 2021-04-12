@@ -12,6 +12,7 @@
 				<v-tab>Bestilling</v-tab>
 				<v-tab>Profil</v-tab>
 				<v-tab>Faktura</v-tab>
+                <v-tab>Admin</v-tab>
 			</v-tabs>
 		</v-app-bar>
 		<v-main>
@@ -21,6 +22,7 @@
 				<v-tab-item><CustomerOrder /></v-tab-item>
 				<v-tab-item><CustomerProfile /></v-tab-item>
 				<v-tab-item><CustomerInvoice /></v-tab-item>
+                <v-tab-item><Admin /></v-tab-item>
 			</v-tabs-items>
 		</v-main>
 	</v-header>
@@ -34,6 +36,7 @@ import CustomerOverview from './CustomerOverview.vue';
 import CustomerOrder from './CustomerOrder.vue';
 import CustomerProfile from './CustomerProfile.vue';
 import CustomerInvoice from './CustomerInvoice.vue';
+import Admin from './Admin/Admin.vue';
 
 @Component({
 	components: {
@@ -43,6 +46,7 @@ import CustomerInvoice from './CustomerInvoice.vue';
 		CustomerProfile,
 		CustomerInvoice,
 		CustomerNavBar,
+        Admin
 	},
 })
 export default class CustomerNavBar extends Vue {
