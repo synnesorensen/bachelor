@@ -52,16 +52,11 @@ export default class TabLogin extends Vue {
         const Auth = getAuth();
         try {
             let signedInUser = await Auth.signIn(this.username, this.password);
-            this.$emit("loggedIn", signedInUser.signInUserSession.accessToken.jwtToken);
-            this.cancel();
+            this.$emit("loggedIn", signedInUser.signInUserSession.idToken.jwtToken);
 
         } catch (err) {
             this.errorMsg = "Feil brukernavn eller passord."
         }
-    }
-
-    cancel() {
-        this.$emit("cancel");
     }
 }
 </script>

@@ -28,7 +28,7 @@
 				<v-tab-item><CustomerInvoice /></v-tab-item>
                 <v-tab-item><Admin /></v-tab-item>
 			</v-tabs-items>
-            <LoginDialog @loggedIn="loggedIn" />
+            <LoginDialog @loggedIn="loggedIn" :showDialog="showLoginDialog" />
 		</v-main>
 	</v-container>
 </template>
@@ -59,10 +59,12 @@ import Admin from './Admin/Admin.vue';
 export default class CustomerNavBar extends Vue {
 	private tab = 0;
     private jwtToken = "";
+    private showLoginDialog = true;
     
     loggedIn(jwtToken: string) {
         this.jwtToken = jwtToken;
         setApiBearerToken(this.jwtToken);
+        this.showLoginDialog = false;
     }
 
     get verifiedUser() {
@@ -70,10 +72,10 @@ export default class CustomerNavBar extends Vue {
     }
 
     logout() {
-        // TODO: log out user
         const Auth = getAuth();
         Auth.signOut();
         this.jwtToken = "";
+        this.showLoginDialog = true;
     }
 
     getVendorFromApi() {
