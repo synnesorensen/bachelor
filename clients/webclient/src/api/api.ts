@@ -13,6 +13,6 @@ export function setApiBearerToken(token: string) {
     });
 }
 
-export async function getVendor():Promise<interfaces.Vendor[]> {
-    return await apiAxios.get(urlPrefix + "/userprofile?userId=synne@birthdaygirl.yay")
+export async function getVendorSubscriptions():Promise<interfaces.UserSubscription[]> {
+    return await apiAxios.get(urlPrefix + "/v/subscriptions")
 }
