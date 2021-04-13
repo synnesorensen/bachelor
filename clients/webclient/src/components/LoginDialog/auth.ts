@@ -1,10 +1,11 @@
 import Auth from "@aws-amplify/auth";
+import * as settings from '../../../../../common/settings'
 
 export default function getAuth() {
     const config = {
-        region: "eu-north-1",
-        userPoolId: "eu-north-1_T0CZQQ1dX",
-        userPoolWebClientId: "4c4g5j647lbdm1kn07i54nl425",
+        region: settings.REGION,
+        userPoolId: settings.awsCognitoUserPoolId,
+        userPoolWebClientId: settings.awsCognitoAppClientId,
         mandatorySignIn: true,
         authenticationFlowType: 'USER_SRP_AUTH',
     };
