@@ -250,6 +250,10 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
     };
 
     let dbResult = await documentClient.query(subparams).promise();
+    if (dbResult.Items.length == 0) {
+        return [];
+    }
+
     let subs = dbResult.Items.map((item) => {
         return {
             vendorId,
