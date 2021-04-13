@@ -42,7 +42,7 @@ import CustomerOrder from './CustomerOrder.vue';
 import CustomerProfile from './CustomerProfile.vue';
 import CustomerInvoice from './CustomerInvoice.vue';
 import getAuth from './LoginDialog/auth';
-import {setApiBearerToken, getVendor, apiAxios} from '../api/api'
+import {setApiBearerToken, getVendorSubscriptions, apiAxios} from '../api/api'
 import Admin from './Admin/Admin.vue';
 
 @Component({
@@ -59,10 +59,20 @@ import Admin from './Admin/Admin.vue';
 export default class CustomerNavBar extends Vue {
 	private tab = 0;
     private jwtToken = "";
-    private showLoginDialog = true;
+    private showLoginDialog = false;
+
+    mounted() {
+        const token = localStorage.getItem("token");
+        if (token) {
+            this.loggedIn(token);
+        } else {
+            this.showLoginDialog = true;
+        }
+    }
     
     loggedIn(jwtToken: string) {
         this.jwtToken = jwtToken;
+        localStorage.setItem("token", this.jwtToken);
         setApiBearerToken(this.jwtToken);
         this.showLoginDialog = false;
     }
@@ -76,10 +86,11 @@ export default class CustomerNavBar extends Vue {
         Auth.signOut();
         this.jwtToken = "";
         this.showLoginDialog = true;
+        localStorage.removeItem("token");
     }
 
     getVendorFromApi() {
-        getVendor();
+        getVendorSubscriptions();
     }
 
 }
