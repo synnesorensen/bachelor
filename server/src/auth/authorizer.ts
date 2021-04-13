@@ -2,7 +2,7 @@ import 'source-map-support/register';
 import jwksClient from 'jwks-rsa';
 import * as jwt from 'jsonwebtoken';
 import * as util from 'util';
-import * as settings from '../settings';
+import * as settings from '../../../common/settings';
 
 import { APIGatewayTokenAuthorizerEvent } from 'aws-lambda';
 
@@ -39,7 +39,7 @@ const getToken = (params: APIGatewayTokenAuthorizerEvent) => {
 
 const jwtOptions = {
     audience: settings.awsCognitoAppClientId,
-    issuer: "https://cognito-idp.eu-west-1.amazonaws.com/" + settings.awsCognitoUserPoolId
+    issuer: "https://cognito-idp." + settings.REGION + ".amazonaws.com/" + settings.awsCognitoUserPoolId
 };
 
 const authenticate = (params: APIGatewayTokenAuthorizerEvent) => {
@@ -56,7 +56,6 @@ const authenticate = (params: APIGatewayTokenAuthorizerEvent) => {
         jwksRequestsPerMinute: 10, // Default value
         jwksUri: `https://cognito-idp.${settings.REGION}.amazonaws.com/${settings.awsCognitoUserPoolId}/.well-known/jwks.json`
     });
-
     const getSigningKey = util.promisify(client.getSigningKey);
     return getSigningKey(decoded.header.kid)
         .then((key: any) => {
@@ -73,13 +72,10 @@ const authenticate = (params: APIGatewayTokenAuthorizerEvent) => {
 
 export async function authorizer(event: APIGatewayTokenAuthorizerEvent) {
     try {
-        console.log("authorizing request", event);
         const data = await authenticate(event);
-        console.log("authorizing response", data);
         return data;
     }
     catch (err) {
-        console.log(err);
         return `Unauthorized: ${err.message}`;
     }
 }

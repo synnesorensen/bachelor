@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {urlPrefix} from '../settings'
+import {urlPrefix} from '../../../../common/settings'
 import * as interfaces from '../../../../server/src/interfaces'
 
 export let apiAxios = axios.create();

@@ -1,3 +1,5 @@
+export const urlPrefix = "http://localhost:3000/dev";
+
 export const TABLENAME = "GlobalTable";
 export const REGION = "eu-north-1";
 
