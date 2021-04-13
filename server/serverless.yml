@@ -64,42 +64,49 @@ functions:
     handler: src/userSubscription.mainHandler
     events:
       - http:
+          authorizer: authorizer
           path: /u/subscription
           method: any
   vendorSubscription:
     handler: src/vendorSubscription.mainHandler
     events:
       - http:
+          authorizer: authorizer
           path: /v/subscription
           method: any
   vendorSubscriptions:
     handler: src/vendorSubscriptions.mainHandler
     events: 
       - http:
+          authorizer: authorizer
           path: /v/subscriptions
           method: get
   userSubscriptions:
     handler: src/userSubscriptions.mainHandler
     events: 
       - http:
+          authorizer: authorizer
           path: /u/subscriptions
           method: get
   userDeliveries:
     handler: src/userDeliveries.mainHandler
     events: 
       - http: 
+          authorizer: authorizer
           path: /u/deliveries
           method: get
   userDelivery:
     handler: src/userDelivery.mainHandler
     events:
       - http:
+          authorizer: authorizer
           path: /u/delivery
           method: any
   vendorDelivery:
     handler: src/vendorDelivery.mainHandler
     events:
       - http:
+          authorizer: authorizer
           path: /v/delivery
           method: any
 
