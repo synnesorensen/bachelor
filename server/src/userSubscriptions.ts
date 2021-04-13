@@ -7,19 +7,12 @@ import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     let userId = getUserInfoFromEvent(event);
-    
-    try {
-        let vendorSubscriptions = await getSubscriptionsForUser(userId);
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify(vendorSubscriptions)
-        };
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        }
+    let vendorSubscriptions = await getSubscriptionsForUser(userId);
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify(vendorSubscriptions)
     };
 }
 

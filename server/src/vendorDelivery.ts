@@ -45,19 +45,13 @@ async function getDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
             body: '{ "message" : "Missing parameter timestamp" }'
         };
     }
-    try {
-        let delivery = await getDeliveryFromDb(vendorId, userId, time);
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify(delivery)
-        };
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        };
-    }
+    let delivery = await getDeliveryFromDb(vendorId, userId, time);
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify(delivery)
+    };
 }
 
 async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -77,21 +71,14 @@ async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
         };
     }  
 
-    let body = JSON.parse(event.body); 
+    let body = JSON.parse(event.body);
 
-    try {
-        let delivery = await putDeliveryInDb(vendorId, userId, body);
+    let delivery = await putDeliveryInDb(vendorId, userId, body);
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify(delivery)
-        };
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        };
-    }
+    return {
+        statusCode: 200,
+        body: JSON.stringify(delivery)
+    };
 }
 
 async function deleteDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -117,17 +104,10 @@ async function deleteDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayPr
             body: '{ "message" : "Missing parameter timestamp" }'
         };
     }
-    try {
-        await deleteDeliveryInDb(vendorId, userId, time);
+    await deleteDeliveryInDb(vendorId, userId, time);
 
-        return {
-            statusCode: 200,
-            body: '{ "message" : "Deletion succeeded" }'
-        }
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        }
+    return {
+        statusCode: 200,
+        body: '{ "message" : "Deletion succeeded" }'
     }
 }

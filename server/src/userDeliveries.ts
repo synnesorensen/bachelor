@@ -7,7 +7,7 @@ import { getUserInfoFromEvent } from './auth/getUserFromJwt'
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     let userId = getUserInfoFromEvent(event);
-    
+
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -23,7 +23,7 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
             statusCode: 400,
             body: '{ "message" : "Missing parameter vendorId" }'
         };
-    } 
+    }
     if (!start) {
         return {
             statusCode: 400,
@@ -37,17 +37,10 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
         };
     }
 
-    try {
-        let deliveries = await getUsersDeliveries(vendorId, userId, start, end);
-        return {
-            statusCode: 200,
-            body: JSON.stringify(deliveries)
-        };
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        }
+    let deliveries = await getUsersDeliveries(vendorId, userId, start, end);
+    return {
+        statusCode: 200,
+        body: JSON.stringify(deliveries)
     };
 }
 

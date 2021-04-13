@@ -10,7 +10,7 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
         return getDelivery(event);
     }
     if (event.httpMethod == "PUT") {
-      return putDelivery(event);
+        return putDelivery(event);
     }
     return {
         statusCode: 405,
@@ -36,26 +36,19 @@ async function getDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
             statusCode: 400,
             body: '{ "message" : "Missing parameter vendorId" }'
         };
-    }    
+    }
     if (!time) {
         return {
             statusCode: 400,
             body: '{ "message" : "Missing parameter timestamp" }'
         };
     }
-    try {
-        let delivery = await getDeliveryFromDb(vendorId, userId, time);
+    let delivery = await getDeliveryFromDb(vendorId, userId, time);
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify(delivery)
-        };
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        };
-    }
+    return {
+        statusCode: 200,
+        body: JSON.stringify(delivery)
+    };
 }
 
 async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -74,7 +67,7 @@ async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
             statusCode: 400,
             body: '{ "message" : "Missing parameter vendorId" }'
         };
-    }    
+    }
     if (!time) {
         return {
             statusCode: 400,
@@ -82,19 +75,11 @@ async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
         };
     }
 
-    let body = JSON.parse(event.body); 
+    let body = JSON.parse(event.body);
+    let delivery = await putDeliveryInDb(vendorId, userId, body);
 
-    try {
-        let delivery = await putDeliveryInDb(vendorId, userId, body);
-
-        return {
-            statusCode: 200,
-            body: JSON.stringify(delivery)
-        };
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        };
-    }
+    return {
+        statusCode: 200,
+        body: JSON.stringify(delivery)
+    };
 }

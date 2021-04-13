@@ -111,16 +111,10 @@ async function deleteUserSubscription(event: APIGatewayProxyEvent): Promise<APIG
             body: '{ "message" : "Missing parameter userId" }'
         };
     }
-    try {
-        deleteSubscriptionInDb(vendorId, userId);
-        return {
-            statusCode: 200,
-            body: '{ "message" : "Deletion succeeded" }'
-        };
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        };
-    }
+
+    deleteSubscriptionInDb(vendorId, userId);
+    return {
+        statusCode: 200,
+        body: '{ "message" : "Deletion succeeded" }'
+    };
 }
