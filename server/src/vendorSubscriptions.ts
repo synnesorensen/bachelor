@@ -1,12 +1,12 @@
 import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
-import { APIGatewayProxyResult } from 'aws-lambda'
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getSubscriptionsForVendor } from './dbUtils';
+import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
-async function handler(): Promise<APIGatewayProxyResult> {
-    let vendorId = "lunsj@hjul.no";
-    // TODO: Get vendorId from JWT
+async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let vendorId = getUserInfoFromEvent(event);
 
     try {
         let userSubscriptions = await getSubscriptionsForVendor(vendorId);

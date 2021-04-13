@@ -3,6 +3,7 @@ import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getDeliveryFromDb, putDeliveryInDb } from './dbUtils';
+import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     if (event.httpMethod == "GET") {
@@ -17,10 +18,10 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     };
 }
 export const mainHandler = middy(handler).use(cors());
-let userId = "synne@birthdaygirl.yay";
-// TODO: Get userId from JWT
+
 
 async function getDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult | PromiseLike<APIGatewayProxyResult>> {
+    let userId = getUserInfoFromEvent(event);
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -58,6 +59,7 @@ async function getDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
 }
 
 async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let userId = getUserInfoFromEvent(event);
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,

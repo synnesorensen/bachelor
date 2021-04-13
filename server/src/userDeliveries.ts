@@ -3,10 +3,10 @@ import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getUsersDeliveries } from './dbUtils'
+import { getUserInfoFromEvent } from './auth/getUserFromJwt'
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    let userId = "synne@birthdaygirl.yay";
-    // TODO: Get userId from JWT
+    let userId = getUserInfoFromEvent(event);
     
     if (!event.queryStringParameters) {
         return {

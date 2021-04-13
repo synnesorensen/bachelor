@@ -3,6 +3,7 @@ import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { deleteSubscriptionInDb, getSubscriptionFromDb, putSubscriptionInDb } from './dbUtils'
+import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     if (event.httpMethod == "GET") {
@@ -22,10 +23,8 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
 
 export const mainHandler = middy(handler).use(cors());
 
-let userId = "synne@birthdaygirl.yay";
-// TODO: Fetch customerId from JWT
-
 async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let userId = getUserInfoFromEvent(event);
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -62,6 +61,7 @@ async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
 }
 
 async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let userId = getUserInfoFromEvent(event);
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -105,6 +105,7 @@ async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
 }
 
 async function deleteUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let userId = getUserInfoFromEvent(event);
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
