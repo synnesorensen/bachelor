@@ -154,7 +154,55 @@ export default class CustomerOrder extends Vue {
             selected: false
         },
         {
+            name: "Skalldyr",
+            selected: false
+        },
+        {
+            name: "Egg",
+            selected: false
+        },
+        {
+            name: "Fisk",
+            selected: false
+        },
+        {
+            name: "Peanøtter",
+            selected: false
+        },
+        {
+            name: "Nøtter",
+            selected: false
+        },
+        {
             name: "Melk",
+            selected: false
+        },
+        {
+            name: "Soya",
+            selected: false
+        },
+        {
+            name: "Selleri",
+            selected: false
+        },
+        {
+            name: "Sennep",
+            selected: false
+        },
+        {
+            name: "Sesam",
+            selected: false
+        },
+        {
+            name: "Svovel",
+            selected: false
+        },
+        {
+            name: "Lupin",
+            selected: false
+        },
+        {
+            name: "Bløtdyr",
             selected: false
         } 
     ];
