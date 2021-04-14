@@ -1,0 +1,48 @@
+# This defines the resources that need to be deployed only a single time per infrastructure
+service: infrastructure
+useDotenv: true
+plugins:
+  - aws-cognito-idp-userpool-domain
+custom:
+  stage: dev
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: dev
+  region: eu-north-1
+resources:
+  Resources:
+    WebAppUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        AdminCreateUserConfig: 
+          AllowAdminCreateUserOnly: false
+          InviteMessageTemplate:
+            EmailMessage: Your username is {username} and temporary password is {####}
+            EmailSubject: Your temporary password
+            SMSMessage: Your username is {username} and temporary password is {####}
+          UnusedAccountValidityDays: 7
+        UsernameAttributes: 
+          - email
+        AutoVerifiedAttributes: 
+          - email
+        EmailConfiguration: 
+          ReplyToEmailAddress: donotreply@domain.tld
+        EmailVerificationMessage: Your verification code is {####}.
+        EmailVerificationSubject: Your verification code
+        MfaConfiguration: OFF
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireLowercase: false
+            RequireNumbers: false
+            RequireSymbols: false
+            RequireUppercase: false
+        UserPoolName: webapp-user-pool # lower case and hyphens only
+    MyCognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient          
+      Properties:
+        ClientName: user-pool-client
+        UserPoolId:
+          Ref: WebAppUserPool
+        GenerateSecret: false

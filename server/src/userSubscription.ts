@@ -3,6 +3,7 @@ import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { deleteSubscriptionInDb, getSubscriptionFromDb, putSubscriptionInDb } from './dbUtils'
+import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     if (event.httpMethod == "GET") {
@@ -22,10 +23,8 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
 
 export const mainHandler = middy(handler).use(cors());
 
-let userId = "synne@birthdaygirl.yay";
-// TODO: Fetch customerId from JWT
-
 async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let userId = getUserInfoFromEvent(event);
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -39,29 +38,23 @@ async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
             statusCode: 400,
             body: '{ "message" : "Missing parameter vendorId" }'
         };
-    }    
-    try {
-        let subscription = await getSubscriptionFromDb(vendorId, userId);
+    }
+    let subscription = await getSubscriptionFromDb(vendorId, userId);
 
-        if (!subscription) {
-            return {
-                statusCode: 404,
-                body: '{ "message" : "No subscription for vendorId: ' + vendorId + '"}'
-            };
-        }
+    if (!subscription) {
         return {
-            statusCode: 200,
-            body: JSON.stringify(subscription)
+            statusCode: 404,
+            body: '{ "message" : "No subscription for vendorId: ' + vendorId + '"}'
         };
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        };
-    } 
+    }
+    return {
+        statusCode: 200,
+        body: JSON.stringify(subscription)
+    };
 }
 
 async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let userId = getUserInfoFromEvent(event);
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -84,27 +77,21 @@ async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
             body: '{ "message" : "userId in body is not matching authenticated user" }'
         };
     }
-    try {
-        let subscription = await putSubscriptionInDb({
-            vendorId,
-            userId,
-            paused: body.paused,
-            schedule: body.schedule
-        }, false);
+    let subscription = await putSubscriptionInDb({
+        vendorId,
+        userId,
+        paused: body.paused,
+        schedule: body.schedule
+    }, false);
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify(subscription)
-        };
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        };
-    }
+    return {
+        statusCode: 200,
+        body: JSON.stringify(subscription)
+    };
 }
 
 async function deleteUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let userId = getUserInfoFromEvent(event);
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -119,16 +106,9 @@ async function deleteUserSubscription(event: APIGatewayProxyEvent): Promise<APIG
             body: '{ "message" : "Missing parameter vendorId" }'
         };
     }
-    try {
-        deleteSubscriptionInDb(vendorId, userId);
-        return {
-            statusCode: 200,
-            body: '{ "message" : "Deletion succeeded" }'
-        };
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        };
-    } 
+    deleteSubscriptionInDb(vendorId, userId);
+    return {
+        statusCode: 200,
+        body: '{ "message" : "Deletion succeeded" }'
+    };
 }
