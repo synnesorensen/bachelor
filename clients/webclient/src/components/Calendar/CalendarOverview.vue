@@ -1,7 +1,7 @@
 <template>
-	<v-sheet height="600" width="70%">
+	<v-sheet height="600" width="70%" center>
 		<h2>Her skal det være tekst</h2>
-		<v-calendar locale="no" color="primary" weekdays="1, 2, 3, 4, 5"> </v-calendar>
+		<v-calendar locale="no" color="primary" weekdays="1, 2, 3, 4, 5" show-iso-weeknumbers> </v-calendar>
 	</v-sheet>
 </template>
 
