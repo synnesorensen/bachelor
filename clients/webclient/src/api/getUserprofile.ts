@@ -1,4 +1,4 @@
-import {urlPrefix} from "../settings"
+import {urlPrefix} from '../../../../common/settings'
 interface Customer {
     approved: boolean,
     email: string

@@ -12,9 +12,11 @@
   "license": "ISC",
   "dependencies": {
     "@middy/http-cors": "^1.5.2",
+    "aws-cognito-idp-userpool-domain": "^0.1.5",
     "aws-sdk": "^2.863.0",
     "chai": "^4.3.4",
     "dotenv": "^8.2.0",
+    "jwks-rsa": "^2.0.2",
     "middy": "^0.36.0",
     "serverless": "^2.30.3",
     "serverless-esbuild": "^1.9.0",

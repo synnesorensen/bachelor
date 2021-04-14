@@ -3,6 +3,7 @@ import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getDeliveryFromDb, deleteDeliveryInDb, putDeliveryInDb } from './dbUtils';
+import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     if (event.httpMethod == "GET") {
@@ -20,10 +21,9 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     };
 }
 export const mainHandler = middy(handler).use(cors());
-let vendorId = "lunsj@hjul.no";
-// TODO: Get vendorId from JWT
 
 async function getDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let vendorId = getUserInfoFromEvent(event);
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -45,22 +45,17 @@ async function getDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
             body: '{ "message" : "Missing parameter timestamp" }'
         };
     }
-    try {
-        let delivery = await getDeliveryFromDb(vendorId, userId, time);
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify(delivery)
-        };
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        };
-    }
+    let delivery = await getDeliveryFromDb(vendorId, userId, time);
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify(delivery)
+    };
 }
 
 async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let vendorId = getUserInfoFromEvent(event);
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -76,24 +71,18 @@ async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
         };
     }  
 
-    let body = JSON.parse(event.body); 
+    let body = JSON.parse(event.body);
 
-    try {
-        let delivery = await putDeliveryInDb(vendorId, userId, body);
+    let delivery = await putDeliveryInDb(vendorId, userId, body);
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify(delivery)
-        };
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        };
-    }
+    return {
+        statusCode: 200,
+        body: JSON.stringify(delivery)
+    };
 }
 
 async function deleteDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let vendorId = getUserInfoFromEvent(event);
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -115,17 +104,10 @@ async function deleteDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayPr
             body: '{ "message" : "Missing parameter timestamp" }'
         };
     }
-    try {
-        await deleteDeliveryInDb(vendorId, userId, time);
+    await deleteDeliveryInDb(vendorId, userId, time);
 
-        return {
-            statusCode: 200,
-            body: '{ "message" : "Deletion succeeded" }'
-        }
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        }
+    return {
+        statusCode: 200,
+        body: '{ "message" : "Deletion succeeded" }'
     }
 }

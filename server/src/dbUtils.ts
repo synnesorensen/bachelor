@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, CompanySubscription } from './interfaces';
-import * as settings from './settings';
+import * as settings from '../../common/settings';
 
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
@@ -250,6 +250,10 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
     };
 
     let dbResult = await documentClient.query(subparams).promise();
+    if (dbResult.Items.length == 0) {
+        return [];
+    }
+
     let subs = dbResult.Items.map((item) => {
         return {
             vendorId,
