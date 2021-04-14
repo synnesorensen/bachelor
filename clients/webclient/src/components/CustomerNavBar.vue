@@ -7,7 +7,6 @@
 			</div>
 			<v-tabs v-if="verifiedUser" v-model="tab" align-with-title>
 				<v-tab>Oversikt</v-tab>
-				<v-tab>Bestilling</v-tab>
 				<v-tab>Profil</v-tab>
 				<v-tab>Faktura</v-tab>
                 <v-tab>Admin</v-tab>
@@ -21,14 +20,15 @@
             </v-btn>
 		</v-app-bar>
 		<v-main>
-			<v-tabs-items v-if="verifiedUser" v-model="tab">
+            <CustomerOrder v-if="!showLoginDialog && userprofile==null" />
+			<v-tabs-items v-else v-model="tab">
 				<v-tab-item><CustomerOverview /></v-tab-item>
-				<v-tab-item><CustomerOrder /></v-tab-item>
 				<v-tab-item><CustomerProfile /> <v-btn @click="getVendorFromApi">Press me </v-btn> </v-tab-item>
 				<v-tab-item><CustomerInvoice /></v-tab-item>
                 <v-tab-item><Admin /></v-tab-item>
 			</v-tabs-items>
             <LoginDialog @loggedIn="loggedIn" :showDialog="showLoginDialog" />
+            
 		</v-main>
 	</v-container>
 </template>
@@ -42,7 +42,7 @@ import CustomerOrder from './CustomerOrder.vue';
 import CustomerProfile from './CustomerProfile.vue';
 import CustomerInvoice from './CustomerInvoice.vue';
 import getAuth from './LoginDialog/auth';
-import {setApiBearerToken, getVendorSubscriptions, apiAxios} from '../api/api'
+import {setApiBearerToken, getVendorSubscriptions, getUserprofile} from '../api/api'
 import Admin from './Admin/Admin.vue';
 
 @Component({
@@ -60,6 +60,7 @@ export default class CustomerNavBar extends Vue {
 	private tab = 0;
     private jwtToken = "";
     private showLoginDialog = false;
+    private userprofile = null;
 
     mounted() {
         const token = localStorage.getItem("token");
@@ -70,15 +71,12 @@ export default class CustomerNavBar extends Vue {
         }
     }
     
-    loggedIn(jwtToken: string) {
+    async loggedIn(jwtToken: string) {
         this.jwtToken = jwtToken;
         localStorage.setItem("token", this.jwtToken);
         setApiBearerToken(this.jwtToken);
         this.showLoginDialog = false;
-    }
-
-    get verifiedUser() {
-        return (this.jwtToken != "")
+        this.userprofile = await getUserprofile();
     }
 
     logout() {

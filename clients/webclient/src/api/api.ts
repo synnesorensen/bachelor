@@ -14,5 +14,17 @@ export function setApiBearerToken(token: string) {
 }
 
 export async function getVendorSubscriptions():Promise<interfaces.UserSubscription[]> {
-    return await apiAxios.get(urlPrefix + "/v/subscriptions")
+    return await apiAxios.get(urlPrefix + "/v/subscriptions");
+}
+
+export async function getUserprofile():Promise<interfaces.Userprofile | null> {
+    try {
+        const userprofile = await apiAxios.get(urlPrefix + "/userprofile");
+        return userprofile.data;
+    } catch (error) {
+        if (error.response.status == 404) {
+            return null;
+        }
+        throw (error);
+    }
 }
