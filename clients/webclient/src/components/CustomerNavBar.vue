@@ -5,7 +5,7 @@
 				<v-icon class="pr-8" x-large color="white">mdi-bike</v-icon>
 				<v-toolbar-title class="titleName">Lunsj på midlertidige hjul</v-toolbar-title>
 			</div>
-			<v-tabs v-if="verifiedUser" v-model="tab" align-with-title>
+			<v-tabs v-if="!showLoginDialog" v-model="tab" align-with-title>
 				<v-tab>Oversikt</v-tab>
 				<v-tab>Profil</v-tab>
 				<v-tab>Faktura</v-tab>
