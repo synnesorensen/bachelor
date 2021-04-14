@@ -4,3 +4,4 @@ server/.esbuild
 server/.serverless
 .env
 server/infrastructure/.serverless
+common/settings.ts
