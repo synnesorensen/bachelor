@@ -3,7 +3,7 @@
 		<v-container> 
 			<v-row>
 				<v-col>
-					<h1>Bestill lunsj</h1>
+					<h1>Bestillingsforespørsel</h1>
 				</v-col>
 			</v-row>
 			<v-row class="text-center">
@@ -21,7 +21,7 @@
         	</v-row>
         	<v-row class ="text-center">
             	<v-col cols="4">
-                	<v-text-field :rules="[numbers, length]" label="Postnummer" v-model="postNo"></v-text-field>
+                	<v-text-field :rules="[numbers, length]" label="Postnummer" v-model="postNo" required></v-text-field>
             	</v-col>
             	<v-col>
                 	<v-text-field label="Poststed" v-model="postPlace"></v-text-field>
@@ -32,54 +32,26 @@
         	</v-row>
         	<v-row>
             	<v-chip-group active-class="blue--text text--accent-4" mandatory>
-                	<v-chip filter outlined>
-                    	1
-                	</v-chip>
-                	<v-chip filter outlined>
-                    	2
-                	</v-chip>
-                	<v-chip filter outlined>
-                    	3
-                	</v-chip>
-                	<v-chip filter outlined>
-                    	4
-                	</v-chip>
-                	<v-chip filter outlined>
-                    	5
-                	</v-chip>
-                	<v-chip filter outlined>
-                    	6
-                	</v-chip>
-                	<v-chip filter outlined>
-                    	7
-                	</v-chip>
-                	<v-chip filter outlined>
-                    	8
-                	</v-chip>
-                	<v-chip filter outlined>
-                    	9
-                	</v-chip>
-                	<v-chip filter outlined>
-                    	10
+                	<v-chip 
+                    	v-for="meal in meals"
+                        v-bind:key="meal.no"
+                        v-model="meal.selected"
+                        filter outlined>
+                        {{meal.no}}
                 	</v-chip>
             	</v-chip-group>
         	</v-row>      
         	<v-row>
-            	<h4>Velg ønsket levering</h4>
+            	<h4>Velg leveringsdager</h4>
         	</v-row>
         	<v-row>
             	<v-chip-group active-class="blue--text text--accent-4" multiple>
-                	<v-chip filter outlined>
-                    	Lunsj tirsdag
-                	</v-chip>
-                	<v-chip filter outlined>
-                    	Lunsj onsdag
-                	</v-chip>
-                	<v-chip filter outlined>
-                    	Lunsj torsdag
-                	</v-chip>
-                	<v-chip filter outlined>
-                    	Middag torsdag
+                	<v-chip 
+                        v-for="deliveryDay in deliveryDays"
+                        v-bind:key="deliveryDay.name"
+                        v-model="deliveryDay.selected"
+                        filter outlined>
+                        {{deliveryDay.name}}
                 	</v-chip>
             	</v-chip-group>
         	</v-row>
@@ -88,11 +60,12 @@
         	</v-row>
         	<v-row>
             	<v-chip-group active-class="blue--text text--accent-4" mandatory>
-                	<v-chip filter outlined>
-                    	Enkel levering (kr. 149)
-                	</v-chip>
-                	<v-chip filter outlined>
-                    	Abonnement (kr. 137 per levering)
+                	<v-chip 
+                        v-for="delivery in deliveries"
+                        v-bind:key="delivery.type"
+                        v-model="delivery.selected"
+                        filter outlined>
+                    	{{delivery.type}}
                 	</v-chip>
             	</v-chip-group>
         	</v-row>
@@ -101,11 +74,12 @@
         	</v-row>
         	<v-row>
             	<v-chip-group active-class="blue--text text--accent-4" mandatory>
-                	<v-chip filter outlined>
-                    	Engangsbokser
-                	</v-chip>
-                	<v-chip filter outlined>
-                    	Gjenbruksbokser (depositum kr. 218)
+                	<v-chip
+                        v-for="box in boxes"
+                        v-bind:key="box.type"
+                        v-model="box.selected"
+                        filter outlined>
+                    	{{box.type}}
                 	</v-chip>
             	</v-chip-group>
         	</v-row>
@@ -119,7 +93,7 @@
                         v-bind:key="allergy.name" 
                         v-model="allergy.selected"
                         filter outlined>
-                    {{allergy.name}}
+                        {{allergy.name}}
                 	</v-chip>
             	</v-chip-group>
         	</v-row>
@@ -127,7 +101,7 @@
             	<v-text-field label="Annen informasjon du vil legge til?" v-model="add"></v-text-field>
         	</v-row>
         	<v-row>
-            	<v-btn @click="sendToDb">Send</v-btn>
+            	<v-btn @click="sendToDb" color="primary">Send inn</v-btn>
         	</v-row>
 		</v-container>
     </v-form>
@@ -144,67 +118,47 @@ export default class CustomerOrder extends Vue {
     private address = "";
     private postNo = 0;
     private postPlace = "";
-    private noOfMeals = 1;
-    private deliveryDay = "";
-    private deliveryType = "";
-    private boxType = "";
+    private meals = [
+        { no: 1, selected: false},
+        { no: 2, selected: false},
+        { no: 3, selected: false},
+        { no: 4, selected: false},
+        { no: 5, selected: false},
+        { no: 6, selected: false},
+        { no: 7, selected: false},
+        { no: 8, selected: false},
+        { no: 9, selected: false},
+        { no: 10, selected: false}
+    ];
+    private deliveryDays = [
+        { name: "Lunsj tirsdag", selected: false},
+        { name: "Lunsj onsdag", selected: false},
+        { name: "Lunsj torsdag (fisk)", selected: false},
+        { name: "Middag torsdag (fisk)", selected: false}
+    ];
+    private deliveries = [
+        { type: "Ei enkelt levering 149 kr", selected: false},
+        { type: "Abonnement (kr. 137 per levering)", selected: false}
+    ];
+    private boxes = [
+        { type: "Engangsboks", selected: false},
+        { type: "Gjenbruksbokser (depositum kr 218)", selected: false}
+    ];
     private allergies = [
-        {
-            name: "Gluten",
-            selected: false
-        },
-        {
-            name: "Skalldyr",
-            selected: false
-        },
-        {
-            name: "Egg",
-            selected: false
-        },
-        {
-            name: "Fisk",
-            selected: false
-        },
-        {
-            name: "Peanøtter",
-            selected: false
-        },
-        {
-            name: "Nøtter",
-            selected: false
-        },
-        {
-            name: "Melk",
-            selected: false
-        },
-        {
-            name: "Soya",
-            selected: false
-        },
-        {
-            name: "Selleri",
-            selected: false
-        },
-        {
-            name: "Sennep",
-            selected: false
-        },
-        {
-            name: "Sesam",
-            selected: false
-        },
-        {
-            name: "Svovel",
-            selected: false
-        },
-        {
-            name: "Lupin",
-            selected: false
-        },
-        {
-            name: "Bløtdyr",
-            selected: false
-        } 
+        { name: "Gluten", selected: false},
+        { name: "Skalldyr", selected: false},
+        { name: "Egg", selected: false},
+        { name: "Fisk", selected: false},
+        { name: "Peanøtter", selected: false},
+        { name: "Nøtter", selected: false},
+        { name: "Melk", selected: false},
+        { name: "Soya", selected: false},
+        { name: "Selleri", selected: false},
+        { name: "Sennep", selected: false},
+        { name: "Sesam", selected: false},
+        { name: "Svovel", selected: false},
+        { name: "Lupin", selected: false},
+        { name: "Bløtdyr", selected: false} 
     ];
     private add = "";
 
