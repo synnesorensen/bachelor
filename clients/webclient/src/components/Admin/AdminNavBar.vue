@@ -1,5 +1,5 @@
 <template>
-	<v-header>
+	<v-container>
 		<v-app-bar app flat color="primary" dark class="appbar">
 			<div class="d-flex align-center">
 				<v-icon class="pr-8" x-large color="white">mdi-bike</v-icon>
@@ -19,7 +19,7 @@
 				<v-tab-item><AdminInvoicing /></v-tab-item>
 			</v-tabs-items>
 		</v-main>
-	</v-header>
+	</v-container>
 </template>
 
 <script lang="ts">
