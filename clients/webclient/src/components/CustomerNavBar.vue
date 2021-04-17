@@ -20,7 +20,7 @@
             </v-btn>
 		</v-app-bar>
 		<v-main>
-            <CustomerOrder userprofile="userprofile" v-if="!showLoginDialog && userprofile==null" />
+            <CustomerOrder :loggedInUser="loggedInUser" v-if="!showLoginDialog && userprofile==null" />
 			<v-tabs-items v-else v-model="tab">
 				<v-tab-item><CustomerOverview /></v-tab-item>
 				<v-tab-item><CustomerProfile /> </v-tab-item>
@@ -45,6 +45,7 @@ import getAuth from './LoginDialog/auth';
 import {setApiBearerToken, getVendorSubscriptions, getUserprofile} from '../api/api'
 import Admin from './Admin/Admin.vue';
 import * as interfaces from '../../../../server/src/interfaces'
+import { getUserInfo } from '../../../../server/src/auth/getUserFromJwt'
 
 @Component({
 	components: {
@@ -62,6 +63,7 @@ export default class CustomerNavBar extends Vue {
     private jwtToken = "";
     private showLoginDialog = false;
     private userprofile: interfaces.Userprofile | null = null;
+    private loggedInUser = "";
 
     mounted() {
         const token = localStorage.getItem("token");
@@ -78,6 +80,7 @@ export default class CustomerNavBar extends Vue {
         setApiBearerToken(this.jwtToken);
         this.showLoginDialog = false;
         this.userprofile = await getUserprofile();
+        this.loggedInUser = getUserInfo(this.jwtToken);
     }
 
     logout() {

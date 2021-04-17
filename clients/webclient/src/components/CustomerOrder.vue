@@ -125,7 +125,7 @@ import * as interfaces from '../../../../server/src/interfaces'
 
 @Component
 export default class CustomerOrder extends Vue {
-    @Prop() userprofile!: interfaces.Userprofile;
+    @Prop() loggedInUser!: string;
     private firstName = "";
     private lastName = "";
     private address = "";
@@ -198,13 +198,13 @@ export default class CustomerOrder extends Vue {
             fullname: this.firstName + " " + this.lastName,
             address: this.address + " " + this.postNo + " " + this.postPlace,
             phone: this.phone.toString(),
-            email: this.userprofile.email,
+            email: this.loggedInUser,
             allergies: this.selectedAllergies
         };
 
         let subscription = {
             vendorId: "lunsj@hjul.no",             // TODO: Hente valgt vendor sin id og schedule fra DB
-            userId: this.userprofile.email,
+            userId: this.loggedInUser,
             approved: false,
             paused: false,
             schedule: this.selectedDeliveryDays,
