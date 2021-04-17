@@ -20,7 +20,7 @@
             </v-btn>
 		</v-app-bar>
 		<v-main>
-            <CustomerOrder v-if="!showLoginDialog && userprofile==null" />
+            <CustomerOrder userprofile="userprofile" v-if="!showLoginDialog && userprofile==null" />
 			<v-tabs-items v-else v-model="tab">
 				<v-tab-item><CustomerOverview /></v-tab-item>
 				<v-tab-item><CustomerProfile /> </v-tab-item>

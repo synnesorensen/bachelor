@@ -28,3 +28,13 @@ export async function getUserprofile():Promise<interfaces.Userprofile | null> {
         throw (error);
     }
 }
+
+export async function putUserprofile(userprofile: interfaces.Userprofile):Promise<interfaces.Userprofile> {
+    const addedUser = await apiAxios.put(urlPrefix + "/userprofile", userprofile);
+    return addedUser.data;
+}
+
+export async function putSubscription(subscription: interfaces.Subscription):Promise<interfaces.Subscription> {
+    const addedSubscription = await apiAxios.put(urlPrefix + "/u/subscription?vendorId=" + subscription.vendorId, subscription);
+    return addedSubscription.data;
+}

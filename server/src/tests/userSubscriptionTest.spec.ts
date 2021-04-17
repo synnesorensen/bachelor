@@ -11,7 +11,9 @@ describe('Test of user subscriptions', () => {
             userId: "testUserId1",
             approved: true,
             paused: false,
-            schedule: ["1", "2"]
+            schedule: ["1", "2"], 
+            noOfMeals: "1",
+            box: "engangsboks"
         };
         const user1 = {
             fullname: "Navn Navnesen",
@@ -25,7 +27,9 @@ describe('Test of user subscriptions', () => {
             userId: "testUserId2",
             approved: false,
             paused: true,
-            schedule: ["2", "3"]
+            schedule: ["2", "3"],
+            noOfMeals: "1",
+            box: "gjenbruksboks"
         };
         const user2 = {
             fullname: "Name Nameson",
