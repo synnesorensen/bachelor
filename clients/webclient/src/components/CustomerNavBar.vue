@@ -23,7 +23,7 @@
             <CustomerOrder v-if="!showLoginDialog && userprofile==null" />
 			<v-tabs-items v-else v-model="tab">
 				<v-tab-item><CustomerOverview /></v-tab-item>
-				<v-tab-item><CustomerProfile /> <v-btn @click="getVendorFromApi">Press me </v-btn> </v-tab-item>
+				<v-tab-item><CustomerProfile /> </v-tab-item>
 				<v-tab-item><CustomerInvoice /></v-tab-item>
                 <v-tab-item><Admin /></v-tab-item>
 			</v-tabs-items>
@@ -44,6 +44,7 @@ import CustomerInvoice from './CustomerInvoice.vue';
 import getAuth from './LoginDialog/auth';
 import {setApiBearerToken, getVendorSubscriptions, getUserprofile} from '../api/api'
 import Admin from './Admin/Admin.vue';
+import * as interfaces from '../../../../server/src/interfaces'
 
 @Component({
 	components: {
@@ -60,7 +61,7 @@ export default class CustomerNavBar extends Vue {
 	private tab = 0;
     private jwtToken = "";
     private showLoginDialog = false;
-    private userprofile = null;
+    private userprofile: interfaces.Userprofile | null = null;
 
     mounted() {
         const token = localStorage.getItem("token");
@@ -85,10 +86,6 @@ export default class CustomerNavBar extends Vue {
         this.jwtToken = "";
         this.showLoginDialog = true;
         localStorage.removeItem("token");
-    }
-
-    getVendorFromApi() {
-        getVendorSubscriptions();
     }
 
 }
