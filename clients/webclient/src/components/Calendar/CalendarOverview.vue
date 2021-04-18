@@ -50,8 +50,8 @@ export default class CalendarOverview extends Vue {
 	mounted() {
 		this.focus = '';
 	}
-	viewDay({ date }) {
-		this.focus = date;
+	viewDay(day: any) {
+		this.focus = day.date;
 		this.type = 'day';
 	}
 	setToday() {
@@ -63,9 +63,9 @@ export default class CalendarOverview extends Vue {
 	next() {
 		(this.$refs.calendar as any).next();
 	}
-	updateRange({ start, end }) {
-		this.start = start;
-		this.end = end;
+	updateRange(range: any) {
+		this.start = range.start;
+		this.end = range.end;
 	}
 }
 </script>
