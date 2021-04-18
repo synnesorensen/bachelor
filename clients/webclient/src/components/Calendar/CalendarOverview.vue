@@ -44,10 +44,8 @@ export default class CalendarOverview extends Vue {
 	private today = new Date().toISOString().substr(0, 10);
 	private focus = new Date().toISOString().substr(0, 10);
 	private type = 'month';
-	private name: null;
-	private details: null;
-	private start: null;
-	private end: null;
+	private start = null;
+	private end = null;
 
 	mounted() {
 		this.focus = '';
