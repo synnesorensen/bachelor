@@ -1,13 +1,18 @@
 <template>
-	<v-sheet height="600">
-		<v-calendar locale="no" color="primary"> </v-calendar>
-	</v-sheet>
+	<v-main>
+		<calendar-overview></calendar-overview>
+	</v-main>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
+import CalendarOverview from '../Calendar/CalendarOverview.vue';
 
-@Component
+@Component({
+	components: {
+		CalendarOverview,
+	},
+})
 export default class AdminOverview extends Vue {}
 </script>
