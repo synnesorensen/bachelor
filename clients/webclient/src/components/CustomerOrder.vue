@@ -211,9 +211,9 @@ export default class CustomerOrder extends Vue {
             noOfMeals: this.selectedNoOfMeals,
             box: this.selectedBox
         }
-
         await putUserprofile(newUserprofile);
         await putSubscription(subscription);
+        this.$emit("userprofile", newUserprofile)
     }
 }
 </script>

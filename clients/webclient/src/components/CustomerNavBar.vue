@@ -20,7 +20,10 @@
             </v-btn>
 		</v-app-bar>
 		<v-main>
-            <CustomerOrder :loggedInUser="loggedInUser" v-if="!showLoginDialog && userprofile==null" />
+            <CustomerOrder 
+                :loggedInUser="loggedInUser" 
+                v-if="!showLoginDialog && userprofile==null" 
+                @userprofile="newUserprofile" />
 			<v-tabs-items v-else v-model="tab">
 				<v-tab-item><CustomerOverview /></v-tab-item>
 				<v-tab-item><CustomerProfile /> </v-tab-item>
@@ -63,7 +66,7 @@ export default class CustomerNavBar extends Vue {
     private jwtToken = "";
     private showLoginDialog = false;
     private userprofile: interfaces.Userprofile | null = null;
-    private loggedInUser = "";
+    private loggedInUser: string | null = null;
 
     mounted() {
         const token = localStorage.getItem("token");
@@ -89,6 +92,10 @@ export default class CustomerNavBar extends Vue {
         this.jwtToken = "";
         this.showLoginDialog = true;
         localStorage.removeItem("token");
+    }
+
+    newUserprofile(userprofile: interfaces.Userprofile) {
+        this.userprofile = userprofile;
     }
 
 }
