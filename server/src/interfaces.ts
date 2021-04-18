@@ -1,9 +1,11 @@
 export interface Subscription {
     vendorId?: string,
     userId: string,
-    approved?: boolean,
-    paused?: boolean,
-    schedule?: string[]
+    approved: boolean,
+    paused: boolean,
+    schedule: string[],
+    noOfMeals: number,
+    box: string
 }
 
 export interface Userprofile {
@@ -20,6 +22,8 @@ export interface UserSubscription {
     approved: boolean,
     paused: boolean,
     schedule: string[],
+    noOfMeals: number,
+    box: string,
     fullname: string,
     address: string,
     phone: string,
@@ -32,7 +36,9 @@ export interface CompanySubscription {
     company: string,
     approved: boolean,
     paused: boolean,
-    schedule: string[]
+    schedule: string[],
+    noOfMeals: number,
+    box: string
 }
 
 export interface Delivery {

@@ -11,7 +11,9 @@ describe('Subscription test', () => {
             userId: "testUserId",
             approved: false,
             paused: true,
-            schedule: ["1", "2"]
+            schedule: ["1", "2"], 
+            noOfMeals: "1",
+            box: "engangsboks"
         };
 
         const putResult = await putSubscriptionInDb(sub, true);

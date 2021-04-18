@@ -28,7 +28,9 @@ export async function getSubscriptionFromDb(vendorId: string, userId: string): P
         userId,
         approved: dbResult.Items[0].approved? dbResult.Items[0].approved : false,
         paused: dbResult.Items[0].paused,
-        schedule: dbResult.Items[0].schedule.values
+        schedule: dbResult.Items[0].schedule.values, 
+        noOfMeals: dbResult.Items[0].noOfMeals,
+        box: dbResult.Items[0].box
     };   
 }
 
@@ -47,15 +49,21 @@ export async function putSubscriptionInDb(subscription: Subscription, isVendor: 
         UpdateExpression += ", approved = if_not_exists(approved, :approved)";
         ExpressionAttributeValues[":approved"] = { BOOL: false };
     }    
-
     if (subscription.paused != undefined) {
         UpdateExpression += ", paused = :paused";
         ExpressionAttributeValues[":paused"] = { BOOL: subscription.paused };
     }
-
     if (subscription.schedule) {
         UpdateExpression += ", schedule = :schedule";
         ExpressionAttributeValues[":schedule"] = { SS: subscription.schedule };
+    }
+    if (subscription.noOfMeals) {
+        UpdateExpression += ", noOfMeals = :noOfMeals";
+        ExpressionAttributeValues[":noOfMeals"] = { N: subscription.noOfMeals.toString() };
+    }
+    if (subscription.box) {
+        UpdateExpression += ", box = :box";
+        ExpressionAttributeValues[":box"] = { S: subscription.box };
     }
 
     UpdateExpression += ", GSI1_pk = :userId";
@@ -82,6 +90,8 @@ export async function putSubscriptionInDb(subscription: Subscription, isVendor: 
         approved: dbItem.Attributes.approved?.BOOL || false,
         paused: dbItem.Attributes.paused?.BOOL || false,
         schedule: dbItem.Attributes.schedule?.SS || [],
+        noOfMeals: parseInt(dbItem.Attributes.noOfMeals.N),
+        box: dbItem.Attributes.box.S
     };
 }
 
@@ -193,34 +203,27 @@ export async function getUserprofileFromDb(userId: string): Promise<Userprofile>
 }
 
 export async function putUserprofileInDb(userprofile: Userprofile, userId: string): Promise<Userprofile> {
-    let UpdateExpression = "set EntityType = :EntityType, fullname = :fullname, address = :address, phone = :phone, email = :email, allergies = :allergies";
-    let ExpressionAttributeValues: any = {
-        ":EntityType": { S: 'Userprofile' },
-        ":fullname": { S: userprofile.fullname },
-        ":address": { S: userprofile.address },
-        ":phone": { S: userprofile.phone },
-        ":email": { S: userprofile.email },
-        ":allergies": { SS: userprofile.allergies}
-    }; 
-
     let params = {
         TableName: settings.TABLENAME,
-        Key: {
-            "pk": { S: "u#" + userId },
-            "sk": { S: "u#" + userId }
-        },
-        UpdateExpression,
-        ExpressionAttributeValues,
-        ReturnValues: "ALL_NEW"
+        Item: {
+            pk: "u#" + userId,
+            sk: "u#" + userId,
+            EntityType: "Userprofile", 
+            fullname: userprofile.fullname, 
+            address: userprofile.address, 
+            phone: userprofile.phone, 
+            email: userprofile.email, 
+            allergies: userprofile.allergies
+        }
     };
 
-    let dbItem = await database.updateItem(params).promise();
+    await documentClient.put(params).promise();
     return {
-        fullname: dbItem.Attributes.fullname.S,
-        address: dbItem.Attributes.address.S,
-        phone: dbItem.Attributes.phone.S,
-        email: dbItem.Attributes.email.S,
-        allergies: dbItem.Attributes.allergies.SS
+        fullname: userprofile.fullname,
+        address: userprofile.address,
+        phone: userprofile.phone,
+        email: userprofile.email,
+        allergies: userprofile.allergies
     }
 } 
 
@@ -260,7 +263,9 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
             userId: item.sk,
             approved: item.approved,
             paused:item.paused,
-            schedule: item.schedule.values
+            schedule: item.schedule.values,
+            noOfMeals: item.noOfMelas,
+            box: item.box
         }
     });
 
@@ -295,6 +300,8 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
             approved: sub.approved,
             paused: sub.paused,
             schedule: sub.schedule,
+            noOfMeals: sub.noOfMeals,
+            box: sub.box,
             fullname: user.fullname?.S,
             address: user.address?.S,
             phone: user.phone?.S,
@@ -330,7 +337,9 @@ export async function getSubscriptionsForUser(userId: string): Promise<CompanySu
             userId,
             approved: item.approved,
             paused: item.paused,
-            schedule: item.schedule.values
+            schedule: item.schedule.values,
+            noOfMeals: item.noOfMeals,
+            box: item.box
         }
     });
 
@@ -363,7 +372,9 @@ export async function getSubscriptionsForUser(userId: string): Promise<CompanySu
             company: vendor.company.S,
             approved: sub.approved,
             paused: sub.paused,
-            schedule: sub.schedule
+            schedule: sub.schedule, 
+            noOfMeals: sub.noOfMeals,
+            box: sub.box
         }
     });
     return result;

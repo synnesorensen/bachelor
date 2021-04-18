@@ -32,11 +32,13 @@ import TabPassword from "./TabPassword.vue"
 })
 
 export default class LoginDialog extends Vue {
-    @Prop() showDialog: boolean;
+    @Prop( {
+        default: true
+    }) showDialog!: boolean;
     private tab = 0;
 
     loggedIn(jwtToken: string) {
         this.$emit("loggedIn", jwtToken);
     }
 }
-</script>
+</script> 

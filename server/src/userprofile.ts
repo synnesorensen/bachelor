@@ -22,6 +22,13 @@ async function getUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     let userId = getUserInfoFromEvent(event);
     let userprofile = await getUserprofileFromDb(userId);
 
+    if (!userprofile) {
+        return {
+            statusCode: 404,
+            body: '{ "message" : "No profile for this user" }'
+        }
+    }
+
     return {
         statusCode: 200,
         body: JSON.stringify(userprofile)

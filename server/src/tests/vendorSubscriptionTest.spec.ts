@@ -12,14 +12,18 @@ describe('Test of vendor subscriptions', () => {
             userId: "testUserId",
             approved: true,
             paused: false,
-            schedule: ["1", "2"]
+            schedule: ["1", "2"],
+            noOfMeals: "1",
+            box: "engangsboks"
         };
         const sub2 = {
             vendorId: "testVendorId2",
             userId: "testUserId",
             approved: true,
             paused: true,
-            schedule: ["5", "7"]
+            schedule: ["5", "7"],
+            noOfMeals: "1",
+            box: "gjenbruksboks"
         }
         const user1 = {
             fullname: "Navn Navnesen",

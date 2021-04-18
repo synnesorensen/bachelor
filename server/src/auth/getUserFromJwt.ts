@@ -33,5 +33,8 @@ function getJWT(event: APIGatewayProxyEvent): string {
     if (!auth) {
         auth = event.headers.Authorization;
     }
+    if (!auth) {
+        return "";
+    }
     return auth.slice(7)
 }
