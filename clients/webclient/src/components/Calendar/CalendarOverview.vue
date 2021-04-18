@@ -49,14 +49,6 @@ export default class CalendarOverview extends Vue {
 	private start: null;
 	private end: null;
 
-	private computed: object = {
-		title(): string {
-			const { start, end } = this;
-			if (!start || !end) {
-				return '';
-			}
-		},
-	};
 	mounted() {
 		this.focus = '';
 	}
