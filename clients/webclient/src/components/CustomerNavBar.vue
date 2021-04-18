@@ -20,9 +20,10 @@
             </v-btn>
 		</v-app-bar>
 		<v-main>
+            <LoginDialog v-if="showLoginDialog" @loggedIn="loggedIn" :showDialog="showLoginDialog" />
             <CustomerOrder 
                 :loggedInUser="loggedInUser" 
-                v-if="!showLoginDialog && userprofile==null" 
+                v-else-if="userprofile==null" 
                 @userprofile="newUserprofile" />
 			<v-tabs-items v-else v-model="tab">
 				<v-tab-item><CustomerOverview /></v-tab-item>
@@ -30,7 +31,7 @@
 				<v-tab-item><CustomerInvoice /></v-tab-item>
                 <v-tab-item><Admin /></v-tab-item>
 			</v-tabs-items>
-            <LoginDialog @loggedIn="loggedIn" :showDialog="showLoginDialog" />
+            
             
 		</v-main>
 	</v-container>
@@ -75,15 +76,17 @@ export default class CustomerNavBar extends Vue {
         } else {
             this.showLoginDialog = true;
         }
+        console.log(this.userprofile)
+        console.log(this.showLoginDialog)
     }
     
     async loggedIn(jwtToken: string) {
         this.jwtToken = jwtToken;
         localStorage.setItem("token", this.jwtToken);
         setApiBearerToken(this.jwtToken);
-        this.showLoginDialog = false;
         this.userprofile = await getUserprofile();
         this.loggedInUser = getUserInfo(this.jwtToken);
+        this.showLoginDialog = false;
     }
 
     logout() {
