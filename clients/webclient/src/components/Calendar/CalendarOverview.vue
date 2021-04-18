@@ -13,10 +13,9 @@
 					<v-btn fab text stmall color="grey darken-2" @click="next">
 						<v-icon small>mdi-chevron-right</v-icon>
 					</v-btn>
-					<v-toolbar-title> Her skal tittelen på mnd komme {{ title }} </v-toolbar-title>
-					<!-- har prøvd med $refs.calendar.title som er forslaget på Vuetify sin side inni {{}}. 
-                    Den gjør at jeg får opp tittelen, men når jeg refresher forsvinner den. Av og til forsvinner hele kalenderen. 
-                    Dette er forslag fra en tutorial jeg fant på youtube -->
+					<v-toolbar-title v-if="$refs.calendar">
+						{{ $refs.calendar.title }}
+					</v-toolbar-title>
 				</v-toolbar>
 			</v-sheet>
 			<v-spacer></v-spacer>
@@ -49,13 +48,6 @@ export default class CalendarOverview extends Vue {
 	private details: null;
 	private start: null;
 	private end: null;
-	// private color: '#1976D2';
-	// private currentlyEditing: null;
-	// private selectedEvent: {};
-	// private selectedElement: null;
-	// private selectedOpen: false;
-	// private events: [];
-	// private dialog: false;
 
 	private computed: object = {
 		title(): string {
@@ -63,22 +55,11 @@ export default class CalendarOverview extends Vue {
 			if (!start || !end) {
 				return '';
 			}
-		// 	const startMonth = this.monthFormatter(start);
-		// 	const endMonth = this.monthFormatter(end);
-		// 	const suffixMonth = startMonth === endMonth ? '' : endMonth;
-		// 	const startYear = start.year;
-		// 	const endYear = end.year;
-		// 	const suffixYear = startYear === endYear ? '' : endYear;
-		// 	const startDay = start.day + this.nth(start.day);
-		// 	const endDay = end.day + this.nth(end.day);
-		// },
-		// monthFormatter() {
-		// 	return this.$refs.calendar.getFormatter({
-		// 		timeZone: 'UTC',
-		// 		month: 'long',
-		// 	});
 		},
 	};
+	mounted() {
+		this.focus = '';
+	}
 	viewDay({ date }) {
 		this.focus = date;
 		this.type = 'day';
@@ -87,19 +68,14 @@ export default class CalendarOverview extends Vue {
 		this.focus = '';
 	}
 	prev() {
-		this.$refs.calendar.prev(); // Denne og den under kommer fra Vuetify sin nettside
+		(this.$refs.calendar as any).prev();
 	}
 	next() {
-		this.$refs.calendar.next();
+		(this.$refs.calendar as any).next();
 	}
 	updateRange({ start, end }) {
 		this.start = start;
 		this.end = end;
 	}
-	// nth(d: number) {
-	// 	return d > 3 && d < 21
-	// 		? 'th'
-	// 		: ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'][d % 10];
-	// }
 }
 </script>
