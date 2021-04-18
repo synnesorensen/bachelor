@@ -3,7 +3,7 @@
 		<v-col>
 			<v-sheet height="64">
 				<v-spacer></v-spacer>
-				<v-toolbar outlined class="mr-4" flat>
+				<v-toolbar flat>
 					<v-btn outlined class="mr-4" color="grey darken-2" @click="setToday">
 						I dag
 					</v-btn>
