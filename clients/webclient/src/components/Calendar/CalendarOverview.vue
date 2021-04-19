@@ -26,8 +26,10 @@
 					locale="no"
 					color="primary"
 					weekdays="1, 2, 3, 4, 5"
+                    :events="events"
 					:now="today"
 					@change="updateRange"
+
 				>
 				</v-calendar>
 			</v-sheet>
@@ -46,6 +48,48 @@ export default class CalendarOverview extends Vue {
 	private type = 'month';
 	private start = null;
 	private end = null;
+    private events = [ 
+        {
+            name: "Lunsj",
+            color: "blue",
+            start: '2021-04-20'
+        },
+        {
+            name: "Lunsj",
+            color: "blue",
+            start: '2021-04-21'
+        },
+        {
+            name: "Lunsj",
+            color: "blue",
+            start: '2021-04-22'
+        },
+        {
+            name: "Middag",
+            color: "green",
+            start: '2021-04-22'
+        },
+        {
+            name: "Lunsj",
+            color: "blue",
+            start: '2021-04-27'
+        },
+        {
+            name: "Lunsj",
+            color: "blue",
+            start: '2021-04-28'
+        },
+        {
+            name: "Lunsj",
+            color: "blue",
+            start: '2021-04-29'
+        },
+        {
+            name: "Middag",
+            color: "green",
+            start: '2021-04-29'
+        }
+    ];
 
 	mounted() {
 		this.focus = '';
