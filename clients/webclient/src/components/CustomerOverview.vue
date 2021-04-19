@@ -1,5 +1,5 @@
 <template>
-	<calendar-overview></calendar-overview>
+    <CalendarOverview />
 </template>
 
 <script lang="ts">
