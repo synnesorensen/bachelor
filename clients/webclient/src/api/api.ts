@@ -21,7 +21,6 @@ async function ensureFreshToken() {
     if (jwtLastRefreshed < (Date.now() - (1000*60))) {
         let Auth = getAuth();
         let jwtToken = (await Auth.currentSession()).getIdToken().getJwtToken();
-        console.log("It is old:", jwtToken);
         setApiBearerToken(jwtToken);
     }
 }

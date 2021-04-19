@@ -1,7 +1,5 @@
 <template>
-	<v-main>
-		<calendar-overview></calendar-overview>
-	</v-main>
+    <CalendarOverview />
 </template>
 
 <script lang="ts">

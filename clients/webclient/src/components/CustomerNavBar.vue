@@ -9,7 +9,6 @@
 				<v-tab>Oversikt</v-tab>
 				<v-tab>Profil</v-tab>
 				<v-tab>Faktura</v-tab>
-                <v-tab>Admin</v-tab>
 			</v-tabs>
             <v-spacer />
             <v-btn 
@@ -29,10 +28,7 @@
 				<v-tab-item><CustomerOverview /></v-tab-item>
 				<v-tab-item><CustomerProfile /> </v-tab-item>
 				<v-tab-item><CustomerInvoice /></v-tab-item>
-                <v-tab-item><Admin /></v-tab-item>
 			</v-tabs-items>
-            
-            
 		</v-main>
 	</v-container>
 </template>
@@ -47,7 +43,6 @@ import CustomerProfile from './CustomerProfile.vue';
 import CustomerInvoice from './CustomerInvoice.vue';
 import getAuth from './LoginDialog/auth';
 import {setApiBearerToken, getVendorSubscriptions, getUserprofile} from '../api/api'
-import Admin from './Admin/Admin.vue';
 import * as interfaces from '../../../../server/src/interfaces'
 import { getUserInfo } from '../../../../server/src/auth/getUserFromJwt'
 
@@ -58,8 +53,7 @@ import { getUserInfo } from '../../../../server/src/auth/getUserFromJwt'
 		CustomerOrder,
 		CustomerProfile,
 		CustomerInvoice,
-		CustomerNavBar,
-        Admin
+		CustomerNavBar
 	},
 })
 export default class CustomerNavBar extends Vue {
@@ -76,8 +70,6 @@ export default class CustomerNavBar extends Vue {
         } else {
             this.showLoginDialog = true;
         }
-        console.log(this.userprofile)
-        console.log(this.showLoginDialog)
     }
     
     async loggedIn(jwtToken: string) {
