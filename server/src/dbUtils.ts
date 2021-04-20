@@ -4,6 +4,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, CompanySubscription } from './interfaces';
 import * as settings from '../../common/settings';
 import { start } from 'node:repl';
+import { count } from 'node:console';
 
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
@@ -496,7 +497,29 @@ export async function deleteDeliveryInDb(vendorId: string, userId: string, time:
 }
 
 export async function postDeliveriesToDb(deliveries: Delivery[], vendorId: string, userId: string): Promise<Delivery[]> {
-    throw new Error('Function not implemented.');
+
+    let dels = [];
+    deliveries.forEach(del => {
+        dels.push({
+            PutRequest: {
+                Item: {
+                    vendorId: ["vendorId"],
+                    userId: ["userId"],
+                    deliverytime: ["deliverytime"],
+                    menu: ["menu"],
+                    cancelled: ["cancelled"]
+                }
+            }
+        });
+    });
+
+    let params = {
+        RequestItems: {
+            [settings.TABLENAME]: dels
+        }
+    };
+    documentClient.batchWrite(params);
+
 }
 
 export async function getAllDeliveriesFromAllSubscribers(vendorId: string, startTime: string, endTime: string): Promise<Delivery[]> {
