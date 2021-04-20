@@ -109,6 +109,13 @@ functions:
           authorizer: authorizer
           path: /v/delivery
           method: any
+  vendorDeliveries:
+    handler: src/vendorDeliveries.mainHandler
+    events:
+      - http:
+          authorizer: authorizer
+          path: /v/deliveries
+          method: get
 
 resources:
   Resources:
@@ -145,6 +152,14 @@ resources:
               - AttributeName: GSI1_pk
                 KeyType: HASH
               - AttributeName: GSI1_sk
+                KeyType: RANGE
+            Projection:
+              ProjectionType: "ALL"
+          - IndexName: GSI2
+            KeySchema:
+              - AttributeName: GSI2_pk
+                KeyType: HASH
+              - AttributeName: GSI2_sk
                 KeyType: RANGE
             Projection:
               ProjectionType: "ALL"

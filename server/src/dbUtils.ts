@@ -3,6 +3,7 @@ import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, CompanySubscription } from './interfaces';
 import * as settings from '../../common/settings';
+import { start } from 'node:repl';
 
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
@@ -399,6 +400,7 @@ export async function getUsersDeliveries(vendorId: string, userId: string, start
 
     let deliveries = dbResult.Items.map((del) => {
         return {
+            vendorId,
             userId,
             deliverytime: del.deliverytime,
             menu: del.menu,
@@ -426,6 +428,7 @@ export async function getDeliveryFromDb(vendorId: string, userId: string, time: 
         return undefined;
     }
     return {
+        vendorId,
         userId,
         deliverytime: dbResult.Items[0].deliverytime,
         menu: dbResult.Items[0].menu,
@@ -454,6 +457,12 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
         ExpressionAttributeValues[":time"] = { S: delivery.deliverytime};
     }
 
+    UpdateExpression += ", GSI2_pk = :vendorId";
+    ExpressionAttributeValues[":vendorId"] = { S: "v#" + delivery.vendorId};
+
+    UpdateExpression += ", GSI2_sk = :deliverytime";
+    ExpressionAttributeValues[":deliverytime"] = { S: delivery.deliverytime};
+
     let params = {
         TableName: settings.TABLENAME,
         Key: {
@@ -467,6 +476,7 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
 
     let dbItem = await database.updateItem(params).promise();
     return {
+        vendorId,
         userId,
         deliverytime: dbItem.Attributes.deliverytime.S,
         menu: dbItem.Attributes.menu.S,
@@ -490,5 +500,29 @@ export async function postDeliveriesToDb(deliveries: Delivery[], vendorId: strin
 }
 
 export async function getAllDeliveriesFromAllSubscribers(vendorId: string, startTime: string, endTime: string): Promise<Delivery[]> {
-    throw new Error('Function not implemented.');
+    let params = {
+        TableName: settings.TABLENAME,
+        KeyConditionExpression: "#GSI2_pk = :vendor and #GSI2_sk BETWEEN :start and :end",
+        ExpressionAttributeNames: {
+            "#GSI1_pk": "GSI1_pk",
+            "#GSI2_sk": "GSI2_sk"
+        },
+        ExpressionAttributeValues: {
+            ":vendor": "u#" + vendorId,
+            ":start": startTime,
+            ":end": endTime
+        }
+    };
+    let dbResult = await documentClient.query(params).promise();
+
+    let deliveries = dbResult.Items.map((del) => {
+        return {
+            vendorId,
+            userId: del.userId,
+            deliverytime: del.deliveryTime, 
+            menu: del.menu,
+            cancelled: del.cancelled
+        }
+    });
+    return deliveries;
 }

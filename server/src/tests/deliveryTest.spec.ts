@@ -7,24 +7,28 @@ import 'mocha';
 describe('Delivery tests', () => {
     it('Put, get and delete a delivery', async () => {
         let delivery1 = {
+            vendorId: "testVendorId",
             userId: "testUserId1",
             deliverytime: "2021-04-20",
             menu: "lunch", 
             cancelled: false
         };
         let delivery2 = {
+            vendorId: "testVendorId",
             userId: "testUserId1",
             deliverytime: "2021-04-01",
             menu: "dinner", 
             cancelled: true
         };
         let delivery3 = {
+            vendorId: "testVendorId",
             userId: "testUserId2",
             deliverytime: "2021-05-01",
             menu: "lunch", 
             cancelled: false
         };
         let delivery4 = {
+            vendorId: "testVendorId",
             userId: "testUserId2",
             deliverytime: "2021-05-31",
             menu: "dinner", 
@@ -71,12 +75,14 @@ describe('Delivery tests', () => {
         expect(testDelete2).to.equal(undefined);
 
         let newDeliveries = [{
+            vendorId: "testVendorId",
             userId: "testUserId2",
             deliverytime: "2021-06-03",
             menu: "dinner", 
             cancelled: false
         },
         {
+            vendorId: "testVendorId",
             userId: "testUserId2",
             deliverytime: "2021-06-02",
             menu: "lunch", 

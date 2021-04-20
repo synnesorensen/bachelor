@@ -42,6 +42,7 @@ export interface CompanySubscription {
 }
 
 export interface Delivery {
+    vendorId: string,
     userId: string,
     deliverytime: string,
     menu: string,
