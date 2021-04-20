@@ -496,30 +496,32 @@ export async function deleteDeliveryInDb(vendorId: string, userId: string, time:
     await database.deleteItem(params).promise();
 }
 
-export async function postDeliveriesToDb(deliveries: Delivery[], vendorId: string, userId: string): Promise<Delivery[]> {
-
+export async function postDeliveriesToDb(deliveries: Delivery[], vendorId: string, userId: string): Promise<void> {
     let dels = [];
-    deliveries.forEach(del => {
+    for (let i = 0; i < deliveries.length; i++) {
         dels.push({
             PutRequest: {
                 Item: {
-                    vendorId: ["vendorId"],
-                    userId: ["userId"],
-                    deliverytime: ["deliverytime"],
-                    menu: ["menu"],
-                    cancelled: ["cancelled"]
+                    vendorId: deliveries[i].vendorId,
+                    userId: deliveries[i].userId,
+                    deliverytime: deliveries[i].deliverytime,
+                    menu: deliveries[i].menu,
+                    cancelled: deliveries[i].cancelled
                 }
             }
         });
-    });
-
-    let params = {
-        RequestItems: {
-            [settings.TABLENAME]: dels
+        if (dels.length == 25) {
+            let params = {
+                RequestItems: {
+                    [settings.TABLENAME]: dels
+                }
+            };
+            let result = await documentClient.batchWrite(params).promise();
+            dels = [];
+            // TODO: Sjekke for Unprocessed items på result, og legge evt feilede objekter inn igjen i dels. 
+            // result.UnprocessedItems
         }
-    };
-    documentClient.batchWrite(params);
-
+    }
 }
 
 export async function getAllDeliveriesFromAllSubscribers(vendorId: string, startTime: string, endTime: string): Promise<Delivery[]> {
