@@ -60,6 +60,7 @@ functions:
           authorizer: authorizer
           path: /userprofile
           method: any
+          cors: true
   userSubscription:
     handler: src/userSubscription.mainHandler
     events:
@@ -109,6 +110,13 @@ functions:
           authorizer: authorizer
           path: /v/delivery
           method: any
+  vendorDeliveries:
+    handler: src/vendorDeliveries.mainHandler
+    events:
+      - http:
+          authorizer: authorizer
+          path: /v/deliveries
+          method: get
 
 resources:
   Resources:
@@ -132,6 +140,10 @@ resources:
             AttributeType: S
           - AttributeName: GSI1_sk
             AttributeType: S
+          - AttributeName: GSI2_pk
+            AttributeType: S
+          - AttributeName: GSI2_sk
+            AttributeType: S
         KeySchema:
           - AttributeName: pk
             KeyType: HASH
@@ -145,6 +157,14 @@ resources:
               - AttributeName: GSI1_pk
                 KeyType: HASH
               - AttributeName: GSI1_sk
+                KeyType: RANGE
+            Projection:
+              ProjectionType: "ALL"
+          - IndexName: GSI2
+            KeySchema:
+              - AttributeName: GSI2_pk
+                KeyType: HASH
+              - AttributeName: GSI2_sk
                 KeyType: RANGE
             Projection:
               ProjectionType: "ALL"

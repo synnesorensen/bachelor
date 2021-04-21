@@ -11,25 +11,26 @@ describe('User profile test', () => {
             address: "Skogen",
             phone: "12345",
             email: "hallo@post.no",
-            allergies: ["løk"]
+            allergies: ["melk"]
         };
 
-        const putResult = await putUserprofileInDb(userprofile, "testUserId");
+        const putResult = await putUserprofileInDb(userprofile, "testUserId44");
         expect(putResult.fullname).to.equal("Navn");
         expect(putResult.address).to.equal("Skogen");
         expect(putResult.phone).to.equal("12345");
         expect(putResult.email).to.equal("hallo@post.no");
-        expect(putResult.allergies).to.eql(["løk"]);
+        expect(putResult.allergies).to.eql(["melk"]);
 
-        const getResult = await getUserprofileFromDb("testUserId");
+        const getResult = await getUserprofileFromDb("testUserId44");
         expect(getResult.fullname).to.equal("Navn");
         expect(getResult.address).to.equal("Skogen");
         expect(getResult.phone).to.equal("12345");
         expect(getResult.email).to.equal("hallo@post.no");
-        expect(getResult.allergies).to.eql(["løk"]);
 
-        await deleteUserprofileInDb("testUserId");
-        const newResult = await getUserprofileFromDb("testUserId");
+        expect(getResult.allergies).to.eql(["melk"]);
+
+        await deleteUserprofileInDb("testUserId44");
+        const newResult = await getUserprofileFromDb("testUserId44");
         expect(newResult).to.equal(undefined);
     });
 });
