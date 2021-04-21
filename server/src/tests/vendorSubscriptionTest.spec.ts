@@ -8,21 +8,21 @@ describe('Test of vendor subscriptions', () => {
 
     it('Getting list of subscriptions with vendor info from DB', async () => {
         const sub1 = {
-            vendorId: "testVendorId1",
-            userId: "testUserId",
+            vendorId: "testVendorId10",
+            userId: "testUserId30",
             approved: true,
             paused: false,
             schedule: ["1", "2"],
-            noOfMeals: "1",
+            noOfMeals: 1,
             box: "engangsboks"
         };
         const sub2 = {
-            vendorId: "testVendorId2",
-            userId: "testUserId",
+            vendorId: "testVendorId20",
+            userId: "testUserId30",
             approved: true,
             paused: true,
             schedule: ["5", "7"],
-            noOfMeals: "1",
+            noOfMeals: 1,
             box: "gjenbruksboks"
         }
         const user1 = {
@@ -49,36 +49,36 @@ describe('Test of vendor subscriptions', () => {
             schedule: ["3", "4", "5", "6", "7"] 
         };
 
-        await putUserprofileInDb(user1, "testUserId");
+        await putUserprofileInDb(user1, "testUserId30");
         await putSubscriptionInDb(sub1, true);
         await putSubscriptionInDb(sub2, false);
-        await putVendorInDb(vendor1, "testVendorId1");
-        await putVendorInDb(vendor2, "testVendorId2");
+        await putVendorInDb(vendor1, "testVendorId10");
+        await putVendorInDb(vendor2, "testVendorId20");
 
-        const getResult = await getSubscriptionsForUser("testUserId");
+        const getResult = await getSubscriptionsForUser("testUserId30");
         expect(getResult.length).to.equal(2);
 
-        let res1 = getResult.find( ({vendorId}) => vendorId === "testVendorId1");
+        let res1 = getResult.find( ({vendorId}) => vendorId === "testVendorId10");
         expect(res1.company).to.equal("Delikatessen");
         expect(res1.approved).to.equal(true);
         expect(res1.paused).to.equal(false);
         expect(res1.schedule).to.eql(["1", "2"]);
 
-        let res2 = getResult.find( ({vendorId}) => vendorId === "testVendorId2");
+        let res2 = getResult.find( ({vendorId}) => vendorId === "testVendorId20");
         expect(res2.company).to.equal("Asian Fusion");
         expect(res2.approved).to.equal(false);
         expect(res2.paused).to.equal(true);
         expect(res2.schedule).to.eql(["5", "7"]);
 
-        await deleteSubscriptionInDb("testVendorId1", "testUserId");
-        await deleteSubscriptionInDb("testVendorId2", "testUserId");
-        const newGet2 = await getSubscriptionsForUser("testUserId");
+        await deleteSubscriptionInDb("testVendorId10", "testUserId30");
+        await deleteSubscriptionInDb("testVendorId20", "testUserId30");
+        const newGet2 = await getSubscriptionsForUser("testUserId30");
         expect(newGet2).to.equal(undefined);
-        await deleteUserprofileInDb("testUserId");
-        const newGet1 = await getUserprofileFromDb("testUserId");
+        await deleteUserprofileInDb("testUserId30");
+        const newGet1 = await getUserprofileFromDb("testUserId30");
         expect(newGet1).to.equal(undefined);
-        await deleteVendorInDb("testVendorId1");
-        await deleteVendorInDb("testVendorId2");
+        await deleteVendorInDb("testVendorId10");
+        await deleteVendorInDb("testVendorId20");
     });
 });
 

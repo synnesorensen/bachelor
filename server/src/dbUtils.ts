@@ -3,8 +3,6 @@ import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, CompanySubscription } from './interfaces';
 import * as settings from '../../common/settings';
-import { start } from 'node:repl';
-import { count } from 'node:console';
 
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
@@ -200,7 +198,7 @@ export async function getUserprofileFromDb(userId: string): Promise<Userprofile>
         address: dbResult.Items[0].address,
         phone: dbResult.Items[0].phone,
         email: dbResult.Items[0].email, 
-        allergies: dbResult.Items[0].allergies.values
+        allergies: dbResult.Items[0].allergies
     };  
 }
 
@@ -273,8 +271,8 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
 
     let keys = dbResult.Items.map((item) => {
         return {
-            "pk": {S: item.sk},         // her må sk fra subscription brukes for å finne
-            "sk": {S: item.sk}          // userprofile sin composite key
+            "pk": item.sk,         // her må sk fra subscription brukes for å finne
+            "sk": item.sk          // userprofile sin composite key
         }
     });
 
@@ -286,7 +284,8 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
             }
         }
     };
-    let users = await database.batchGetItem(usersubparams).promise();
+
+    let users = await documentClient.batchGet(usersubparams).promise();
     
     let subshash = new Map<string, Subscription>();
 
@@ -295,7 +294,7 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
     });
 
     let result:UserSubscription[] = users.Responses[settings.TABLENAME].map(user => {
-        let sub = subshash.get(user.sk.S);
+        let sub = subshash.get(user.sk);
         return {
             vendorId: sub.vendorId,
             userId: sub.userId.substr(2),
@@ -304,11 +303,11 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
             schedule: sub.schedule,
             noOfMeals: sub.noOfMeals,
             box: sub.box,
-            fullname: user.fullname?.S,
-            address: user.address?.S,
-            phone: user.phone?.S,
-            email: user.email?.S,
-            allergies: user.allergies?.SS
+            fullname: user.fullname,
+            address: user.address,
+            phone: user.phone,
+            email: user.email,
+            allergies: user.allergies
         }
     });
     return result;
@@ -443,6 +442,11 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
         ":EntityType": { S: "Delivery"}
     }
 
+    if (delivery.userId != undefined) {
+        UpdateExpression += ", userId = :userId";
+        ExpressionAttributeValues[":userId"] = { S: delivery.userId};
+    }
+
     if (delivery.cancelled != undefined) {
         UpdateExpression += ", cancelled = :cancelled";
         ExpressionAttributeValues[":cancelled"] = { BOOL: delivery.cancelled};
@@ -496,17 +500,19 @@ export async function deleteDeliveryInDb(vendorId: string, userId: string, time:
     await database.deleteItem(params).promise();
 }
 
-export async function postDeliveriesToDb(deliveries: Delivery[], vendorId: string, userId: string): Promise<void> {
+export async function postDeliveriesToDb(deliveries: Delivery[]): Promise<void> {
     let dels = [];
     for (let i = 0; i < deliveries.length; i++) {
         dels.push({
             PutRequest: {
                 Item: {
-                    vendorId: deliveries[i].vendorId,
-                    userId: deliveries[i].userId,
+                    pk: "v#" + deliveries[i].vendorId,
+                    sk: "d#" + deliveries[i].userId + "#" + deliveries[i].deliverytime,
                     deliverytime: deliveries[i].deliverytime,
                     menu: deliveries[i].menu,
-                    cancelled: deliveries[i].cancelled
+                    cancelled: deliveries[i].cancelled,
+                    GSI2_pk: "v#" + deliveries[i].vendorId,
+                    GSI2_sk: deliveries[i].deliverytime
                 }
             }
         });
@@ -520,20 +526,31 @@ export async function postDeliveriesToDb(deliveries: Delivery[], vendorId: strin
             dels = [];
             // TODO: Sjekke for Unprocessed items på result, og legge evt feilede objekter inn igjen i dels. 
             // result.UnprocessedItems
-        }
+        } 
+    }
+    if (dels.length > 0) {
+        let params = {
+            RequestItems: {
+                [settings.TABLENAME]: dels
+            }
+        };
+        let result = await documentClient.batchWrite(params).promise();
+        // TODO: Sjekke for Unprocessed items på result, og legge evt feilede objekter inn igjen i dels. 
+        // result.UnprocessedItems
     }
 }
 
 export async function getAllDeliveriesFromAllSubscribers(vendorId: string, startTime: string, endTime: string): Promise<Delivery[]> {
     let params = {
         TableName: settings.TABLENAME,
+        IndexName: "GSI2",
         KeyConditionExpression: "#GSI2_pk = :vendor and #GSI2_sk BETWEEN :start and :end",
         ExpressionAttributeNames: {
-            "#GSI1_pk": "GSI1_pk",
+            "#GSI2_pk": "GSI2_pk",
             "#GSI2_sk": "GSI2_sk"
         },
         ExpressionAttributeValues: {
-            ":vendor": "u#" + vendorId,
+            ":vendor": "v#" + vendorId,
             ":start": startTime,
             ":end": endTime
         }
@@ -544,7 +561,7 @@ export async function getAllDeliveriesFromAllSubscribers(vendorId: string, start
         return {
             vendorId,
             userId: del.userId,
-            deliverytime: del.deliveryTime, 
+            deliverytime: del.deliverytime, 
             menu: del.menu,
             cancelled: del.cancelled
         }

@@ -1,4 +1,4 @@
-export const urlPrefix = "http://localhost:3000/dev";
+export const urlPrefix = "https://4zhpwcxtq4.execute-api.eu-north-1.amazonaws.com/dev";
 
 export const TABLENAME = "GlobalTable";
 export const REGION = "eu-north-1";

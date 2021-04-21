@@ -7,12 +7,12 @@ import 'mocha';
 describe('Test of user subscriptions', () => {
     it('Getting list of subscriptions with users info from DB', async () => {
         const sub1 = {
-            vendorId: "testVendorId",
+            vendorId: "testVendorId40",
             userId: "testUserId1",
             approved: true,
             paused: false,
             schedule: ["1", "2"], 
-            noOfMeals: "1",
+            noOfMeals: 1,
             box: "engangsboks"
         };
         const user1 = {
@@ -20,15 +20,15 @@ describe('Test of user subscriptions', () => {
             address: "Skogen 110",
             phone: "123456",
             email: "gjøk@skogen.no", 
-            allergies: [""]
+            allergies: []
         };
         const sub2 = {
-            vendorId: "testVendorId",
+            vendorId: "testVendorId40",
             userId: "testUserId2",
             approved: false,
             paused: true,
             schedule: ["2", "3"],
-            noOfMeals: "1",
+            noOfMeals: 1,
             box: "gjenbruksboks"
         };
         const user2 = {
@@ -44,7 +44,7 @@ describe('Test of user subscriptions', () => {
         await putSubscriptionInDb(sub1, false);
         await putSubscriptionInDb(sub2, false);
 
-        const getResult = await getSubscriptionsForVendor("testVendorId");
+        const getResult = await getSubscriptionsForVendor("testVendorId40");
         expect(getResult.length).to.equal(2);
 
         let res1 = getResult.find( ({userId}) => userId === "testUserId1");
@@ -52,7 +52,7 @@ describe('Test of user subscriptions', () => {
         expect(res1.address).to.equal("Skogen 110");
         expect(res1.phone).to.equal("123456");
         expect(res1.email).to.equal("gjøk@skogen.no");
-        expect(res1.allergies).to.eql([""]);
+        expect(res1.allergies).to.eql([]);
         expect(res1.approved).to.equal(false);
         expect(res1.paused).to.equal(false);
         expect(res1.schedule).to.eql(["1", "2"]);
@@ -69,8 +69,8 @@ describe('Test of user subscriptions', () => {
 
         await deleteUserprofileInDb("testUserId1");
         await deleteUserprofileInDb("testUserId2");
-        await deleteSubscriptionInDb("testVendorId", "testUserId1");
-        await deleteSubscriptionInDb("testVendorId", "testUserId2"); 
+        await deleteSubscriptionInDb("testVendorId40", "testUserId1");
+        await deleteSubscriptionInDb("testVendorId40", "testUserId2"); 
     });
 
 });
