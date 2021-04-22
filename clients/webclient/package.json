@@ -7,6 +7,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@aws-amplify/auth": "^3.4.29",
     "aws-amplify": "^3.3.26",
     "tslib": "^1.14.1",
     "vue": "^2.6.11",

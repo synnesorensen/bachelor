@@ -9,7 +9,8 @@ export default function getAuth() {
         mandatorySignIn: true,
         authenticationFlowType: 'USER_SRP_AUTH',
     };
-    
     Auth.configure(config);
+    console.log(config)
     return Auth;
+    
 }
