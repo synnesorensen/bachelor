@@ -5,3 +5,4 @@ server/.serverless
 .env
 server/infrastructure/.serverless
 common/settings.ts
+node_modules/@types
