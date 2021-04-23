@@ -129,7 +129,6 @@ async showUserProfile() {
       this.noOfMeals = subscriptionRes.noOfMeals.toString();
       this.box = subscriptionRes.box;
       this.schedule = subscriptionRes.schedule;
-      console.log(subscriptionRes)
     }
 
     }
