@@ -100,7 +100,6 @@ export default class TabRegister extends Vue {
         }
         try {
             let signUp = await this.Auth.signUp(params);
-            console.log(signUp);
             this.showCodeVerification = true;
         } catch (err) {
             this.errorMsg1 = err.message;
