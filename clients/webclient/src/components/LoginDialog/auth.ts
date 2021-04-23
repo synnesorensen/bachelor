@@ -10,7 +10,6 @@ export default function getAuth() {
         authenticationFlowType: 'USER_SRP_AUTH',
     };
     Auth.configure(config);
-    console.log(config)
     return Auth;
     
 }

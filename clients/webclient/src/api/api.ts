@@ -43,6 +43,19 @@ export async function getUserprofile():Promise<interfaces.Userprofile | null> {
     }
 }
 
+export async function getUserSubscription(id: string):Promise<interfaces.UserSubscription | null> {
+    await ensureFreshToken();
+    try {
+        const userSubscription = await apiAxios.get(urlPrefix + "/u/subscription?vendorId=" + id);
+        return userSubscription.data;
+    } catch (error) {
+        if (error.response.status == 404) {
+            return null;
+        }
+        throw (error);
+    }
+}
+
 export async function putUserprofile(userprofile: interfaces.Userprofile):Promise<interfaces.Userprofile> {
     await ensureFreshToken();
     const addedUser = await apiAxios.put(urlPrefix + "/userprofile", userprofile);
