@@ -100,14 +100,14 @@ export default class CustomerProfile extends Vue {
   private address = "";
   private phone = "";
   private email = "";
-  private allergies = [];
+  private allergies: string[] = [];
 
   //Usersubscription
   private approved = false;
   private paused = false;
-  private schedule = [];
+  private schedule: string[] = [];
   private noOfMeals = "";
-  private box  =  "";
+  private box = "";
 
 
 async showUserProfile() {
