@@ -1,7 +1,7 @@
 import 'source-map-support/register'
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { ApiSubscription, Subscription, UserSubscription, Userprofile, Delivery, Vendor, CompanySubscription } from './interfaces';
+import { ApiSubscription, Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription } from './interfaces';
 import * as settings from '../../common/settings';
 
 const database = new DynamoDB({ region: settings.REGION });
@@ -24,7 +24,7 @@ export async function getSubscriptionFromDb(vendorId: string, userId: string): P
     if (subscriptionResult.Items.length == 0) {
         return undefined;
     }
-    let subscription = {
+    return {
             vendorId,
             userId,
             approved: subscriptionResult.Items[0].approved? subscriptionResult.Items[0].approved : false,
@@ -34,33 +34,6 @@ export async function getSubscriptionFromDb(vendorId: string, userId: string): P
             box: subscriptionResult.Items[0].box
     };
     
-    let vendorParams = {
-        TableName: settings.TABLENAME,
-        KeyConditionExpression: "#pk = :vendor and #sk = :vendor",
-        ExpressionAttributeNames: {
-            "#pk": "pk",
-            "#sk": "sk"
-        },
-        ExpressionAttributeValues: {
-            ":vendor": "v#" + vendorId
-        }
-    }
-    let vendorResult = await documentClient.query(vendorParams).promise();
-    if (vendorResult.Items.length == 0) {
-        return undefined;
-    }
-    let vendorSchedule = vendorResult.Items[0].schedule;
-    let userSchedule = vendorSchedule.filter((item) => subscription.schedule.includes(item.id));
-
-    return {
-        vendorId,
-        userId,
-        approved: subscription.approved,
-        paused: subscription.paused,
-        schedule: userSchedule,
-        noOfMeals: subscription.noOfMeals,
-        box: subscription.box
-    };
 }
 
 export async function putSubscriptionInDb(subscription: Subscription, isVendor: boolean): Promise<Subscription> {
@@ -353,7 +326,7 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
     return result;
 }
 
-export async function getSubscriptionsForUser(userId: string): Promise<CompanySubscription[]> {
+export async function getSubscriptionsForUser(userId: string): Promise<VendorSubscription[]> {
     let params = {
         TableName: settings.TABLENAME,
         IndexName: "GSI1",
@@ -372,7 +345,7 @@ export async function getSubscriptionsForUser(userId: string): Promise<CompanySu
     if (dbResult.Items.length == 0) {
         return undefined;
     }
-    let subs = dbResult.Items.map((item) => {
+    let subs:Subscription[] = dbResult.Items.map((item) => {
         return {
             vendorId: item.pk,
             userId,
@@ -386,34 +359,34 @@ export async function getSubscriptionsForUser(userId: string): Promise<CompanySu
 
     let keys = dbResult.Items.map((item) => {
         return {
-            "pk": {S: item.pk},
-            "sk": {S: item.pk}
+            "pk": item.pk,
+            "sk": item.pk
         }
     }); 
     let params2 = {
         RequestItems: {
             [settings.TABLENAME]: {
                 Keys: keys,
-                ProjectionExpression: "pk, company"
+                ProjectionExpression: "pk, company, schedule"
             }
         }
     };
 
-    let vendors = await database.batchGetItem(params2).promise();
+    let vendors = await documentClient.batchGet(params2).promise();
     let subhash = new Map<String, Subscription>();
 
     subs.forEach((sub) => {
         subhash.set(sub.vendorId, sub);
     });
 
-    let result:CompanySubscription[] = vendors.Responses[settings.TABLENAME].map((vendor) => {
-        let sub = subhash.get(vendor.pk.S);
+    let result:VendorSubscription[] = vendors.Responses[settings.TABLENAME].map((vendor) => {
+        let sub = subhash.get(vendor.pk);
         return {
             vendorId: sub.vendorId.substr(2),
-            company: vendor.company.S,
+            company: vendor.company,
             approved: sub.approved,
             paused: sub.paused,
-            schedule: sub.schedule, 
+            schedule: vendor.schedule, 
             noOfMeals: sub.noOfMeals,
             box: sub.box
         }

@@ -41,12 +41,12 @@ export interface UserSubscription {
     allergies: string[]
 }
 
-export interface CompanySubscription {
+export interface VendorSubscription {
     vendorId: string,
     company: string,
     approved: boolean,
     paused: boolean,
-    schedule: string[],
+    schedule: MenuItems[],
     noOfMeals: number,
     box: string
 }
