@@ -65,6 +65,7 @@ export default class CustomerNavBar extends Vue {
 
     mounted() {
         const token = localStorage.getItem("token");
+        console.log(token)
         if (token) {
             this.loggedIn(token);
         } else {

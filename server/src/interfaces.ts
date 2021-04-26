@@ -8,6 +8,16 @@ export interface Subscription {
     box: string
 }
 
+export interface ApiSubscription {
+    vendorId?: string,
+    userId: string,
+    approved: boolean,
+    paused: boolean,
+    schedule: MenuItems[],
+    noOfMeals: number,
+    box: string
+}
+
 export interface Userprofile {
     fullname: string,
     address: string,
@@ -21,7 +31,7 @@ export interface UserSubscription {
     userId: string,
     approved: boolean,
     paused: boolean,
-    schedule: string[],
+    schedule: MenuItems[],
     noOfMeals: number,
     box: string,
     fullname: string,
@@ -55,6 +65,13 @@ export interface Vendor {
     address: string,
     phone: string,
     email: string,
-    schedule: string[]
+    schedule: MenuItems[]
+}
+
+export interface MenuItems {
+    id: string,
+    time: string,
+    menu: string,
+    day: string
 }
 
