@@ -96,19 +96,12 @@ functions:
           authorizer: authorizer
           path: /u/deliveries
           method: get
-  userDelivery:
-    handler: src/userDelivery.mainHandler
+  delivery:
+    handler: src/delivery.mainHandler
     events:
       - http:
           authorizer: authorizer
-          path: /u/delivery
-          method: any
-  vendorDelivery:
-    handler: src/vendorDelivery.mainHandler
-    events:
-      - http:
-          authorizer: authorizer
-          path: /v/delivery
+          path: /delivery
           method: any
   vendorDeliveries:
     handler: src/vendorDeliveries.mainHandler

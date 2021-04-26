@@ -147,10 +147,47 @@ export async function getAllVendorsDeliveries(start: string, end: string):Promis
     }
 }
 
-export async function addNewDeliveries(deliveries: interfaces.Delivery[]): Promise<interfaces.Delivery[]> {
+export async function putNewDeliveries(deliveries: interfaces.Delivery[]): Promise<interfaces.Delivery[]> {
     await ensureFreshToken();
     const addedDeliveries = await apiAxios.post(urlPrefix + "/v/deliveries", deliveries);
     return addedDeliveries.data;
 }
 
+export async function getAllUsersDeliveries(start: string, end: string):Promise<interfaces.Delivery[] | null> {
+    await ensureFreshToken();
+    try {
+        const deliveries = await apiAxios.get(urlPrefix + "/u/deliveries?start=" + start + "&end=" + end);
+        return deliveries.data;
+    } catch (error) {
+        if (error.response.status == 404) {
+            return null;
+        }
+        throw (error);
+    }
+}
 
+export async function getDelivery(vendorId: string, userId: string, time: string):Promise<interfaces.Delivery | null> {
+    await ensureFreshToken();
+    try {
+        const delivery = await apiAxios.get(urlPrefix + "/delivery?vendorId=" + vendorId + "&userId=" + userId + "&time=" + time);
+        return delivery.data;
+    } catch (error) {
+        if (error.response.status == 404) {
+            return null;
+        }
+        throw (error);
+    }
+}
+
+export async function putNewDelivery(vendorId: string, userId: string, delivery: interfaces.Delivery):Promise<interfaces.Delivery> {
+    await ensureFreshToken();
+    const newDelivery = await apiAxios.put(urlPrefix + "/delivery?vendorId=" + vendorId + "&userId=" + userId, delivery);
+    return newDelivery.data;
+}
+
+export async function deleteDelivery(vendorId: string, userId: string, time: string) {
+    await ensureFreshToken();
+    await apiAxios.delete(urlPrefix + "/delivery?vendorId=" + vendorId + "&userId=" + userId + "&time=" + time);
+}
+
+// TODO: Lag en funksjon for å hente første levering når tilhørende lambda er implementert.
