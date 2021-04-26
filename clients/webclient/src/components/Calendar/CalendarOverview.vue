@@ -29,7 +29,7 @@
                     :events="events"
 					:now="today"
 					@change="updateRange"
-
+                    show-week
 				>
 				</v-calendar>
 			</v-sheet>
