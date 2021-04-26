@@ -276,8 +276,6 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
 
     let dbResult = await documentClient.query(subscriptionParams).promise();
     if (dbResult.Items.length == 0) {
-        console.log("Hallaien") 
-        console.log(dbResult.Items.length)
         return [];
     }
     
