@@ -91,6 +91,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import { MenuItems } from "../../../../server/src/interfaces";
 import { getUserprofile, getUserSubscription } from "../api/api";
 
 @Component
@@ -105,7 +106,7 @@ export default class CustomerProfile extends Vue {
   //Usersubscription
   private approved = false;
   private paused = false;
-  private schedule: string[] = [];
+  private schedule: MenuItems[] = [];
   private noOfMeals = "";
   private box = "";
 

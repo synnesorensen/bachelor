@@ -1,14 +1,14 @@
 import 'source-map-support/register'
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, CompanySubscription } from './interfaces';
+import { ApiSubscription, Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription } from './interfaces';
 import * as settings from '../../common/settings';
 
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
 
-export async function getSubscriptionFromDb(vendorId: string, userId: string): Promise<Subscription | undefined> {
-    let params = {
+export async function getSubscriptionFromDb(vendorId: string, userId: string): Promise<ApiSubscription | undefined> {
+    let subscriptionParams = {
         TableName: settings.TABLENAME,
         KeyConditionExpression: "#pk = :vendor and #sk = :userId",
         ExpressionAttributeNames: {
@@ -20,18 +20,20 @@ export async function getSubscriptionFromDb(vendorId: string, userId: string): P
             ":userId": "u#" + userId
         }
     }
-    let dbResult = await documentClient.query(params).promise();
-    if (dbResult.Items.length == 0) {
+    let subscriptionResult = await documentClient.query(subscriptionParams).promise();
+    if (subscriptionResult.Items.length == 0) {
         return undefined;
     }
     return {
-        userId,
-        approved: dbResult.Items[0].approved? dbResult.Items[0].approved : false,
-        paused: dbResult.Items[0].paused,
-        schedule: dbResult.Items[0].schedule.values, 
-        noOfMeals: dbResult.Items[0].noOfMeals,
-        box: dbResult.Items[0].box
-    };   
+            vendorId,
+            userId,
+            approved: subscriptionResult.Items[0].approved? subscriptionResult.Items[0].approved : false,
+            paused: subscriptionResult.Items[0].paused,
+            schedule: subscriptionResult.Items[0].schedule.values, 
+            noOfMeals: subscriptionResult.Items[0].noOfMeals,
+            box: subscriptionResult.Items[0].box
+    };
+    
 }
 
 export async function putSubscriptionInDb(subscription: Subscription, isVendor: boolean): Promise<Subscription> {
@@ -128,41 +130,34 @@ export async function getVendorFromDb(vendorId: string): Promise<Vendor> {
         address: dbResult.Items[0].address,
         phone: dbResult.Items[0].phone,
         email: dbResult.Items[0].email,
-        schedule: dbResult.Items[0].schedule.values
+        schedule: dbResult.Items[0].schedule
     };
 }
 
 export async function putVendorInDb(vendor: Vendor, vendorId: string): Promise<Vendor> {
-    let UpdateExpression = "set EntityType = :EntityType, company = :company, fullname = :fullname, address = :address, phone = :phone, email = :email, schedule = :schedule";
-    let ExpressionAttributeValues: any = {
-        ":EntityType": { S: 'Vendor' },
-        ":company": { S: vendor.company},
-        ":fullname": { S: vendor.fullname },
-        ":address": { S: vendor.address },
-        ":phone": { S: vendor.phone },
-        ":email": { S: vendor.email },
-        ":schedule": { SS: vendor.schedule}
-    }; 
-
     let params = {
         TableName: settings.TABLENAME,
-        Key: {
-            "pk": { S: "v#" + vendorId },
-            "sk": { S: "v#" + vendorId }
-        },
-        UpdateExpression,
-        ExpressionAttributeValues,
-        ReturnValues: "ALL_NEW"
-    };
+        Item: {
+            pk: "v#" + vendorId,
+            sk: "v#" + vendorId,
+            EntityType: "Vendor",
+            company: vendor.company,
+            fullname: vendor.fullname,
+            address: vendor.address,
+            phone: vendor.phone,
+            email: vendor.email,
+            schedule: vendor.schedule
+        }
+    }; 
 
-    let dbItem = await database.updateItem(params).promise();
+    await documentClient.put(params).promise();
     return {
-        company: dbItem.Attributes.company.S,
-        fullname: dbItem.Attributes.fullname.S,
-        address: dbItem.Attributes.address.S,
-        phone: dbItem.Attributes.phone.S,
-        email: dbItem.Attributes.email.S,
-        schedule: dbItem.Attributes.schedule.SS
+        company: vendor.company,
+        fullname: vendor.fullname,
+        address: vendor.address,
+        phone: vendor.phone,
+        email: vendor.email,
+        schedule: vendor.schedule
     };
 }
 
@@ -239,7 +234,7 @@ export async function deleteUserprofileInDb(userId: string): Promise<void> {
 }
 
 export async function getSubscriptionsForVendor(vendorId: string): Promise<UserSubscription[]> {
-    let subparams = {
+    let subscriptionParams = {
         TableName: settings.TABLENAME,
         KeyConditionExpression: "#pk = :vendor and begins_with(#sk, :prefix)",
         ExpressionAttributeNames: {
@@ -252,12 +247,13 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
         }
     };
 
-    let dbResult = await documentClient.query(subparams).promise();
+    let dbResult = await documentClient.query(subscriptionParams).promise();
     if (dbResult.Items.length == 0) {
         return [];
     }
+    
 
-    let subs = dbResult.Items.map((item) => {
+    let subscriptions = dbResult.Items.map((item) => {
         return {
             vendorId,
             userId: item.sk,
@@ -276,7 +272,7 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
         }
     });
 
-    let usersubparams = {
+    let userSubscriptionParams = {
         RequestItems: {
             [settings.TABLENAME]: {
                 Keys: keys,
@@ -285,22 +281,39 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
         }
     };
 
-    let users = await documentClient.batchGet(usersubparams).promise();
-    
+    let users = await documentClient.batchGet(userSubscriptionParams).promise();
     let subshash = new Map<string, Subscription>();
 
-    subs.forEach((sub) => {
+    subscriptions.forEach((sub) => {
         subshash.set(sub.userId, sub);
     });
 
+    let vendorParams = {
+        TableName: settings.TABLENAME,
+        KeyConditionExpression: "#pk = :vendor and #sk = :vendor",
+        ExpressionAttributeNames: {
+            "#pk": "pk",
+            "#sk": "sk"
+        },
+        ExpressionAttributeValues: {
+            ":vendor": "v#" + vendorId
+        }
+    }
+    let vendorResult = await documentClient.query(vendorParams).promise();
+    if (vendorResult.Items.length == 0) {
+        return undefined;
+    }
+    let vendorSchedule = vendorResult.Items[0].schedule;
+
     let result:UserSubscription[] = users.Responses[settings.TABLENAME].map(user => {
         let sub = subshash.get(user.sk);
+        let userSchedule = vendorSchedule.filter((item) => sub.schedule.includes(item.id));
         return {
             vendorId: sub.vendorId,
             userId: sub.userId.substr(2),
             approved: sub.approved,
             paused: sub.paused,
-            schedule: sub.schedule,
+            schedule: userSchedule,
             noOfMeals: sub.noOfMeals,
             box: sub.box,
             fullname: user.fullname,
@@ -313,7 +326,7 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
     return result;
 }
 
-export async function getSubscriptionsForUser(userId: string): Promise<CompanySubscription[]> {
+export async function getSubscriptionsForUser(userId: string): Promise<VendorSubscription[]> {
     let params = {
         TableName: settings.TABLENAME,
         IndexName: "GSI1",
@@ -332,7 +345,7 @@ export async function getSubscriptionsForUser(userId: string): Promise<CompanySu
     if (dbResult.Items.length == 0) {
         return undefined;
     }
-    let subs = dbResult.Items.map((item) => {
+    let subs:Subscription[] = dbResult.Items.map((item) => {
         return {
             vendorId: item.pk,
             userId,
@@ -346,34 +359,34 @@ export async function getSubscriptionsForUser(userId: string): Promise<CompanySu
 
     let keys = dbResult.Items.map((item) => {
         return {
-            "pk": {S: item.pk},
-            "sk": {S: item.pk}
+            "pk": item.pk,
+            "sk": item.pk
         }
     }); 
     let params2 = {
         RequestItems: {
             [settings.TABLENAME]: {
                 Keys: keys,
-                ProjectionExpression: "pk, company"
+                ProjectionExpression: "pk, company, schedule"
             }
         }
     };
 
-    let vendors = await database.batchGetItem(params2).promise();
+    let vendors = await documentClient.batchGet(params2).promise();
     let subhash = new Map<String, Subscription>();
 
     subs.forEach((sub) => {
         subhash.set(sub.vendorId, sub);
     });
 
-    let result:CompanySubscription[] = vendors.Responses[settings.TABLENAME].map((vendor) => {
-        let sub = subhash.get(vendor.pk.S);
+    let result:VendorSubscription[] = vendors.Responses[settings.TABLENAME].map((vendor) => {
+        let sub = subhash.get(vendor.pk);
         return {
             vendorId: sub.vendorId.substr(2),
-            company: vendor.company.S,
+            company: vendor.company,
             approved: sub.approved,
             paused: sub.paused,
-            schedule: sub.schedule, 
+            schedule: vendor.schedule, 
             noOfMeals: sub.noOfMeals,
             box: sub.box
         }

@@ -38,7 +38,20 @@ describe('Test of vendor subscriptions', () => {
             address: "Hakkebakkeskogen",
             phone: "448866",
             email: "harepus@skogen.no",
-            schedule: ["1", "2", "3", "4", "5"]
+            schedule: [
+                {
+                    "id": "1",
+                    "day": "tuesday",
+                    "time": "10",
+                    "menu": "Veggie lunch"
+                },
+                {
+                    "id": "2",
+                    "day": "wednesday",
+                    "time": "10",
+                    "menu": "Fish lunch"
+                }
+            ]
         };
         const vendor2 = {
             company: "Asian Fusion",
@@ -46,7 +59,20 @@ describe('Test of vendor subscriptions', () => {
             address: "Osloveien 45",
             phone: "48523",
             email: "fusion@asia.com",
-            schedule: ["3", "4", "5", "6", "7"] 
+            schedule: [
+                {
+                    "id": "1",
+                    "day": "tuesday",
+                    "time": "10",
+                    "menu": "Veggie lunch"
+                },
+                {
+                    "id": "2",
+                    "day": "wednesday",
+                    "time": "10",
+                    "menu": "Fish lunch"
+                }
+            ]
         };
 
         await putUserprofileInDb(user1, "testUserId30");
@@ -79,7 +105,7 @@ describe('Test of vendor subscriptions', () => {
         expect(newGet1).to.equal(undefined);
         await deleteVendorInDb("testVendorId10");
         await deleteVendorInDb("testVendorId20");
-    });
+    }).timeout(5000);
 });
 
 
