@@ -1,13 +1,13 @@
 import 'source-map-support/register'
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { ApiSubscription, Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription } from './interfaces';
+import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription } from './interfaces';
 import * as settings from '../../common/settings';
 
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
 
-export async function getSubscriptionFromDb(vendorId: string, userId: string): Promise<ApiSubscription | undefined> {
+export async function getSubscriptionFromDb(vendorId: string, userId: string): Promise<Subscription | undefined> {
     let subscriptionParams = {
         TableName: settings.TABLENAME,
         KeyConditionExpression: "#pk = :vendor and #sk = :userId",
