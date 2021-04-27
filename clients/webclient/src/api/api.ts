@@ -81,7 +81,7 @@ export async function getVendorSubscriptions():Promise<interfaces.UserSubscripti
     return await apiAxios.get(urlPrefix + "/v/subscriptions");
 }
 
-export async function getUserSubscriptions():Promise<interfaces.CompanySubscription[]> {
+export async function getUserSubscriptions():Promise<interfaces.VendorSubscription[]> {
     await ensureFreshToken();
     return await apiAxios.get(urlPrefix + "/u/subscriptions");
 }
