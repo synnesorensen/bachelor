@@ -7,8 +7,9 @@
 			</div>
 			<v-tabs v-model="tab" align-with-title>
 				<v-tab>Oversikt</v-tab>
-                <v-tab>Profil</v-tab>
+                <v-tab>Firmaprofil</v-tab>
 				<v-tab>Fakturering</v-tab>
+                <v-tab>Registrere betaling</v-tab>
 			</v-tabs>
 		</v-app-bar>
 		<v-main>
@@ -16,6 +17,7 @@
 				<v-tab-item><AdminOverview /></v-tab-item>
                 <v-tab-item><AdminProfile /></v-tab-item>
 				<v-tab-item><AdminInvoicing /></v-tab-item>
+                <v-tab-item><AdminPayments /></v-tab-item>
 			</v-tabs-items>
 		</v-main>
 	</v-container>
@@ -27,12 +29,14 @@ import Component from 'vue-class-component';
 import AdminOverview from './AdminOverview.vue';
 import AdminInvoicing from './AdminInvoicing.vue';
 import AdminProfile from './AdminProfile.vue';
+import AdminPayments from './AdminPayments.vue';
 
 @Component({
 	components: {
 		AdminOverview,
 		AdminInvoicing,
-        AdminProfile
+        AdminProfile, 
+        AdminPayments
 	},
 })
 export default class AdminNavBar extends Vue {
