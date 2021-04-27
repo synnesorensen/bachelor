@@ -52,8 +52,9 @@ export async function deleteUserprofile() {
 
 export async function getVendor(vendorId: string): Promise<interfaces.Vendor | null> {
     await ensureFreshToken();
+    const url = urlPrefix + "/vendor?vendorId=" + encodeURIComponent(vendorId);
     try {
-        const vendor = await apiAxios.get(urlPrefix + "/vendor?vendorId=" + vendorId);
+        const vendor = await apiAxios.get(url);
         return vendor.data;
     } catch (error) {
         if (error.response.status == 404) {
