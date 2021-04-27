@@ -70,9 +70,10 @@ export async function putVendor(vendor: interfaces.Vendor): Promise<interfaces.V
     return addedVendor.data;
 }
 
-export async function deleteVendor() {
+export async function deleteVendor(vendorId: string) {
     await ensureFreshToken();
-    await apiAxios.delete(urlPrefix + "/vendor");
+    const url = urlPrefix + "/vendor?vendorId=" + encodeURIComponent(vendorId);
+    await apiAxios.delete(url);
 }
 
 // TODO: Lag en funksjon for å hente liste av vendors når tilhørende lambda er implementert.
