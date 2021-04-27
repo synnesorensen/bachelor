@@ -5,6 +5,7 @@
                 <h2>Registrert informasjon</h2>
             </v-col>
         </v-row>
+        <v-row />
         <v-row>
             <v-col :cols="2">
                 <p class="font-weight-medium">Navn</p>
@@ -45,6 +46,16 @@
                 <p class="font-weight-light"> {{ loggedInUser.email }} </p>
             </v-col>
         </v-row>
+        <v-row>
+            <v-col :cols="2">
+                <p class="font-weight-medium">Leveringsplan</p>
+            </v-col>
+            <v-col>
+                <div v-for="item in items" v-bind:key="item.id">
+                    <p class="font-weight-light" > {{item.day + "  -  " + item.menu}} </p>
+                </div>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 
@@ -56,14 +67,19 @@ import * as interfaces from "../../../../../server/src/interfaces"
 
 @Component
 export default class CustomerProfile extends Vue {
-    private loggedInUser:interfaces.Vendor = null;
+    private loggedInUser:interfaces.Vendor | null = null;
+    private items: interfaces.MenuItems[] | null = [];
     
     async created() {
-        const response = await getUserprofile();
-        const vendor = await getVendor("v#" + response.email);
-        this.loggedInUser = vendor;
+        const userprofile = await getUserprofile();
+        if (userprofile != null) {
+            const vendor = await getVendor(userprofile.email);
+            this.loggedInUser = vendor;
+        }
+        if (this.loggedInUser != null) {
+            this.items = this.loggedInUser.schedule;
+        }
     }
-
 }
 
 </script>
