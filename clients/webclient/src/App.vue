@@ -20,7 +20,7 @@ import AdminNavBar from './components/Admin/AdminNavBar.vue';
 	},
 })
 export default class App extends Vue {
-    private isAdmin = false;
+    private isAdmin = true;
 
 
 }
