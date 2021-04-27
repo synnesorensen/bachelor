@@ -80,7 +80,8 @@ export async function deleteVendor(vendorId: string) {
 
 export async function getVendorSubscriptions():Promise<interfaces.UserSubscription[]> {
     await ensureFreshToken();
-    return await apiAxios.get(urlPrefix + "/v/subscriptions");
+    const subscriptions = await apiAxios.get(urlPrefix + "/v/subscriptions");
+    return subscriptions.data;
 }
 
 export async function getUserSubscriptions():Promise<interfaces.VendorSubscription[]> {
@@ -127,7 +128,8 @@ export async function getUserSubscription(id: string):Promise<interfaces.Subscri
 
 export async function putUserSubscription(subscription: interfaces.Subscription):Promise<interfaces.Subscription> {
     await ensureFreshToken();
-    const addedSubscription = await apiAxios.put(urlPrefix + "/u/subscription?vendorId=" + subscription.vendorId, subscription);
+    const url = urlPrefix + "/u/subscription?vendorId=" + encodeURIComponent(subscription.vendorId);
+    const addedSubscription = await apiAxios.put(url, subscription);
     return addedSubscription.data;
 }
 
