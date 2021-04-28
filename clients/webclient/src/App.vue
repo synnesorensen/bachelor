@@ -2,11 +2,14 @@
 	<v-app>
         <AppBar 
             :userprofile="userprofile"
-            v-if="authorized" 
+            v-if="authorized && userprofile != null" 
             @logout="logout" 
             @newUserprofile="newUserprofile" />
         <LoginDialog v-if="!authorized" @loggedIn="loggedIn" :showDialog="!authorized" />
-
+        <CustomerOrder 
+                :loggedInUser="loggedInUser" 
+                v-if="userprofile==null && authorized" 
+                @newUserprofile="newUserprofile" />
 	</v-app>
 </template>
 
@@ -15,6 +18,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import AppBar from './components/AppBar.vue';
 import LoginDialog from './components/LoginDialog/LoginDialog.vue';
+import CustomerOrder from './components/Users/CustomerOrder.vue';
 import getAuth from './components/LoginDialog/auth';
 import {setApiBearerToken, getUserprofile} from '../src/api/api'
 import * as interfaces from '../../../server/src/interfaces'
@@ -23,7 +27,8 @@ import { getUserInfo } from '../../../server/src/auth/getUserFromJwt'
 @Component({
 	components: {
         LoginDialog,
-        AppBar
+        AppBar,
+        CustomerOrder
 	},
 })
 export default class App extends Vue {
@@ -46,7 +51,9 @@ export default class App extends Vue {
         this.jwtToken = jwtToken;
         localStorage.setItem("token", this.jwtToken);
         setApiBearerToken(this.jwtToken);
+        console.log("Got the token, getting profile");
         this.userprofile = await getUserprofile();
+        console.log("userprof:",this.userprofile);
         this.loggedInUser = getUserInfo(this.jwtToken);
         this.authorized = true;
     }
@@ -60,6 +67,7 @@ export default class App extends Vue {
     }
 
     newUserprofile(userprofile: interfaces.Userprofile) {
+        console.log("newUserprofile");
         this.userprofile = userprofile;
     }
 

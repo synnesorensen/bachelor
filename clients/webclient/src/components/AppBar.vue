@@ -22,11 +22,7 @@
             </v-btn>
 		</v-app-bar>
 		<v-main>
-            <CustomerOrder 
-                :loggedInUser="loggedInUser" 
-                v-if="userprofile==null" 
-                @newUserprofile="newUserprofile" />
-			<v-tabs-items v-else v-model="tab">
+			<v-tabs-items v-model="tab">
 				<v-tab-item v-if="!userprofile.isVendor"><CustomerOverview /></v-tab-item>
 				<v-tab-item v-if="!userprofile.isVendor"><CustomerProfile /> </v-tab-item>
 				<v-tab-item v-if="!userprofile.isVendor"><CustomerInvoice /></v-tab-item>
@@ -43,7 +39,6 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import CustomerOverview from './Users/CustomerOverview.vue';
-import CustomerOrder from './Users/CustomerOrder.vue';
 import CustomerProfile from './Users/CustomerProfile.vue';
 import CustomerInvoice from './Users/CustomerInvoice.vue';
 import AdminOverview from './Admin/AdminOverview.vue';
@@ -56,7 +51,6 @@ import { Prop } from 'vue-property-decorator';
 @Component({
 	components: {
 		CustomerOverview,
-		CustomerOrder,
 		CustomerProfile,
 		CustomerInvoice,
         AdminOverview,
