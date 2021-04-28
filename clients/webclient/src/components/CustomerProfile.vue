@@ -48,11 +48,13 @@
 		<v-row>
 			<v-col>
 				<h3>
-					Mine allergier:
+					<label for="allergylist">Mine allergier:</label>
 				</h3>
 				<h4>
-					<ul v-for="allergy in allergies" :key="allergy">
-						{{ allergy }}
+					<ul>
+						<li v-for="allergy in allergies" :key="allergy" id="allergylist">
+							{{ allergy }}
+						</li>
 					</ul>
 				</h4>
 			</v-col>
@@ -126,10 +128,12 @@ export default class CustomerProfile extends Vue {
 			this.email = userRes.email;
 			this.allergies = userRes.allergies;
 		}
+		console.log(userRes);
 
 		//Må finnne en bedre måte å hente vendor på
 		let vendor = 'lunsj@hjul.no';
 		let subscriptionRes = await getUserSubscriptions();
+		console.log(subscriptionRes);
 		if (subscriptionRes != null) {
 			this.approved = subscriptionRes[0].approved;
 			this.paused = subscriptionRes[0].paused;
@@ -144,3 +148,9 @@ export default class CustomerProfile extends Vue {
 	}
 }
 </script>
+
+<style scoped>
+ul {
+	list-style: none;
+}
+</style>
