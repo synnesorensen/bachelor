@@ -199,7 +199,8 @@ export default class CustomerOrder extends Vue {
             address: this.address + " " + this.postNo + " " + this.postPlace,
             phone: this.phone.toString(),
             email: this.loggedInUser,
-            allergies: this.selectedAllergies
+            allergies: this.selectedAllergies,
+            isVendor: false
         };
 
         let subscription = {

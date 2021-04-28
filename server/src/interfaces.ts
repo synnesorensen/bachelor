@@ -13,7 +13,8 @@ export interface Userprofile {
     address: string,
     phone: string,
     email: string, 
-    allergies: string[]
+    allergies: string[], 
+    isVendor: boolean
 }
 
 export interface UserSubscription {

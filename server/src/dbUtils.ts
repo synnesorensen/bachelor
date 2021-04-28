@@ -193,7 +193,8 @@ export async function getUserprofileFromDb(userId: string): Promise<Userprofile>
         address: dbResult.Items[0].address,
         phone: dbResult.Items[0].phone,
         email: dbResult.Items[0].email, 
-        allergies: dbResult.Items[0].allergies
+        allergies: dbResult.Items[0].allergies,
+        isVendor: dbResult.Items[0].isVendor
     };  
 }
 
@@ -208,7 +209,8 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
             address: userprofile.address, 
             phone: userprofile.phone, 
             email: userprofile.email, 
-            allergies: userprofile.allergies
+            allergies: userprofile.allergies,
+            isVendor: userprofile.isVendor
         }
     };
 
@@ -218,7 +220,8 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
         address: userprofile.address,
         phone: userprofile.phone,
         email: userprofile.email,
-        allergies: userprofile.allergies
+        allergies: userprofile.allergies,
+        isVendor: userprofile.isVendor
     }
 } 
 

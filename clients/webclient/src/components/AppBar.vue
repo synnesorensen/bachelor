@@ -6,13 +6,13 @@
 				<v-toolbar-title class="titleName">Lunsj på midlertidige hjul</v-toolbar-title>
 			</div>
 			<v-tabs v-model="tab" align-with-title>
-				<v-tab v-if="!userprofile.isAdmin">Kundekalender</v-tab>
-				<v-tab v-if="!userprofile.isAdmin">Kundeprofil</v-tab>
-				<v-tab v-if="!userprofile.isAdmin">Faktura</v-tab>
-                <v-tab v-if="userprofile.isAdmin">AdminKalender</v-tab>
-                <v-tab v-if="userprofile.isAdmin">Firmaprofil</v-tab>
-				<v-tab v-if="userprofile.isAdmin">Fakturering</v-tab>
-                <v-tab v-if="userprofile.isAdmin">Registrere betaling</v-tab>
+				<v-tab v-if="!userprofile.isVendor">Kundekalender</v-tab>
+				<v-tab v-if="!userprofile.isVendor">Kundeprofil</v-tab>
+				<v-tab v-if="!userprofile.isVendor">Faktura</v-tab>
+                <v-tab v-if="userprofile.isVendor">AdminKalender</v-tab>
+                <v-tab v-if="userprofile.isVendor">Firmaprofil</v-tab>
+				<v-tab v-if="userprofile.isVendor">Fakturering</v-tab>
+                <v-tab v-if="userprofile.isVendor">Registrere betaling</v-tab>
 			</v-tabs>
             <v-spacer />
             <v-btn 
@@ -27,13 +27,13 @@
                 v-if="userprofile==null" 
                 @newUserprofile="newUserprofile" />
 			<v-tabs-items v-else v-model="tab">
-				<v-tab-item><CustomerOverview /></v-tab-item>
-				<v-tab-item><CustomerProfile /> </v-tab-item>
-				<v-tab-item><CustomerInvoice /></v-tab-item>
-                <v-tab-item><AdminOverview /></v-tab-item>
-                <v-tab-item><AdminProfile /></v-tab-item>
-				<v-tab-item><AdminInvoicing /></v-tab-item>
-                <v-tab-item><AdminPayments /></v-tab-item>
+				<v-tab-item v-if="!userprofile.isVendor"><CustomerOverview /></v-tab-item>
+				<v-tab-item v-if="!userprofile.isVendor"><CustomerProfile /> </v-tab-item>
+				<v-tab-item v-if="!userprofile.isVendor"><CustomerInvoice /></v-tab-item>
+                <v-tab-item v-if="userprofile.isVendor"><AdminOverview /></v-tab-item>
+                <v-tab-item v-if="userprofile.isVendor"><AdminProfile /></v-tab-item>
+				<v-tab-item v-if="userprofile.isVendor"><AdminInvoicing /></v-tab-item>
+                <v-tab-item v-if="userprofile.isVendor"><AdminPayments /></v-tab-item>
 			</v-tabs-items>
 		</v-main>
 	</v-container>
