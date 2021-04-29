@@ -98,26 +98,26 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import Component from 'vue-class-component';
-import { MenuItems } from '../../../../server/src/interfaces';
-import { getUserprofile, getUserSubscriptions } from '../api/api';
+import Vue from "vue";
+import Component from "vue-class-component";
+import { MenuItems } from "../../../../../server/src/interfaces";
+import { getUserprofile, getUserSubscriptions } from "../../api/api";
 
 @Component
 export default class CustomerProfile extends Vue {
 	//Userprofile
-	private fullname = '';
-	private address = '';
-	private phone = '';
-	private email = '';
+	private fullname = "";
+	private address = "";
+	private phone = "";
+	private email = "";
 	private allergies: string[] = [];
 
 	//Usersubscription
 	private approved = false;
 	private paused = false;
 	private schedule: MenuItems[] = [];
-	private noOfMeals = '';
-	private box = '';
+	private noOfMeals = "";
+	private box = "";
 
 	async showUserProfile() {
 		let userRes = await getUserprofile();
@@ -128,12 +128,10 @@ export default class CustomerProfile extends Vue {
 			this.email = userRes.email;
 			this.allergies = userRes.allergies;
 		}
-		console.log(userRes);
 
 		//Må finnne en bedre måte å hente vendor på
-		let vendor = 'lunsj@hjul.no';
+		let vendor = "lunsj@hjul.no";
 		let subscriptionRes = await getUserSubscriptions();
-		console.log(subscriptionRes);
 		if (subscriptionRes != null) {
 			this.approved = subscriptionRes[0].approved;
 			this.paused = subscriptionRes[0].paused;
@@ -148,9 +146,3 @@ export default class CustomerProfile extends Vue {
 	}
 }
 </script>
-
-<style scoped>
-ul {
-	list-style: none;
-}
-</style>

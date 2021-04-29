@@ -61,6 +61,14 @@ functions:
           path: /userprofile
           method: any
           cors: true
+  vendor:
+    handler: src/vendor.mainHandler
+    events:
+      - http:
+          authorizer: authorizer
+          path: /vendor
+          method: any
+          cors: true
   userSubscription:
     handler: src/userSubscription.mainHandler
     events:

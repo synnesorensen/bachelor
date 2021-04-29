@@ -95,7 +95,7 @@ export default class TabPassword extends Vue {
         try {
             await this.Auth.forgotPasswordSubmit(this.username, this.code, this.password2);
             let signedInUser = await this.Auth.signIn(this.username, this.password2);
-            this.$emit("loggedIn", signedInUser.signInUserSession.accessToken.jwtToken);
+            this.$emit("loggedIn", signedInUser.signInUserSession.idToken.jwtToken);
         } catch (err) {
             this.errorMsg = err.message;
         }

@@ -120,8 +120,8 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
-import {putUserSubscription, putUserprofile} from '../api/api'
-import * as interfaces from '../../../../server/src/interfaces'
+import {putUserSubscription, putUserprofile} from '../../api/api'
+import * as interfaces from '../../../../../server/src/interfaces'
 
 @Component
 export default class CustomerOrder extends Vue {
@@ -199,7 +199,8 @@ export default class CustomerOrder extends Vue {
             address: this.address + " " + this.postNo + " " + this.postPlace,
             phone: this.phone.toString(),
             email: this.loggedInUser,
-            allergies: this.selectedAllergies
+            allergies: this.selectedAllergies,
+            isVendor: false
         };
 
         let subscription = {
@@ -213,7 +214,7 @@ export default class CustomerOrder extends Vue {
         }
         await putUserprofile(newUserprofile);
         await putUserSubscription(subscription);
-        this.$emit("userprofile", newUserprofile)
+        this.$emit("newUserprofile", newUserprofile)
     }
 }
 </script>
