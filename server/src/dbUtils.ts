@@ -1,13 +1,13 @@
 import 'source-map-support/register'
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { ApiSubscription, Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription } from './interfaces';
+import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription } from './interfaces';
 import * as settings from '../../common/settings';
 
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
 
-export async function getSubscriptionFromDb(vendorId: string, userId: string): Promise<ApiSubscription | undefined> {
+export async function getSubscriptionFromDb(vendorId: string, userId: string): Promise<Subscription | undefined> {
     let subscriptionParams = {
         TableName: settings.TABLENAME,
         KeyConditionExpression: "#pk = :vendor and #sk = :userId",
@@ -193,7 +193,8 @@ export async function getUserprofileFromDb(userId: string): Promise<Userprofile>
         address: dbResult.Items[0].address,
         phone: dbResult.Items[0].phone,
         email: dbResult.Items[0].email, 
-        allergies: dbResult.Items[0].allergies
+        allergies: dbResult.Items[0].allergies,
+        isVendor: dbResult.Items[0].isVendor
     };  
 }
 
@@ -208,7 +209,8 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
             address: userprofile.address, 
             phone: userprofile.phone, 
             email: userprofile.email, 
-            allergies: userprofile.allergies
+            allergies: userprofile.allergies,
+            isVendor: userprofile.isVendor
         }
     };
 
@@ -218,7 +220,8 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
         address: userprofile.address,
         phone: userprofile.phone,
         email: userprofile.email,
-        allergies: userprofile.allergies
+        allergies: userprofile.allergies,
+        isVendor: userprofile.isVendor
     }
 } 
 

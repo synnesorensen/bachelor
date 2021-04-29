@@ -110,7 +110,7 @@ export default class TabRegister extends Vue {
             let confirmedSignUp = await this.Auth.confirmSignUp(this.username, this.code);
             if (confirmedSignUp === "SUCCESS") {
                 let signedInUser = await this.Auth.signIn(this.username, this.password2);
-                this.$emit("loggedIn", signedInUser.signInUserSession.accessToken.jwtToken);
+                this.$emit("loggedIn", signedInUser.signInUserSession.idToken.jwtToken);
             }
         } catch (err) {
             this.errorMsg2 = err.message;

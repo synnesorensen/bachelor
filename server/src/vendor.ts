@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { deleteUserprofileInDb, deleteVendorInDb, getVendorFromDb, putVendorInDb } from './dbUtils';
+import { deleteVendorInDb, getVendorFromDb, putVendorInDb } from './dbUtils';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {

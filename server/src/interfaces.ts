@@ -1,19 +1,9 @@
 export interface Subscription {
-    vendorId?: string,
+    vendorId: string,
     userId: string,
     approved: boolean,
     paused: boolean,
     schedule: string[],
-    noOfMeals: number,
-    box: string
-}
-
-export interface ApiSubscription {
-    vendorId?: string,
-    userId: string,
-    approved: boolean,
-    paused: boolean,
-    schedule: MenuItems[],
     noOfMeals: number,
     box: string
 }
@@ -23,7 +13,8 @@ export interface Userprofile {
     address: string,
     phone: string,
     email: string, 
-    allergies: string[]
+    allergies: string[], 
+    isVendor: boolean
 }
 
 export interface UserSubscription {

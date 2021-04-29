@@ -52,8 +52,9 @@ export async function deleteUserprofile() {
 
 export async function getVendor(vendorId: string): Promise<interfaces.Vendor | null> {
     await ensureFreshToken();
+    const url = urlPrefix + "/vendor?vendorId=" + encodeURIComponent(vendorId);
     try {
-        const vendor = await apiAxios.get(urlPrefix + "/vendor?vendorId=" + vendorId);
+        const vendor = await apiAxios.get(url);
         return vendor.data;
     } catch (error) {
         if (error.response.status == 404) {
@@ -69,9 +70,10 @@ export async function putVendor(vendor: interfaces.Vendor): Promise<interfaces.V
     return addedVendor.data;
 }
 
-export async function deleteVendor() {
+export async function deleteVendor(vendorId: string) {
     await ensureFreshToken();
-    await apiAxios.delete(urlPrefix + "/vendor");
+    const url = urlPrefix + "/vendor?vendorId=" + encodeURIComponent(vendorId);
+    await apiAxios.delete(url);
 }
 
 // TODO: Lag en funksjon for å hente liste av vendors når tilhørende lambda er implementert.
@@ -127,7 +129,8 @@ export async function getUserSubscription(id: string):Promise<interfaces.Subscri
 
 export async function putUserSubscription(subscription: interfaces.Subscription):Promise<interfaces.Subscription> {
     await ensureFreshToken();
-    const addedSubscription = await apiAxios.put(urlPrefix + "/u/subscription?vendorId=" + subscription.vendorId, subscription);
+    const url = urlPrefix + "/u/subscription?vendorId=" + encodeURIComponent(subscription.vendorId);
+    const addedSubscription = await apiAxios.put(url, subscription);
     return addedSubscription.data;
 }
 

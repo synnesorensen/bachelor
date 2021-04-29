@@ -5,7 +5,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import CalendarOverview from './Calendar/CalendarOverview.vue';
+import CalendarOverview from './../Calendar/CalendarOverview.vue';
 
 @Component({
 	components: {
