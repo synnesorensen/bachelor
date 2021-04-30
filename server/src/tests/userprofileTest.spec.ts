@@ -11,7 +11,8 @@ describe('User profile test', () => {
             address: "Skogen",
             phone: "12345",
             email: "hallo@post.no",
-            allergies: ["melk"]
+            allergies: ["melk"],
+            isVendor: false
         };
 
         const putResult = await putUserprofileInDb(userprofile, "testUserId44");
