@@ -30,7 +30,8 @@ describe('Test of vendor subscriptions', () => {
             address: "Skogen 110",
             phone: "123456",
             email: "gjøk@skogen.no", 
-            allergies: [""]
+            allergies: [""],
+            isVendor: false
         };
         const vendor1 = {
             company: "Delikatessen",
@@ -88,13 +89,15 @@ describe('Test of vendor subscriptions', () => {
         expect(res1.company).to.equal("Delikatessen");
         expect(res1.approved).to.equal(true);
         expect(res1.paused).to.equal(false);
-        expect(res1.schedule).to.eql(["1", "2"]);
+        expect(res1.schedule[0].id).to.eql("1");
+        expect(res1.schedule[1].id).to.eql("2");
 
         let res2 = getResult.find( ({vendorId}) => vendorId === "testVendorId20");
         expect(res2.company).to.equal("Asian Fusion");
         expect(res2.approved).to.equal(false);
         expect(res2.paused).to.equal(true);
-        expect(res2.schedule).to.eql(["5", "7"]);
+        //expect(res2.schedule[0].id).to.eql("5");
+        //expect(res2.schedule[1].id).to.eql("7");
 
         await deleteSubscriptionInDb("testVendorId10", "testUserId30");
         await deleteSubscriptionInDb("testVendorId20", "testUserId30");
