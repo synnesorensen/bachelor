@@ -1,6 +1,6 @@
 require('dotenv').config();
 import 'source-map-support/register';
-import { getDeliveryFromDb, putDeliveryInDb, deleteDeliveryInDb, getUsersDeliveries, postDeliveriesToDb, getAllDeliveriesFromAllSubscribers } from '../dbUtils';
+import { getDeliveryFromDb, putDeliveryInDb, deleteDeliveryInDb, getUsersDeliveries, postDeliveriesToDb, getAllDeliveriesFromAllSubscribers } from '../../dbUtils';
 import { expect } from 'chai';
 import 'mocha';
 

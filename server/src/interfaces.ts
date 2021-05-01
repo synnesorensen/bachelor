@@ -66,3 +66,7 @@ export interface MenuItems {
     day: string
 }
 
+export interface WeekTime {
+    day: number,
+    time: number
+}
