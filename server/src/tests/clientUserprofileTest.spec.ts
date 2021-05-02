@@ -1,15 +1,16 @@
 require('dotenv').config();
 import 'source-map-support/register';
 import { deleteUserprofile, getUserprofile, putUserprofile } from '../../../clients/webclient/src/api/api';
-import getAuth from '../../../clients/webclient/src/components/LoginDialog/auth'
+import getAuth from '../../../clients/webclient/src/components/LoginDialog/auth';
+import { testUser, testPass} from '../../../common/settings';
 import { expect } from 'chai';
 import 'mocha';
 
 describe('Client user profile test', () => {
     it('userProfile client check', async () => {
         const auth = getAuth();
-        let username = "ingrid.elisabeth.hjelle+test20@gmail.com";
-        let password = "qwerty123";
+        let username = testUser;
+        let password = testPass;
         let signedInUser = await auth.signIn(username, password);
 
         let userprofile = {
@@ -37,10 +38,12 @@ describe('Client user profile test', () => {
         expect(putRes.allergies[0]).to.equal("melk");
         expect(putRes.isVendor).to.equal(false);
 
-        //let delRes = await deleteUserprofile();
-        //let newRes = await getUserprofile();
-        //expect(newRes).to.equal(null);
-    });
+        /*
+        Dette fungerer, men sletter profilen på ordentlig
+        let delRes = await deleteUserprofile();
+        let newRes = await getUserprofile();
+        expect(newRes).to.equal(null);*/
+    }).timeout(5000);
   });
 
 
