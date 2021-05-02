@@ -117,7 +117,6 @@ describe('Date and time tests', () => {
         expect(result[0].menuId).equal("2");
 
         let result2 = getDeliveryDates(new Date("2021-05-01T00:00:05"), schedule, 5);
-        console.log("De fem er: ", result2)
         expect(result2[0].date.getDay()).equal(2);
 
         let result3 = getDeliveryDates(new Date("2021-05-03T22:00:01.000Z"), schedule, 1);

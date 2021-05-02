@@ -5,7 +5,13 @@ import { getSubscriptionsForUser } from './dbUtils'
 
 export async function generateDeliveries(EarliestStartDate: Date, userId: string, vendor: string, noOfDeliveries: number): Promise<Delivery[]> {
     let subscriptions = await getSubscriptionsForUser(userId);
+    if (!subscriptions) {
+        throw "User " + userId + " does not exist"
+    }
     let subscription =  subscriptions.find( ({vendorId}) => vendorId == vendor);
+    if (!subscription) {
+        throw "User " + userId + " has no subscription for vendor " + vendor;
+    }
 
     let menuItems = subscription.schedule;
 
@@ -18,7 +24,6 @@ export async function generateDeliveries(EarliestStartDate: Date, userId: string
     });
 
     let deliveryDates = getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries);
-    console.log(deliveryDates)
     return deliveryDates.map((date) => {
         return {
             vendorId: vendor,

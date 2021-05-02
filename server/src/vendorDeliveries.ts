@@ -2,11 +2,19 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { getAllDeliveriesFromAllSubscribers, saveDeliveriesToDb } from './dbUtils'
+import { getAllDeliveriesFromAllSubscribers, getUserprofileFromDb, saveDeliveriesToDb } from './dbUtils'
 import { getUserInfoFromEvent } from './auth/getUserFromJwt'
 import { generateDeliveries } from './addDeliveries';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let vendorId = getUserInfoFromEvent(event);
+    let vendor = await getUserprofileFromDb(vendorId);
+    if (!vendor.isVendor) {
+        return {
+            statusCode: 403,
+            body: JSON.stringify( {message: "User " + vendorId + " is not a vendor"})
+        };
+    }
     if (event.httpMethod == "GET") {
         return getVendorDeliveries(event);
     }
@@ -21,7 +29,6 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
 
 async function getVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     let vendorId = getUserInfoFromEvent(event);
-
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -61,7 +68,7 @@ export const mainHandler = middy(handler).use(cors());
 
 async function postVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     let vendorId = getUserInfoFromEvent(event);
-
+    
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -71,7 +78,6 @@ async function postVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGat
     let date = event.queryStringParameters["startDate"];
     let no = event.queryStringParameters["no"];
     let userId = event.queryStringParameters["userId"];
-    console.log(event.queryStringParameters)
 
     if (!vendorId) {
         return {
@@ -100,12 +106,25 @@ async function postVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGat
     let startDate = new Date(date);
     let noOfDeliveries = parseInt(no);
 
-    let deliveries = await generateDeliveries(startDate, userId, vendorId, noOfDeliveries);
-    console.log("Deliveries som vi tar inn i DB ", deliveries)
-    await saveDeliveriesToDb(deliveries);
+    if (isNaN(noOfDeliveries)) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Invalid format for number of deliveries" }'
+        };
+    }
 
-    return {
-        statusCode: 200,
-        body: JSON.stringify(deliveries)
-    };
+    try {
+        let deliveries = await generateDeliveries(startDate, userId, vendorId, noOfDeliveries);
+        await saveDeliveriesToDb(deliveries);
+
+        return {
+            statusCode: 200,
+            body: JSON.stringify(deliveries)
+        };
+    } catch (e) {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ message: e.toString()})
+        }
+    }
 }

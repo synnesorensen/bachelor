@@ -2,9 +2,6 @@ import { DateWithMenuId, WeekTime } from './interfaces'
 
 export function getDeliveryDates(startDate: Date, weekTimes: WeekTime[], no:number):DateWithMenuId[] {
     let nextDelivery = nextDeliveryDate(startDate, weekTimes);
-    console.log("Startdato ", startDate)
-    console.log("Neste dato ", nextDelivery.date)
-    console.log("week times fra getDelivery dates", weekTimes)
     let count = 0;
     let deliveryDates: DateWithMenuId[] = [];
 
