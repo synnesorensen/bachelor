@@ -3,14 +3,125 @@ import 'source-map-support/register';
 import { expect } from 'chai';
 import 'mocha';
 import { WeekTime } from '../../interfaces'
-import { toWeekTime } from '../../timeHandling'
+import { nextDeliveryDate, toWeekTime, noOfDeliveriesInMonth, getDeliveryDates } from '../../timeHandling'
 
 describe('Date and time tests', () => {
     it('From date to WeekTime',  () => {
         let result:WeekTime = toWeekTime(new Date("2021-12-17T03:24:05"));
         expect(result.day).equal(5);
         expect(result.time).equal(3 * 1000 * 3600 + 24 * 60 * 1000 + 5*1000);
+    });
 
+    it('Find next weekTimes',  () => {
+        let schedule: WeekTime[] = [{
+            menuId: "2",
+            day: 2,
+            time: 1000
+        },
+        {
+            menuId: "3",
+            day: 3,
+            time: 1000
+        },
+        {
+            menuId: "41",
+            day: 4,
+            time: 1000
+        },
+        {
+            menuId: "43",
+            day: 4,
+            time: 2000 
+        }];
+        let result = nextDeliveryDate(new Date("2021-11-17T03:24:05"), schedule);
+        expect(result.menuId).equal("41");
+        expect(result.date.getDay()).equal(4);
+        expect(result.date.getDate()).equal(18);
+        expect(result.date.getMonth()).equal(10);
+        expect(result.date.getFullYear()).equal(2021);
 
+        let wrap = nextDeliveryDate(new Date("2021-11-19T03:24:05"), schedule);
+        expect(wrap.menuId).equal("2");
+        expect(wrap.date.getDay()).equal(2);
+        expect(wrap.date.getDate()).equal(23);
+        expect(wrap.date.getMonth()).equal(10);
+        expect(wrap.date.getFullYear()).equal(2021);
+    });
+    it('Find next weekTimes',  () => {
+        let schedule: WeekTime[] = [{
+            menuId: "2",
+            day: 2,
+            time: 1000
+        }];
+        let result = nextDeliveryDate(new Date("2021-05-03T03:24:05"), schedule);
+        expect(result.menuId).equal("2");
+        expect(result.date.getDay()).equal(2);
+        expect(result.date.getDate()).equal(4);
+        expect(result.date.getMonth()).equal(4);
+        expect(result.date.getFullYear()).equal(2021);
+
+        let wrap = nextDeliveryDate(new Date("2021-05-05T03:24:05"), schedule);
+        expect(result.menuId).equal("2")
+        expect(wrap.date.getDay()).equal(2);
+        expect(wrap.date.getDate()).equal(11);
+        expect(wrap.date.getMonth()).equal(4);
+        expect(wrap.date.getFullYear()).equal(2021);
+    });
+    it('Count deliveries in a month',  () => {
+        let schedule: WeekTime[] = [{
+            day: 2,
+            time: 1000*3600*6
+        },
+        {
+            day: 3,
+            time: 1000*3600*6
+        },
+        {
+            day: 4,
+            time: 1000*3600*6
+        }];
+        let result = noOfDeliveriesInMonth(new Date("2021-06-01T05:00:00"), schedule);
+        expect(result).equal(14);
+    });
+    it('Find next delivery dates',  () => {
+        let schedule: WeekTime[] = [{
+            menuId: "2",
+            day: 2,
+            time: 1000
+        },
+        {
+            menuId: "3",
+            day: 3,
+            time: 1000
+        },
+        {
+            menuId: "41",
+            day: 4,
+            time: 1000
+        },
+        {
+            menuId: "43",
+            day: 4,
+            time: 2000 
+        }];
+        let result = getDeliveryDates(new Date("2021-05-01T01:05:05"), schedule, 10);
+        expect(result.length).equal(10);
+        expect(result[0].date.getDay()).equal(2);
+        expect(result[1].date.getDay()).equal(3);
+        expect(result[2].date.getDay()).equal(4);
+        expect(result[3].date.getDay()).equal(4);
+        expect(result[4].date.getDay()).equal(2);
+        expect(result[5].date.getDay()).equal(3);
+        expect(result[6].date.getDay()).equal(4);
+        expect(result[7].date.getDay()).equal(4);
+        expect(result[0].menuId).equal("2");
+
+        let result2 = getDeliveryDates(new Date("2021-05-01T00:00:05"), schedule, 5);
+        console.log("De fem er: ", result2)
+        expect(result2[0].date.getDay()).equal(2);
+
+        let result3 = getDeliveryDates(new Date("2021-05-03T22:00:01.000Z"), schedule, 1);
+        expect(result3[0].date.getDay()).equal(2);
     });
 });
+

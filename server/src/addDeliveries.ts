@@ -1,38 +1,51 @@
 import 'source-map-support/register'
-import { getSubscriptionsForUser } from './dbUtils';
-import { Delivery } from './interfaces';
+import { Delivery, WeekTime } from './interfaces';
+import { getDeliveryDates } from './timeHandling'
+import { getSubscriptionsForUser } from './dbUtils'
 
-export async function addDeliveries(userId: string, vendor: string, noOfDeliveries: number): Promise<Delivery[]> {
-    const subscriptions = await getSubscriptionsForUser(userId);
-    const relevantSubscription = subscriptions.find( ({vendorId}) => vendorId === vendor);
-    const schedule = relevantSubscription.schedule;
-    const deliveryDays:string[] = [];
-    let deliveries:Delivery[] = [];
-    
-    schedule.forEach( (day) => {
-        deliveryDays.push(day.day)
+export async function generateDeliveries(EarliestStartDate: Date, userId: string, vendor: string, noOfDeliveries: number): Promise<Delivery[]> {
+    let subscriptions = await getSubscriptionsForUser(userId);
+    let subscription =  subscriptions.find( ({vendorId}) => vendorId == vendor);
+
+    let menuItems = subscription.schedule;
+
+    let weekTimes:WeekTime[] = menuItems.map((item) => { 
+        return {
+            menuId: item.id,
+            day: dayStringToInt(item.day),
+            time: parseInt(item.time)
+        }
     });
-    
-    
-    return deliveries;
+
+    let deliveryDates = getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries);
+    console.log(deliveryDates)
+    return deliveryDates.map((date) => {
+        return {
+            vendorId: vendor,
+            userId,
+            deliverytime: date.date.toISOString(),
+            menuId: date.menuId!,
+            cancelled: false
+        }
+    });
 }
 
-function getDayOfWeek(date: string) {
-    const dayOfWeek = new Date(date).getDay();    
-    return isNaN(dayOfWeek) ? null : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayOfWeek];
-}
-
-function addDays(date: Date, days: number) {
-    date.setDate(date.getDate() + days);
-    return date;
-}
-
-function getDates(startDate: Date, stopDate: Date, no: number) {
-    let dates: Date[] = [];
-    let currentDate = startDate;            // denne må være lastDeliveryDate
-    while (currentDate <= stopDate) {
-        dates.push(new Date (currentDate));
-        currentDate = addDays(currentDate, 1);
+function dayStringToInt(day: string) {
+    switch(day) {
+        case 'Søndag':
+            return 0;
+        case 'Mandag':
+            return 1;
+        case 'Tirsdag':
+            return 2;
+        case 'Onsdag':
+            return 3;
+        case 'Torsdag':
+            return 4;
+        case 'Fredag':
+            return 5;
+        case 'Lørdag':
+            return 6;
     }
-    return dates;
+    return -1;
 }

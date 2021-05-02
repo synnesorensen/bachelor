@@ -46,7 +46,7 @@ export interface Delivery {
     vendorId: string,
     userId: string,
     deliverytime: string,
-    menu: string,
+    menuId: string,
     cancelled: boolean
 }
 
@@ -67,6 +67,12 @@ export interface MenuItems {
 }
 
 export interface WeekTime {
+    menuId?: string,
     day: number,
     time: number
+}
+
+export interface DateWithMenuId {
+    date: Date,
+    menuId?: string
 }
