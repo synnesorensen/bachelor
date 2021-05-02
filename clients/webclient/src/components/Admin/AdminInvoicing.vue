@@ -28,7 +28,7 @@ import * as interfaces from "../../../../../server/src/interfaces";
 export default class AdminInvoicing extends Vue {
     private selectedUser = "";
 
-    userSelected(userId) {
+    userSelected(userId: string) {
         this.selectedUser = userId;
     }
 

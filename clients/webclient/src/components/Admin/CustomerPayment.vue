@@ -14,7 +14,7 @@ import { getVendorSubscriptions } from '../../api/api'
 
 @Component
 export default class CustomerPayment extends Vue {
-    @Prop() selectedUser:string; 
+    @Prop() selectedUser:string = ""; 
 
     private subscriber = {
         userId: "test"
