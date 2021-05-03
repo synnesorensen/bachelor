@@ -1,20 +1,22 @@
 <template>
-    <v-list dense>
-        <v-subheader>Kunder</v-subheader>
-        <v-list-item-group
-        v-model="selectedSub"
-        color="primary"
-      >
-        <v-list-item
-          v-for="(sub, i) in subscribers"
-          v-bind:key="i"
+    <v-card>
+        <v-card-title>Kundeliste</v-card-title>
+        <v-list dense>
+            <v-list-item-group
+            v-model="selectedSub"
+            color="primary"
         >
-        <v-list-item-content>
-            <v-list-item-title v-text="sub.fullname"></v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
-    </v-list>
+            <v-list-item
+            v-for="(sub, i) in subscribers"
+            v-bind:key="i"
+            >
+            <v-list-item-content>
+                <v-list-item-title v-text="sub.fullname"></v-list-item-title>
+            </v-list-item-content>
+            </v-list-item>
+        </v-list-item-group>
+        </v-list>
+    </v-card>
 </template>
 
 <script lang="ts">
@@ -38,8 +40,7 @@ export default class Subscribers extends Vue {
     set selectedSub(value) {
         this._selectedSub = value;
         if (this._selectedSub != undefined) {
-            console.log(this.subscribers[this._selectedSub]);
-            this.$emit("userSelected", this.subscribers[this._selectedSub].userId);
+            this.$emit("userSelected", this.subscribers[this._selectedSub]);
         }
         
     }

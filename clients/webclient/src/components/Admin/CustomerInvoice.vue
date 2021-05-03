@@ -44,7 +44,7 @@
             </v-row>
         </v-card-text>
         <v-card-actions>
-      <v-btn v-if="selectedUser" color="primary">Registrer betaling </v-btn>
+      <v-btn v-if="selectedUser" color="primary">Lag faktura </v-btn>
     </v-card-actions>
     </v-card>
 </template>
@@ -56,7 +56,7 @@ import { Prop } from 'vue-property-decorator';
 import * as interfaces from "../../../../../server/src/interfaces";
 
 @Component
-export default class CustomerPayment extends Vue {
+export default class CustomerInvoice extends Vue {
     @Prop() selectedUser:interfaces.UserSubscription | null = null; 
 
 

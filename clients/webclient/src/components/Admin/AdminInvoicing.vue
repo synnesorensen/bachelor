@@ -5,7 +5,7 @@
                 <Subscribers @userSelected="userSelected" />
             </v-col>
             <v-col> 
-		        <CustomerPayment :selectedUser="selectedUser" />
+		        <CustomerInvoice :selectedUser="selectedUser" />
             </v-col>
         </v-row>
 	</v-container>
@@ -15,21 +15,21 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import Subscribers from './Subscribers.vue'
-import CustomerPayment from './CustomerPayment.vue'
+import CustomerInvoice from './CustomerInvoice.vue'
 import * as interfaces from "../../../../../server/src/interfaces";
 
 @Component({
 	components: {
 		Subscribers,
-        CustomerPayment
+        CustomerInvoice
 	},
 })
 
 export default class AdminInvoicing extends Vue {
-    private selectedUser = "";
+    private selectedUser: interfaces.UserSubscription | null = null;
 
-    userSelected(userId: string) {
-        this.selectedUser = userId;
+    userSelected(user: interfaces.UserSubscription) {
+        this.selectedUser = user;
     }
 
 
