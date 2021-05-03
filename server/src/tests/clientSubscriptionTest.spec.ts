@@ -1,6 +1,6 @@
 require('dotenv').config();
 import 'source-map-support/register';
-import { putVendor, putUserSubscription, getUserSubscriptions,  getUserSubscription, deleteUserSubscription, putVendorSubscription, getVendorSubscription, getVendorSubscriptions } from '../../../clients/webclient/src/api/api';
+import api from '../../../clients/webclient/src/api/api';
 import getAuth from '../../../clients/webclient/src/components/LoginDialog/auth'
 import { expect } from 'chai';
 import { testUser, testPass} from '../../../common/settings';
@@ -46,14 +46,14 @@ describe('Client subscription test', () => {
             box: "engangsboks"
         };
 
-        const putResult = await putUserSubscription(sub);
+        const putResult = await api.putUserSubscription(sub);
         expect(putResult.vendorId).to.equal("ingrid.elisabeth.hjelle+test98@gmail.com");
         expect(putResult.userId).to.equal("ingrid.elisabeth.hjelle+test98@gmail.com");
         expect(putResult.approved).to.equal(false);
         expect(putResult.paused).to.equal(true);
         expect(putResult.schedule).to.eql(["1", "2"]);
         
-        const getResult = await getUserSubscriptions();
+        const getResult = await api.getUserSubscriptions();
         expect(getResult[0].vendorId).to.equal("ingrid.elisabeth.hjelle+test98@gmail.com");
         //expect(getResult[0].noOfMeals).equal(1);
         //expect(getResult[0].box).to.equal("engangsboks");
@@ -61,7 +61,7 @@ describe('Client subscription test', () => {
         //expect(getResult[0].paused).to.equal(true);
         //expect(getResult[0].schedule.length).to.equal(2);
 
-        const userSub = await getUserSubscription("ingrid.elisabeth.hjelle+test98@gmail.com");
+        const userSub = await api.getUserSubscription("ingrid.elisabeth.hjelle+test98@gmail.com");
         console.log(userSub)
         expect(userSub.vendorId).to.equal("ingrid.elisabeth.hjelle+test98@gmail.com");
         expect(userSub.userId).to.equal("ingrid.elisabeth.hjelle+test98@gmail.com");
@@ -77,11 +77,11 @@ describe('Client subscription test', () => {
         expect(newResult).to.equal(null); */
         //await deleteVendor("testVendorId55");
 
-        /*const putVS = await putVendorSubscription(sub);
-        console.log(putVS);
-        const getVS = await getVendorSubscription("ingrid.elisabeth.hjelle+test98@gmail.com");
-        console.log(getVS);
-        const getVSs = await getVendorSubscriptions();
-        console.log(getVSs)*/
+        const putVS = await api.putVendorSubscription(sub);
+
+        const getVS = await api.getVendorSubscription("ingrid.elisabeth.hjelle+test98@gmail.com");
+
+        const getVSs = await api.getVendorSubscriptions();
+
     }).timeout(5000);
 });

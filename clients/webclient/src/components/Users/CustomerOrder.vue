@@ -120,7 +120,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
-import {putUserSubscription, putUserprofile} from '../../api/api'
+import api from '../../api/api'
 import * as interfaces from '../../../../../server/src/interfaces'
 
 @Component
@@ -212,8 +212,8 @@ export default class CustomerOrder extends Vue {
             noOfMeals: this.selectedNoOfMeals,
             box: this.selectedBox
         }
-        await putUserprofile(newUserprofile);
-        await putUserSubscription(subscription);
+        await api.putUserprofile(newUserprofile);
+        await api.putUserSubscription(subscription);
         this.$emit("newUserprofile", newUserprofile)
     }
 }
