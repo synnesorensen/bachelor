@@ -94,7 +94,8 @@ export async function getUserSubscriptions():Promise<interfaces.VendorSubscripti
 export async function getVendorSubscription(id: string):Promise<interfaces.Subscription | null> {
     await ensureFreshToken();
     try {
-        const vendorSubscription = await apiAxios.get(urlPrefix + "/v/subscription?userId=" + id);
+        const url = urlPrefix + "/v/subscription?userId=" + encodeURIComponent(id);
+        const vendorSubscription = await apiAxios.get(url);
         return vendorSubscription.data;
     } catch (error) {
         if (error.response.status == 404) {
@@ -106,13 +107,15 @@ export async function getVendorSubscription(id: string):Promise<interfaces.Subsc
 
 export async function putVendorSubscription(subscription: interfaces.Subscription):Promise<interfaces.Subscription> {
     await ensureFreshToken();
-    const addedSubscription = await apiAxios.put(urlPrefix + "/v/subscription?userId=" + subscription.userId, subscription);
+    const url = urlPrefix + "/v/subscription?userId=" + encodeURIComponent(subscription.userId);
+    const addedSubscription = await apiAxios.put(url, subscription);
     return addedSubscription.data;
 }
 
 export async function deleteVendorSubscription(id: string) {
     await ensureFreshToken();
-    await apiAxios.delete(urlPrefix + "/v/subscription?userId=" + id);
+    const url = urlPrefix + "/v/subscription?userId=" + encodeURIComponent(id);
+    await apiAxios.delete(url);
 }
 
 export async function getUserSubscription(id: string):Promise<interfaces.Subscription | null> {
@@ -138,7 +141,8 @@ export async function putUserSubscription(subscription: interfaces.Subscription)
 
 export async function deleteUserSubscription(id: string) {
     await ensureFreshToken();
-    await apiAxios.delete(urlPrefix + "/u/subscription?vendorId=" + id);
+    const url = urlPrefix + "/u/subscription?vendorId=" + encodeURIComponent(id);
+    await apiAxios.delete(url);
 }
 
 export async function getAllVendorsDeliveries(start: string, end: string):Promise<interfaces.Delivery[] | null> {
@@ -176,7 +180,8 @@ export async function getAllUsersDeliveries(start: string, end: string):Promise<
 export async function getDelivery(vendorId: string, userId: string, time: string):Promise<interfaces.Delivery | null> {
     await ensureFreshToken();
     try {
-        const delivery = await apiAxios.get(urlPrefix + "/delivery?vendorId=" + vendorId + "&userId=" + userId + "&time=" + time);
+        const url = urlPrefix + "/delivery?vendorId=" + encodeURIComponent(vendorId) +"&userId=" + encodeURIComponent(userId) + "&time=" + encodeURIComponent(time);
+        const delivery = await apiAxios.get(url);
         return delivery.data;
     } catch (error) {
         if (error.response.status == 404) {
@@ -186,15 +191,17 @@ export async function getDelivery(vendorId: string, userId: string, time: string
     }
 }
 
-export async function putNewDelivery(vendorId: string, userId: string, delivery: interfaces.Delivery):Promise<interfaces.Delivery> {
+export async function putDelivery(vendorId: string, userId: string, delivery: interfaces.Delivery):Promise<interfaces.Delivery> {
     await ensureFreshToken();
-    const newDelivery = await apiAxios.put(urlPrefix + "/delivery?vendorId=" + vendorId + "&userId=" + userId, delivery);
+    const url = urlPrefix + "/delivery?vendorId=" + encodeURIComponent(vendorId) +"&userId=" + encodeURIComponent(userId);
+    const newDelivery = await apiAxios.put(url, delivery);
     return newDelivery.data;
 }
 
 export async function deleteDelivery(vendorId: string, userId: string, time: string) {
     await ensureFreshToken();
-    await apiAxios.delete(urlPrefix + "/delivery?vendorId=" + vendorId + "&userId=" + userId + "&time=" + time);
+    const url = urlPrefix + "/delivery?vendorId=" + encodeURIComponent(vendorId) +"&userId=" + encodeURIComponent(userId) + "&time=" + encodeURIComponent(time);
+    await apiAxios.delete(url);
 }
 
 // TODO: Lag en funksjon for å hente første levering når tilhørende lambda er implementert.
