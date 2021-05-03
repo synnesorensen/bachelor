@@ -118,7 +118,8 @@ export async function deleteVendorSubscription(id: string) {
 export async function getUserSubscription(id: string):Promise<interfaces.Subscription | null> {
     await ensureFreshToken();
     try {
-        const userSubscription = await apiAxios.get(urlPrefix + "/u/subscription?vendorId=" + id);
+        const url = urlPrefix + "/u/subscription?vendorId=" + encodeURIComponent(id);
+        const userSubscription = await apiAxios.get(url);
         return userSubscription.data;
     } catch (error) {
         if (error.response.status == 404) {

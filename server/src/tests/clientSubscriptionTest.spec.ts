@@ -52,25 +52,24 @@ describe('Client subscription test', () => {
         expect(putResult.approved).to.equal(false);
         expect(putResult.paused).to.equal(true);
         expect(putResult.schedule).to.eql(["1", "2"]);
-        console.log("Hello")
         
-        /*const getResult = await getUserSubscriptions();
-        console.log(getResult)
+        const getResult = await getUserSubscriptions();
         expect(getResult[0].vendorId).to.equal("ingrid.elisabeth.hjelle+test98@gmail.com");
-        expect(getResult[0].noOfMeals).equal(1);
-        expect(getResult[0].box).to.equal("engangsboks");
-        expect(getResult[0].approved).to.equal(false);
-        expect(getResult[0].paused).to.equal(true);
-        expect(getResult[0].schedule.length).to.equal(2);
+        //expect(getResult[0].noOfMeals).equal(1);
+        //expect(getResult[0].box).to.equal("engangsboks");
+        //expect(getResult[0].approved).to.equal(false);
+        //expect(getResult[0].paused).to.equal(true);
+        //expect(getResult[0].schedule.length).to.equal(2);
 
-        /*const userSub = await getUserSubscription("ingrid.elisabeth.hjelle+test98@gmail.com");
+        const userSub = await getUserSubscription("ingrid.elisabeth.hjelle+test98@gmail.com");
+        console.log(userSub)
         expect(userSub.vendorId).to.equal("ingrid.elisabeth.hjelle+test98@gmail.com");
-        expect(userSub.userId).to.equal("ingrid.elisabeth.hjelle+test15@gmail.com");
-        expect(userSub.approved).to.equal(false);
-        expect(userSub.paused).to.equal(true);
-        expect(userSub.schedule.length).to.equal(2);
-        expect(userSub.noOfMeals).to.equal(1);
-        expect(userSub.box).to.equal("engangsboks");*/
+        expect(userSub.userId).to.equal("ingrid.elisabeth.hjelle+test98@gmail.com");
+        //expect(userSub.approved).to.equal(false);
+        //expect(userSub.paused).to.equal(true);
+        //expect(userSub.schedule.length).to.equal(2);
+        //expect(userSub.noOfMeals).to.equal(1);
+        //expect(userSub.box).to.equal("engangsboks");*/
 
         /* Her feiler det
         await deleteUserSubscription("ingrid.elisabeth.hjelle+test20@gmail.com");
@@ -84,5 +83,5 @@ describe('Client subscription test', () => {
         console.log(getVS);
         const getVSs = await getVendorSubscriptions();
         console.log(getVSs)*/
-    });
+    }).timeout(5000);
 });

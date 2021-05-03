@@ -52,10 +52,9 @@ describe('Client vendor profile test', () => {
         expect(getResult.schedule[1].id).to.equal("2");
 
         //Denne feiler i terminalen
-        auth.signOut();
         /*Denne feiler med server error 403
         await deleteVendor("testVendorId11");
         const newResult = await getVendor("testVendorId11");
         expect(newResult).to.equal(undefined); */
-    });
+    }).timeout(5000);
 });
