@@ -44,8 +44,9 @@
             </v-row>
         </v-card-text>
         <v-card-actions>
-      <v-btn v-if="selectedUser" color="primary">Registrer betaling </v-btn>
-    </v-card-actions>
+            <v-btn v-if="selectedUser" color="primary" @click="invoice">Lag faktura </v-btn>
+            <v-btn v-if="selectedUser" color="primary" @click="payment">Registrer betaling </v-btn>
+        </v-card-actions>
     </v-card>
 </template>
 
@@ -59,7 +60,13 @@ import * as interfaces from "../../../../../server/src/interfaces";
 export default class CustomerPayment extends Vue {
     @Prop() selectedUser:interfaces.UserSubscription | null = null; 
 
+    payment() {
 
+    }
+
+    invoice() {
+        
+    }
     
 }
 </script>
