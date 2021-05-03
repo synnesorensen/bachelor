@@ -117,7 +117,7 @@ functions:
       - http:
           authorizer: authorizer
           path: /v/deliveries
-          method: get
+          method: any
 
 resources:
   Resources:
