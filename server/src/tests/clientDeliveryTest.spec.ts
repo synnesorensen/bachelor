@@ -50,14 +50,12 @@ describe('Client delivery tests', () => {
         
         const newPut = await putNewDelivery("testVendorId66", "testUserId16", delivery2);
         expect(newPut.menu).to.equal("dinner");
-        console.log(newPut)
-        console.log(putResult)
+
 
         const getAllUDels = getAllUsersDeliveries("2021-04-01", "2021-04-30");
-        console.log(getAllUDels)
 
         const getAllVDels = getAllVendorsDeliveries("2021-04-01", "2021-04-30");
-        console.log(getAllVDels)
+
         //const getAllUserDel = await getAllUsersDeliveries("testVendorId66", "testUserId16", "2021-04-01", "2021-04-30");
         //expect(getAllUserDel.length).to.equal(0);
         /*

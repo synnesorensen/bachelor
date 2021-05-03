@@ -64,9 +64,10 @@ export async function getVendor(vendorId: string): Promise<interfaces.Vendor | n
     }
 }
 
-export async function putVendor(vendor: interfaces.Vendor): Promise<interfaces.Vendor> {
+export async function putVendor(vendor: interfaces.Vendor, vendorId: string): Promise<interfaces.Vendor> {
     await ensureFreshToken();
-    const addedVendor = await apiAxios.put(urlPrefix + "/vendor", vendor);
+    const url = urlPrefix + "/vendor?vendorId=" + encodeURIComponent(vendorId);
+    const addedVendor = await apiAxios.put(url, vendor);
     return addedVendor.data;
 }
 
