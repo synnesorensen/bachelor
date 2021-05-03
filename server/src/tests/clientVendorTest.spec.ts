@@ -1,17 +1,24 @@
 require('dotenv').config();
 import 'source-map-support/register';
 import api from '../../../clients/webclient/src/api/api';
+import { Api } from '../../../clients/webclient/src/api/api';
 import getAuth from '../../../clients/webclient/src/components/LoginDialog/auth'
-import { testPass, testUser, testVend, testVendPass} from '../../../common/settings';
+import { testPass, testUser, testVend, testVendPass } from '../../../common/settings';
 import { expect } from 'chai';
 import 'mocha';
 
+let user = null;
+let vendor = null;
+
 describe('Client vendor profile test', () => {
+    before(async function () {
+        user = new Api();
+        vendor = new Api();
+
+        await user.login(testUser, testPass);
+        await vendor.login(testVend, testVendPass);
+    });
     it('Putting, getting and deleting a vendor', async () => {
-        const auth = getAuth();
-        let username = testVend;
-        let password = testVendPass;
-        let signedInUser = await auth.signIn(username, password);
         const vendor = {
             company: "Delikatessen",
             fullname: "Bakermester Harepus",
@@ -56,4 +63,9 @@ describe('Client vendor profile test', () => {
         const newResult = await getVendor("testVendorId11");
         expect(newResult).to.equal(undefined); */
     }).timeout(5000);
+    after(async function () {
+        await user.logout();
+        await vendor.logout();
+        console.log("logged out")
+    });
 });
