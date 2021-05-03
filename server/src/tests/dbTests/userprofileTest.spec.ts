@@ -1,6 +1,6 @@
 require('dotenv').config();
 import 'source-map-support/register';
-import { deleteUserprofileInDb, getUserprofileFromDb, putUserprofileInDb } from '../dbUtils';
+import { deleteUserprofileInDb, getUserprofileFromDb, putUserprofileInDb } from '../../dbUtils';
 import { expect } from 'chai';
 import 'mocha';
 
@@ -11,7 +11,8 @@ describe('User profile test', () => {
             address: "Skogen",
             phone: "12345",
             email: "hallo@post.no",
-            allergies: ["melk"]
+            allergies: ["melk"],
+            isVendor: false
         };
 
         const putResult = await putUserprofileInDb(userprofile, "testUserId44");

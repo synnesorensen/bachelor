@@ -1,6 +1,6 @@
 require('dotenv').config();
 import 'source-map-support/register';
-import { putVendorInDb, getVendorFromDb, deleteVendorInDb } from '../dbUtils';
+import { putVendorInDb, getVendorFromDb, deleteVendorInDb } from '../../dbUtils';
 import { expect } from 'chai';
 import 'mocha';
 
