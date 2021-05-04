@@ -263,7 +263,7 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
             approved: item.approved,
             paused:item.paused,
             schedule: item.schedule.values,
-            noOfMeals: item.noOfMelas,
+            noOfMeals: item.noOfMeals,
             box: item.box
         }
     });
