@@ -436,7 +436,7 @@ export async function getDeliveryFromDb(vendorId: string, userId: string, time: 
         },
         ExpressionAttributeValues: {
             ":vendor": "v#" + vendorId,
-            ":prefix": "d#" + userId + "#" + time
+            ":prefix": "d#" + time + "#u" + userId
         }
     };
     let dbResult = await documentClient.query(params).promise();
@@ -488,7 +488,7 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
         TableName: settings.TABLENAME,
         Key: {
             "pk": { S: "v#" + vendorId },
-            "sk": { S: "d#" + userId + "#" + delivery.deliverytime}
+            "sk": { S: "d#" + delivery.deliverytime + "#u" + userId}
         },
         UpdateExpression,
         ExpressionAttributeValues,
@@ -510,7 +510,7 @@ export async function deleteDeliveryInDb(vendorId: string, userId: string, time:
         TableName: settings.TABLENAME,
         Key: {
             "pk": { S: "v#" + vendorId },
-            "sk": { S: "d#" + userId + "#" + time}
+            "sk": { S: "d#"+ time + "#u" + userId }
         }
     };
     await database.deleteItem(params).promise();
@@ -524,7 +524,7 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
                 Item: {
                     EntityType: "Delivery",
                     pk: "v#" + deliveries[i].vendorId,
-                    sk: "d#" + deliveries[i].userId + "#" + deliveries[i].deliverytime,
+                    sk: "d#" + deliveries[i].deliverytime + "#u" + deliveries[i].userId,
                     deliverytime: deliveries[i].deliverytime,
                     menuId: deliveries[i].menuId,
                     cancelled: deliveries[i].cancelled,
@@ -561,10 +561,10 @@ export async function getAllDeliveriesFromAllSubscribers(vendorId: string, start
     let params = {
         TableName: settings.TABLENAME,
         IndexName: "GSI2",
-        KeyConditionExpression: "#GSI2_pk = :vendor and #GSI2_sk BETWEEN :start and :end",
+        KeyConditionExpression: "#pk = :vendor and #sk BETWEEN :start and :end",
         ExpressionAttributeNames: {
-            "#GSI2_pk": "GSI2_pk",
-            "#GSI2_sk": "GSI2_sk"
+            "#pk": "pk",
+            "#sk": "sk"
         },
         ExpressionAttributeValues: {
             ":vendor": "v#" + vendorId,
