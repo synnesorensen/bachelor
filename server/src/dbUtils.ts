@@ -436,7 +436,7 @@ export async function getDeliveryFromDb(vendorId: string, userId: string, time: 
         },
         ExpressionAttributeValues: {
             ":vendor": "v#" + vendorId,
-            ":prefix": "d#" + time + "#u" + userId
+            ":prefix": "d#" + time + "#u#" + userId
         }
     };
     let dbResult = await documentClient.query(params).promise();
@@ -488,7 +488,7 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
         TableName: settings.TABLENAME,
         Key: {
             "pk": { S: "v#" + vendorId },
-            "sk": { S: "d#" + delivery.deliverytime + "#u" + userId}
+            "sk": { S: "d#" + delivery.deliverytime + "#u#" + userId}
         },
         UpdateExpression,
         ExpressionAttributeValues,
@@ -510,7 +510,7 @@ export async function deleteDeliveryInDb(vendorId: string, userId: string, time:
         TableName: settings.TABLENAME,
         Key: {
             "pk": { S: "v#" + vendorId },
-            "sk": { S: "d#"+ time + "#u" + userId }
+            "sk": { S: "d#"+ time + "#u#" + userId }
         }
     };
     await database.deleteItem(params).promise();
@@ -524,7 +524,7 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
                 Item: {
                     EntityType: "Delivery",
                     pk: "v#" + deliveries[i].vendorId,
-                    sk: "d#" + deliveries[i].deliverytime + "#u" + deliveries[i].userId,
+                    sk: "d#" + deliveries[i].deliverytime + "#u#" + deliveries[i].userId,
                     deliverytime: deliveries[i].deliverytime,
                     menuId: deliveries[i].menuId,
                     cancelled: deliveries[i].cancelled,
@@ -560,7 +560,6 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
 export async function getAllDeliveriesFromAllSubscribers(vendorId: string, startTime: string, endTime: string): Promise<Delivery[]> {
     let params = {
         TableName: settings.TABLENAME,
-        IndexName: "GSI2",
         KeyConditionExpression: "#pk = :vendor and #sk BETWEEN :start and :end",
         ExpressionAttributeNames: {
             "#pk": "pk",
@@ -568,8 +567,8 @@ export async function getAllDeliveriesFromAllSubscribers(vendorId: string, start
         },
         ExpressionAttributeValues: {
             ":vendor": "v#" + vendorId,
-            ":start": startTime,
-            ":end": endTime
+            ":start": "d#" + startTime,
+            ":end": "d#" + endTime
         }
     };
     let dbResult = await documentClient.query(params).promise();
