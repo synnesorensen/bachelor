@@ -1,4 +1,6 @@
 <template>
+    <main>
+    <div>
 	<v-row class="fill-height">
 		<v-col>
 			<v-sheet height="64">
@@ -27,22 +29,29 @@
                     show-week
 					:now="today"
                     :events="events"
+                    @click:event="showEvent"
 					@change="getEvents"
 				>
 				</v-calendar>
 			</v-sheet>
 		</v-col>
 	</v-row>
+    </div>
+    <Deliveries v-if="showDeliveries" />
+    </main>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
+import Deliveries from './Deliveries.vue'
 import { getAllVendorsDeliveries, getUserprofile, getVendor } from "../../api/api";
 import * as interfaces from "../../../../../server/src/interfaces"
 
 @Component({
-	components: {},
+	components: {
+        Deliveries
+    },
 })
 export default class AdminOverview extends Vue {
     private today = new Date().toISOString().substr(0, 10);
@@ -51,6 +60,7 @@ export default class AdminOverview extends Vue {
 	private start = null;
 	private end = null;
     private events: any[] = [];
+    private showDeliveries = false;
 
     mounted() {
 		this.focus = '';
@@ -95,6 +105,9 @@ export default class AdminOverview extends Vue {
         });
         this.events = events;
         }
+    }
+    showEvent() {
+        this.showDeliveries = true;
     }
 }
 </script>
