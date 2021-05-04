@@ -26,6 +26,7 @@
 					weekdays="1, 2, 3, 4, 5"
                     show-week
 					:now="today"
+                    :events="events"
 					@change="getEvents"
 				>
 				</v-calendar>
@@ -37,7 +38,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { getAllVendorsDeliveries } from "../../api/api";
+import { getAllVendorsDeliveries, getUserprofile, getVendor } from "../../api/api";
 import * as interfaces from "../../../../../server/src/interfaces"
 
 @Component({
@@ -49,7 +50,7 @@ export default class AdminOverview extends Vue {
 	private type = 'month';
 	private start = null;
 	private end = null;
-    private events = [];
+    private events: any[] = [];
 
     mounted() {
 		this.focus = '';
@@ -72,9 +73,28 @@ export default class AdminOverview extends Vue {
 		this.end = range.end;
 	}
 
-    async getEvents({start, end}) {
-        const events = await getAllVendorsDeliveries(start.date, end.date);
-        console.log(events)
+    async getEvents( {start, end}:{start:any, end:any} ) {
+        const userprofile = await getUserprofile();
+        const vendor = await getVendor(userprofile!.email);
+        let schedule = vendor!.schedule;
+
+        const events: any[] = [];
+        const deliveries = await getAllVendorsDeliveries(start.date, end.date);
+        if (deliveries) {
+            deliveries.forEach((del) => {
+            const delStart = new Date(`${del.deliverytime.substring(0,10)}T00:00:00`);
+            const delEnd = new Date(`${del.deliverytime.substring(0,10)}T23:59:59`);
+            const menu = schedule.find(({id}) => id == del.menuId);
+
+            events.push({
+                name: menu!.menu,
+                start: delStart,
+                end: delEnd, 
+                color: "green"
+            });
+        });
+        this.events = events;
+        }
     }
 }
 </script>
