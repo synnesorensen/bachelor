@@ -18,7 +18,6 @@ import * as interfaces from "../../../../../server/src/interfaces"
 	components: {},
 })
 export default class Deliveries extends Vue {
-    private search = "";
     private start = "";
     private end = "";
     private users:interfaces.UserSubscription[] = [];
@@ -39,10 +38,10 @@ export default class Deliveries extends Vue {
 
     async created() {
         let deliveries = await getAllVendorsDeliveries(this.start, this.end);
-        const userSubscriptions = await getVendorSubscriptions();
+        let userSubscriptions = await getVendorSubscriptions();
 
-        deliveries.forEach((del) => {
-            let user = userSubscriptions.find(({userId}) => userId == del.userId);
+        deliveries!.forEach((del) => {
+            let user:interfaces.UserSubscription = userSubscriptions!.find(({userId}) => userId == del.userId);
             this.users.push(user);
         });
     }
