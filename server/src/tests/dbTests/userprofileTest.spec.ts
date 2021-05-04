@@ -1,6 +1,6 @@
 require('dotenv').config();
 import 'source-map-support/register';
-import { deleteUserprofileInDb, getUserprofileFromDb, putUserprofileInDb } from '../dbUtils';
+import { deleteUserprofileInDb, getUserprofileFromDb, putUserprofileInDb } from '../../dbUtils';
 import { expect } from 'chai';
 import 'mocha';
 

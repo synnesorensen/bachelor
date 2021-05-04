@@ -1,6 +1,6 @@
 require('dotenv').config();
 import 'source-map-support/register';
-import { deleteSubscriptionInDb, deleteUserprofileInDb, deleteVendorInDb, getSubscriptionsForVendor, putSubscriptionInDb, putUserprofileInDb, putVendorInDb } from '../dbUtils';
+import { deleteSubscriptionInDb, deleteUserprofileInDb, deleteVendorInDb, getSubscriptionsForVendor, putSubscriptionInDb, putUserprofileInDb, putVendorInDb } from '../../dbUtils';
 import { expect } from 'chai';
 import 'mocha';
 
@@ -41,7 +41,8 @@ describe('Test of user subscriptions', () => {
             address: "Skogen 110",
             phone: "123456",
             email: "gjøk@skogen.no", 
-            allergies: []
+            allergies: [],
+            isVendor: false
         };
         const sub2 = {
             vendorId: "testVendorId40",
@@ -57,7 +58,8 @@ describe('Test of user subscriptions', () => {
             address: "Viken 84",
             phone: "456789",
             email: "party@viken.no",
-            allergies: ["melk"]
+            allergies: ["melk"],
+            isVendor: false
         };
 
         await putVendorInDb(vendor, "testVendorId40");
@@ -95,6 +97,6 @@ describe('Test of user subscriptions', () => {
         await deleteSubscriptionInDb("testVendorId40", "testUserId1");
         await deleteSubscriptionInDb("testVendorId40", "testUserId2"); 
         await deleteVendorInDb("testVendorId40");
-    });
+    }).timeout(5000);
 
 });

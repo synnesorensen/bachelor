@@ -51,9 +51,7 @@ export default class App extends Vue {
         this.jwtToken = jwtToken;
         localStorage.setItem("token", this.jwtToken);
         api.setApiBearerToken(this.jwtToken);
-        console.log("Got the token, getting profile");
         this.userprofile = await api.getUserprofile();
-        console.log("userprof:",this.userprofile);
         this.loggedInUser = getUserInfo(this.jwtToken);
         this.authorized = true;
     }
@@ -67,7 +65,6 @@ export default class App extends Vue {
     }
 
     newUserprofile(userprofile: interfaces.Userprofile) {
-        console.log("newUserprofile");
         this.userprofile = userprofile;
     }
 

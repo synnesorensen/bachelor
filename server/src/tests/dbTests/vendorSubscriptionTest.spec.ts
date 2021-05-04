@@ -1,6 +1,6 @@
 require('dotenv').config();
 import 'source-map-support/register';
-import { deleteSubscriptionInDb, deleteUserprofileInDb, deleteVendorInDb, getSubscriptionsForUser, getUserprofileFromDb, putSubscriptionInDb, putUserprofileInDb, putVendorInDb } from '../dbUtils';
+import { deleteSubscriptionInDb, deleteUserprofileInDb, deleteVendorInDb, getSubscriptionsForUser, getUserprofileFromDb, putSubscriptionInDb, putUserprofileInDb, putVendorInDb } from '../../dbUtils';
 import { expect } from 'chai';
 import 'mocha';
 
@@ -62,13 +62,13 @@ describe('Test of vendor subscriptions', () => {
             email: "fusion@asia.com",
             schedule: [
                 {
-                    "id": "1",
+                    "id": "5",
                     "day": "tuesday",
                     "time": "10",
                     "menu": "Veggie lunch"
                 },
                 {
-                    "id": "2",
+                    "id": "7",
                     "day": "wednesday",
                     "time": "10",
                     "menu": "Fish lunch"
@@ -90,14 +90,12 @@ describe('Test of vendor subscriptions', () => {
         expect(res1.approved).to.equal(true);
         expect(res1.paused).to.equal(false);
         expect(res1.schedule[0].id).to.eql("1");
-        expect(res1.schedule[1].id).to.eql("2");
 
         let res2 = getResult.find( ({vendorId}) => vendorId === "testVendorId20");
         expect(res2.company).to.equal("Asian Fusion");
         expect(res2.approved).to.equal(false);
         expect(res2.paused).to.equal(true);
-        //expect(res2.schedule[0].id).to.eql("5");
-        //expect(res2.schedule[1].id).to.eql("7");
+        expect(res2.schedule[0].id).to.eql("5");
 
         await deleteSubscriptionInDb("testVendorId10", "testUserId30");
         await deleteSubscriptionInDb("testVendorId20", "testUserId30");
