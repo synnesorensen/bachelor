@@ -12,46 +12,24 @@
         </v-row>
         <v-row>
             <v-col>
-                <!-- <h2 v-if="editButton !== clicked"> -->
                 <h2>
                     {{ loggedInUser.fullname }}
                 </h2>
-                <!-- <v-else v-text-field label="Navn" v-model="fullname"></v-else> -->
-            </v-col>
-            <v-col>
-                <v-btn class="mx-2" fab dark small color="primary">
-                    <v-icon dark> mdi-pencil </v-icon>
-                </v-btn>
             </v-col>
         </v-row>
         <v-row>
             <v-col>
                 <h3>{{ loggedInUser.address }}</h3>
             </v-col>
-            <v-col>
-                <v-btn class="mx-2" fab dark small color="primary">
-                    <v-icon dark> mdi-pencil </v-icon>
-                </v-btn>
-            </v-col>
         </v-row>
         <v-row>
             <v-col>
                 <h3>{{ loggedInUser.phone }}</h3>
             </v-col>
-            <v-col>
-                <v-btn class="mx-2" fab dark small color="primary">
-                    <v-icon dark> mdi-pencil </v-icon>
-                </v-btn>
-            </v-col>
         </v-row>
         <v-row>
             <v-col>
                 <h3>{{ loggedInUser.email }}</h3>
-            </v-col>
-            <v-col>
-                <v-btn class="mx-2" fab dark small color="primary">
-                    <v-icon dark> mdi-pencil </v-icon>
-                </v-btn>
             </v-col>
         </v-row>
         <v-row>
@@ -59,7 +37,7 @@
                 <h3>
                     <label for="allergylist">Mine allergier:</label>
                 </h3>
-                <h4>
+                <p>
                     <ul>
                         <li
                             v-for="allergy in allergies"
@@ -69,48 +47,30 @@
                             {{ allergy }}
                         </li>
                     </ul>
-                </h4>
-            </v-col>
-            <v-col>
-                <v-btn class="mx-2" fab dark small color="primary">
-                    <v-icon dark> mdi-pencil </v-icon>
-                </v-btn>
+                </p>
             </v-col>
         </v-row>
         <v-row>
             <v-col>
                 <h3>Antall porsjoner: {{ subscription.noOfMeals }}</h3>
             </v-col>
-            <v-col>
-                <v-btn class="mx-2" fab dark small color="primary">
-                    <v-icon dark> mdi-pencil </v-icon>
-                </v-btn>
-            </v-col>
         </v-row>
         <v-row>
             <v-col>
                 <h3>Valgt boks: {{ subscription.box }}</h3>
-            </v-col>
-            <v-col>
-                <v-btn class="mx-2" fab dark small color="primary">
-                    <v-icon dark> mdi-pencil </v-icon>
-                </v-btn>
             </v-col>
         </v-row>
         <v-row>
             <v-col>
                 <!-- <h3>Leveringsdag: {{ items.day }}</h3> -->
                 <h3>Leveringsdag:</h3>
-                <div v-for="item in items" v-bind:key="item.id">
-                    <p class="font-weight-light">
-                        {{ item.day + "  -  " + item.menu }}
-                    </p>
-                </div>
-            </v-col>
-            <v-col>
-                <v-btn class="mx-2" fab dark small color="primary">
-                    <v-icon dark> mdi-pencil </v-icon>
-                </v-btn>
+                <p>
+                    <ul v-for="item in items" v-bind:key="item.id">
+                        <li>
+                            {{ item.day + "  -  " + item.menu }}
+                        </li>
+                    </ul>
+                </p>
             </v-col>
         </v-row>
     </v-container>
@@ -136,10 +96,7 @@ export default class CustomerProfile extends Vue {
     async created() {
         const userprofile = await getUserprofile();
         const subs = await getUserSubscriptions();
-        console.log(userprofile);
-        console.log(subs);
         if (userprofile != null) {
-            // const user = await getUserprofile();
             this.loggedInUser = userprofile;
             this.allergies = this.loggedInUser.allergies;
         }
@@ -148,16 +105,17 @@ export default class CustomerProfile extends Vue {
             this.items = subs[0].schedule;
             this.subscription = subs[0];
         }
-
-        // if (subs != null) {
-        //     // const subscriptions = await getVendorSubscriptions();
-        //     // const allUserSubs = await getUserSubscriptions();
-        //     // const userSub = allUserSubs.find(({vendorId}) => vendorId == subscriptions[0].schedule);
-        // }
     }
 
-    // sendToOrderForm(component) {
-    //    component = this.editProfile;
-    // }
+    sendToOrderForm(component) {
+        component = this.editProfile;
+    }
 }
 </script>
+
+<style scoped>
+ul {
+    list-style-type: none;
+    font-weight: 400;
+}
+</style>
