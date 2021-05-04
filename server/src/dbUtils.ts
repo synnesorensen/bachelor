@@ -397,18 +397,19 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
     return result;
 }
 
-export async function getUsersDeliveries(vendorId: string, userId: string, startDate: string, endDate: string): Promise<Delivery[]> {
+export async function getUsersDeliveries(userId: string, startDate: string, endDate: string): Promise<Delivery[]> {
     let params = {
         TableName: settings.TABLENAME,
-        KeyConditionExpression: "#pk = :vendor and #sk BETWEEN :prefix1 and :prefix2",
+        IndexName: "GSI2",
+        KeyConditionExpression: "#GSI2_pk = :user and #GSI2_sk BETWEEN :prefix1 and :prefix2",
         ExpressionAttributeNames: {
-            "#pk": "pk",
-            "#sk": "sk"
+            "#GSI2_pk": "GSI2_pk",
+            "#GSI2_sk": "GSI2_sk"
         },
         ExpressionAttributeValues: {
-            ":vendor": "v#" + vendorId,
-            ":prefix1": "d#" + userId + "#" + startDate,
-            ":prefix2": "d#" + userId + "#" + endDate
+            ":user": "u#" + userId,
+            ":prefix1": startDate,
+            ":prefix2": endDate
         }
     };
 
@@ -416,7 +417,6 @@ export async function getUsersDeliveries(vendorId: string, userId: string, start
 
     let deliveries = dbResult.Items.map((del) => {
         return {
-            vendorId,
             userId,
             deliverytime: del.deliverytime,
             menuId: del.menuId,
@@ -478,8 +478,8 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
         ExpressionAttributeValues[":time"] = { S: delivery.deliverytime};
     }
 
-    UpdateExpression += ", GSI2_pk = :vendorId";
-    ExpressionAttributeValues[":vendorId"] = { S: "v#" + delivery.vendorId};
+    UpdateExpression += ", GSI2_pk = :userId";
+    ExpressionAttributeValues[":userId"] = { S: "u#" + delivery.userId};
 
     UpdateExpression += ", GSI2_sk = :deliverytime";
     ExpressionAttributeValues[":deliverytime"] = { S: delivery.deliverytime};
@@ -528,7 +528,7 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
                     deliverytime: deliveries[i].deliverytime,
                     menuId: deliveries[i].menuId,
                     cancelled: deliveries[i].cancelled,
-                    GSI2_pk: "v#" + deliveries[i].vendorId,
+                    GSI2_pk: "u#" + deliveries[i].userId,
                     GSI2_sk: deliveries[i].deliverytime
                 }
             }
