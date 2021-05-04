@@ -26,7 +26,7 @@
 					weekdays="1, 2, 3, 4, 5"
                     show-week
 					:now="today"
-					@change="updateRange"
+					@change="getEvents"
 				>
 				</v-calendar>
 			</v-sheet>
@@ -37,11 +37,11 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
+import { getAllVendorsDeliveries } from "../../api/api";
+import * as interfaces from "../../../../../server/src/interfaces"
 
 @Component({
-	components: {
-		
-	},
+	components: {},
 })
 export default class AdminOverview extends Vue {
     private today = new Date().toISOString().substr(0, 10);
@@ -49,6 +49,7 @@ export default class AdminOverview extends Vue {
 	private type = 'month';
 	private start = null;
 	private end = null;
+    private events = [];
 
     mounted() {
 		this.focus = '';
@@ -70,5 +71,10 @@ export default class AdminOverview extends Vue {
 		this.start = range.start;
 		this.end = range.end;
 	}
+
+    async getEvents({start, end}) {
+        const events = await getAllVendorsDeliveries(start.date, end.date);
+        console.log(events)
+    }
 }
 </script>
