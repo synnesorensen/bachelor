@@ -576,11 +576,12 @@ export async function getAllDeliveriesFromAllSubscribers(vendorId: string, start
     let deliveries = dbResult.Items.map((del) => {
         return {
             vendorId,
-            userId: del.userId,
+            userId: del.GSI2_pk.substr(2),
             deliverytime: del.deliverytime, 
             menuId: del.menuId,
             cancelled: del.cancelled
         }
     });
+    console.log(deliveries)
     return deliveries;
 }
