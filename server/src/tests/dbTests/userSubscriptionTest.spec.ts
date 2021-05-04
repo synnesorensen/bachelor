@@ -97,6 +97,6 @@ describe('Test of user subscriptions', () => {
         await deleteSubscriptionInDb("testVendorId40", "testUserId1");
         await deleteSubscriptionInDb("testVendorId40", "testUserId2"); 
         await deleteVendorInDb("testVendorId40");
-    });
+    }).timeout(5000);
 
 });

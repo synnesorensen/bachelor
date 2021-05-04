@@ -43,7 +43,7 @@ export interface VendorSubscription {
 }
 
 export interface Delivery {
-    vendorId: string,
+    vendorId?: string,
     userId: string,
     deliverytime: string,
     menuId: string,
