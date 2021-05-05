@@ -120,11 +120,18 @@ export class Api {
         }
     }
 
-    async putVendorSubscription(subscription: interfaces.Subscription): Promise<interfaces.Subscription> {
+    async putVendorSubscription(subscription: interfaces.Subscription): Promise<interfaces.Subscription | null> {
         await this.ensureFreshToken();
-        const url = urlPrefix + "/v/subscription?userId=" + encodeURIComponent(subscription.userId);
-        const addedSubscription = await this.apiAxios.put(url, subscription);
-        return addedSubscription.data;
+        try {
+            const url = urlPrefix + "/v/subscription?userId=" + encodeURIComponent(subscription.userId);
+            const addedSubscription = await this.apiAxios.put(url, subscription);
+            return addedSubscription.data;
+        } catch (error) {
+            if (error.response.status == 403) {
+                return null;
+            }
+            throw (error);
+        }
     }
 
     async deleteVendorSubscription(id: string) {
@@ -147,11 +154,18 @@ export class Api {
         }
     }
 
-    async putUserSubscription(subscription: interfaces.Subscription): Promise<interfaces.Subscription> {
+    async putUserSubscription(subscription: interfaces.Subscription): Promise<interfaces.Subscription | null> {
         await this.ensureFreshToken();
-        const url = urlPrefix + "/u/subscription?vendorId=" + encodeURIComponent(subscription.vendorId);
-        const addedSubscription = await this.apiAxios.put(url, subscription);
-        return addedSubscription.data;
+        try {
+            const url = urlPrefix + "/u/subscription?vendorId=" + encodeURIComponent(subscription.vendorId);
+            const addedSubscription = await this.apiAxios.put(url, subscription);
+            return addedSubscription.data;
+        } catch (error) {
+            if (error.response.status == 403) {
+                return null;
+            }
+            throw (error);
+        }
     }
 
     async deleteUserSubscription(id: string) {
