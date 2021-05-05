@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { deleteSubscriptionInDb, getSubscriptionFromDb, putSubscriptionInDb } from './dbUtils'
+import { deleteSubscriptionInDb, getSubscriptionFromDb, getUserprofileFromDb, putSubscriptionInDb } from './dbUtils'
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -56,14 +56,21 @@ async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
         };
     } catch (err) {
         return {
-            statusCode: 500, 
+            statusCode: 500,
             body: JSON.stringify(err)
-        };  
+        };
     }
 }
 
 async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     let vendorId = getUserInfoFromEvent(event);
+    let vendor = await getUserprofileFromDb(vendorId);
+    if (!vendor.isVendor) {
+        return {
+            statusCode: 403,
+            body: JSON.stringify({ message: "User " + vendorId + " is not a vendor" })
+        };
+    }
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -81,7 +88,7 @@ async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
     let body = JSON.parse(event.body);
 
     try {
-        let subscription = await putSubscriptionInDb({...body, vendorId}, true);
+        let subscription = await putSubscriptionInDb({ ...body, vendorId }, true);
 
         return {
             statusCode: 200,
