@@ -23,7 +23,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import * as interfaces from "../../../../../server/src/interfaces";
-import { getVendorSubscriptions } from '../../api/api'
+import api from '../../api/api'
 
 @Component
 export default class Subscribers extends Vue {
@@ -31,7 +31,7 @@ export default class Subscribers extends Vue {
     private subscribers: interfaces.UserSubscription[] = [];
     
     async created() {
-        this.subscribers = await getVendorSubscriptions();
+        this.subscribers = await api.getVendorSubscriptions();
     }
 
     get selectedSub() {
