@@ -3,7 +3,7 @@
         dense
         :headers="headers"
         :items="users"
-        item-key="fullname"
+        item-key="userId"
         class="elevation-1">
     </v-data-table>
 </template>
@@ -13,14 +13,26 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { getAllVendorsDeliveries, getVendorSubscriptions } from "../../api/api";
 import * as interfaces from "../../../../../server/src/interfaces"
+import { Prop, Watch } from 'vue-property-decorator';
 
 @Component({
 	components: {},
 })
 export default class Deliveries extends Vue {
+    @Prop() date = "";
     private start = "";
     private end = "";
     private users:interfaces.UserSubscription[] = [];
+    @Watch("date")
+    async onDateChanged() {
+        let deliveries = await getAllVendorsDeliveries(this.date + "T00:00:00", this.date + "T23:59:00");
+        let userSubscriptions = await getVendorSubscriptions();
+
+        deliveries!.forEach((del) => {
+            let user:interfaces.UserSubscription = userSubscriptions!.find(({userId}) => userId == del.userId);
+            this.users.push(user);
+        });
+    }
     private headers = [
         {
           text: "Navn",
@@ -33,18 +45,8 @@ export default class Deliveries extends Vue {
         { text: "Adresse", value: "address" },
         { text: "Telefon", value: "phone" },
         { text: "Epost", value: "email" },
-        { text: "Allergies", value: "allergies" }
+        { text: "Allergier", value: "allergies" }
     ];
-
-    async created() {
-        let deliveries = await getAllVendorsDeliveries(this.start, this.end);
-        let userSubscriptions = await getVendorSubscriptions();
-
-        deliveries!.forEach((del) => {
-            let user:interfaces.UserSubscription = userSubscriptions!.find(({userId}) => userId == del.userId);
-            this.users.push(user);
-        });
-    }
 
 }
 </script>

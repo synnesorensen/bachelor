@@ -37,7 +37,7 @@
 		</v-col>
 	</v-row>
     </div>
-    <Deliveries v-if="showDeliveries" />
+    <Deliveries v-if="showDeliveries" :date="selectedDate"/>
     </main>
 </template>
 
@@ -61,6 +61,7 @@ export default class AdminOverview extends Vue {
 	private end = null;
     private events: any[] = [];
     private showDeliveries = false;
+    private selectedDate = "";
 
     mounted() {
 		this.focus = '';
@@ -106,7 +107,8 @@ export default class AdminOverview extends Vue {
         this.events = events;
         }
     }
-    showEvent() {
+    showEvent(event:any) {
+        this.selectedDate = event.day.date;
         this.showDeliveries = true;
     }
 }
