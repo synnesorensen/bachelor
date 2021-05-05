@@ -15,7 +15,7 @@ describe('Testing userprofile for user', () => {
         await user.login(testUser, testPass);
 
     });
-    it('userProfile client check, put, get and delete', async () => {
+    it('userProfile user check, put, get and delete', async () => {
         let userprofile = {
             fullname: "Hjørdis",
             address: "Skogen",
