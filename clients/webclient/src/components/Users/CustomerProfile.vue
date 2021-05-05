@@ -5,9 +5,9 @@
                 <h1 class="primary--text">Min profil</h1>
             </v-col>
             <v-col>
-                <v-btn color="primary" @click="sendToOrderForm"
-                    >Endre profil</v-btn
-                >
+                <v-btn color="primary" @click="sendToOrderForm()">
+                    <v-icon left>mdi-pencil</v-icon>Endre profil
+                </v-btn>
             </v-col>
         </v-row>
         <v-row>
@@ -89,7 +89,7 @@ export default class CustomerProfile extends Vue {
     private loggedInUser: interfaces.Userprofile | null = null;
     private subscription: interfaces.VendorSubscription | null = null;
     private items: interfaces.MenuItems[] | null = [];
-    private editProfile: CustomerOrder | null = null;
+    private editProfile: 'customer-order' | null = null;
     private customerProfile: CustomerProfile | null = null;
     private allergies: string[] | null = null;
 
@@ -107,8 +107,8 @@ export default class CustomerProfile extends Vue {
         }
     }
 
-    sendToOrderForm(component) {
-        component = this.editProfile;
+    sendToOrderForm() {
+        this.$emit("sendToOrderForm", CustomerOrder);
     }
 }
 </script>
