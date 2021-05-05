@@ -19,19 +19,22 @@ import { Prop, Watch } from 'vue-property-decorator';
 	components: {},
 })
 export default class Deliveries extends Vue {
-    @Prop() date = "";
+    @Prop() date!:string;
     private start = "";
     private end = "";
     private users:interfaces.UserSubscription[] = [];
     @Watch("date")
     async onDateChanged() {
-        let deliveries = await getAllVendorsDeliveries(this.date + "T00:00:00", this.date + "T23:59:00");
-        let userSubscriptions = await getVendorSubscriptions();
-
-        deliveries!.forEach((del) => {
-            let user:interfaces.UserSubscription = userSubscriptions!.find(({userId}) => userId == del.userId);
-            this.users.push(user);
-        });
+        console.log(this.date)
+        if (this.date) {
+            let deliveries = await getAllVendorsDeliveries(this.date + "T00:00:00", this.date + "T23:59:00");
+            let userSubscriptions = await getVendorSubscriptions();
+            this.users = [];
+            deliveries!.forEach((del) => {
+                let user:interfaces.UserSubscription = userSubscriptions!.find(({userId}) => userId == del.userId);
+                this.users.push(user);
+            });
+        }
     }
     private headers = [
         {

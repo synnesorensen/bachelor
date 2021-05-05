@@ -61,7 +61,7 @@ export default class AdminOverview extends Vue {
 	private end = null;
     private events: any[] = [];
     private showDeliveries = false;
-    private selectedDate = "";
+    private selectedDate = null;
 
     mounted() {
 		this.focus = '';
