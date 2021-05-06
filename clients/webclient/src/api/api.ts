@@ -190,7 +190,7 @@ export class Api {
 
     async putNewDeliveries(startDate: string, no: number, userId: string, deliveries: interfaces.Delivery[]): Promise<interfaces.Delivery[]> {
         await this.ensureFreshToken();
-        const url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(startDate) + "&no=" + encodeURIComponent(no) + "&userId=" + encodeURIComponent(userId);
+        const url = urlPrefix + "/v/deliveries?start=" + startDate + "&no=" + no + "&userId=" + encodeURIComponent(userId);
         const addedDeliveries = await this.apiAxios.post(url, deliveries);
         return addedDeliveries.data;
     }
@@ -198,8 +198,7 @@ export class Api {
     async getAllUsersDeliveries(start: string, end: string): Promise<interfaces.Delivery[] | null> {
         await this.ensureFreshToken();
         try {
-            const url = urlPrefix + "/u/deliveries?start=" + encodeURIComponent(start) + "&end=" + end;
-            const deliveries = await this.apiAxios.get(url);
+            const deliveries = await this.apiAxios.get(urlPrefix + "/u/deliveries?start=" + start + "&end=" + end;
             return deliveries.data;
         } catch (error) {
             if (error.response.status == 404) {
