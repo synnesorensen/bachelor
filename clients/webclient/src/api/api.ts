@@ -139,10 +139,14 @@ export async function deleteUserSubscription(id: string) {
     await apiAxios.delete(urlPrefix + "/u/subscription?vendorId=" + id);
 }
 
-export async function getAllVendorsDeliveries(start: string, end: string):Promise<interfaces.Delivery[] | null> {
+export async function getAllVendorsDeliveries(start: string, end: string, summary?:boolean):Promise<interfaces.Delivery[] | null> {
     await ensureFreshToken();
     try {
-        const deliveries = await apiAxios.get(urlPrefix + "/v/deliveries?start=" + start + "&end=" + end);
+        let suffix = "";
+        if (summary) {
+            suffix = "&summary=true"
+        }
+        const deliveries = await apiAxios.get(urlPrefix + "/v/deliveries?start=" + start + "&end=" + end + suffix);
         return deliveries.data;
     } catch (error) {
         if (error.response.status == 404) {
