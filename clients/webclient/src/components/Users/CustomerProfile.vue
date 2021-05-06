@@ -2,12 +2,12 @@
     <v-container> 
          <v-row>
             <v-col>
-                <v-btn color="primary" @click="sendToCustomerOrder">
+                <v-btn v-if="showUserprofile" color="primary" @click="sendToCustomerOrder">
                     <v-icon left>mdi-pencil</v-icon>Endre profil
                 </v-btn>
             </v-col>
         </v-row>
-        <div v-if="editUserprofile = true">
+        <div v-if="showUserprofile">
         <v-row>
             <v-col>
                 <h1 class="primary--text">Min profil</h1>
@@ -75,7 +75,7 @@
             </v-col>
         </v-row>
         </div>
-         <div v-if="editUserprofile = true">
+         <div v-if="editUserprofile">
             <CustomerOrder /> 
         </div>
     </v-container>
@@ -100,10 +100,12 @@ export default class CustomerProfile extends Vue {
     private items: interfaces.MenuItems[] | null = [];
     private allergies: string[] | null = null;
     private editUserprofile: boolean = false; 
+    private showUserprofile: boolean = true;
 
     sendToCustomerOrder() {
         console.log("button clicked");
         this.editUserprofile = true;
+        this.showUserprofile = false;
     }
 
     async created() {
