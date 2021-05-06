@@ -177,7 +177,8 @@ export class Api {
     async getAllVendorsDeliveries(start: string, end: string): Promise<interfaces.Delivery[] | null> {
         await this.ensureFreshToken();
         try {
-            const deliveries = await this.apiAxios.get(urlPrefix + "/v/deliveries?start=" + start + "&end=" + end);
+            const url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(start) + "&end=" + end;
+            const deliveries = await this.apiAxios.get(url);
             return deliveries.data;
         } catch (error) {
             if (error.response.status == 404) {
@@ -187,16 +188,18 @@ export class Api {
         }
     }
 
-    async putNewDeliveries(deliveries: interfaces.Delivery[]): Promise<interfaces.Delivery[]> {
+    async putNewDeliveries(startDate: string, no: number, userId: string, deliveries: interfaces.Delivery[]): Promise<interfaces.Delivery[]> {
         await this.ensureFreshToken();
-        const addedDeliveries = await this.apiAxios.post(urlPrefix + "/v/deliveries", deliveries);
+        const url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(startDate) + "&no=" + encodeURIComponent(no) + "&userId=" + encodeURIComponent(userId);
+        const addedDeliveries = await this.apiAxios.post(url, deliveries);
         return addedDeliveries.data;
     }
 
     async getAllUsersDeliveries(start: string, end: string): Promise<interfaces.Delivery[] | null> {
         await this.ensureFreshToken();
         try {
-            const deliveries = await this.apiAxios.get(urlPrefix + "/u/deliveries?start=" + start + "&end=" + end);
+            const url = urlPrefix + "/u/deliveries?start=" + encodeURIComponent(start) + "&end=" + end;
+            const deliveries = await this.apiAxios.get(url);
             return deliveries.data;
         } catch (error) {
             if (error.response.status == 404) {
