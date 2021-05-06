@@ -102,7 +102,7 @@ async function postVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGat
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
-            body: '{ "message" : "Missing parameter time" }'
+            body: '{ "message" : "Missing parameters date, no and userId" }'
         };
     }
     let date = event.queryStringParameters["startDate"];
