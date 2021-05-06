@@ -582,6 +582,6 @@ export async function getAllDeliveriesFromAllSubscribers(vendorId: string, start
             cancelled: del.cancelled
         }
     });
-    console.log(deliveries)
+
     return deliveries;
 }

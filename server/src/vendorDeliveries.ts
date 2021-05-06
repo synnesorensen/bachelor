@@ -5,6 +5,8 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getAllDeliveriesFromAllSubscribers, getUserprofileFromDb, saveDeliveriesToDb } from './dbUtils'
 import { getUserInfoFromEvent } from './auth/getUserFromJwt'
 import { generateDeliveries } from './addDeliveries';
+import { isJSDocReadonlyTag } from 'typescript';
+import { Delivery, Summary } from './interfaces';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     let vendorId = getUserInfoFromEvent(event);
@@ -37,6 +39,7 @@ async function getVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGate
     }
     let start = event.queryStringParameters["start"];
     let end = event.queryStringParameters["end"];
+    let summary = event.queryStringParameters["summary"];
 
     if (!vendorId) {
         return {
@@ -56,12 +59,39 @@ async function getVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGate
             body: '{ "message" : "Missing parameter end time" }'
         };
     }
-
     let deliveries = await getAllDeliveriesFromAllSubscribers(vendorId, start, end); 
+
+    if (summary && summary == "true") {
+        return {
+            statusCode: 200,
+            body: JSON.stringify(generateSummary(deliveries))
+        }
+    }
+    
     return {
         statusCode: 200,
         body: JSON.stringify(deliveries)
     };
+}
+function generateSummary(deliveries: Delivery[]) {
+    let hash = new Map<string, Summary>();
+    deliveries.forEach((del) => {
+        let summary = hash.get(del.deliverytime);
+        if (!summary) {
+            summary = {
+                menuId: del.menuId,
+                date: del.deliverytime,
+                count: 0
+            }
+            hash.set(del.deliverytime, summary);
+        }
+        summary.count++;
+    });
+    let array = [];
+    for (let k of hash) {
+        array.push(k[1]);
+    }
+    return array;
 }
 
 export const mainHandler = middy(handler).use(cors());
