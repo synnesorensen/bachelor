@@ -1,13 +1,16 @@
 <template>
-    <v-container>
+    <v-container> 
+         <v-row>
+            <v-col>
+                <v-btn color="primary" @click="sendToCustomerOrder">
+                    <v-icon left>mdi-pencil</v-icon>Endre profil
+                </v-btn>
+            </v-col>
+        </v-row>
+        <div v-if="editUserprofile = true">
         <v-row>
             <v-col>
                 <h1 class="primary--text">Min profil</h1>
-            </v-col>
-            <v-col>
-                <v-btn color="primary" @click="sendToOrderForm()">
-                    <v-icon left>mdi-pencil</v-icon>Endre profil
-                </v-btn>
             </v-col>
         </v-row>
         <v-row>
@@ -42,8 +45,7 @@
                         <li
                             v-for="allergy in allergies"
                             :key="allergy"
-                            id="allergylist"
-                        >
+                            id="allergylist">
                             {{ allergy }}
                         </li>
                     </ul>
@@ -62,7 +64,6 @@
         </v-row>
         <v-row>
             <v-col>
-                <!-- <h3>Leveringsdag: {{ items.day }}</h3> -->
                 <h3>Leveringsdag:</h3>
                 <p>
                     <ul v-for="item in items" v-bind:key="item.id">
@@ -73,6 +74,10 @@
                 </p>
             </v-col>
         </v-row>
+        </div>
+         <div v-if="editUserprofile = true">
+            <CustomerOrder /> 
+        </div>
     </v-container>
 </template>
 
@@ -84,14 +89,22 @@ import { getUserprofile, getUserSubscriptions } from "../../api/api";
 import * as interfaces from "../../../../../server/src/interfaces";
 import CustomerOrder from "./CustomerOrder.vue";
 
-@Component
+@Component({
+    components: {
+        CustomerOrder,
+    },
+})
 export default class CustomerProfile extends Vue {
     private loggedInUser: interfaces.Userprofile | null = null;
     private subscription: interfaces.VendorSubscription | null = null;
     private items: interfaces.MenuItems[] | null = [];
-    private editProfile: 'customer-order' | null = null;
-    private customerProfile: CustomerProfile | null = null;
     private allergies: string[] | null = null;
+    private editUserprofile: boolean = false; 
+
+    sendToCustomerOrder() {
+        console.log("button clicked");
+        this.editUserprofile = true;
+    }
 
     async created() {
         const userprofile = await getUserprofile();
@@ -105,10 +118,6 @@ export default class CustomerProfile extends Vue {
             this.items = subs[0].schedule;
             this.subscription = subs[0];
         }
-    }
-
-    sendToOrderForm() {
-        this.$emit("sendToOrderForm", CustomerOrder);
     }
 }
 </script>
