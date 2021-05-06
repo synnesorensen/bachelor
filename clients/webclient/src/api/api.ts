@@ -198,7 +198,7 @@ export class Api {
     async getAllUsersDeliveries(start: string, end: string): Promise<interfaces.Delivery[] | null> {
         await this.ensureFreshToken();
         try {
-            const deliveries = await this.apiAxios.get(urlPrefix + "/u/deliveries?start=" + start + "&end=" + end;
+            const deliveries = await this.apiAxios.get(urlPrefix + "/u/deliveries?start=" + start + "&end=" + end);
             return deliveries.data;
         } catch (error) {
             if (error.response.status == 404) {
