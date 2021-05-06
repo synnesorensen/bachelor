@@ -139,7 +139,7 @@ export async function deleteUserSubscription(id: string) {
     await apiAxios.delete(urlPrefix + "/u/subscription?vendorId=" + id);
 }
 
-export async function getAllVendorsDeliveries(start: string, end: string, summary?:boolean):Promise<interfaces.Delivery[] | null> {
+export async function getAllVendorsDeliveries(start: string, end: string, summary?:boolean):Promise<interfaces.Delivery[] | interfaces.Summary[] | null> {
     await ensureFreshToken();
     try {
         let suffix = "";

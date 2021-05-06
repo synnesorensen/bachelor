@@ -73,7 +73,7 @@ async function getVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGate
         body: JSON.stringify(deliveries)
     };
 }
-function generateSummary(deliveries: Delivery[]) {
+function generateSummary(deliveries: Delivery[] | Summary[]) {
     let hash = new Map<string, Summary>();
     deliveries.forEach((del) => {
         let summary = hash.get(del.deliverytime);
