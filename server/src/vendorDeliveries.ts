@@ -103,6 +103,12 @@ async function postVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGat
             body: '{ "message" : "Missing parameter number of deliveries" }'
         };
     }
+    if (!date.endsWith("Z")) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Parameter time must be YYYY-MM-DDTHH:MM:SS.MMMZ" }'
+        };
+    }
     let startDate = new Date(date);
     let noOfDeliveries = parseInt(no);
 

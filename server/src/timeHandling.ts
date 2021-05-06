@@ -61,8 +61,8 @@ function lessThanOrEqual(wt1: WeekTime, wt2: WeekTime) {
 
 export function toWeekTime(date: Date): WeekTime {
     return {
-        day: date.getDay(),
-        time: date.getHours() * 3600000 + date.getMinutes() * 60000 + date.getSeconds() * 1000
+        day: date.getUTCDay(),
+        time: date.getUTCHours() * 3600000 + date.getUTCMinutes() * 60000 + date.getUTCSeconds() * 1000
     }
 }
 
