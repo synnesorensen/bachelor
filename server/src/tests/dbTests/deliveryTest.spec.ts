@@ -115,5 +115,5 @@ describe('Delivery tests', () => {
         await deleteDeliveryInDb("testVendorId66", "testUserId26", "2021-06-01");
         await deleteDeliveryInDb("testVendorId66", "testUserId26", "2021-06-15");
         await deleteDeliveryInDb("testVendorId66", "testUserId26", "2021-06-30"); 
-    }).timeout(5000);
+    });
 });

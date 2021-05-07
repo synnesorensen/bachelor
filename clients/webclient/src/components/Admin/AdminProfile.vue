@@ -62,7 +62,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { getUserprofile, getVendor } from "../../api/api";
+import api from "../../api/api";
 import * as interfaces from "../../../../../server/src/interfaces"
 
 @Component
@@ -71,9 +71,9 @@ export default class CustomerProfile extends Vue {
     private items: interfaces.MenuItems[] | null = [];
     
     async created() {
-        const userprofile = await getUserprofile();
+        const userprofile = await api.getUserprofile();
         if (userprofile != null) {
-            const vendor = await getVendor(userprofile.email);
+            const vendor = await api.getVendor(userprofile.email);
             this.loggedInUser = vendor;
         }
         if (this.loggedInUser != null) {

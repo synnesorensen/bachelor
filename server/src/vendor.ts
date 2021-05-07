@@ -22,6 +22,7 @@ async function getVendor(event: APIGatewayProxyEvent): Promise<APIGatewayProxyRe
     let vendorId = event.queryStringParameters["vendorId"];
     let vendor = await getVendorFromDb(vendorId);
 
+
     if (!vendor) {
         return {
             statusCode: 404,
@@ -40,6 +41,14 @@ async function putvendor(event: APIGatewayProxyEvent): Promise<APIGatewayProxyRe
     const loggedInUser = getUserInfoFromEvent(event);
     let vendorId = event.queryStringParameters["vendorId"];
     let body = JSON.parse(event.body);
+
+
+    if (!event.queryStringParameters) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter vendorId" }'
+        };
+    }
 
     if (vendorId != loggedInUser) {
         return {
