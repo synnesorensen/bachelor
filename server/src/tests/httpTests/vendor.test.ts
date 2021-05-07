@@ -7,7 +7,7 @@ import 'mocha';
 import { afterEach, beforeEach } from 'mocha';
 
 let vendor = null;
-let vendormail = "ingrid.elisabeth.hjelle+test97@gmail.com";
+let vendormail = testVend;
 
 describe('Vendor test client side', () => {
     beforeEach(async function () {

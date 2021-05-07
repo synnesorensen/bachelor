@@ -8,8 +8,8 @@ import { afterEach, beforeEach } from 'mocha';
 
 let user = null;
 let vendor = null;
-let usermail = "ingrid.elisabeth.hjelle+test50@gmail.com";
-let vendormail = "ingrid.elisabeth.hjelle+test97@gmail.com";
+let usermail = testUser;
+let vendormail = testVend;
 
 describe('Subscription vendor test', () => {
     beforeEach(async function () {

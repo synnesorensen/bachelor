@@ -7,7 +7,7 @@ import 'mocha';
 import { afterEach, beforeEach } from 'mocha';
 
 let user = null;
-const mail = "ingrid.elisabeth.hjelle+test97@gmail.com";
+const mail = testVend;
 
 describe('Testing userprofile for vendor', () => {
     beforeEach(async function () {
