@@ -174,7 +174,7 @@ export class Api {
         await this.apiAxios.delete(url);
     }
 
-    async getAllVendorsDeliveries(start: string, end: string): Promise<interfaces.Delivery[] | interfaces.Summary[] | null> {
+    async getAllVendorsDeliveries(start: string, end: string, summary?:boolean): Promise<interfaces.Delivery[] | interfaces.Summary[] | null> {
         await this.ensureFreshToken();
         try {
             const url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(start) + "&end=" + end;

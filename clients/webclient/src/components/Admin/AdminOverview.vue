@@ -1,7 +1,6 @@
 <template>
     <main>
-    <div>
-	<v-row class="fill-height">
+	<v-row>
 		<v-col>
 			<v-sheet height="64">
 				<v-spacer />
@@ -35,9 +34,10 @@
 				</v-calendar>
 			</v-sheet>
 		</v-col>
+        <v-col>
+            <Deliveries v-if="showDeliveries" :date="selectedDate"/>
+        </v-col>
 	</v-row>
-    </div>
-    <Deliveries v-if="showDeliveries" :date="selectedDate"/>
     </main>
 </template>
 
@@ -45,7 +45,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import Deliveries from './Deliveries.vue'
-import { getAllVendorsDeliveries, getUserprofile, getVendor } from "../../api/api";
+import { Api } from "../../api/api";
 import * as interfaces from "../../../../../server/src/interfaces"
 
 @Component({
@@ -62,6 +62,7 @@ export default class AdminOverview extends Vue {
     private events: any[] = [];
     private showDeliveries = false;
     private selectedDate = null;
+    private api = new Api();
 
     mounted() {
 		this.focus = '';
@@ -85,26 +86,25 @@ export default class AdminOverview extends Vue {
 	}
 
     async getEvents( {start, end}:{start:any, end:any} ) {
-        const userprofile = await getUserprofile();
-        const vendor = await getVendor(userprofile!.email);
+        const userprofile = await this.api.getUserprofile();
+        const vendor = await this.api.getVendor(userprofile!.email);
         let schedule = vendor!.schedule;
-
-        const events: any[] = [];
-        const deliveries = await getAllVendorsDeliveries(start.date, end.date);
+        let events: any[] = [];
+        let deliveries = await this.api.getAllVendorsDeliveries(start.date, end.date, true);
         if (deliveries) {
             deliveries.forEach((del) => {
-            const delStart = new Date(`${del.deliverytime.substring(0,10)}T00:00:00`);
-            const delEnd = new Date(`${del.deliverytime.substring(0,10)}T23:59:59`);
-            const menu = schedule.find(({id}) => id == del.menuId);
+                const delStart = new Date(`${del.date.substring(0,10)}T00:00:00`);
+                const delEnd = new Date(`${del.date.substring(0,10)}T23:59:59`);
+                const menu = schedule.find(({id}) => id == del.menuId);
 
-            events.push({
-                name: menu!.menu,
-                start: delStart,
-                end: delEnd, 
-                color: "green"
+                events.push({
+                    name: menu!.menu,
+                    start: delStart,
+                    end: delEnd, 
+                    color: "green"
+                });
             });
-        });
-        this.events = events;
+            this.events = events;
         }
     }
     showEvent(event:any) {

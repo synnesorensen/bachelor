@@ -11,7 +11,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { getAllVendorsDeliveries, getVendorSubscriptions } from "../../api/api";
+import { Api } from "../../api/api";
 import * as interfaces from "../../../../../server/src/interfaces"
 import { Prop, Watch } from 'vue-property-decorator';
 
@@ -20,15 +20,15 @@ import { Prop, Watch } from 'vue-property-decorator';
 })
 export default class Deliveries extends Vue {
     @Prop() date!:string;
+    private api = new Api();
     private start = "";
     private end = "";
     private users:interfaces.UserSubscription[] = [];
     @Watch("date")
     async onDateChanged() {
-        console.log(this.date)
         if (this.date) {
-            let deliveries = await getAllVendorsDeliveries(this.date + "T00:00:00", this.date + "T23:59:00");
-            let userSubscriptions = await getVendorSubscriptions();
+            let deliveries = await this.api.getAllVendorsDeliveries(this.date + "T00:00:00", this.date + "T23:59:00");
+            let userSubscriptions = await this.api.getVendorSubscriptions();
             this.users = [];
             deliveries!.forEach((del) => {
                 let user:interfaces.UserSubscription = userSubscriptions!.find(({userId}) => userId == del.userId);
@@ -43,11 +43,10 @@ export default class Deliveries extends Vue {
           sortable: true,
           value: "fullname",
         },
-        { text: "Boks", value: "box" },
-        { text: "Antall", value: "noOfMeals" },
         { text: "Adresse", value: "address" },
         { text: "Telefon", value: "phone" },
-        { text: "Epost", value: "email" },
+        { text: "Boks", value: "box" },
+        { text: "Antall", value: "noOfMeals" },
         { text: "Allergier", value: "allergies" }
     ];
 
