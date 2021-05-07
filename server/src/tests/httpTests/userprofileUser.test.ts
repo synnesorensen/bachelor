@@ -9,7 +9,7 @@ import { afterEach, beforeEach } from 'mocha';
 let user = null;
 let mail = testUser;
 
-describe('Testing userprofile for user', () => {
+describe('Userprofile for user http test', () => {
     beforeEach(async function () {
         user = new Api();
         await user.login(testUser, testPass);

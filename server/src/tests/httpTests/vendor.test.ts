@@ -9,7 +9,7 @@ import { afterEach, beforeEach } from 'mocha';
 let vendor = null;
 let vendormail = testVend;
 
-describe('Vendor test client side', () => {
+describe('Vendor http test', () => {
     beforeEach(async function () {
         vendor = new Api();
         await vendor.logout();

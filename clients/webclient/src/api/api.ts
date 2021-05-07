@@ -190,9 +190,6 @@ export class Api {
 
     async postNewDeliveries(startDate: string, no: number, userId: string): Promise<interfaces.Delivery[]> {
         await this.ensureFreshToken();
-        console.log(startDate)
-        console.log(no)
-        console.log(userId)
         const url = urlPrefix + "/v/deliveries?startDate=" + startDate + "&no=" + no + "&userId=" + encodeURIComponent(userId);
         const addedDeliveries = await this.apiAxios.post(url);
         return addedDeliveries.data;

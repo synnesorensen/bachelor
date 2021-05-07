@@ -8,7 +8,7 @@ import { afterEach, beforeEach } from 'mocha';
 
 let user = null;
 
-describe('Testing user role', function () {
+describe('User role http test', function () {
     before(async function () {
         user = new Api();
         await user.login(testUser, testPass);

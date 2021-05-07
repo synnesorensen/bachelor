@@ -7,7 +7,7 @@ import 'mocha';
 import { afterEach, beforeEach } from 'mocha';
 
 let vendor = null;
-describe('Testing vendor role', function () {
+describe('Vendor role http test', function () {
     beforeEach(async function () {
         vendor = new Api();
         await vendor.login(testVend, testVendPass);

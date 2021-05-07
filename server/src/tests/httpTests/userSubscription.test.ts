@@ -11,7 +11,7 @@ let user = null;
 const vendormail = testVend;
 const usermail = testUser;
 
-describe('Testing a users subscriptions', () => {
+describe('Users subscriptions http test', () => {
     beforeEach(async function () {
         vendor = new Api();
         user = new Api();

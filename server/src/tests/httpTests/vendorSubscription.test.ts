@@ -11,7 +11,7 @@ let vendor = null;
 let usermail = testUser;
 let vendormail = testVend;
 
-describe('Subscription vendor test', () => {
+describe('Subscription vendor http test', () => {
     beforeEach(async function () {
         vendor = new Api();
         user = new Api();

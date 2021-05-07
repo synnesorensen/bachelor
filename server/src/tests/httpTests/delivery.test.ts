@@ -11,7 +11,7 @@ let user = null
 const vendormail = testVend;
 const usermail = testUser;
 
-describe('Delivery http test', () => {
+describe('Delivery, user and vedorDeliveries http test', () => {
     beforeEach(async function () {
         vendor = new Api();
         user = new Api();
@@ -77,7 +77,7 @@ describe('Delivery http test', () => {
 
         await vendor.deleteDelivery(vendormail, usermail, "2021-05-01");
         const delRes = await vendor.getDelivery(vendormail, usermail, "2021-05-01");
-        console.log(delRes)
+
         let putRes = await vendor.putDelivery(vendormail, usermail, delivery3);
         expect(putRes.deliverytime).to.equal("2021-05-01");
 
@@ -96,22 +96,22 @@ describe('Delivery http test', () => {
 
         //Testing vendorDeliveries v/deliveries
         const vDelgetResult = await vendor.getAllVendorsDeliveries("2021-04-01", "2021-04-30");
-        console.log(vDelgetResult)
-
         expect(vDelgetResult.length).to.equal(2);
         let vres1 = vDelgetResult.find( ({deliverytime}) => deliverytime === "2021-04-01");
         expect(vres1.menuId).to.equal("2");
         let vres2 = vDelgetResult.find( ({deliverytime}) => deliverytime === "2021-04-20");
         expect(vres2.menuId).to.equal("1");
-        console.log(vres2)
 
         let vdelputRes = await vendor.postNewDeliveries("2021-06-30", 3, usermail);
-        console.log("hei hei", vdelputRes)
         expect(vdelputRes.length).to.equal(3);
         expect(vdelputRes[0].userId).to.equal(usermail);
         expect(vdelputRes[0].vendorId).to.equal(vendormail);
-        let vdelgetRes2 = await vendor.getAllVendorsDeliveries("2021-20-06", "2021-20-07");
-        console.log(vdelgetRes2)
+        expect(vdelputRes[0].deliverytime.substr(0, 10)).to.equal("2021-07-06");
+        expect(vdelputRes[1].deliverytime.substr(0, 10)).to.equal("2021-07-07");
+        expect(vdelputRes[2].deliverytime.substr(0, 10)).to.equal("2021-07-13");
+        expect(vdelputRes[0].menuId).to.equal("1");
+        expect(vdelputRes[1].menuId).to.equal("2");
+        expect(vdelputRes[2].menuId).to.equal("1");
 
     });
     afterEach(async function () {
