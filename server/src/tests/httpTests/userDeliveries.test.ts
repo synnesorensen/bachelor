@@ -30,7 +30,7 @@ describe('User deliveries test', () => {
         let getRes2 = await user.getAllUsersDeliveries("2021-04-01", "2021-05-31");
         expect(getRes2.length).to.equal(4);
 
-    }).timeout(5000);
+    });
     afterEach(async function () {
         await vendor.logout();
         await user.logout();

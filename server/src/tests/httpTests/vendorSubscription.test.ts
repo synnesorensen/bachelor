@@ -63,7 +63,7 @@ describe('Subscription vendor test', () => {
         await user.putUserSubscription(sub);
 
 
-    }).timeout(5000);
+    });
     afterEach(async function () {
         await vendor.logout();
     });

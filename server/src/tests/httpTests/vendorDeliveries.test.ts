@@ -85,10 +85,10 @@ describe('Vendor deliveries test', () => {
             cancelled: false        
         }];
 
-        let putRes = await vendor.putNewDeliveries("2021-06-30", 3, usermail, newDeliveries);
+        let putRes = await vendor.postNewDeliveries("2021-06-30", 3, usermail);
         console.log("Hallo", putRes)
 
-    }).timeout(5000);
+    });
     afterEach(async function () {
         await vendor.logout();
         await user.logout();

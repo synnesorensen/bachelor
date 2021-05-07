@@ -61,7 +61,7 @@ describe('Testing a users subscriptions', () => {
         let httpresult = await user.putUserSubscription(sub1);
         expect(httpresult.statusCode).to.equal(undefined);
 
-    }).timeout(5000);
+    });
     afterEach(async function () {
         await vendor.logout();
     });

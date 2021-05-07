@@ -43,7 +43,7 @@ describe('Testing userprofile for vendor', () => {
         expect(getRes.allergies.length).to.equal(1);
         expect(getRes.isVendor).to.equal(true);
 
-    }).timeout(5000);
+    });
     afterEach(async function () {
         await user.logout();
     });

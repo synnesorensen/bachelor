@@ -48,7 +48,7 @@ describe('Testing userprofile for user', () => {
         expect(newRes).to.equal(null);
         await user.putUserprofile(userprofile)
         
-    }).timeout(5000);
+    });
     afterEach(async function () {
         await user.logout();
     });

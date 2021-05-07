@@ -102,7 +102,7 @@ SyntaxError: Unexpected number in JSON at position 4
         expect(putRes.deliverytime).to.equal("2021-05-01");
         //await vendor.deleteDelivery("testVendorId66", "testUserId26", "2021-06-15");
         //await vendor.deleteDelivery("testVendorId66", "testUserId26", "2021-06-30");*/
-    }).timeout(5000);
+    });
     afterEach(async function () {
         await vendor.logout();
         await user.logout();

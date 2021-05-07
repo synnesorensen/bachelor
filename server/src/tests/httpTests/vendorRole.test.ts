@@ -17,7 +17,7 @@ describe('Testing vendor role', function () {
         let vendorprofile = await vendor.getUserprofile();
         expect(vendorprofile.isVendor).equal(true);
 
-    }).timeout(5000);
+    });
     afterEach(async function () {
         await vendor.logout();
     });

@@ -63,7 +63,7 @@ describe('Vendor test client side', () => {
         const newResult = await vendor.getVendor(vendormail);
         expect(newResult).to.equal(null);
         await vendor.putVendor(vendorProfile, vendormail);*/
-    }).timeout(5000);
+    });
     afterEach(async function () {
         await vendor.logout();
     });

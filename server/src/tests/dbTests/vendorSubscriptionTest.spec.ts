@@ -106,7 +106,7 @@ describe('Test of vendor subscriptions', () => {
         expect(newGet1).to.equal(undefined);
         await deleteVendorInDb("testVendorId10");
         await deleteVendorInDb("testVendorId20");
-    }).timeout(5000);
+    });
 });
 
 

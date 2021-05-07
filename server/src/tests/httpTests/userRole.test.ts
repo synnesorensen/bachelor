@@ -9,7 +9,7 @@ import { afterEach, beforeEach } from 'mocha';
 let user = null;
 
 describe('Testing user role', function () {
-    beforeEach(async function () {
+    before(async function () {
         user = new Api();
         await user.login(testUser, testPass);
     });
@@ -18,8 +18,8 @@ describe('Testing user role', function () {
         let userprofile = await user.getUserprofile();
         expect(userprofile.isVendor).equal(false);
 
-    }).timeout(5000);
-    afterEach(async function () {
+    });
+    after(async function () {
         await user.logout();
     });
 
