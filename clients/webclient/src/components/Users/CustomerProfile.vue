@@ -92,7 +92,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { MenuItems } from "../../../../../server/src/interfaces";
-import { getUserprofile, getUserSubscriptions } from "../../api/api";
+import api from "../../api/api";
 
 @Component
 export default class CustomerProfile extends Vue {
@@ -112,7 +112,7 @@ export default class CustomerProfile extends Vue {
 
 
     async showUserProfile() {
-        let userRes = await getUserprofile();
+        let userRes = await api.getUserprofile();
         if(userRes != null) {
             this.fullname = userRes.fullname;
             this.address = userRes.address;
@@ -123,7 +123,7 @@ export default class CustomerProfile extends Vue {
 
         //Må finnne en bedre måte å hente vendor på
         let vendor = "lunsj@hjul.no";
-        let subscriptionRes = await getUserSubscriptions();
+        let subscriptionRes = await api.getUserSubscriptions();
         if(subscriptionRes != null) {
         this.approved = subscriptionRes[0].approved;
         this.paused = subscriptionRes[0].paused;
