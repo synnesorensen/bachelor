@@ -174,10 +174,16 @@ export class Api {
         await this.apiAxios.delete(url);
     }
 
-    async getAllVendorsDeliveries(start: string, end: string, summary?:boolean): Promise<interfaces.Delivery[] | interfaces.Summary[] | null> {
+    async getAllVendorsDeliveries(startDate: string, endDate: string, summary?:boolean): Promise<interfaces.Delivery[] | interfaces.Summary[] | null> {
         await this.ensureFreshToken();
-        try {
-            const url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(start) + "&end=" + end;
+        let startDateUTC = new Date(startDate).getUTCDate().toString();
+        let endDateUTC = new Date(endDate).getUTCDate().toString();
+
+        try { 
+            let url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(startDateUTC) + "&end=" + endDateUTC;
+            if (summary) {
+                url += "&summary=true"
+            }
             const deliveries = await this.apiAxios.get(url);
             return deliveries.data;
         } catch (error) {
@@ -190,15 +196,18 @@ export class Api {
 
     async postNewDeliveries(startDate: string, no: number, userId: string): Promise<interfaces.Delivery[]> {
         await this.ensureFreshToken();
-        const url = urlPrefix + "/v/deliveries?startDate=" + startDate + "&no=" + no + "&userId=" + encodeURIComponent(userId);
+        let startDateUTC = new Date(startDate).getUTCDate().toString();
+        const url = urlPrefix + "/v/deliveries?startDate=" + startDateUTC + "&no=" + no + "&userId=" + encodeURIComponent(userId);
         const addedDeliveries = await this.apiAxios.post(url);
         return addedDeliveries.data;
     }
 
-    async getAllUsersDeliveries(start: string, end: string): Promise<interfaces.Delivery[] | null> {
+    async getAllUsersDeliveries(startDate: string, endDate: string): Promise<interfaces.Delivery[] | null> {
         await this.ensureFreshToken();
+        let startDateUTC = new Date(startDate).getUTCDate().toString();
+        let endDateUTC = new Date(endDate).getUTCDate().toString();
         try {
-            const deliveries = await this.apiAxios.get(urlPrefix + "/u/deliveries?start=" + start + "&end=" + end);
+            const deliveries = await this.apiAxios.get(urlPrefix + "/u/deliveries?start=" + startDateUTC + "&end=" + endDateUTC);
             return deliveries.data;
         } catch (error) {
             if (error.response.status == 404) {
@@ -210,8 +219,9 @@ export class Api {
 
     async getDelivery(vendorId: string, userId: string, time: string): Promise<interfaces.Delivery | null> {
         await this.ensureFreshToken();
+        let timeUTC = new Date(time).getUTCDate.toString();
         try {
-            const url = urlPrefix + "/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId) + "&time=" + encodeURIComponent(time);
+            const url = urlPrefix + "/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId) + "&time=" + timeUTC;
             const delivery = await this.apiAxios.get(url);
             return delivery.data;
         } catch (error) {
@@ -231,7 +241,8 @@ export class Api {
 
     async deleteDelivery(vendorId: string, userId: string, time: string) {
         await this.ensureFreshToken();
-        const url = urlPrefix + "/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId) + "&time=" + encodeURIComponent(time);
+        let timeUTC = new Date(time).getUTCDate.toString();
+        const url = urlPrefix + "/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId) + "&time=" + timeUTC;
         await this.apiAxios.delete(url);
     }
 

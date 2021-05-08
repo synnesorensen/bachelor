@@ -2,6 +2,7 @@ import { DateWithMenuId, WeekTime } from './interfaces'
 
 export function getDeliveryDates(startDate: Date, weekTimes: WeekTime[], no:number):DateWithMenuId[] {
     let nextDelivery = nextDeliveryDate(startDate, weekTimes);
+
     let count = 0;
     let deliveryDates: DateWithMenuId[] = [];
 
@@ -17,7 +18,7 @@ export function noOfDeliveriesInMonth(startDate: Date, weekTimes: WeekTime[]):nu
     let nextDelivery = nextDeliveryDate(startDate, weekTimes);
     let count = 0;
 
-    while (nextDelivery.date.getMonth() == startDate.getMonth()) {
+    while (nextDelivery.date.getUTCMonth() == startDate.getUTCMonth()) {
         nextDelivery = nextDeliveryDate(nextDelivery.date, weekTimes);
         count++;
     }
@@ -28,7 +29,6 @@ export function nextDeliveryDate(date: Date, weekTimes: WeekTime[]): DateWithMen
     if (weekTimes.length == 0) {
         return null;
     }
-
     let weekTime = toWeekTime(date);
     let i = 0;
     while (i < weekTimes.length && lessThanOrEqual(weekTimes[i], weekTime)) {
@@ -62,7 +62,7 @@ function lessThanOrEqual(wt1: WeekTime, wt2: WeekTime) {
 export function toWeekTime(date: Date): WeekTime {
     return {
         day: date.getUTCDay(),
-        time: date.getUTCHours() * 3600000 + date.getUTCMinutes() * 60000 + date.getUTCSeconds() * 1000
+        time: date.getUTCHours() * 3600000 + date.getUTCMinutes() * 60000 + date.getUTCSeconds() * 1000 + date.getUTCMilliseconds()
     }
 }
 
