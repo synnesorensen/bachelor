@@ -1,7 +1,7 @@
 import 'source-map-support/register'
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription, Summary } from './interfaces';
+import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription, Summary, MenuItems } from './interfaces';
 import * as settings from '../../common/settings';
 
 const database = new DynamoDB({ region: settings.REGION });
@@ -374,7 +374,6 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
             }
         }
     };
-
     let vendors = await documentClient.batchGet(params2).promise();
     let subhash = new Map<String, Subscription>();
 
@@ -382,14 +381,25 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
         subhash.set(sub.vendorId, sub);
     });
 
+
+
     let result:VendorSubscription[] = vendors.Responses[settings.TABLENAME].map((vendor) => {
         let sub = subhash.get(vendor.pk);
+        let menuHash = new Map<string, MenuItems>();
+        vendor.schedule.forEach((item:MenuItems) => {
+            menuHash.set(item.id, item);
+        });
+        let subSchedule: MenuItems[]= [];
+        sub.schedule.forEach((item) => {
+            subSchedule.push(menuHash.get(item));
+        });
+        
         return {
             vendorId: sub.vendorId.substr(2),
             company: vendor.company,
             approved: sub.approved,
             paused: sub.paused,
-            schedule: vendor.schedule, 
+            schedule: subSchedule,
             noOfMeals: sub.noOfMeals,
             box: sub.box
         }
