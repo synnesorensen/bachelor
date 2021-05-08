@@ -16,23 +16,23 @@
         <v-row>
             <v-col>
                 <h2>
-                    {{ loggedInUser.fullname }}
+                    {{ userprofile.fullname }}
                 </h2>
             </v-col>
         </v-row>
         <v-row>
             <v-col>
-                <h3>{{ loggedInUser.address }}</h3>
+                <h3>{{ userprofile.address }}</h3>
             </v-col>
         </v-row>
         <v-row>
             <v-col>
-                <h3>{{ loggedInUser.phone }}</h3>
+                <h3>{{ userprofile.phone }}</h3>
             </v-col>
         </v-row>
         <v-row>
             <v-col>
-                <h3>{{ loggedInUser.email }}</h3>
+                <h3>{{ userprofile.email }}</h3>
             </v-col>
         </v-row>
         <v-row>
@@ -76,7 +76,7 @@
         </v-row>
         </div>
          <div v-if="editUserprofile">
-            <CustomerOrder /> 
+            <CustomerOrder :loggedInUser="loggedInUser"/> 
         </div>
     </v-container>
 </template>
@@ -88,6 +88,7 @@ import { MenuItems } from "../../../../../server/src/interfaces";
 import { getUserprofile, getUserSubscriptions } from "../../api/api";
 import * as interfaces from "../../../../../server/src/interfaces";
 import CustomerOrder from "./CustomerOrder.vue";
+import { Prop } from "vue-property-decorator";
 
 @Component({
     components: {
@@ -95,10 +96,11 @@ import CustomerOrder from "./CustomerOrder.vue";
     },
 })
 export default class CustomerProfile extends Vue {
-    private loggedInUser: interfaces.Userprofile | null = null;
+    @Prop() userprofile!: interfaces.Userprofile;
+    @Prop() loggedInUser!: string;
     private subscription: interfaces.VendorSubscription | null = null;
     private items: interfaces.MenuItems[] | null = [];
-    private allergies: string[] | null = null;
+    private allergies = this.userprofile.allergies;
     private editUserprofile: boolean = false; 
     private showUserprofile: boolean = true;
 
@@ -109,12 +111,7 @@ export default class CustomerProfile extends Vue {
     }
 
     async created() {
-        const userprofile = await getUserprofile();
         const subs = await getUserSubscriptions();
-        if (userprofile != null) {
-            this.loggedInUser = userprofile;
-            this.allergies = this.loggedInUser.allergies;
-        }
 
         if (subs != null) {
             this.items = subs[0].schedule;

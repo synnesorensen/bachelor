@@ -1,6 +1,7 @@
 <template>
 	<v-app>
         <AppBar 
+            :loggedInUser="loggedInUser"
             :userprofile="userprofile"
             v-if="authorized && userprofile != null" 
             @logout="logout" 

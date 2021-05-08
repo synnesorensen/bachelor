@@ -24,7 +24,7 @@
 		<v-main>
 			<v-tabs-items v-model="tab">
 				<v-tab-item v-if="!userprofile.isVendor"><CustomerOverview /></v-tab-item>
-				<v-tab-item v-if="!userprofile.isVendor"><CustomerProfile /> </v-tab-item>
+				<v-tab-item v-if="!userprofile.isVendor"><CustomerProfile :userprofile="userprofile" :loggedInUser="loggedInUser" /> </v-tab-item>
 				<v-tab-item v-if="!userprofile.isVendor"><CustomerInvoice /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminOverview /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminProfile /></v-tab-item>
@@ -60,7 +60,8 @@ import { Prop } from 'vue-property-decorator';
 	},
 })
 export default class AppBar extends Vue {
-    @Prop() userprofile!: interfaces.Userprofile; 
+    @Prop() userprofile!: interfaces.Userprofile;
+    @Prop() loggedInUser!: string; 
 	private tab = 0;
 
     logout() {
