@@ -1,141 +1,129 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col>
-        <h1 class="primary--text">Min profil</h1>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <h2>{{ fullname }}</h2>
-      </v-col>
-      <v-col>
-        <v-btn class="mx-2" fab dark small color="primary">
-          <v-icon dark> mdi-pencil </v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <h3>{{ address }}</h3>
-      </v-col>
-      <v-col>
-        <v-btn class="mx-2" fab dark small color="primary">
-          <v-icon dark> mdi-pencil </v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <h3>{{ phone }}</h3>
-      </v-col>
-      <v-col>
-        <v-btn class="mx-2" fab dark small color="primary">
-          <v-icon dark> mdi-pencil </v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <h3>{{ email }}</h3>
-      </v-col>
-      <v-col>
-        <v-btn class="mx-2" fab dark small color="primary">
-          <v-icon dark> mdi-pencil </v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <h3>Mine allergier: {{ allergies }}</h3>
-      </v-col>
-      <v-col>
-        <v-btn class="mx-2" fab dark small color="primary">
-          <v-icon dark> mdi-pencil </v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <h3>Antall porsjoner: {{ noOfMeals }}</h3>
-      </v-col>
-      <v-col>
-        <v-btn class="mx-2" fab dark small color="primary">
-          <v-icon dark> mdi-pencil </v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <h3>Valgt boks: {{ box }}</h3>
-      </v-col>
-      <v-col>
-        <v-btn class="mx-2" fab dark small color="primary">
-          <v-icon dark> mdi-pencil </v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <h3>Leveringsdag: {{ schedule }}</h3>
-      </v-col>
-      <v-col>
-        <v-btn class="mx-2" fab dark small color="primary">
-          <v-icon dark> mdi-pencil </v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-container>
+    <v-container v-if="loggedInUser"> 
+         <v-row>
+            <v-col>
+                <v-btn v-if="showUserprofile" color="primary" @click="sendToCustomerOrder">
+                    <v-icon left>mdi-pencil</v-icon>Endre profil
+                </v-btn>
+            </v-col>
+        </v-row>
+        <div v-if="showUserprofile">
+        <v-row>
+            <v-col>
+                <h1 class="primary--text">Min profil</h1>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                <h2>
+                    {{ userprofile.fullname }}
+                </h2>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                <h3>{{ userprofile.address }}</h3>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                <h3>{{ userprofile.phone }}</h3>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                <h3>{{ userprofile.email }}</h3>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                <h3>
+                    <label for="allergylist">Mine allergier:</label>
+                </h3>
+                <p>
+                    <ul>
+                        <li
+                            v-for="allergy in allergies"
+                            :key="allergy"
+                            id="allergylist">
+                            {{ allergy }}
+                        </li>
+                    </ul>
+                </p>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                <h3>Antall porsjoner: {{ subscription.noOfMeals }}</h3>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                <h3>Valgt boks: {{ subscription.box }}</h3>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                <h3>Leveringsdag:</h3>
+                <p>
+                    <ul v-for="item in items" v-bind:key="item.id">
+                        <li>
+                            {{ item.day + "  -  " + item.menu }}
+                        </li>
+                    </ul>
+                </p>
+            </v-col>
+        </v-row>
+        </div>
+         <div v-if="editUserprofile">
+            <CustomerOrder :loggedInUser="loggedInUser"/> 
+        </div>
+    </v-container>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
 import { MenuItems } from "../../../../../server/src/interfaces";
+import * as interfaces from "../../../../../server/src/interfaces";
+import CustomerOrder from "./CustomerOrder.vue";
+import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
 
-@Component
+@Component({
+    components: {
+        CustomerOrder,
+    },
+})
 export default class CustomerProfile extends Vue {
-    //Userprofile
-    private fullname = "";
-    private address = "";
-    private phone = "";
-    private email = "";
-    private allergies: string[] = [];
+    @Prop() userprofile!: interfaces.Userprofile;
+    @Prop() loggedInUser!: string;
+    private subscription: interfaces.VendorSubscription | null = null;
+    private items: interfaces.MenuItems[] | null = [];
+    private allergies = this.userprofile.allergies;
+    private editUserprofile: boolean = false; 
+    private showUserprofile: boolean = true;
 
-    //Usersubscription
-    private approved = false;
-    private paused = false;
-    private schedule: MenuItems[] = [];
-    private noOfMeals = "";
-    private box = "";
-
-
-    async showUserProfile() {
-        let userRes = await api.getUserprofile();
-        if(userRes != null) {
-            this.fullname = userRes.fullname;
-            this.address = userRes.address;
-            this.phone = userRes.phone;
-            this.email = userRes.email;
-            this.allergies = userRes.allergies;
-        }
-
-        //Må finnne en bedre måte å hente vendor på
-        let vendor = "lunsj@hjul.no";
-        let subscriptionRes = await api.getUserSubscriptions();
-        if(subscriptionRes != null) {
-        this.approved = subscriptionRes[0].approved;
-        this.paused = subscriptionRes[0].paused;
-        this.noOfMeals = subscriptionRes[0].noOfMeals.toString();
-        this.box = subscriptionRes[0].box;
-        this.schedule = subscriptionRes[0].schedule;
-        }
+    sendToCustomerOrder() {
+        console.log("button clicked");
+        this.editUserprofile = true;
+        this.showUserprofile = false;
     }
 
-    beforeMount() {
-        this.showUserProfile();
+    async created() {
+        const subs = await api.getUserSubscriptions();
+
+        if (subs != null) {
+            this.items = subs[0].schedule;
+            this.subscription = subs[0];
+        }
     }
 }
-
 </script>
+
+<style scoped>
+ul {
+    list-style-type: none;
+    font-weight: 400;
+}
+</style>
