@@ -11,7 +11,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Api } from "../../api/api";
+import api from "../../api/api";
 import * as interfaces from "../../../../../server/src/interfaces"
 import { Prop, Watch } from 'vue-property-decorator';
 
@@ -20,15 +20,18 @@ import { Prop, Watch } from 'vue-property-decorator';
 })
 export default class Deliveries extends Vue {
     @Prop() date!:string;
-    private api = new Api();
     private start = "";
     private end = "";
     private users:interfaces.UserSubscription[] = [];
     @Watch("date")
     async onDateChanged() {
         if (this.date) {
-            let deliveries = await this.api.getAllVendorsDeliveries(this.date + "T00:00:00", this.date + "T23:59:00");
-            let userSubscriptions = await this.api.getVendorSubscriptions();
+            let startDate = new Date(this.date+"T00:00:00");
+            let endDate = new Date(this.date+"T23:59:59");
+            let UTCStartDate = startDate.toISOString();
+            let UTCEndDate = endDate.toISOString();
+            let deliveries = await api.getAllVendorsDeliveries(UTCStartDate, UTCEndDate);
+            let userSubscriptions = await api.getVendorSubscriptions();
             this.users = [];
             deliveries!.forEach((del) => {
                 let user:interfaces.UserSubscription = userSubscriptions!.find(({userId}) => userId == del.userId);
