@@ -174,10 +174,14 @@ export class Api {
         await this.apiAxios.delete(url);
     }
 
-    async getAllVendorsDeliveries(start: string, end: string): Promise<interfaces.Delivery[] | null> {
+    async getAllVendorsDeliveries(startDate: string, endDate: string, summary?:boolean): Promise<interfaces.Delivery[] | interfaces.Summary[] | null> {
         await this.ensureFreshToken();
-        try {
-            const url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(start) + "&end=" + end;
+
+        try { 
+            let url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(startDate) + "&end=" + endDate;
+            if (summary) {
+                url += "&summary=true"
+            }
             const deliveries = await this.apiAxios.get(url);
             return deliveries.data;
         } catch (error) {
@@ -195,10 +199,11 @@ export class Api {
         return addedDeliveries.data;
     }
 
-    async getAllUsersDeliveries(start: string, end: string): Promise<interfaces.Delivery[] | null> {
+    async getAllUsersDeliveries(startDate: string, endDate: string): Promise<interfaces.Delivery[] | null> {
         await this.ensureFreshToken();
+
         try {
-            const deliveries = await this.apiAxios.get(urlPrefix + "/u/deliveries?start=" + start + "&end=" + end);
+            const deliveries = await this.apiAxios.get(urlPrefix + "/u/deliveries?start=" + startDate + "&end=" + endDate);
             return deliveries.data;
         } catch (error) {
             if (error.response.status == 404) {
@@ -211,7 +216,7 @@ export class Api {
     async getDelivery(vendorId: string, userId: string, time: string): Promise<interfaces.Delivery | null> {
         await this.ensureFreshToken();
         try {
-            const url = urlPrefix + "/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId) + "&time=" + encodeURIComponent(time);
+            const url = urlPrefix + "/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId) + "&time=" + time;
             const delivery = await this.apiAxios.get(url);
             return delivery.data;
         } catch (error) {
@@ -231,7 +236,7 @@ export class Api {
 
     async deleteDelivery(vendorId: string, userId: string, time: string) {
         await this.ensureFreshToken();
-        const url = urlPrefix + "/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId) + "&time=" + encodeURIComponent(time);
+        const url = urlPrefix + "/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId) + "&time=" + time;
         await this.apiAxios.delete(url);
     }
 

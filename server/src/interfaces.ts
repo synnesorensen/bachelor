@@ -76,3 +76,9 @@ export interface DateWithMenuId {
     date: Date,
     menuId?: string
 }
+
+export interface Summary {
+    menuId: string,
+    date: string,
+    count: number
+}

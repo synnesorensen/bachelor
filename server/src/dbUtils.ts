@@ -1,7 +1,7 @@
 import 'source-map-support/register'
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription } from './interfaces';
+import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription, Summary, MenuItems } from './interfaces';
 import * as settings from '../../common/settings';
 
 const database = new DynamoDB({ region: settings.REGION });
@@ -263,7 +263,7 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
             approved: item.approved,
             paused:item.paused,
             schedule: item.schedule.values,
-            noOfMeals: item.noOfMelas,
+            noOfMeals: item.noOfMeals,
             box: item.box
         }
     });
@@ -374,7 +374,6 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
             }
         }
     };
-
     let vendors = await documentClient.batchGet(params2).promise();
     let subhash = new Map<String, Subscription>();
 
@@ -382,14 +381,25 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
         subhash.set(sub.vendorId, sub);
     });
 
+
+
     let result:VendorSubscription[] = vendors.Responses[settings.TABLENAME].map((vendor) => {
         let sub = subhash.get(vendor.pk);
+        let menuHash = new Map<string, MenuItems>();
+        vendor.schedule.forEach((item:MenuItems) => {
+            menuHash.set(item.id, item);
+        });
+        let subSchedule: MenuItems[]= [];
+        sub.schedule.forEach((item) => {
+            subSchedule.push(menuHash.get(item));
+        });
+        
         return {
             vendorId: sub.vendorId.substr(2),
             company: vendor.company,
             approved: sub.approved,
             paused: sub.paused,
-            schedule: vendor.schedule, 
+            schedule: subSchedule,
             noOfMeals: sub.noOfMeals,
             box: sub.box
         }
@@ -557,7 +567,7 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
     }
 }
 
-export async function getAllDeliveriesFromAllSubscribers(vendorId: string, startTime: string, endTime: string): Promise<Delivery[]> {
+export async function getAllDeliveriesFromAllSubscribers(vendorId: string, startTime: string, endTime: string): Promise<Delivery[] | Summary[]> {
     let params = {
         TableName: settings.TABLENAME,
         KeyConditionExpression: "#pk = :vendor and #sk BETWEEN :start and :end",
@@ -576,11 +586,12 @@ export async function getAllDeliveriesFromAllSubscribers(vendorId: string, start
     let deliveries = dbResult.Items.map((del) => {
         return {
             vendorId,
-            userId: del.userId,
+            userId: del.GSI2_pk.substr(2),
             deliverytime: del.deliverytime, 
             menuId: del.menuId,
             cancelled: del.cancelled
         }
     });
+
     return deliveries;
 }
