@@ -46,7 +46,6 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import Deliveries from './Deliveries.vue'
 import  api from "../../api/api";
-import * as interfaces from "../../../../../server/src/interfaces"
 
 @Component({
 	components: {
@@ -56,22 +55,22 @@ import * as interfaces from "../../../../../server/src/interfaces"
 export default class AdminOverview extends Vue {
     private today = new Date().toISOString().substr(0, 10);
 	private focus = new Date().toISOString().substr(0, 10);
-	private type = 'month';
+	private type = "month";
 	private start = null;
 	private end = null;
     private events: any[] = [];
     private showDeliveries = false;
-    private selectedDate = null;
+    private selectedDate = "";
 
     mounted() {
-		this.focus = '';
+		this.focus = "";
 	}
 	viewDay(day: any) {
 		this.focus = day.date;
-		this.type = 'day';
+		this.type = "day";
 	}
 	setToday() {
-		this.focus = '';
+		this.focus = "";
 	}
 	prev() {
 		(this.$refs.calendar as any).prev();
@@ -90,9 +89,8 @@ export default class AdminOverview extends Vue {
         let schedule = vendor!.schedule;
         let events: any[] = [];
         let deliveries = await api.getAllVendorsDeliveries(start.date, end.date, true);
-        if (deliveries.length > 0) {
-            deliveries.forEach((del) => {
-                console.log(del)
+        if (deliveries) {
+            deliveries.forEach((del: any) => {
                 const delStart = new Date(`${del.date.substring(0,10)}T00:00:00`);
                 const delEnd = new Date(`${del.date.substring(0,10)}T23:59:59`);
                 const menu = schedule.find(({id}) => id == del.menuId);
@@ -108,8 +106,9 @@ export default class AdminOverview extends Vue {
         }
     }
     showEvent(event:any) {
-        this.selectedDate = event.day.date;
         this.showDeliveries = true;
+        this.selectedDate = event.day.date;
+        console.log("I AdminOverview ", this.selectedDate)
     }
 }
 </script>

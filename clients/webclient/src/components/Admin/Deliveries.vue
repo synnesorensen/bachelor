@@ -19,13 +19,14 @@ import { Prop, Watch } from 'vue-property-decorator';
 	components: {},
 })
 export default class Deliveries extends Vue {
-    @Prop() date!:string;
+    @Prop() date!: string;
     private start = "";
     private end = "";
     private users:interfaces.UserSubscription[] = [];
     @Watch("date")
     async onDateChanged() {
         if (this.date) {
+            console.log("I Deliveries ", this.date)
             let startDate = new Date(this.date+"T00:00:00");
             let endDate = new Date(this.date+"T23:59:59");
             let UTCStartDate = startDate.toISOString();
@@ -33,9 +34,11 @@ export default class Deliveries extends Vue {
             let deliveries = await api.getAllVendorsDeliveries(UTCStartDate, UTCEndDate);
             let userSubscriptions = await api.getVendorSubscriptions();
             this.users = [];
-            deliveries!.forEach((del) => {
-                let user:interfaces.UserSubscription = userSubscriptions!.find(({userId}) => userId == del.userId);
-                this.users.push(user);
+            deliveries!.forEach((del: any) => {
+                let user = userSubscriptions!.find(({userId}) => userId == del.userId);
+                if (user) {
+                    this.users.push(user);
+                }
             });
         }
     }
