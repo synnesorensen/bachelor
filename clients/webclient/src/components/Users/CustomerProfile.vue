@@ -85,10 +85,10 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { MenuItems } from "../../../../../server/src/interfaces";
-import { getUserprofile, getUserSubscriptions } from "../../api/api";
 import * as interfaces from "../../../../../server/src/interfaces";
 import CustomerOrder from "./CustomerOrder.vue";
 import { Prop } from "vue-property-decorator";
+import api from "../../api/api";
 
 @Component({
     components: {
@@ -111,7 +111,7 @@ export default class CustomerProfile extends Vue {
     }
 
     async created() {
-        const subs = await getUserSubscriptions();
+        const subs = await api.getUserSubscriptions();
 
         if (subs != null) {
             this.items = subs[0].schedule;

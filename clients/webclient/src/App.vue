@@ -21,7 +21,7 @@ import AppBar from './components/AppBar.vue';
 import LoginDialog from './components/LoginDialog/LoginDialog.vue';
 import CustomerOrder from './components/Users/CustomerOrder.vue';
 import getAuth from './components/LoginDialog/auth';
-import {setApiBearerToken, getUserprofile} from '../src/api/api'
+import api from '../src/api/api'
 import * as interfaces from '../../../server/src/interfaces'
 import { getUserInfo } from '../../../server/src/auth/getUserFromJwt'
 
@@ -51,10 +51,8 @@ export default class App extends Vue {
     async loggedIn(jwtToken: string) {
         this.jwtToken = jwtToken;
         localStorage.setItem("token", this.jwtToken);
-        setApiBearerToken(this.jwtToken);
-        console.log("Got the token, getting profile");
-        this.userprofile = await getUserprofile();
-        console.log("userprof:",this.userprofile);
+        api.setApiBearerToken(this.jwtToken);
+        this.userprofile = await api.getUserprofile();
         this.loggedInUser = getUserInfo(this.jwtToken);
         this.authorized = true;
     }
@@ -68,7 +66,6 @@ export default class App extends Vue {
     }
 
     newUserprofile(userprofile: interfaces.Userprofile) {
-        console.log("newUserprofile");
         this.userprofile = userprofile;
     }
 

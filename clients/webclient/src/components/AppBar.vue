@@ -11,8 +11,7 @@
 				<v-tab v-if="!userprofile.isVendor">Faktura</v-tab>
                 <v-tab v-if="userprofile.isVendor">AdminKalender</v-tab>
                 <v-tab v-if="userprofile.isVendor">Firmaprofil</v-tab>
-				<v-tab v-if="userprofile.isVendor">Fakturering</v-tab>
-                <v-tab v-if="userprofile.isVendor">Registrere betaling</v-tab>
+                <v-tab v-if="userprofile.isVendor">Betalinger</v-tab>
 			</v-tabs>
             <v-spacer />
             <v-btn 
@@ -28,7 +27,6 @@
 				<v-tab-item v-if="!userprofile.isVendor"><CustomerInvoice /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminOverview /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminProfile /></v-tab-item>
-				<v-tab-item v-if="userprofile.isVendor"><AdminInvoicing /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminPayments /></v-tab-item>
 			</v-tabs-items>
 		</v-main>
@@ -42,7 +40,6 @@ import CustomerOverview from './Users/CustomerOverview.vue';
 import CustomerProfile from './Users/CustomerProfile.vue';
 import CustomerInvoice from './Users/CustomerInvoice.vue';
 import AdminOverview from './Admin/AdminOverview.vue';
-import AdminInvoicing from './Admin/AdminInvoicing.vue';
 import AdminProfile from './Admin/AdminProfile.vue';
 import AdminPayments from './Admin/AdminPayments.vue';
 import * as interfaces from './../../../../server/src/interfaces'
@@ -54,7 +51,6 @@ import { Prop } from 'vue-property-decorator';
 		CustomerProfile,
 		CustomerInvoice,
         AdminOverview,
-		AdminInvoicing,
         AdminProfile, 
         AdminPayments
 	},
