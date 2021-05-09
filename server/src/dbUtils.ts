@@ -254,7 +254,6 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
     if (dbResult.Items.length == 0) {
         return [];
     }
-    
 
     let subscriptions = dbResult.Items.map((item) => {
         return {
@@ -308,7 +307,7 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
     }
     let vendorSchedule = vendorResult.Items[0].schedule;
 
-    let result:UserSubscription[] = users.Responses[settings.TABLENAME].map(user => {
+    let result:UserSubscription[] = await Promise.all(users.Responses[settings.TABLENAME].map(async user => {
         let sub = subshash.get(user.sk);
         let userSchedule = vendorSchedule.filter((item) => sub.schedule.includes(item.id));
         return {
@@ -323,9 +322,10 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
             address: user.address,
             phone: user.phone,
             email: user.email,
-            allergies: user.allergies
+            allergies: user.allergies,
+            lastDeliveryDate: (await findLatestDelivery(sub.vendorId, sub.userId.substr(2)))?.deliverytime.substr(0, 10)
         }
-    });
+    }));
     return result;
 }
 
@@ -348,7 +348,8 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
     if (dbResult.Items.length == 0) {
         return undefined;
     }
-    let subs:Subscription[] = dbResult.Items.map((item) => {
+    let subs:Subscription[] = await Promise.all(dbResult.Items.map(async (item) => {
+        
         return {
             vendorId: item.pk,
             userId,
@@ -356,9 +357,10 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
             paused: item.paused,
             schedule: item.schedule.values,
             noOfMeals: item.noOfMeals,
-            box: item.box
+            box: item.box,
+            lastDeliveryDate: (await findLatestDelivery(item.pk.substr(2), userId))?.deliverytime
         }
-    });
+    }));
 
     let keys = dbResult.Items.map((item) => {
         return {

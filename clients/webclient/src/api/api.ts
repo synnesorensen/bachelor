@@ -240,8 +240,17 @@ export class Api {
         await this.apiAxios.delete(url);
     }
 
-    // TODO: Lag en funksjon for å hente første levering når tilhørende lambda er implementert.
+    async getUnpaidDeliveries(userId: string, yearMonth: string, afterDate?: string): Promise<number> {
+        await this.ensureFreshToken();
 
+        let url = urlPrefix + "/unpaidDeliveries?userId=" + encodeURIComponent(userId) + "&yearMonth=" + yearMonth;
+        if (afterDate) {
+            url += "&afterDate=" + afterDate
+        }
+
+        const response = await this.apiAxios.get(url);
+        return parseInt(response.data.no);
+    }
 }
 let api = new Api();
 export default api;

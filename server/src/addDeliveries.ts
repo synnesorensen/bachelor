@@ -1,5 +1,5 @@
 import 'source-map-support/register'
-import { Delivery, WeekTime } from './interfaces';
+import { Delivery, MenuItems, WeekTime } from './interfaces';
 import { getDeliveryDates } from './timeHandling'
 import { getSubscriptionsForUser } from './dbUtils'
 
@@ -13,15 +13,7 @@ export async function generateDeliveries(EarliestStartDate: Date, userId: string
         throw "User " + userId + " has no subscription for vendor " + vendor;
     }
 
-    let menuItems = subscription.schedule;
-
-    let weekTimes:WeekTime[] = menuItems.map((item) => { 
-        return {
-            menuId: item.id,
-            day: dayStringToInt(item.day),
-            time: parseInt(item.time)
-        }
-    });
+    let weekTimes:WeekTime[] = scheduleToWeekTimes(subscription.schedule)
 
     let deliveryDates = getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries);
     return deliveryDates.map((date) => {
@@ -31,6 +23,16 @@ export async function generateDeliveries(EarliestStartDate: Date, userId: string
             deliverytime: date.date.toISOString(),
             menuId: date.menuId!,
             cancelled: false
+        }
+    });
+}
+
+export function scheduleToWeekTimes(menuItems: MenuItems[]):WeekTime[] {
+    return menuItems.map((item) => { 
+        return {
+            menuId: item.id,
+            day: dayStringToInt(item.day),
+            time: parseInt(item.time)
         }
     });
 }

@@ -105,7 +105,6 @@ export default class CustomerProfile extends Vue {
     private showUserprofile: boolean = true;
 
     sendToCustomerOrder() {
-        console.log("button clicked");
         this.editUserprofile = true;
         this.showUserprofile = false;
     }

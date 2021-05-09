@@ -25,8 +25,8 @@
 				<v-tab-item v-if="!userprofile.isVendor"><CustomerOverview /></v-tab-item>
 				<v-tab-item v-if="!userprofile.isVendor"><CustomerProfile :userprofile="userprofile" :loggedInUser="loggedInUser" /> </v-tab-item>
 				<v-tab-item v-if="!userprofile.isVendor"><CustomerInvoice /></v-tab-item>
-                <v-tab-item v-if="userprofile.isVendor"><AdminOverview /></v-tab-item>
-                <v-tab-item v-if="userprofile.isVendor"><AdminProfile /></v-tab-item>
+                <v-tab-item v-if="userprofile.isVendor"><AdminOverview :userprofile="userprofile" /></v-tab-item>
+                <v-tab-item v-if="userprofile.isVendor"><AdminProfile :userprofile="userprofile" /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminPayments /></v-tab-item>
 			</v-tabs-items>
 		</v-main>

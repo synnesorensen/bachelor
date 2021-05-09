@@ -118,6 +118,13 @@ functions:
           authorizer: authorizer
           path: /v/deliveries
           method: any
+  unpaidDeliveries:
+    handler: src/unpaidDeliveries.mainHandler
+    events:
+      - http:
+          authorizer: authorizer
+          path: /unpaidDeliveries
+          method: get
 
 resources:
   Resources:
