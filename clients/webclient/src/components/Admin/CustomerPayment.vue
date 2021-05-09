@@ -50,9 +50,16 @@
                     <p class="font-weight-light"> {{selectedUser.lastDeliveryDate}} </p>
                 </v-col>
             </v-row>
+            <v-row>
+                <v-col :cols="2">
+                    <p class="font-weight-medium"> Ubetalte måltid i neste måned </p>
+                </v-col>
+                <v-col>
+                    <p class="font-weight-light"> {{unpaidDeliveries}} </p>
+                </v-col>
+            </v-row>
         </v-card-text>
         <v-card-actions>
-            <v-btn v-if="selectedUser" color="primary" @click="invoice">Lag faktura </v-btn>
             <v-btn v-if="selectedUser" color="primary" @click="payment">Registrer betaling </v-btn>
         </v-card-actions>
     </v-card>
@@ -61,20 +68,25 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
+import { Prop, Watch } from 'vue-property-decorator';
+import api from '../../api/api'
 import * as interfaces from "../../../../../server/src/interfaces";
 
 @Component
 export default class CustomerPayment extends Vue {
     @Prop() selectedUser:interfaces.UserSubscription | null = null; 
+    private unpaidDeliveries = 0;
+    @Watch("selectedUser")
+    async onChange() {
+        if (this.selectedUser != null) {
+            this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.userId, "2021-06");
+        }
+    }
 
     payment() {
 
     }
 
-    invoice() {
-        
-    }
     
 }
 </script>
