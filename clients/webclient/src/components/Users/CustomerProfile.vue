@@ -1,5 +1,5 @@
 <template>
-    <v-container v-if="loggedInUser"> 
+    <v-container v-if="subscription"> 
          <v-row>
             <v-col>
                 <v-btn v-if="showUserprofile" color="primary" @click="sendToCustomerOrder">
