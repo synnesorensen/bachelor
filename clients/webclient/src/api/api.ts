@@ -240,10 +240,10 @@ export class Api {
         await this.apiAxios.delete(url);
     }
 
-    async getUnpaidDeliveries(userId: string, month: string, afterDate?: string): Promise<number> {
+    async getUnpaidDeliveries(userId: string, yearMonth: string, afterDate?: string): Promise<number> {
         await this.ensureFreshToken();
 
-        let url = urlPrefix + "/unpaidDeliveries?userId=" + encodeURIComponent(userId) + "&yearMonth=" + month;
+        let url = urlPrefix + "/unpaidDeliveries?userId=" + encodeURIComponent(userId) + "&yearMonth=" + yearMonth;
         if (afterDate) {
             url += "&afterDate=" + afterDate
         }

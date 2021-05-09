@@ -38,14 +38,14 @@ describe('Date and time tests', () => {
         expect(result.date.getUTCDay()).equal(4);
         expect(result.date.getUTCDate()).equal(18);
         expect(result.date.getUTCMonth()).equal(10);
-        expect(result.date.getFullYear()).equal(2021);
+        expect(result.date.getUTCFullYear()).equal(2021);
 
         let wrap = nextDeliveryDate(new Date("2021-11-19T03:24:05.000Z"), schedule);
         expect(wrap.menuId).equal("2");
         expect(wrap.date.getUTCDay()).equal(2);
         expect(wrap.date.getUTCDate()).equal(23);
         expect(wrap.date.getUTCMonth()).equal(10);
-        expect(wrap.date.getFullYear()).equal(2021);
+        expect(wrap.date.getUTCFullYear()).equal(2021);
     });
     it('Find next weekTimes',  () => {
         let schedule: WeekTime[] = [{
@@ -58,14 +58,14 @@ describe('Date and time tests', () => {
         expect(result.date.getDay()).equal(2);
         expect(result.date.getDate()).equal(4);
         expect(result.date.getMonth()).equal(4);
-        expect(result.date.getFullYear()).equal(2021);
+        expect(result.date.getUTCFullYear()).equal(2021);
 
         let wrap = nextDeliveryDate(new Date("2021-05-05T03:24:05.000Z"), schedule);
         expect(result.menuId).equal("2")
         expect(wrap.date.getDay()).equal(2);
         expect(wrap.date.getDate()).equal(11);
         expect(wrap.date.getMonth()).equal(4);
-        expect(wrap.date.getFullYear()).equal(2021);
+        expect(wrap.date.getUTCFullYear()).equal(2021);
     });
     it('Count deliveries in a month',  () => {
         let schedule: WeekTime[] = [{
