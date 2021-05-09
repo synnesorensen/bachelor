@@ -3,6 +3,7 @@ import 'source-map-support/register';
 import { getDeliveryFromDb, putDeliveryInDb, deleteDeliveryInDb, getUsersDeliveries, saveDeliveriesToDb, getAllDeliveriesFromAllSubscribers } from '../../dbUtils';
 import { expect } from 'chai';
 import 'mocha';
+import {Delivery} from '../../interfaces'
 
 describe('Delivery tests', () => {
     it('Put, get and delete a delivery', async () => {
@@ -56,8 +57,7 @@ describe('Delivery tests', () => {
         await putDeliveryInDb("testVendorId66", "testUserId26", delivery3);
         await putDeliveryInDb("testVendorId66", "testUserId26", delivery4);
  
-        let getDelsForAllSubs = await getAllDeliveriesFromAllSubscribers("testVendorId66", "2021-04-01", "2021-05-31");
-
+        let getDelsForAllSubs = await getAllDeliveriesFromAllSubscribers("testVendorId66", "2021-04-01", "2021-05-31") as Delivery[];
         expect(getDelsForAllSubs.length).to.equal(4);
         let res2 = getDelsForAllSubs.find( ({deliverytime}) => deliverytime === "2021-05-31");
         expect(res2.menuId).to.equal("1");
