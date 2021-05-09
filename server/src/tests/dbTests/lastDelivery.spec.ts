@@ -34,4 +34,4 @@ describe('Last delivery', () => {
         await deleteDeliveryInDb("testVendorId66", "testUserId16","2021-04-20");
         await deleteDeliveryInDb("testVendorId66", "testUserId16","2021-04-21");
     });
-}); 
+});
