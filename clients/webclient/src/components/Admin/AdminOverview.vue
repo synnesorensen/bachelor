@@ -46,6 +46,8 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import Deliveries from './Deliveries.vue'
 import  api from "../../api/api";
+import {Userprofile} from '../../../../../server/src/interfaces'
+import { Prop } from 'vue-property-decorator';
 
 @Component({
 	components: {
@@ -53,6 +55,7 @@ import  api from "../../api/api";
     },
 })
 export default class AdminOverview extends Vue {
+    @Prop() userprofile!: Userprofile;
     private today = new Date().toISOString().substr(0, 10);
 	private focus = new Date().toISOString().substr(0, 10);
 	private type = "month";
@@ -84,8 +87,7 @@ export default class AdminOverview extends Vue {
 	}
 
     async getEvents( {start, end}:{start:any, end:any} ) {
-        const userprofile = await api.getUserprofile();
-        const vendor = await api.getVendor(userprofile!.email);
+        const vendor = await api.getVendor(this.userprofile!.email);
         let schedule = vendor!.schedule;
         let events: any[] = [];
         let deliveries = await api.getAllVendorsDeliveries(start.date, end.date, true);

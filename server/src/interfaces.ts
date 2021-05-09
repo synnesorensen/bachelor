@@ -1,3 +1,12 @@
+export interface Userprofile {
+    fullname: string,
+    address: string,
+    phone: string,
+    email: string, 
+    allergies: string[], 
+    isVendor: boolean
+}
+
 export interface Subscription {
     vendorId: string,
     userId: string,
@@ -6,15 +15,6 @@ export interface Subscription {
     schedule: string[],
     noOfMeals: number,
     box: string
-}
-
-export interface Userprofile {
-    fullname: string,
-    address: string,
-    phone: string,
-    email: string, 
-    allergies: string[], 
-    isVendor: boolean
 }
 
 export interface UserSubscription {
@@ -29,7 +29,8 @@ export interface UserSubscription {
     address: string,
     phone: string,
     email: string, 
-    allergies: string[]
+    allergies: string[],
+    lastDeliveryDate?: string
 }
 
 export interface VendorSubscription {
@@ -39,7 +40,8 @@ export interface VendorSubscription {
     paused: boolean,
     schedule: MenuItems[],
     noOfMeals: number,
-    box: string
+    box: string,
+    lastDeliveryDate?: string
 }
 
 export interface Delivery {

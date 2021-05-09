@@ -1,5 +1,5 @@
 <template>
-    <v-container v-if="loggedInUser">
+    <v-container v-if="vendorProfile">
         <v-row>
             <v-col>
                 <h2>Registrert informasjon</h2>
@@ -11,7 +11,7 @@
                 <p class="font-weight-medium">Navn</p>
             </v-col>
             <v-col>
-                <p class="font-weight-light"> {{ loggedInUser.fullname }} </p>
+                <p class="font-weight-light"> {{ vendorProfile.fullname }} </p>
             </v-col>
         </v-row>
         <v-row>
@@ -19,7 +19,7 @@
                 <p class="font-weight-medium">Firmanavn</p>
             </v-col>
             <v-col>
-                <p class="font-weight-light"> {{ loggedInUser.company }} </p>
+                <p class="font-weight-light"> {{ vendorProfile.company }} </p>
             </v-col>
         </v-row>
         <v-row>
@@ -27,7 +27,7 @@
                 <p class="font-weight-medium">Adresse</p>
             </v-col>
             <v-col>
-                <p class="font-weight-light"> {{ loggedInUser.address }} </p>
+                <p class="font-weight-light"> {{ vendorProfile.address }} </p>
             </v-col>
         </v-row>
         <v-row>
@@ -35,7 +35,7 @@
                 <p class="font-weight-medium">Telefonnummer</p>
             </v-col>
             <v-col>
-                <p class="font-weight-light"> {{ loggedInUser.phone }} </p>
+                <p class="font-weight-light"> {{ vendorProfile.phone }} </p>
             </v-col>
         </v-row>
         <v-row>
@@ -43,7 +43,7 @@
                 <p class="font-weight-medium">E-post</p>
             </v-col>
             <v-col>
-                <p class="font-weight-light"> {{ loggedInUser.email }} </p>
+                <p class="font-weight-light"> {{ vendorProfile.email }} </p>
             </v-col>
         </v-row>
         <v-row>
@@ -64,20 +64,20 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import api from "../../api/api";
 import * as interfaces from "../../../../../server/src/interfaces"
+import { Prop } from "vue-property-decorator";
 
 @Component
 export default class CustomerProfile extends Vue {
-    private loggedInUser:interfaces.Vendor | null = null;
+    @Prop() userprofile!: interfaces.Userprofile;
+    private vendorProfile:interfaces.Vendor | null = null;
     private items: interfaces.MenuItems[] | null = [];
     
     async created() {
-        const userprofile = await api.getUserprofile();
-        if (userprofile != null) {
-            const vendor = await api.getVendor(userprofile.email);
-            this.loggedInUser = vendor;
-        }
-        if (this.loggedInUser != null) {
-            this.items = this.loggedInUser.schedule;
+        const vendor = await api.getVendor(this.userprofile.email);
+        this.vendorProfile = vendor;
+
+        if (this.vendorProfile != null) {
+            this.items = this.vendorProfile.schedule;
         }
     }
 }

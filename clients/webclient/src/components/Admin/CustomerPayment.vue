@@ -42,6 +42,14 @@
                     <p class="font-weight-light"> {{ selectedUser.email }} </p>
                 </v-col>
             </v-row>
+            <v-row>
+                <v-col :cols="2">
+                    <p class="font-weight-medium"> Siste betalte levering </p>
+                </v-col>
+                <v-col>
+                    <p class="font-weight-light"> {{selectedUser.lastDeliveryDate}} </p>
+                </v-col>
+            </v-row>
         </v-card-text>
         <v-card-actions>
             <v-btn v-if="selectedUser" color="primary" @click="invoice">Lag faktura </v-btn>
