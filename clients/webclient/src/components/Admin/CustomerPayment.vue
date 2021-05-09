@@ -70,7 +70,40 @@
             </v-row>
         </v-card-text>
         <v-card-actions>
-            <v-btn v-if="selectedUser" color="primary">Registrer betaling </v-btn>
+            <v-btn v-if="selectedUser" @click="dialog = true" color="primary">Registrer betaling </v-btn>
+            <v-dialog v-model="dialog" max-width="400" max-height="800">
+                <v-card>
+                    <v-card-title class="headline">
+                        Registrer betaling
+                    </v-card-title>
+                    <v-card-text>
+                        <p class="font-weight-medium">Navn</p>
+                        <p class="font-weight-light">{{selectedUser.fullname}}</p> 
+                        <v-text-field v-model="paidDeliveries" label="Betalte leveringer"></v-text-field>
+                        <p class="font-weight-medium">Sett første leveringsdato: </p>
+                        <v-date-picker
+                            v-model="picker"
+                            no-title
+                            scrollable>
+                        </v-date-picker>
+                    </v-card-text>
+                    <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        color="green darken-1"
+                        text
+                        @click="registerPayment()">
+                        Registrer
+                    </v-btn>
+                    <v-btn
+                        color="green darken-1"
+                        text
+                        @click="dialog = false">
+                        Avbryt
+                    </v-btn>
+                    </v-card-actions>
+                </v-card>
+                </v-dialog>
         </v-card-actions>
     </v-card>
 </template>
@@ -85,6 +118,9 @@ import * as interfaces from "../../../../../server/src/interfaces";
 @Component
 export default class CustomerPayment extends Vue {
     @Prop() selectedUser:interfaces.UserSubscription | null; 
+    private dialog = false;
+    private picker = new Date().toISOString().substr(0, 10);
+    private paidDeliveries = 0;
     private unpaidDeliveries = 0;
     private monthOffset = 1;
     get selectedMonth() {
@@ -109,6 +145,7 @@ export default class CustomerPayment extends Vue {
             } else {
                 this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.userId, this.selectedMonth);
             }
+            this.paidDeliveries = this.unpaidDeliveries;
     }
 
     nextMonth() {
@@ -132,6 +169,12 @@ export default class CustomerPayment extends Vue {
     async next() {
         this.monthOffset ++;
         this.updateUnpaidDeliveries();
+    }
+
+    async registerPayment() {
+        let time = new Date(this.picker).toISOString();
+        await api.postNewDeliveries(time, this.paidDeliveries, this.selectedUser.userId);
+        this.dialog = false;
     }
     
 }
