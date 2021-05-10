@@ -75,7 +75,8 @@
             </v-col>
         </v-row>
         </div>
-         <div v-if="editUserprofile">
+        <div v-if="editUserprofile">
+            <v-btn v-if="editUserprofile" color="secondary" @click="cancel">Avbryt</v-btn>
             <CustomerOrder :loggedInUser="loggedInUser"/> 
         </div>
     </v-container>
@@ -107,6 +108,11 @@ export default class CustomerProfile extends Vue {
     sendToCustomerOrder() {
         this.editUserprofile = true;
         this.showUserprofile = false;
+    }
+
+    cancel() {
+        this.editUserprofile = false;
+        this.showUserprofile = true;
     }
 
     async created() {
