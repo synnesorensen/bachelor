@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { url } from 'node:inspector';
 import { urlPrefix } from '../../../../common/settings'
 import * as interfaces from '../../../../server/src/interfaces'
 import getAuth from '../components/LoginDialog/auth'
@@ -11,7 +10,7 @@ export class Api {
 
     async login(username: string, password: string) {
         const auth = getAuth();
-        let signedInUser = await auth.signIn(username, password);
+        await auth.signIn(username, password);
         let jwtToken = (await auth.currentSession()).getIdToken().getJwtToken();
         this.setApiBearerToken(jwtToken);
 

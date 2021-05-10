@@ -11,3 +11,10 @@ export const testPass = process.env.TESTPASSWORD;
 
 export const testVend = process.env.TESTVENDOR;
 export const testVendPass = process.env.TESTVENDORPASSWORD;
+
+export const dbUser1 = process.env.DBUSER1;
+export const dbUser2 = process.env.DBUSER2;
+export const dbUser3 = process.env.DBUSER3;
+export const dbUser4 = process.env.DBUSER4;
+export const dbUser5 = process.env.DBUSER5;
+export const dbVendor = process.env.DBVENDOR;

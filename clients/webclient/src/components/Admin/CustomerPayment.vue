@@ -117,7 +117,7 @@ import * as interfaces from "../../../../../server/src/interfaces";
 
 @Component
 export default class CustomerPayment extends Vue {
-    @Prop() selectedUser:interfaces.UserSubscription | null; 
+    @Prop() selectedUser!:interfaces.UserSubscription | null; 
     private dialog = false;
     private picker = new Date().toISOString().substr(0, 10);
     private paidDeliveries = 0;
@@ -133,17 +133,18 @@ export default class CustomerPayment extends Vue {
         }
     }
     async updateUnpaidDeliveries() {
-        let lastDelivery = new Date(this.selectedUser.lastDeliveryDate);
+        let date = this.selectedUser!.lastDeliveryDate!;        // Er det ok med den siste 1 ?
+        let lastDelivery = new Date(date);
             let selectedDate = new Date(this.nextMonth());
             if (selectedDate.getTime() < lastDelivery.getTime()) {
                 if (selectedDate.getUTCMonth() == lastDelivery.getUTCMonth()
                     && selectedDate.getUTCFullYear() == lastDelivery.getUTCFullYear()) {
-                    this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.userId, this.selectedMonth, this.selectedUser.lastDeliveryDate);
+                    this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser!.userId, this.selectedMonth, this.selectedUser!.lastDeliveryDate);
                 } else {
                     this.unpaidDeliveries = 0; 
                 }
             } else {
-                this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.userId, this.selectedMonth);
+                this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser!.userId, this.selectedMonth);
             }
             this.paidDeliveries = this.unpaidDeliveries;
     }
@@ -173,7 +174,7 @@ export default class CustomerPayment extends Vue {
 
     async registerPayment() {
         let time = new Date(this.picker).toISOString();
-        await api.postNewDeliveries(time, this.paidDeliveries, this.selectedUser.userId);
+        await api.postNewDeliveries(time, this.paidDeliveries, this.selectedUser!.userId);
         this.dialog = false;
     }
     
