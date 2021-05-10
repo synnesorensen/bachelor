@@ -83,13 +83,13 @@
                         Pause abonnement
                     </v-card-title> 
                     <v-card-text
-                        > Text
+                        > {{ this.dialogTxt }}
                     </v-card-text>
                     <v-btn
                         color="green darken-1"
                         text
                         @click="pauseDelivery()">
-                        Registrer
+                        OK!
                     </v-btn>
                     <v-btn
                         color="green darken-1"
@@ -133,6 +133,7 @@ export default class CustomerProfile extends Vue {
   private dialog: boolean = false;
   private txt: boolean = false;
   private btnTxt: string = "";
+  private dialogTxt: string = "";
 
   sendToCustomerOrder() {
     this.editUserprofile = true;
@@ -163,9 +164,11 @@ export default class CustomerProfile extends Vue {
       if (this.subscription.paused) {
         this.txt = true;
         this.btnTxt = "Aktiver abonnement";
+        this.dialogTxt = "Du aktiverer nå ditt abonnement igjen";
       } else {
         this.txt = false;
         this.btnTxt = "Pause abonnement";
+        this.dialogTxt = "Du setter nå ditt abonnement på pause";
       }
     }
   }
