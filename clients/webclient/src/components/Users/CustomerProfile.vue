@@ -1,83 +1,109 @@
 <template>
-    <v-container v-if="subscription"> 
-         <v-row>
-            <v-col>
-                <v-btn v-if="showUserprofile" color="primary" @click="sendToCustomerOrder">
-                    <v-icon left>mdi-pencil</v-icon>Endre profil
-                </v-btn>
-            </v-col>
-        </v-row>
+    <v-container v-if="subscription">
         <div v-if="showUserprofile">
-        <v-row>
-            <v-col>
-                <h1 class="primary--text">Min profil</h1>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col>
-                <h2>
-                    {{ userprofile.fullname }}
-                </h2>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col>
-                <h3>{{ userprofile.address }}</h3>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col>
-                <h3>{{ userprofile.phone }}</h3>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col>
-                <h3>{{ userprofile.email }}</h3>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col>
-                <h3>
-                    <label for="allergylist">Mine allergier:</label>
-                </h3>
-                <p>
-                    <ul>
-                        <li
-                            v-for="allergy in allergies"
-                            :key="allergy"
-                            id="allergylist">
-                            {{ allergy }}
-                        </li>
-                    </ul>
-                </p>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col>
-                <h3>Antall porsjoner: {{ subscription.noOfMeals }}</h3>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col>
-                <h3>Valgt boks: {{ subscription.box }}</h3>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col>
-                <h3>Leveringsdag:</h3>
-                <p>
-                    <ul v-for="item in items" v-bind:key="item.id">
-                        <li>
-                            {{ item.day + "  -  " + item.menu }}
-                        </li>
-                    </ul>
-                </p>
-            </v-col>
-        </v-row>
+            <v-row>
+                <v-col>
+                    <h1 class="primary--text">Min profil</h1>
+                </v-col>
+                <v-col>
+                    <v-btn
+                        v-if="showUserprofile"
+                        color="primary"
+                        @click="sendToCustomerOrder"
+                    >
+                        <v-icon left>mdi-pencil</v-icon>Endre profil
+                    </v-btn>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col :cols="2">
+                    <p class="font-weight-black">Navn</p>
+                </v-col>
+                <v-col>
+                    <p class="font-weight-light">
+                        {{ userprofile.fullname }}
+                    </p>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col :cols="2">
+                    <p class="font-weight-black">Adresse</p>
+                </v-col>
+                <v-col>
+                    <p class="font-weight-light">{{ userprofile.address }}</p>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col :cols="2">
+                    <p class="font-weight-black">Telefonnummer</p>
+                </v-col>
+                <v-col>
+                    <p class="font-weight-light">{{ userprofile.phone }}</p>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col :cols="2">
+                    <p class="font-weight-black">Epost</p>
+                </v-col>
+                <v-col>
+                    <p class="font-weight-light">{{ userprofile.email }}</p>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col :cols="2">
+                    <p class="font-weight-black">
+                        <label for="allergylist">Mine allergier</label>
+                    </p>
+                </v-col>
+                <v-col>
+                    <p
+                        class="font-weight-light"
+                        v-for="allergy in allergies"
+                        :key="allergy"
+                        id="allergylist"
+                    >
+                        {{ allergy }}
+                    </p>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col :cols="2">
+                    <p class="font-weight-black">Antall porsjoner</p>
+                </v-col>
+                <v-col>
+                    <p class="font-weight-light">
+                        {{ subscription.noOfMeals }}
+                    </p>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col :cols="2">
+                    <p class="font-weight-black">Valgt boks</p>
+                </v-col>
+                <v-col>
+                    <p class="font-weight-light">{{ subscription.box }}</p>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col :cols="2">
+                    <p class="font-weight-black">Leveringsdag</p>
+                </v-col>
+                <v-col>
+                    <p
+                        class="font-weight-light"
+                        v-for="item in items"
+                        v-bind:key="item.id"
+                    >
+                        {{ item.day + "  -  " + item.menu }}
+                    </p>
+                </v-col>
+            </v-row>
         </div>
         <div v-if="editUserprofile">
-            <v-btn v-if="editUserprofile" color="secondary" @click="cancel">Avbryt</v-btn>
-            <CustomerOrder :loggedInUser="loggedInUser"/> 
+            <v-btn v-if="editUserprofile" color="secondary" @click="cancel"
+                >Avbryt</v-btn
+            >
+            <CustomerOrder :loggedInUser="loggedInUser" />
         </div>
     </v-container>
 </template>
@@ -102,7 +128,7 @@ export default class CustomerProfile extends Vue {
     private subscription: interfaces.VendorSubscription | null = null;
     private items: interfaces.MenuItems[] | null = [];
     private allergies = this.userprofile.allergies;
-    private editUserprofile: boolean = false; 
+    private editUserprofile: boolean = false;
     private showUserprofile: boolean = true;
 
     sendToCustomerOrder() {
