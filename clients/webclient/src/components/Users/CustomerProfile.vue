@@ -2,7 +2,7 @@
     <v-container v-if="subscription">
         <div v-if="showUserprofile">
             <v-row>
-                <v-col>
+                <v-col :cols="5">
                     <h1 class="primary--text">Min profil</h1>
                 </v-col>
                 <v-col>
@@ -100,10 +100,19 @@
             </v-row>
         </div>
         <div v-if="editUserprofile">
-            <v-btn v-if="editUserprofile" color="secondary" @click="cancel"
-                >Avbryt</v-btn
-            >
-            <CustomerOrder :loggedInUser="loggedInUser" />
+            <v-row>
+                <v-col :cols="5">
+                    <v-btn
+                        v-if="editUserprofile"
+                        color="secondary"
+                        @click="cancel">
+                        Avbryt
+                    </v-btn>
+                </v-col>
+                <v-col>
+                    <CustomerOrder :loggedInUser="loggedInUser" />
+                </v-col>
+            </v-row>
         </div>
     </v-container>
 </template>
@@ -151,10 +160,3 @@ export default class CustomerProfile extends Vue {
     }
 }
 </script>
-
-<style scoped>
-ul {
-    list-style-type: none;
-    font-weight: 400;
-}
-</style>
