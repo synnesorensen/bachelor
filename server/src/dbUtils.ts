@@ -345,6 +345,7 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
     };
 
     let dbResult = await documentClient.query(params).promise();
+
     if (dbResult.Items.length == 0) {
         return undefined;
     }
@@ -553,13 +554,14 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
                 }
             }
         });
+
         if (dels.length == 25) {
             let params = {
                 RequestItems: {
                     [settings.TABLENAME]: dels
                 }
             };
-            let result = await documentClient.batchWrite(params).promise();
+            await documentClient.batchWrite(params).promise();
             dels = [];
             // TODO: Sjekke for Unprocessed items på result, og legge evt feilede objekter inn igjen i dels. 
             // result.UnprocessedItems
@@ -571,7 +573,7 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
                 [settings.TABLENAME]: dels
             }
         };
-        let result = await documentClient.batchWrite(params).promise();
+        await documentClient.batchWrite(params).promise();
         // TODO: Sjekke for Unprocessed items på result, og legge evt feilede objekter inn igjen i dels. 
         // result.UnprocessedItems
     }

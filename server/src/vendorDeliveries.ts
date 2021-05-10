@@ -5,7 +5,6 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getAllDeliveriesFromAllSubscribers, getUserprofileFromDb, saveDeliveriesToDb } from './dbUtils'
 import { getUserInfoFromEvent } from './auth/getUserFromJwt'
 import { generateDeliveries } from './addDeliveries';
-import { isJSDocReadonlyTag } from 'typescript';
 import { Delivery, Summary } from './interfaces';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -149,7 +148,6 @@ async function postVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGat
         };
     }
 
-    try {
         let deliveries = await generateDeliveries(startDate, userId, vendorId, noOfDeliveries);
         await saveDeliveriesToDb(deliveries);
 
@@ -157,10 +155,5 @@ async function postVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGat
             statusCode: 200,
             body: JSON.stringify(deliveries)
         };
-    } catch (e) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ message: e.toString()})
-        }
-    }
+
 }

@@ -43,7 +43,7 @@ describe('Userprofile for user http test', () => {
         expect(getRes.allergies).to.not.equal("sennep")
         expect(getRes.isVendor).to.equal(false);
 
-        let delRes = await user.deleteUserprofile();
+        await user.deleteUserprofile();
         let newRes = await user.getUserprofile();
         expect(newRes).to.equal(null);
         await user.putUserprofile(userprofile)

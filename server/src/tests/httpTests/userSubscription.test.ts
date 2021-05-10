@@ -26,7 +26,7 @@ describe('Users subscriptions http test', () => {
             userId: usermail,
             approved: false,
             paused: true,
-            schedule: ["1", "2"],
+            schedule: ["2", "3"],
             noOfMeals: 1,
             box: "engangsboks"
         };

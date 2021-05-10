@@ -26,14 +26,14 @@ describe('Vendor http test', () => {
             isVendor: true,
             schedule: [
                 {
-                    "id": "1",
-                    "day": "tuesday",
+                    "id": "2",
+                    "day": "Tirsdag",
                     "time": "10",
                     "menu": "Veggie lunch"
                 },
                 {
-                    "id": "2",
-                    "day": "wednesday",
+                    "id": "3",
+                    "day": "Onsdag",
                     "time": "10",
                     "menu": "Fish lunch"
                 }
@@ -45,16 +45,16 @@ describe('Vendor http test', () => {
         expect(putResult.fullname).to.equal("Bakermester Harepus");
         expect(putResult.address).to.equal("Hakkebakkeskogen");
         expect(putResult.phone).to.equal("6688552");
-        expect(putResult.schedule[0].id).to.equal("1");
-        expect(putResult.schedule[1].id).to.equal("2");
+        expect(putResult.schedule[0].id).to.equal("2");
+        expect(putResult.schedule[1].id).to.equal("3");
 
         const getResult = await vendor.getVendor(vendormail);
         expect(getResult.company).to.equal("Delikatessen");
         expect(getResult.fullname).to.equal("Bakermester Harepus");
         expect(getResult.address).to.equal("Hakkebakkeskogen");
         expect(getResult.phone).to.equal("6688552");
-        expect(getResult.schedule[0].id).to.equal("1");
-        expect(getResult.schedule[1].id).to.equal("2");
+        expect(getResult.schedule[0].id).to.equal("2");
+        expect(getResult.schedule[1].id).to.equal("3");
 
         
         /*
