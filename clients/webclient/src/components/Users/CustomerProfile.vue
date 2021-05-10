@@ -74,6 +74,33 @@
                 </p>
             </v-col>
         </v-row>
+        <v-row>
+        <template>
+         <v-btn @click="dialog = true" color="primary"> {{ this.btnTxt }} </v-btn>
+            <v-dialog v-model="dialog" persistent max-width="290"> 
+                <v-card>
+                    <v-card-title class="headline">
+                        Pause abonnement
+                    </v-card-title> 
+                    <v-card-text
+                        > Text
+                    </v-card-text>
+                    <v-btn
+                        color="green darken-1"
+                        text
+                        @click="pauseDelivery()">
+                        Registrer
+                    </v-btn>
+                    <v-btn
+                        color="green darken-1"
+                        text
+                        @click="dialog = false">
+                        Avbryt
+                    </v-btn>
+                </v-card>
+                </v-dialog>
+            </template>
+        </v-row>
         </div>
          <div v-if="editUserprofile">
             <CustomerOrder :loggedInUser="loggedInUser"/> 
@@ -91,38 +118,76 @@ import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
 
 @Component({
-    components: {
-        CustomerOrder,
-    },
+  components: {
+    CustomerOrder,
+  },
 })
 export default class CustomerProfile extends Vue {
-    @Prop() userprofile!: interfaces.Userprofile;
-    @Prop() loggedInUser!: string;
-    private subscription: interfaces.VendorSubscription | null = null;
-    private items: interfaces.MenuItems[] | null = [];
-    private allergies = this.userprofile.allergies;
-    private editUserprofile: boolean = false; 
-    private showUserprofile: boolean = true;
+  @Prop() userprofile!: interfaces.Userprofile;
+  @Prop() loggedInUser!: string;
+  private subscription: interfaces.VendorSubscription | null = null;
+  private items: interfaces.MenuItems[] | null = [];
+  private allergies = this.userprofile.allergies;
+  private editUserprofile: boolean = false;
+  private showUserprofile: boolean = true;
+  private dialog: boolean = false;
+  private txt: boolean = false;
+  private btnTxt: string = "";
 
-    sendToCustomerOrder() {
-        this.editUserprofile = true;
-        this.showUserprofile = false;
-    }
+  sendToCustomerOrder() {
+    this.editUserprofile = true;
+    this.showUserprofile = false;
+  }
 
-    async created() {
-        const subs = await api.getUserSubscriptions();
-
-        if (subs != null) {
-            this.items = subs[0].schedule;
-            this.subscription = subs[0];
+  async pauseDelivery() {
+    this.dialog = false;
+    if (this.subscription != null) {
+      let del = await api.getUserSubscription(this.subscription.vendorId);
+      if (del != null) {
+        if (del.paused) {
+          console.log(del.paused);
+          del.paused = false;
+          await api.putUserSubscription(del);
+        } else {
+          console.log(del.paused);
+          del.paused = true;
+          await api.putUserSubscription(del);
         }
+        this.changeText();
+      }
     }
+  }
+
+  async changeText() {
+    if (this.subscription != null) {
+      if (this.subscription.paused) {
+        this.txt = true;
+        this.btnTxt = "Aktiver abonnement";
+      } else {
+        this.txt = false;
+        this.btnTxt = "Pause abonnement";
+      }
+    }
+  }
+
+  updated() {
+    this.changeText();
+  }
+
+  async created() {
+    const subs = await api.getUserSubscriptions();
+
+    if (subs != null) {
+      this.items = subs[0].schedule;
+      this.subscription = subs[0];
+    }
+  }
 }
 </script>
 
 <style scoped>
 ul {
-    list-style-type: none;
-    font-weight: 400;
+  list-style-type: none;
+  font-weight: 400;
 }
 </style>
