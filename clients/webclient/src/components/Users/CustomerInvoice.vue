@@ -44,7 +44,7 @@ export default class CustomerInvoice extends Vue {
     }
 
     findDates() {
-        this.lastPaid = this.subscription!.lastDeliveryDate!;
+        this.lastPaid = this.subscription!.lastDeliveryDate!.substr(0,10);
         let dateForLastDelivery = new Date(this.lastPaid);
         dateForLastDelivery.setMonth(dateForLastDelivery.getMonth() + 1, 1);
         let nextInvoiceDate = new Date(dateForLastDelivery);
