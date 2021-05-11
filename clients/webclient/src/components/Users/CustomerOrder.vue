@@ -165,11 +165,9 @@
                 ></v-text-field>
             </v-row>
             <v-row>
-                <v-col :cols="2">
-                    <v-btn @click="sendToDb" color="primary">Send inn</v-btn>
-                </v-col>
                 <v-col>
-                    <v-btn @click="logout" color="secondary">Avbryt</v-btn>
+                    <v-btn @click="sendToDb" color="primary" class="ma-1">Send inn</v-btn>
+                    <v-btn @click="logout" color="secondary" class="ma-1">Avbryt</v-btn>
                 </v-col>
             </v-row>
         </v-container>
