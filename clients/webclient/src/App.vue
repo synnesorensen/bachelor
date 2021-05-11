@@ -10,7 +10,8 @@
         <CustomerOrder 
                 :loggedInUser="loggedInUser" 
                 v-if="userprofile==null && authorized" 
-                @newUserprofile="newUserprofile" />
+                @newUserprofile="newUserprofile"
+                @logout="logout" />
 	</v-app>
 </template>
 
