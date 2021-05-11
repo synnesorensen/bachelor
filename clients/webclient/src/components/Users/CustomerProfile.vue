@@ -126,9 +126,9 @@ import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
 
 @Component({
-  components: {
-    CustomerOrder,
-  },
+    components: {
+        CustomerOrder,
+    },
 })
 export default class CustomerProfile extends Vue {
     @Prop() userprofile!: Userprofile;
@@ -139,19 +139,10 @@ export default class CustomerProfile extends Vue {
     private editUserprofile: boolean = false;
     private showUserprofile: boolean = true;
 
-  async changeText() {
-    if (this.subscription != null) {
-      if (this.subscription.paused) {
-        this.txt = true;
-        this.btnTxt = "Aktiver abonnement";
-        this.dialogTxt = "Du aktiverer nå ditt abonnement igjen";
-      } else {
-        this.txt = false;
-        this.btnTxt = "Pause abonnement";
-        this.dialogTxt = "Du setter nå ditt abonnement på pause";
-      }
+    sendToCustomerOrder() {
+        this.editUserprofile = true;
+        this.showUserprofile = false;
     }
-  }
 
     cancel() {
         this.editUserprofile = false;
@@ -161,13 +152,10 @@ export default class CustomerProfile extends Vue {
     async created() {
         const subs = await api.getUserSubscriptions();
 
-  async created() {
-    const subs = await api.getUserSubscriptions();
-
-    if (subs != null) {
-      this.items = subs[0].schedule;
-      this.subscription = subs[0];
+        if (subs != null) {
+            this.items = subs[0].schedule;
+            this.subscription = subs[0];
+        }
     }
-  }
 }
 </script>
