@@ -345,6 +345,7 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
     };
 
     let dbResult = await documentClient.query(params).promise();
+
     if (dbResult.Items.length == 0) {
         return undefined;
     }
@@ -357,8 +358,7 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
             paused: item.paused,
             schedule: item.schedule.values,
             noOfMeals: item.noOfMeals,
-            box: item.box,
-            lastDeliveryDate: (await findLatestDelivery(item.pk.substr(2), userId))?.deliverytime
+            box: item.box
         }
     }));
 
@@ -383,9 +383,7 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
         subhash.set(sub.vendorId, sub);
     });
 
-
-
-    let result:VendorSubscription[] = vendors.Responses[settings.TABLENAME].map((vendor) => {
+    let result:VendorSubscription[] = await Promise.all(vendors.Responses[settings.TABLENAME].map(async (vendor) => {
         let sub = subhash.get(vendor.pk);
         let menuHash = new Map<string, MenuItems>();
         vendor.schedule.forEach((item:MenuItems) => {
@@ -403,9 +401,10 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
             paused: sub.paused,
             schedule: subSchedule,
             noOfMeals: sub.noOfMeals,
-            box: sub.box
+            box: sub.box,
+            lastDeliveryDate: (await findLatestDelivery(sub.vendorId.substr(2), userId))?.deliverytime
         }
-    });
+    }));
     return result;
 }
 
@@ -553,13 +552,14 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
                 }
             }
         });
+
         if (dels.length == 25) {
             let params = {
                 RequestItems: {
                     [settings.TABLENAME]: dels
                 }
             };
-            let result = await documentClient.batchWrite(params).promise();
+            await documentClient.batchWrite(params).promise();
             dels = [];
             // TODO: Sjekke for Unprocessed items på result, og legge evt feilede objekter inn igjen i dels. 
             // result.UnprocessedItems
@@ -571,7 +571,7 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
                 [settings.TABLENAME]: dels
             }
         };
-        let result = await documentClient.batchWrite(params).promise();
+        await documentClient.batchWrite(params).promise();
         // TODO: Sjekke for Unprocessed items på result, og legge evt feilede objekter inn igjen i dels. 
         // result.UnprocessedItems
     }
@@ -610,6 +610,7 @@ export async function getAllDeliveriesFromAllSubscribers(vendorId: string, start
 }
 
 export async function findLatestDelivery(vendorId: string, userId: string):Promise<Delivery | null> {
+
     let params = {
         TableName: settings.TABLENAME,
         IndexName: "GSI1",

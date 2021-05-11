@@ -4,7 +4,6 @@ import { Api } from '../../../../clients/webclient/src/api/api';
 import { testUser, testPass } from '../../../../common/settings';
 import { expect } from 'chai';
 import 'mocha';
-import { afterEach, beforeEach } from 'mocha';
 
 let user = null;
 

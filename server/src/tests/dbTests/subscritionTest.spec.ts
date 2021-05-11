@@ -38,7 +38,7 @@ describe('Subscription test', () => {
             box: "engangsboks"
         };
 
-        const putVendor = await putVendorInDb(vendor, "testVendorId55");
+        await putVendorInDb(vendor, "testVendorId55");
         const putResult = await putSubscriptionInDb(sub, true);
         expect(putResult.vendorId).to.equal("testVendorId55");
         expect(putResult.userId).to.equal("testUserId55");

@@ -29,9 +29,13 @@ export async function generateDeliveries(EarliestStartDate: Date, userId: string
 
 export function scheduleToWeekTimes(menuItems: MenuItems[]):WeekTime[] {
     return menuItems.map((item) => { 
+        const day = dayStringToInt(item.day);
+        if (day < 0) {
+            throw ("Ugyldig dag")
+        }
         return {
             menuId: item.id,
-            day: dayStringToInt(item.day),
+            day: day,
             time: parseInt(item.time)
         }
     });

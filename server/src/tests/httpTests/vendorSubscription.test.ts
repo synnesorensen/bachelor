@@ -25,7 +25,7 @@ describe('Subscription vendor http test', () => {
             userId: usermail,
             approved: false,
             paused: true,
-            schedule: ["1", "2"], 
+            schedule: ["2", "3"], 
             noOfMeals: 1,
             box: "engangsboks"
         };
@@ -35,7 +35,7 @@ describe('Subscription vendor http test', () => {
         expect(putResult.userId).to.equal(usermail);
         expect(putResult.approved).to.equal(false);
         expect(putResult.paused).to.equal(true);
-        expect(putResult.schedule).to.eql(["1", "2"]);
+        expect(putResult.schedule).to.eql(["2", "3"]);
         
         const getResult = await user.getUserSubscriptions();
         expect(getResult[0].vendorId).to.equal(vendormail);

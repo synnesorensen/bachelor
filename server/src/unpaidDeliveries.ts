@@ -4,7 +4,7 @@ import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 import { getSubscriptionFromDb, getVendorFromDb } from './dbUtils';
-import { noOfDeliveriesInMonth, toWeekTime } from './timeHandling';
+import { noOfDeliveriesInMonth } from './timeHandling';
 import { scheduleToWeekTimes } from './addDeliveries';
 import { MenuItems } from './interfaces';
 
