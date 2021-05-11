@@ -65,7 +65,6 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import api from "../../api/api";
-import CustomerDeliveries from "./CustomerDeliveries.vue";
 
 @Component({
 })
@@ -144,19 +143,25 @@ export default class CustomerOverview extends Vue {
   async changeDelivery() {
 	  let user = await api.getUserprofile();
 	  let vend = await api.getUserSubscriptions();
-	  console.log(user)
-	  console.log("hei", vend)
-	  let res = await api.getDelivery(vend[0].vendorId, user.email, this.selectedDate);
-	  console.log(res.cancelled)
-	  if(res != null && res.cancelled) {
-		  console.log("hallo")
-	  }
+    let date = this.selectedDate + "T00:00:01.000Z"
+	  console.log("user", user)
+	  console.log("vend", vend)
+    console.log(date)
+	  let res = await api.getDelivery(vend[0].vendorId, user.email, date);
+	  console.log(res)
 	  if(res != null && !res.cancelled) {
+      res.cancelled = true;
+      let pu = await api.putDelivery(vend[0].vendorId, user.email, res);
+		  console.log("hallo")
+      this.dialog = false;
+      console.log(pu)
+	  }
+	  /*if(res != null && !res.cancelled) {
 		res.cancelled = true;
 	  	await api.putDelivery(vend[0].vendorId, user.email, res);
 		console.log("hei")
 		this.dialog = false;
-	  }
+	  }*/
   }
 }
 </script>
