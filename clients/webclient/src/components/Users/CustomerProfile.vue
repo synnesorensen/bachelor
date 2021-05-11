@@ -84,8 +84,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { MenuItems } from "../../../../../server/src/interfaces";
-import * as interfaces from "../../../../../server/src/interfaces";
+import { MenuItems, Userprofile, VendorSubscription } from "../../../../../server/src/interfaces";
 import CustomerOrder from "./CustomerOrder.vue";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
@@ -96,10 +95,10 @@ import api from "../../api/api";
     },
 })
 export default class CustomerProfile extends Vue {
-    @Prop() userprofile!: interfaces.Userprofile;
+    @Prop() userprofile!: Userprofile;
     @Prop() loggedInUser!: string;
-    private subscription: interfaces.VendorSubscription | null = null;
-    private items: interfaces.MenuItems[] | null = [];
+    private subscription: VendorSubscription | null = null;
+    private items: MenuItems[] | null = [];
     private allergies = this.userprofile.allergies;
     private editUserprofile: boolean = false; 
     private showUserprofile: boolean = true;
