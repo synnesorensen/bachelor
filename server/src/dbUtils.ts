@@ -402,7 +402,7 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
             schedule: subSchedule,
             noOfMeals: sub.noOfMeals,
             box: sub.box,
-            lastDeliveryDate: (await findLatestDelivery(sub.vendorId.substr(2), userId))?.deliverytime
+            lastDeliveryDate: (await findLatestDelivery(sub.vendorId.substr(2), userId))?.deliverytime.substr(0, 10)
         }
     }));
     return result;
