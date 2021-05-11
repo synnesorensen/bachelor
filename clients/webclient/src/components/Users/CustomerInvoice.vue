@@ -35,19 +35,21 @@ export default class CustomerInvoice extends Vue {
 
     async created() {
         let subs = await api.getUserSubscriptions();
-        this.subscription = subs[0];
-        if (this.subscription.lastDeliveryDate) {
-            this.findDates();
-        } 
+        if (subs) {
+            this.subscription = subs[0];
+            if (this.subscription.lastDeliveryDate) {
+                this.findDates();
+            } 
+        }
     }
 
     findDates() {
-        this.lastPaid = this.subscription.lastDeliveryDate;
+        this.lastPaid = this.subscription!.lastDeliveryDate!.substr(0,10);
         let dateForLastDelivery = new Date(this.lastPaid);
         dateForLastDelivery.setMonth(dateForLastDelivery.getMonth() + 1, 1);
         let nextInvoiceDate = new Date(dateForLastDelivery);
 
-        if (this.subscription.paused == true) {
+        if (this.subscription!.paused == true) {
             this.nextInvoice = "Abonnementet ditt er satt på pause. Du vil ikke få ny faktura før abonnementet startes igjen."
         } else {
             this.nextInvoice = nextInvoiceDate.toISOString().substr(0,10);
