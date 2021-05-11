@@ -358,8 +358,7 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
             paused: item.paused,
             schedule: item.schedule.values,
             noOfMeals: item.noOfMeals,
-            box: item.box,
-            lastDeliveryDate: (await findLatestDelivery(item.pk.substr(2), userId))?.deliverytime
+            box: item.box
         }
     }));
 
@@ -384,9 +383,7 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
         subhash.set(sub.vendorId, sub);
     });
 
-
-
-    let result:VendorSubscription[] = vendors.Responses[settings.TABLENAME].map((vendor) => {
+    let result:VendorSubscription[] = await Promise.all(vendors.Responses[settings.TABLENAME].map(async (vendor) => {
         let sub = subhash.get(vendor.pk);
         let menuHash = new Map<string, MenuItems>();
         vendor.schedule.forEach((item:MenuItems) => {
@@ -404,9 +401,10 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
             paused: sub.paused,
             schedule: subSchedule,
             noOfMeals: sub.noOfMeals,
-            box: sub.box
+            box: sub.box,
+            lastDeliveryDate: (await findLatestDelivery(sub.vendorId.substr(2), userId))?.deliverytime
         }
-    });
+    }));
     return result;
 }
 
@@ -612,6 +610,7 @@ export async function getAllDeliveriesFromAllSubscribers(vendorId: string, start
 }
 
 export async function findLatestDelivery(vendorId: string, userId: string):Promise<Delivery | null> {
+
     let params = {
         TableName: settings.TABLENAME,
         IndexName: "GSI1",

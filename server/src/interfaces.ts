@@ -17,6 +17,7 @@ export interface Subscription {
     box: string
 }
 
+// User on admin pages: Returns all subscribers that a vendor/company has. 
 export interface UserSubscription {
     vendorId: string,
     userId: string,
@@ -33,6 +34,7 @@ export interface UserSubscription {
     lastDeliveryDate?: string
 }
 
+// Used on user pages. Returns all subscriptions for different vendors/companies. 
 export interface VendorSubscription {
     vendorId: string,
     company: string,

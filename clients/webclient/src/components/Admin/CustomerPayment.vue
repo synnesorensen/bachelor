@@ -133,7 +133,7 @@ export default class CustomerPayment extends Vue {
         }
     }
     async updateUnpaidDeliveries() {
-        let date = this.selectedUser!.lastDeliveryDate!;        // Er det ok med den siste 1 ?
+        let date = this.selectedUser!.lastDeliveryDate!;        // Er det ok med den siste ! ?
         let lastDelivery = new Date(date);
             let selectedDate = new Date(this.nextMonth());
             if (selectedDate.getTime() < lastDelivery.getTime()) {
