@@ -48,7 +48,7 @@
           <v-card>
             <v-card-title class="headline"> Kansellere levering {{this.selectedDate}} </v-card-title>
             <v-card-text> Er du sikker på at du ønsker å kansellere leveering {{this.selectedDate}} </v-card-text>
-            <v-btn color="green darken-1" text @click="dialog = false">
+            <v-btn color="green darken-1" text @click="changeDelivery()">
               OK!
             </v-btn>
             <v-btn color="green darken-1" text @click="dialog = false">
@@ -68,9 +68,6 @@ import api from "../../api/api";
 import CustomerDeliveries from "./CustomerDeliveries.vue";
 
 @Component({
-  components: {
-    CustomerDeliveries,
-  },
 })
 export default class CustomerOverview extends Vue {
   private today = new Date().toISOString().substr(0, 10);
@@ -110,7 +107,7 @@ export default class CustomerOverview extends Vue {
     let deliveries = await api.getAllUsersDeliveries(start.date, end.date);
     let sub = await api.getUserSubscriptions();
     let schedule = sub[0].schedule;
-	let color = "red";
+	let calColor = "green";
 
     if (deliveries) {
       deliveries.forEach((del) => {
@@ -121,15 +118,17 @@ export default class CustomerOverview extends Vue {
           `${del.deliverytime.substring(0, 10)}T23:59:59`
         );
         const menu = schedule.find(({ id }) => id == del.menuId);
+		let calName = menu!.menu;
 		if(del.cancelled) {
-			color
+			calColor = "red"
+			calName = "Kansellert";
 		}
 
         events.push({
-          name: menu!.menu,
+          name: calName,
           start: delStart,
           end: delEnd,
-          color: "green",
+          color: calColor,
         });
       });
       this.events = events;
@@ -144,10 +143,20 @@ export default class CustomerOverview extends Vue {
 
   async changeDelivery() {
 	  let user = await api.getUserprofile();
-	  let vend = await api.getVendorSubscriptions();
+	  let vend = await api.getUserSubscriptions();
+	  console.log(user)
+	  console.log("hei", vend)
 	  let res = await api.getDelivery(vend[0].vendorId, user.email, this.selectedDate);
-	  res.cancelled = true;
-	  await api.putDelivery(vend[0].vendorId, user.email, res);
+	  console.log(res.cancelled)
+	  if(res != null && res.cancelled) {
+		  console.log("hallo")
+	  }
+	  if(res != null && !res.cancelled) {
+		res.cancelled = true;
+	  	await api.putDelivery(vend[0].vendorId, user.email, res);
+		console.log("hei")
+		this.dialog = false;
+	  }
   }
 }
 </script>
