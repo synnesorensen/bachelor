@@ -106,7 +106,7 @@ export default class CustomerOverview extends Vue {
     let deliveries = await api.getAllUsersDeliveries(start.date, end.date);
     let sub = await api.getUserSubscriptions();
     let schedule = sub[0].schedule;
-	let calColor = "green";
+
 
     if (deliveries) {
       deliveries.forEach((del) => {
@@ -117,6 +117,7 @@ export default class CustomerOverview extends Vue {
           `${del.deliverytime.substring(0, 10)}T23:59:59`
         );
         const menu = schedule.find(({ id }) => id == del.menuId);
+    	let calColor = "green";
 		let calName = menu!.menu;
 		if(del.cancelled) {
 			calColor = "red"
