@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { getAllDeliveriesFromAllSubscribers, getUserprofileFromDb, saveDeliveriesToDb } from './dbUtils'
+import { getAllDeliveriesFromAllSubscribers, getUserprofileFromDb, saveDeliveriesToDb, updateDeliveries } from './dbUtils'
 import { getUserInfoFromEvent } from './auth/getUserFromJwt'
 import { generateDeliveries } from './addDeliveries';
 import { Delivery, Summary } from './interfaces';
@@ -18,6 +18,9 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     }
     if (event.httpMethod == "GET") {
         return getVendorDeliveries(event);
+    }
+    if (event.httpMethod == "PUT") {
+        return putVendorDeliveries(event);
     }
     if (event.httpMethod == "POST") {
         return postVendorDeliveries(event);
@@ -93,7 +96,16 @@ function generateSummary(deliveries: Delivery[] | Summary[]) {
     return array;
 }
 
-export const mainHandler = middy(handler).use(cors());
+async function putVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let vendorId = getUserInfoFromEvent(event);
+    let body = JSON.parse(event.body);
+    let deliveries = await updateDeliveries(vendorId, body);
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify(deliveries)
+    };
+}
 
 async function postVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     let vendorId = getUserInfoFromEvent(event);
@@ -157,3 +169,4 @@ async function postVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGat
         };
 
 }
+export const mainHandler = middy(handler).use(cors());

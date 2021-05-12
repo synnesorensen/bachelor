@@ -32,6 +32,24 @@
 					@change="getEvents"
 				>
 				</v-calendar>
+                <v-menu
+                    v-model="selectedOpen"
+                    :close-on-content-click="false"
+                    :activator="selectedElement"
+                    offset-x
+                >
+                    <v-card color="grey lighten-4" min-width="350px" flat >
+                        <v-toolbar :color="selectedEvent.color" dark >
+                            <v-toolbar-title v-html= "selectedEvent.name"></v-toolbar-title>
+                        </v-toolbar>
+                        <v-card-text>
+                            <v-card-actions>
+                                <v-btn text color="secondary" @click="showDeliveries" > Leveringer </v-btn>
+                                <v-btn text color="secondary" @click="cancelDelivery" > Kanseller levering </v-btn>
+                            </v-card-actions>
+                        </v-card-text>
+                    </v-card>
+                </v-menu>
 			</v-sheet>
 		</v-col>
         <v-col>
@@ -46,7 +64,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import Deliveries from './Deliveries.vue'
 import  api from "../../api/api";
-import {Userprofile} from '../../../../../server/src/interfaces'
+import {Delivery, Userprofile} from '../../../../../server/src/interfaces'
 import { Prop } from 'vue-property-decorator';
 
 @Component({
@@ -62,8 +80,11 @@ export default class AdminOverview extends Vue {
 	private start = null;
 	private end = null;
     private events: any[] = [];
-    private showDeliveries = false;
+    private showList = false;
     private selectedDate = "";
+    private selectedEvent = {};
+    private selectedElement = null;
+    private selectedOpen = false;
 
     mounted() {
 		this.focus = "";
@@ -107,10 +128,39 @@ export default class AdminOverview extends Vue {
             this.events = events;
         }
     }
-    showEvent(event:any) {
-        this.showDeliveries = true;
+    
+    showEvent ( {nativeEvent, event}:{nativeEvent: any, event: any} ) {
+        const open = () => {
+            this.selectedEvent = event;
+            this.selectedElement = nativeEvent.target;
+            requestAnimationFrame(() => requestAnimationFrame(() => this.selectedOpen = true))
+        }
+
+        if (this.selectedOpen) {
+            this.selectedOpen = false
+            requestAnimationFrame(() => requestAnimationFrame(() => open()))
+        } else {
+            open()
+        }
+        nativeEvent.stopPropagation()
+    };
+
+      showDeliveries(event:any) {
         this.selectedDate = event.day.date;
-        console.log("I AdminOverview ", this.selectedDate)
+        this.showList = true;
+    }
+
+    async cancelDelivery(event:any) {
+        this.selectedDate = event.day.date;
+        let deliveries = await api.getAllVendorsDeliveries(this.selectedDate, this.selectedDate);
+        if (deliveries) {
+            deliveries!.forEach((del: any) => {
+                del.cancelled = true;
+            });
+            await api.updateDeliveries(deliveries as Delivery[]);
+        }
+        let cancelledEvent = this.events.find(({start}) => start == this.selectedDate);
+        cancelledEvent.color = "grey";
     }
 }
 </script>

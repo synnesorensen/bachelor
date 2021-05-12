@@ -191,6 +191,12 @@ export class Api {
         }
     }
 
+    async updateDeliveries(deliveries:interfaces.Delivery[]): Promise<interfaces.Delivery[]> {
+        await this.ensureFreshToken();
+        let changedDeliveries = await this.apiAxios.put(urlPrefix + "/v/deliveries");
+        return changedDeliveries.data;
+    }
+
     async postNewDeliveries(startDate: string, no: number, userId: string): Promise<interfaces.Delivery[]> {
         await this.ensureFreshToken();
         const url = urlPrefix + "/v/deliveries?startDate=" + startDate + "&no=" + no + "&userId=" + encodeURIComponent(userId);
