@@ -1,22 +1,70 @@
 <template>
     <v-container>
-        <p class="font-weight-medium">Aktive kunder</p>
-        <v-data-table
-            dense
-            :headers="headers"
-            :items="activeUsers"
-            item-key="userId"
-            class="elevation-1">
-        </v-data-table>
+        <v-card>
+            <v-card-title>
+                Kunder med aktiv abonnement
+                <v-spacer></v-spacer>
+                <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Søk"
+                    single-line
+                    hide-details
+                ></v-text-field>
+            </v-card-title>
+            <v-data-table
+                dense
+                :headers="headers"
+                :items="activeUsers"
+                item-key="userId"
+                :search="search"
+                class="elevation-1">
+            </v-data-table>
+        </v-card>
         <br />
-        <p class="font-weight-medium">Pausede kunder</p>
-        <v-data-table
-            dense
-            :headers="headers"
-            :items="pausedUsers"
-            item-key="userId"
-            class="elevation-1">
-        </v-data-table>
+        <v-card>
+            <v-card-title>
+                Kunder med abonnement på pause
+                <v-spacer></v-spacer>
+                <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Søk"
+                    single-line
+                    hide-details
+                ></v-text-field>
+            </v-card-title>
+            <v-data-table
+                dense
+                :headers="headers"
+                :items="pausedUsers"
+                item-key="userId"
+                :search="search"
+                class="elevation-1">
+            </v-data-table>
+        </v-card>
+        <br />
+        <v-card>
+            <v-card-title>
+                Kunder til godkjenning
+                <v-spacer></v-spacer>
+                <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Søk"
+                    single-line
+                    hide-details
+                ></v-text-field>
+            </v-card-title>
+            <v-data-table
+                dense
+                :headers="headers"
+                :items="unapprovedUsers"
+                item-key="userId"
+                :search="search"
+                class="elevation-1">
+            </v-data-table>
+        </v-card>
     </v-container>
 </template>
 
@@ -31,8 +79,10 @@ import * as interfaces from "../../../../../server/src/interfaces";
 	},
 })
 export default class AdminCustomers extends Vue {
-    private activeUsers: interfaces.UserSubscription[] = [];
-    private pausedUsers: interfaces.UserSubscription[] = [];
+    private activeUsers: any[] = [];
+    private pausedUsers: any[] = [];
+    private unapprovedUsers: any[] = [];
+    private search = "";
     private headers = [
         {
           text: "Navn",
@@ -46,20 +96,54 @@ export default class AdminCustomers extends Vue {
         { text: "Boks", value: "box" },
         { text: "Antall", value: "noOfMeals" },
         { text: "Allergier", value: "allergies" },
-        { text: "Godkjent", value: "approved" },
-        { text: "Pause", value: "paused" },
-        { text: "Leveringsdager", value: "schedule" }
+        { text: "Leveringsdager", value: "days" }
     ];
 
     async created() {
         let users = await api.getVendorSubscriptions();
         users.forEach((user) => {
-            if (user.paused) {
-                this.pausedUsers.push(user);
+            let days: string[] = [];
+            user.schedule.forEach((item) => {
+                days.push(item.day)
+            });
+            if (user.approved) {
+                if (user.paused) {
+                    this.pausedUsers.push({
+                        fullname: user.fullname,
+                        address: user.address,
+                        phone: user.phone,
+                        email: user.email,
+                        box: user.box,
+                        noOfMeals: user.noOfMeals,
+                        allergies: user.allergies,
+                        days: days
+                    });
+                } else {
+                    this.activeUsers.push({
+                        fullname: user.fullname,
+                        address: user.address,
+                        phone: user.phone,
+                        email: user.email,
+                        box: user.box,
+                        noOfMeals: user.noOfMeals,
+                        allergies: user.allergies,
+                        days: days
+                    });
+                }
             } else {
-                this.activeUsers.push(user);
+                this.unapprovedUsers.push({
+                    fullname: user.fullname,
+                    address: user.address,
+                    phone: user.phone,
+                    email: user.email,
+                    box: user.box,
+                    noOfMeals: user.noOfMeals,
+                    allergies: user.allergies,
+                    days: days
+                });
             }
-        })
+            
+        });
     }
 }
 </script>
