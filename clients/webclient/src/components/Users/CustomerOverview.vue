@@ -40,10 +40,9 @@
                 </v-calendar>
             </v-sheet>
         </v-col>
-        <v-col>
-            <template v-if="!candelDelivery">
+        <v-row>
                 <v-dialog
-                    
+
                     :date="selectedDate"
                     dialog="true"
                     v-model="dialog"
@@ -74,8 +73,7 @@
                         </v-btn>
                     </v-card>
                 </v-dialog>
-            </template>
-        </v-col>
+        </v-row>
     </v-row>
 </template>
 
