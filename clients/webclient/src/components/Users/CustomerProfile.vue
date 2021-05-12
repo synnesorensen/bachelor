@@ -99,7 +99,6 @@
                 </v-col>
             </v-row>
             <v-row>
-                <template>
                     <v-btn @click="dialog = true" color="primary">
                         {{ this.buttonText }}
                     </v-btn>
@@ -125,7 +124,6 @@
                             </v-btn>
                         </v-card>
                     </v-dialog>
-                </template>
             </v-row>
         </div>
         <div v-if="editUserprofile">
