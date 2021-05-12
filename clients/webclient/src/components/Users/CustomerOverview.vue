@@ -41,9 +41,9 @@
             </v-sheet>
         </v-col>
         <v-col>
-            <template>
+            <template v-if="!candelDelivery">
                 <v-dialog
-                    v-if="showDay"
+                    
                     :date="selectedDate"
                     dialog="true"
                     v-model="dialog"
@@ -96,7 +96,7 @@ export default class CustomerOverview extends Vue {
     private showDay: boolean = false;
     private selectedDate = "";
     private dialog: boolean = false;
-    private cancelled: boolean = true;
+    private cancelledDelivery: boolean = false;
 
     mounted() {
         this.focus = "";
@@ -136,11 +136,10 @@ export default class CustomerOverview extends Vue {
                 const menu = schedule.find(({ id }) => id == del.menuId);
                 let calColor = "green";
                 let calName = menu!.menu;
-                let cancel = false;
                 if (del.cancelled) {
                     calColor = "red";
                     calName = "Kansellert";
-                    cancel = true;
+                    this.cancelledDelivery = true;
                 }
 
                 events.push({
@@ -175,7 +174,7 @@ export default class CustomerOverview extends Vue {
         }
     }
 
-    async checkDelivery() {
+    async beforeMount() {
 
     }
 }
