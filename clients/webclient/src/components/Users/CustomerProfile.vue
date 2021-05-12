@@ -101,14 +101,14 @@
 	  <v-row>
 		<template>
 		  <v-btn @click="dialog = true" color="primary">
-			{{ this.btnTxt }}
+			{{ this.buttonText }}
 		  </v-btn>
 		  <v-dialog v-model="dialog" persistent max-width="300">
 			<v-card>
 			  <v-card-title class="headline">
-				{{ this.btnTxt }}
+				{{ this.buttonText }}
 			  </v-card-title>
-			  <v-card-text> {{ this.dialogTxt }} </v-card-text>
+			  <v-card-text> {{ this.dialogText }} </v-card-text>
 			  <v-btn color="green darken-1" text @click="pauseDelivery()">
 				OK!
 			  </v-btn>
