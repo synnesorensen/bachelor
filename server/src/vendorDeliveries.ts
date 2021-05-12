@@ -97,8 +97,9 @@ function generateSummary(deliveries: Delivery[] | Summary[]) {
 }
 
 async function putVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let vendorId = getUserInfoFromEvent(event);
     let body = JSON.parse(event.body);
-    let deliveries = await updateDeliveries(body);
+    let deliveries = await updateDeliveries(vendorId, body);
 
     return {
         statusCode: 200,

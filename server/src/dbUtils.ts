@@ -533,6 +533,33 @@ export async function deleteDeliveryInDb(vendorId: string, userId: string, time:
     await database.deleteItem(params).promise();
 }
 
+export async function updateDeliveries(vendorId: string, deliveries: Delivery[]): Promise<void> {
+    let dels = [];
+    for (let i = 0; i < deliveries.length; i++) {
+        dels.push({
+            TableName: settings.TABLENAME,
+            Item: {
+                EntityType: "Delivery",
+                pk: "v#" + vendorId,
+                sk: "d#" + deliveries[i].deliverytime + "#u#" + deliveries[i].userId,
+                deliverytime: deliveries[i].deliverytime,
+                menuId: deliveries[i].menuId,
+                cancelled: deliveries[i].cancelled,
+                GSI2_pk: "u#" + deliveries[i].userId,
+                GSI2_sk: deliveries[i].deliverytime,
+                GSI1_pk: "u#" + deliveries[i].userId + "#v#" + vendorId,
+                GSI1_sk: deliveries[i].deliverytime
+            }
+        });
+    }
+    let promises = [];
+
+    for (let del of dels) {
+        promises.push(documentClient.put(del).promise());
+    }
+    await Promise.all(promises);
+}
+
 export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> {
     let dels = [];
     for (let i = 0; i < deliveries.length; i++) {
