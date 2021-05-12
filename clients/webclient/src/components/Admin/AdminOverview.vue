@@ -159,6 +159,8 @@ export default class AdminOverview extends Vue {
             });
             await api.updateDeliveries(deliveries as Delivery[]);
         }
+        let cancelledEvent = this.events.find(({start}) => start == this.selectedDate);
+        cancelledEvent.color = "grey";
     }
 }
 </script>
