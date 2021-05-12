@@ -99,31 +99,31 @@
                 </v-col>
             </v-row>
             <v-row>
-                    <v-btn @click="dialog = true" color="primary">
-                        {{ this.buttonText }}
-                    </v-btn>
-                    <v-dialog v-model="dialog" persistent max-width="300">
-                        <v-card>
-                            <v-card-title class="headline">
-                                {{ this.buttonText }}
-                            </v-card-title>
-                            <v-card-text> {{ this.dialogText }} </v-card-text>
-                            <v-btn
-                                color="green darken-1"
-                                text
-                                @click="pauseDelivery()"
-                            >
-                                OK!
-                            </v-btn>
-                            <v-btn
-                                color="green darken-1"
-                                text
-                                @click="dialog = false"
-                            >
-                                Avbryt
-                            </v-btn>
-                        </v-card>
-                    </v-dialog>
+                <v-btn @click="dialog = true" color="primary">
+                    {{ this.buttonText }}
+                </v-btn>
+                <v-dialog v-model="dialog" persistent max-width="300">
+                    <v-card>
+                        <v-card-title class="headline">
+                            {{ this.buttonText }}
+                        </v-card-title>
+                        <v-card-text> {{ this.dialogText }} </v-card-text>
+                        <v-btn
+                            color="green darken-1"
+                            text
+                            @click="pauseDelivery()"
+                        >
+                            OK!
+                        </v-btn>
+                        <v-btn
+                            color="green darken-1"
+                            text
+                            @click="dialog = false"
+                        >
+                            Avbryt
+                        </v-btn>
+                    </v-card>
+                </v-dialog>
             </v-row>
         </div>
         <div v-if="editUserprofile">

@@ -41,38 +41,33 @@
             </v-sheet>
         </v-col>
         <v-row>
-                <v-dialog
-
-                    :date="selectedDate"
-                    dialog="true"
-                    v-model="dialog"
-                    persistent
-                    max-width="400"
-                >
-                    <v-card>
-                        <v-card-title class="headline">
-                            Kansellere levering {{ this.selectedDate }}
-                        </v-card-title>
-                        <v-card-text>
-                            Er du sikker på at du ønsker å kansellere leveering
-                            {{ this.selectedDate }}
-                        </v-card-text>
-                        <v-btn
-                            color="green darken-1"
-                            text
-                            @click="cancelDelivery()"
-                        >
-                            OK!
-                        </v-btn>
-                        <v-btn
-                            color="green darken-1"
-                            text
-                            @click="dialog = false"
-                        >
-                            Avbryt
-                        </v-btn>
-                    </v-card>
-                </v-dialog>
+            <v-dialog
+                :date="selectedDate"
+                dialog="true"
+                v-model="dialog"
+                persistent
+                max-width="400"
+            >
+                <v-card>
+                    <v-card-title class="headline">
+                        Kansellere levering {{ this.selectedDate }}
+                    </v-card-title>
+                    <v-card-text>
+                        Er du sikker på at du ønsker å kansellere leveering
+                        {{ this.selectedDate }}
+                    </v-card-text>
+                    <v-btn
+                        color="green darken-1"
+                        text
+                        @click="cancelDelivery()"
+                    >
+                        OK!
+                    </v-btn>
+                    <v-btn color="green darken-1" text @click="dialog = false">
+                        Avbryt
+                    </v-btn>
+                </v-card>
+            </v-dialog>
         </v-row>
     </v-row>
 </template>
@@ -94,7 +89,6 @@ export default class CustomerOverview extends Vue {
     private showDay: boolean = false;
     private selectedDate = "";
     private dialog: boolean = false;
-    private cancelledDelivery: boolean = false;
 
     mounted() {
         this.focus = "";
@@ -137,7 +131,6 @@ export default class CustomerOverview extends Vue {
                 if (del.cancelled) {
                     calColor = "red";
                     calName = "Kansellert";
-                    this.cancelledDelivery = true;
                 }
 
                 events.push({
@@ -170,10 +163,6 @@ export default class CustomerOverview extends Vue {
                 this.dialog = false;
             }
         }
-    }
-
-    async beforeMount() {
-
     }
 }
 </script>
