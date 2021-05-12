@@ -26,7 +26,6 @@ export default class Deliveries extends Vue {
     @Watch("date")
     async onDateChanged() {
         if (this.date) {
-            console.log("I Deliveries ", this.date)
             let startDate = new Date(this.date+"T00:00:00");
             let endDate = new Date(this.date+"T23:59:59");
             let UTCStartDate = startDate.toISOString();

@@ -148,7 +148,6 @@ export default class AdminOverview extends Vue {
       showDeliveries(event:any) {
         this.selectedDate = event.day.date;
         this.showList = true;
-        console.log("I AdminOverview ", this.selectedDate)
     }
 
     async cancelDelivery(event:any) {
