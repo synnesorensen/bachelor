@@ -200,24 +200,24 @@ export default class CustomerOrder extends Vue {
         { no: 7, selected: false },
         { no: 8, selected: false },
         { no: 9, selected: false },
-        { no: 10, selected: false },
+        { no: 10, selected: false }
     ];
     private selectedNoOfMeals = 1;
     private deliveryDays = [
         { id: "1", menu: "Tirsdag - lunsj", selected: false },
         { id: "2", menu: "Onsdag - lunsj", selected: false },
         { id: "3", menu: "Torsdag - fisk til lunsj", selected: false },
-        { id: "4", menu: "Torsdag - fisk til middag", selected: false },
+        { id: "4", menu: "Torsdag - fisk til middag", selected: false }
     ];
     private selectedDeliveryDays = [];
     private deliveries = [
         { type: "Ei enkelt levering 149 kr", selected: false },
-        { type: "Abonnement (kr. 137 per levering)", selected: false },
+        { type: "Abonnement (kr. 137 per levering)", selected: false }
     ];
     private selectedDeliveries = [];
     private boxes = [
         { type: "Engangsboks", selected: false },
-        { type: "Gjenbruksbokser (depositum kr 218)", selected: false },
+        { type: "Gjenbruksbokser (depositum kr 218)", selected: false }
     ];
     private selectedBox = "";
     private allergies = [
@@ -234,7 +234,7 @@ export default class CustomerOrder extends Vue {
         { name: "Sesam", selected: false },
         { name: "Svovel", selected: false },
         { name: "Lupin", selected: false },
-        { name: "Bløtdyr", selected: false },
+        { name: "Bløtdyr", selected: false }
     ];
     private selectedAllergies = [];
     private add = "";
@@ -263,7 +263,7 @@ export default class CustomerOrder extends Vue {
             phone: this.phone.toString(),
             email: this.loggedInUser,
             allergies: this.selectedAllergies,
-            isVendor: false,
+            isVendor: false
         };
 
         let subscription = {
@@ -273,7 +273,7 @@ export default class CustomerOrder extends Vue {
             paused: false,
             schedule: this.selectedDeliveryDays,
             noOfMeals: this.selectedNoOfMeals,
-            box: this.selectedBox,
+            box: this.selectedBox
         };
         await api.putUserprofile(newUserprofile);
         await api.putUserSubscription(subscription);
