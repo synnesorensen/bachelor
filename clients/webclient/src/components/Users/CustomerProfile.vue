@@ -98,6 +98,33 @@
                     </p>
                 </v-col>
             </v-row>
+            <v-row>
+                <v-btn @click="dialog = true" color="primary">
+                    {{ this.buttonText }}
+                </v-btn>
+                <v-dialog v-model="dialog" persistent max-width="300">
+                    <v-card>
+                        <v-card-title class="headline">
+                            {{ this.buttonText }}
+                        </v-card-title>
+                        <v-card-text> {{ this.dialogText }} </v-card-text>
+                        <v-btn
+                            color="green darken-1"
+                            text
+                            @click="pauseDelivery()"
+                        >
+                            OK!
+                        </v-btn>
+                        <v-btn
+                            color="green darken-1"
+                            text
+                            @click="dialog = false"
+                        >
+                            Avbryt
+                        </v-btn>
+                    </v-card>
+                </v-dialog>
+            </v-row>
         </div>
         <div v-if="editUserprofile">
             <v-row>
@@ -105,7 +132,8 @@
                     <v-btn
                         v-if="editUserprofile"
                         color="secondary"
-                        @click="cancel">
+                        @click="cancel"
+                    >
                         Avbryt
                     </v-btn>
                 </v-col>
@@ -120,7 +148,11 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { MenuItems, Userprofile, VendorSubscription } from "../../../../../server/src/interfaces";
+import {
+    MenuItems,
+    Userprofile,
+    VendorSubscription,
+} from "../../../../../server/src/interfaces";
 import CustomerOrder from "./CustomerOrder.vue";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
@@ -138,6 +170,10 @@ export default class CustomerProfile extends Vue {
     private allergies = this.userprofile.allergies;
     private editUserprofile: boolean = false;
     private showUserprofile: boolean = true;
+    private dialog: boolean = false;
+    private switchText: boolean = false;
+    private buttonText: string = "";
+    private dialogText: string = "";
 
     sendToCustomerOrder() {
         this.editUserprofile = true;
@@ -156,6 +192,42 @@ export default class CustomerProfile extends Vue {
             this.items = subs[0].schedule;
             this.subscription = subs[0];
         }
+    }
+
+    async pauseDelivery() {
+        this.dialog = false;
+        if (this.subscription != null) {
+            let del = await api.getUserSubscription(this.subscription.vendorId);
+            if (del != null) {
+                if (del.paused) {
+                    console.log(del.paused);
+                    del.paused = false;
+                    await api.putUserSubscription(del);
+                } else {
+                    console.log(del.paused);
+                    del.paused = true;
+                    await api.putUserSubscription(del);
+                }
+            }
+        }
+    }
+
+    async changeText() {
+        if (this.subscription != null) {
+            if (this.subscription.paused) {
+                this.switchText = true;
+                this.buttonText = "Aktiver abonnement";
+                this.dialogText = "Du aktiverer nå ditt abonnement igjen";
+            } else {
+                this.switchText = false;
+                this.buttonText = "Pause abonnement";
+                this.dialogText = "Du setter nå ditt abonnement på pause";
+            }
+        }
+    }
+
+    updated() {
+        this.changeText();
     }
 }
 </script>
