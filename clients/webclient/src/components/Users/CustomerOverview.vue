@@ -53,8 +53,8 @@
                         Kansellere levering {{ this.selectedDate }}
                     </v-card-title>
                     <v-card-text>
-                        Er du sikker på at du ønsker å kansellere leveering
-                        {{ this.selectedDate }}
+                        Er du sikker på at du ønsker å kansellere levering
+                        {{ this.selectedDate }}?
                     </v-card-text>
                     <v-btn
                         color="green darken-1"
@@ -75,10 +75,13 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
+import { Userprofile } from "../../../../../server/src/interfaces";
 
 @Component({})
 export default class CustomerOverview extends Vue {
+	@Prop() userprofile!: Userprofile;
     private today = new Date().toISOString().substr(0, 10);
     private focus = new Date().toISOString().substr(0, 10);
     private type = "month";
@@ -151,15 +154,14 @@ export default class CustomerOverview extends Vue {
     }
 
     async cancelDelivery() {
-        let user = await api.getUserprofile();
         let vend = await api.getUserSubscriptions();
         let date = this.selectedDate + "T00:00:01.000Z";
 
-        if (user != null && vend != null) {
-            let res = await api.getDelivery(vend[0].vendorId, user.email, date);
-            if (res != null && !res.cancelled) {
+        if (this.userprofile && vend) {
+            let res = await api.getDelivery(vend[0].vendorId, this.userprofile.email, date);
+            if (res && !res.cancelled) {
                 res.cancelled = true;
-                await api.putDelivery(vend[0].vendorId, user.email, res);
+                await api.putDelivery(vend[0].vendorId, this.userprofile.email, res);
                 this.dialog = false;
             }
         }
