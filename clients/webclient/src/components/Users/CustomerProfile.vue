@@ -138,7 +138,7 @@
                     </v-btn>
                 </v-col>
                 <v-col>
-                    <CustomerOrder :loggedInUser="loggedInUser" />
+                    <CustomerEdit :loggedInUser="loggedInUser" />
                 </v-col>
             </v-row>
         </div>
@@ -153,13 +153,13 @@ import {
     Userprofile,
     VendorSubscription,
 } from "../../../../../server/src/interfaces";
-import CustomerOrder from "./CustomerOrder.vue";
+import CustomerEdit from "./CustomerEdit.vue";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
 
 @Component({
     components: {
-        CustomerOrder,
+        CustomerEdit,
     },
 })
 export default class CustomerProfile extends Vue {

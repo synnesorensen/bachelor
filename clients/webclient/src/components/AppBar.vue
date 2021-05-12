@@ -12,6 +12,7 @@
                 <v-tab v-if="userprofile.isVendor">AdminKalender</v-tab>
                 <v-tab v-if="userprofile.isVendor">Firmaprofil</v-tab>
                 <v-tab v-if="userprofile.isVendor">Betalinger</v-tab>
+
 			</v-tabs>
             <v-spacer />
             <v-btn 
@@ -39,6 +40,7 @@ import Component from 'vue-class-component';
 import CustomerOverview from './Users/CustomerOverview.vue';
 import CustomerProfile from './Users/CustomerProfile.vue';
 import CustomerInvoice from './Users/CustomerInvoice.vue';
+import CustomerEdit from './Users/CustomerEdit.vue';
 import AdminOverview from './Admin/AdminOverview.vue';
 import AdminProfile from './Admin/AdminProfile.vue';
 import AdminPayments from './Admin/AdminPayments.vue';
@@ -52,7 +54,8 @@ import { Prop } from 'vue-property-decorator';
 		CustomerInvoice,
         AdminOverview,
         AdminProfile, 
-        AdminPayments
+        AdminPayments,
+		CustomerEdit
 	},
 })
 export default class AppBar extends Vue {
