@@ -57,12 +57,15 @@
                 ></v-text-field>
             </v-card-title>
             <v-data-table
-                dense
-                :headers="headers"
+                :headers="headersExtra"
                 :items="unapprovedUsers"
-                item-key="userId"
                 :search="search"
                 class="elevation-1">
+            <template v-slot:[`item.controls`]="props">
+                <v-btn class="mx-2" fab dark small color="pink" @click="approve(props.item)">
+                    <v-icon dark>mdi-heart</v-icon>
+                </v-btn>
+            </template>
             </v-data-table>
         </v-card>
     </v-container>
@@ -72,7 +75,6 @@
 import Vue from 'vue';
 import api from "../../api/api";
 import Component from 'vue-class-component';
-import * as interfaces from "../../../../../server/src/interfaces";
 
 @Component({
 	components: {
@@ -97,6 +99,22 @@ export default class AdminCustomers extends Vue {
         { text: "Antall", value: "noOfMeals" },
         { text: "Allergier", value: "allergies" },
         { text: "Leveringsdager", value: "days" }
+    ];
+    private headersExtra = [
+        {
+          text: "Navn",
+          align: 'start',
+          sortable: true,
+          value: "fullname",
+        },
+        { text: "Adresse", value: "address" },
+        { text: "Telefon", value: "phone" },
+        { text: "Epost", value: "email" },
+        { text: "Boks", value: "box" },
+        { text: "Antall", value: "noOfMeals" },
+        { text: "Allergier", value: "allergies" },
+        { text: "Leveringsdager", value: "days" },
+        { text: "Godkjenn", value: "controls", sortable: false }
     ];
 
     async created() {
@@ -144,6 +162,9 @@ export default class AdminCustomers extends Vue {
             }
             
         });
+    }
+    async approve(item: any) {
+        console.log("Godkjenner " + item)
     }
 }
 </script>
