@@ -156,9 +156,9 @@ export default class AdminOverview extends Vue {
         let deliveries = await api.getAllVendorsDeliveries(this.selectedDate, this.selectedDate);
         if (deliveries) {
             deliveries!.forEach((del: any) => {
-            del.cancelled = true;
-        });
-        // await api.putAllVendorsDeliveries(deliveries);
+                del.cancelled = true;
+            });
+            await api.updateDeliveries(deliveries as Delivery[]);
         }
     }
 }
