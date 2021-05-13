@@ -77,11 +77,13 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
-import { Userprofile } from "../../../../../server/src/interfaces";
+import { Userprofile, Vendor } from "../../../../../server/src/interfaces";
+import { request } from "node:http";
 
 @Component({})
 export default class CustomerOverview extends Vue {
-	@Prop() userprofile!: Userprofile;
+    @Prop() userprofile!: Userprofile;
+    @Prop() vendor!: Vendor;
     private today = new Date().toISOString().substr(0, 10);
     private focus = new Date().toISOString().substr(0, 10);
     private type = "month";
@@ -120,6 +122,10 @@ export default class CustomerOverview extends Vue {
         let sub = await api.getUserSubscriptions();
         let schedule = sub[0].schedule;
 
+        const vendor = await api.getVendor(this.vendor.email);
+        let vendorSchedule = vendor!.schedule;
+        let vendorDeliveries = await api.getAllVendorsDeliveries(start.date, end.date);
+
         if (deliveries) {
             deliveries.forEach((del) => {
                 const delStart = new Date(
@@ -145,7 +151,28 @@ export default class CustomerOverview extends Vue {
             });
             this.events = events;
         }
+
+        if (vendorDeliveries) {
+            vendorDeliveries.forEach((del: any) => {
+                const delStart = new Date(
+                    `${del.date.substring(0, 10)}T00:00:00`
+                );
+                const delEnd = new Date(
+                    `${del.date.substring(0, 10)}T23:59:59`
+                );
+                const menu = vendorSchedule.find(({ id }) => id == del.menuId);
+
+                events.push({
+                    name: menu!.menu,
+                    start: delStart,
+                    end: delEnd,
+                    color: "yellow",
+                });
+            });
+            this.events = events;
+        }
     }
+
     showEvent(event: any) {
         this.showDay = true;
         this.dialog = true;
@@ -158,10 +185,18 @@ export default class CustomerOverview extends Vue {
         let date = this.selectedDate + "T00:00:01.000Z";
 
         if (this.userprofile && vend) {
-            let res = await api.getDelivery(vend[0].vendorId, this.userprofile.email, date);
+            let res = await api.getDelivery(
+                vend[0].vendorId,
+                this.userprofile.email,
+                date
+            );
             if (res && !res.cancelled) {
                 res.cancelled = true;
-                await api.putDelivery(vend[0].vendorId, this.userprofile.email, res);
+                await api.putDelivery(
+                    vend[0].vendorId,
+                    this.userprofile.email,
+                    res
+                );
                 this.dialog = false;
             }
         }
