@@ -128,7 +128,7 @@
         </div>
         <div v-if="editUserprofile">
             <v-row>
-                <v-col :cols="5">
+                <v-col :cols="1">
                     <v-btn
                         v-if="editUserprofile"
                         color="secondary"

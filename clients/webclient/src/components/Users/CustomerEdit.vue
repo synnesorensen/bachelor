@@ -53,6 +53,13 @@
                         required
                     ></v-text-field>
                 </v-col>
+                <v-col>
+                    <v-text-field
+                        label="E-post"
+                        v-model="email"
+                        required
+                    ></v-text-field>
+                </v-col>
             </v-row>
             <v-row>
                 <h4>Dine registrerte alleriger er</h4>
@@ -91,21 +98,24 @@ export default class CustomerEdit extends Vue {
     private postNo = "";
     private postPlace = "";
     private phone = "";
+    private email = "";
+    private show = true;
 
     async fillForm() {
         let user = await api.getUserprofile();
         let fn = user.fullname.split(" ");
-        for(let i = 0; i < fn.length-1; i++) {
+        for (let i = 0; i < fn.length - 1; i++) {
             this.firstName += fn[i] + " ";
         }
-        this.lastName = fn[fn.length-1];
+        this.lastName = fn[fn.length - 1];
         let a = user.address.split(" ");
         this.address = a[0] + " " + a[1];
         this.postNo = a[2];
         this.postPlace = a[3];
         this.phone = user.phone;
+        this.email = user.email;
         this.selectedAllergies = user.allergies;
-        console.log(this.userprofile)
+        console.log(this.userprofile);
     }
 
     async beforeMount() {
@@ -144,11 +154,12 @@ export default class CustomerEdit extends Vue {
     }
 
     async sendToDb() {
+        this.show = false;
         let newUserprofile = {
             fullname: this.firstName + " " + this.lastName,
             address: this.address + " " + this.postNo + " " + this.postPlace,
             phone: this.phone.toString(),
-            email: this.loggedInUser,
+            email: this.email,
             allergies: this.selectedAllergies,
             isVendor: false,
         };
@@ -158,7 +169,7 @@ export default class CustomerEdit extends Vue {
     }
 
     cancel() {
-        this.$emit("userprofile");
+       this.show = false;
     }
 }
 </script>
