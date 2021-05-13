@@ -44,7 +44,7 @@
             </v-data-table>
         </v-card>
         <br />
-        <v-card>
+        <v-card v-if="unapprovedUsers.length > 0">
             <v-card-title>
                 Kunder til godkjenning
                 <v-spacer></v-spacer>
@@ -60,7 +60,8 @@
                 :headers="headersExtra"
                 :items="unapprovedUsers"
                 :search="search"
-                class="elevation-1">
+                class="elevation-1"
+                >
             <template v-slot:[`item.controls`]="props">
                 <v-btn class="mx-2" fab dark small color="green" @click="approve(props.item)">
                     <v-icon dark>mdi-checkbox-marked-circle-outline</v-icon>
