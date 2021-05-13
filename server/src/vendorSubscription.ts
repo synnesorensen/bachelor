@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { deleteSubscriptionInDb, getSubscriptionFromDb, getUserprofileFromDb, putSubscriptionInDb } from './dbUtils'
+import { deleteSubscriptionInDb, getSubscriptionFromDb, getUserprofileFromDb, putSubscriptionInDb, updateApproval } from './dbUtils'
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -11,6 +11,9 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     }
     if (event.httpMethod == "PUT") {
         return putUserSubscription(event);
+    }
+    if (event.httpMethod == "PATCH") {
+        return updateUserSubscription(event);
     }
     if (event.httpMethod == "DELETE") {
         return deleteUserSubscription(event);
@@ -93,6 +96,46 @@ async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
         return {
             statusCode: 200,
             body: JSON.stringify(subscription)
+        };
+    } catch (err) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify(err)
+        };
+    }
+}
+
+async function updateUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let vendorId = getUserInfoFromEvent(event);
+    let vendor = await getUserprofileFromDb(vendorId);
+    if (!vendor.isVendor) {
+        return {
+            statusCode: 403,
+            body: JSON.stringify({ message: "User " + vendorId + " is not a vendor" })
+        };
+    }
+    if (!event.queryStringParameters) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter userId" }'
+        };
+    }
+    let userId = event.queryStringParameters["userId"];
+
+    if (!userId) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter userId" }'
+        };
+    }
+    let body = JSON.parse(event.body);
+
+    try {
+        await updateApproval(vendorId, userId, body.approved)
+
+        return {
+            statusCode: 200,
+            body: '{ "message" : "Approval updated" }'
         };
     } catch (err) {
         return {
