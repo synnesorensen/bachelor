@@ -76,6 +76,7 @@ import Vue from 'vue';
 import api from "../../api/api";
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
+import { UserSubscription } from '../../../../../server/src/interfaces';
 
 @Component({
 	components: {
@@ -83,9 +84,22 @@ import { Prop } from 'vue-property-decorator';
 })
 export default class AdminCustomers extends Vue {
     @Prop() loggedInUser!: string;
-    private activeUsers: any[] = [];
-    private pausedUsers: any[] = [];
-    private unapprovedUsers: any[] = [];
+    private users: UserSubscription[] = []
+    get activeUsers() {
+        return this.users.filter((user) => {
+            return user.approved && !user.paused;
+        });
+    }
+    get pausedUsers() {
+        return this.users.filter((user) => {
+            return user.approved && user.paused;
+        });
+    }
+    get unapprovedUsers() {
+        return this.users.filter((user) => {
+            return !user.approved;
+        });
+    }
     private search = "";
     private headers = [
         {
@@ -121,64 +135,27 @@ export default class AdminCustomers extends Vue {
 
     async created() {
         let users = await api.getVendorSubscriptions();
-        users.forEach((user) => {
-            let days: string[] = [];
-            user.schedule.forEach((item) => {
-                days.push(item.day)
-            });
-            if (user.approved) {
-                if (user.paused) {
-                    this.pausedUsers.push({
-                        userId: user.userId,
-                        fullname: user.fullname,
-                        address: user.address,
-                        phone: user.phone,
-                        email: user.email,
-                        box: user.box,
-                        noOfMeals: user.noOfMeals,
-                        allergies: user.allergies,
-                        days: days
-                    });
-                } else {
-                    this.activeUsers.push({
-                        userId: user.userId,
-                        fullname: user.fullname,
-                        address: user.address,
-                        phone: user.phone,
-                        email: user.email,
-                        box: user.box,
-                        noOfMeals: user.noOfMeals,
-                        allergies: user.allergies,
-                        days: days
-                    });
-                }
-            } else {
-                this.unapprovedUsers.push({
-                    userId: user.userId,
-                    fullname: user.fullname,
-                    address: user.address,
-                    phone: user.phone,
-                    email: user.email,
-                    box: user.box,
-                    noOfMeals: user.noOfMeals,
-                    allergies: user.allergies,
-                    days: days
-                });
+        this.users = users.map((user) => {
+            return {
+                ...user, 
+                days: this.deliveryDays(user)
             }
-            
         });
     }
-    async approve(item: any) {
-        let sub = {
-            vendorId: this.loggedInUser,
-            userId: item.userId,
-            approved: true,
-            paused: item.paused,
-            schedule: item.schedule,
-            noOfMeals: item.noOfMeals,
-            box: item.box
+
+    deliveryDays(item: UserSubscription) {
+        return item.schedule.map((menuItem) => {
+            return menuItem.day;
+        });
+    }
+
+    async approve(item: UserSubscription) {
+        try {
+            await api.updateApproval(item.userId, true);
+            item.approved = true;
+        } catch (err) {
+            console.log(err)    // Lag dialogboks her.
         }
-        await api.putVendorSubscription(sub);
     }
 }
 </script>

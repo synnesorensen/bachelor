@@ -33,7 +33,6 @@ export async function getSubscriptionFromDb(vendorId: string, userId: string): P
             noOfMeals: subscriptionResult.Items[0].noOfMeals,
             box: subscriptionResult.Items[0].box
     };
-    
 }
 
 export async function putSubscriptionInDb(subscription: Subscription, isVendor: boolean): Promise<Subscription> {
@@ -95,6 +94,24 @@ export async function putSubscriptionInDb(subscription: Subscription, isVendor: 
         noOfMeals: parseInt(dbItem.Attributes.noOfMeals.N),
         box: dbItem.Attributes.box.S
     };
+}
+
+export async function updateApproval(vendorId: string, userId: string, approved: boolean): Promise<void> {
+    let UpdateExpression = "set approved = :approved";
+    let ExpressionAttributeValues: any = {
+        ":approved": { BOOL: approved }
+    }; 
+
+    let params = {
+        TableName: settings.TABLENAME,
+        Key: {
+            "pk": { S: "v#" + vendorId },
+            "sk": { S: "u#" + userId }
+        },
+        UpdateExpression,
+        ExpressionAttributeValues
+    };
+    await database.updateItem(params).promise();
 }
 
 export async function deleteSubscriptionInDb(vendorId: string, userId: string): Promise<void> {

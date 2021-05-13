@@ -173,6 +173,14 @@ export class Api {
         await this.apiAxios.delete(url);
     }
 
+    async updateApproval(userId: string, approved: boolean) {
+        await this.ensureFreshToken();
+        const body = {
+            approved
+        };
+        await this.apiAxios.patch(urlPrefix + "/v/subscription?userId=" + encodeURIComponent(userId), body);
+    }
+
     async getAllVendorsDeliveries(startDate: string, endDate: string, summary?:boolean): Promise<interfaces.Delivery[] | interfaces.Summary[] | null> {
         await this.ensureFreshToken();
 
