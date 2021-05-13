@@ -29,7 +29,7 @@
                 <v-tab-item v-if="userprofile.isVendor"><AdminOverview :userprofile="userprofile" /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminProfile :userprofile="userprofile" /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminPayments /></v-tab-item>
-                <v-tab-item v-if="userprofile.isVendor"><AdminCustomers /></v-tab-item>
+                <v-tab-item v-if="userprofile.isVendor"><AdminCustomers :loggedInUser="loggedInUser" /></v-tab-item>
 			</v-tabs-items>
 		</v-main>
 	</v-container>

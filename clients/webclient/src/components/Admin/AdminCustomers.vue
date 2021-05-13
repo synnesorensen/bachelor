@@ -62,8 +62,8 @@
                 :search="search"
                 class="elevation-1">
             <template v-slot:[`item.controls`]="props">
-                <v-btn class="mx-2" fab dark small color="pink" @click="approve(props.item)">
-                    <v-icon dark>mdi-heart</v-icon>
+                <v-btn class="mx-2" fab dark small color="green" @click="approve(props.item)">
+                    <v-icon dark>mdi-checkbox-marked-circle-outline</v-icon>
                 </v-btn>
             </template>
             </v-data-table>
@@ -75,12 +75,14 @@
 import Vue from 'vue';
 import api from "../../api/api";
 import Component from 'vue-class-component';
+import { Prop } from 'vue-property-decorator';
 
 @Component({
 	components: {
 	},
 })
 export default class AdminCustomers extends Vue {
+    @Prop() loggedInUser!: string;
     private activeUsers: any[] = [];
     private pausedUsers: any[] = [];
     private unapprovedUsers: any[] = [];
@@ -114,7 +116,7 @@ export default class AdminCustomers extends Vue {
         { text: "Antall", value: "noOfMeals" },
         { text: "Allergier", value: "allergies" },
         { text: "Leveringsdager", value: "days" },
-        { text: "Godkjenn", value: "controls", sortable: false }
+        { text: "", value: "controls", sortable: false }
     ];
 
     async created() {
@@ -127,6 +129,7 @@ export default class AdminCustomers extends Vue {
             if (user.approved) {
                 if (user.paused) {
                     this.pausedUsers.push({
+                        userId: user.userId,
                         fullname: user.fullname,
                         address: user.address,
                         phone: user.phone,
@@ -138,6 +141,7 @@ export default class AdminCustomers extends Vue {
                     });
                 } else {
                     this.activeUsers.push({
+                        userId: user.userId,
                         fullname: user.fullname,
                         address: user.address,
                         phone: user.phone,
@@ -150,6 +154,7 @@ export default class AdminCustomers extends Vue {
                 }
             } else {
                 this.unapprovedUsers.push({
+                    userId: user.userId,
                     fullname: user.fullname,
                     address: user.address,
                     phone: user.phone,
@@ -164,7 +169,16 @@ export default class AdminCustomers extends Vue {
         });
     }
     async approve(item: any) {
-        console.log("Godkjenner " + item)
+        let sub = {
+            vendorId: this.loggedInUser,
+            userId: item.userId,
+            approved: true,
+            paused: item.paused,
+            schedule: item.schedule,
+            noOfMeals: item.noOfMeals,
+            box: item.box
+        }
+        await api.putVendorSubscription(sub);
     }
 }
 </script>
