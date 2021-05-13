@@ -95,8 +95,10 @@ export default class CustomerEdit extends Vue {
     async fillForm() {
         let user = await api.getUserprofile();
         let fn = user.fullname.split(" ");
-        this.firstName = fn[0];
-        this.lastName = fn[1];
+        for(let i = 0; i < fn.length-1; i++) {
+            this.firstName += fn[i] + " ";
+        }
+        this.lastName = fn[fn.length-1];
         let a = user.address.split(" ");
         this.address = a[0] + " " + a[1];
         this.postNo = a[2];
