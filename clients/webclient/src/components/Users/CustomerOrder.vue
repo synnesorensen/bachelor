@@ -183,12 +183,12 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
-import * as interfaces from "../../../../../server/src/interfaces";
+import { MenuItems, Vendor} from "../../../../../server/src/interfaces";
 
 @Component
 export default class CustomerOrder extends Vue {
     @Prop() loggedInUser!: string;
-    private vendor: any;
+    private vendor!: Vendor;
     private firstName = "";
     private lastName = "";
     private address = "";
@@ -208,7 +208,7 @@ export default class CustomerOrder extends Vue {
         { no: 10, selected: false },
     ];
     private selectedNoOfMeals = 1;
-    private deliveryDays: any = [];
+    private deliveryDays: MenuItems[] = [];
     private selectedDeliveryDays = [];
     private deliveries = [
         { type: "Abonnement (kr. 137 per levering)", selected: false },
