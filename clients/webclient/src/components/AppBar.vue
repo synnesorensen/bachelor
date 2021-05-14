@@ -40,7 +40,6 @@ import Component from 'vue-class-component';
 import CustomerOverview from './Users/CustomerOverview.vue';
 import CustomerProfile from './Users/CustomerProfile.vue';
 import CustomerInvoice from './Users/CustomerInvoice.vue';
-import CustomerEdit from './Users/CustomerEdit.vue';
 import AdminOverview from './Admin/AdminOverview.vue';
 import AdminProfile from './Admin/AdminProfile.vue';
 import AdminPayments from './Admin/AdminPayments.vue';
@@ -54,8 +53,7 @@ import { Prop } from 'vue-property-decorator';
 		CustomerInvoice,
         AdminOverview,
         AdminProfile, 
-        AdminPayments,
-		CustomerEdit
+        AdminPayments
 	},
 })
 export default class AppBar extends Vue {
