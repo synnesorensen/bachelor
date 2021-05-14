@@ -28,32 +28,17 @@
                     show-week
 					:now="today"
                     :events="events"
-                    @click:event="showEvent"
+                    @click:event="showDeliveries"
 					@change="getEvents"
 				>
 				</v-calendar>
-                <v-menu
-                    v-model="selectedOpen"
-                    :close-on-content-click="false"
-                    :activator="selectedElement"
-                    offset-x
-                >
-                    <v-card color="grey lighten-4" min-width="350px" flat >
-                        <v-toolbar :color="selectedEvent.color" dark >
-                            <v-toolbar-title v-html= "selectedEvent.name"></v-toolbar-title>
-                        </v-toolbar>
-                        <v-card-text>
-                            <v-card-actions>
-                                <v-btn text color="secondary" @click="showDeliveries" > Leveringer </v-btn>
-                                <v-btn text color="secondary" @click="cancelDelivery" > Kanseller levering </v-btn>
-                            </v-card-actions>
-                        </v-card-text>
-                    </v-card>
-                </v-menu>
 			</v-sheet>
 		</v-col>
         <v-col>
-            <Deliveries v-if="showDeliveries" :date="selectedDate"/>
+            <v-card v-if="showList">
+                <v-card-title>Dagens leveringer</v-card-title>
+                <Deliveries :date="selectedDate"/>
+            </v-card>
         </v-col>
 	</v-row>
     </main>
@@ -128,24 +113,8 @@ export default class AdminOverview extends Vue {
             this.events = events;
         }
     }
-    
-    showEvent ( {nativeEvent, event}:{nativeEvent: any, event: any} ) {
-        const open = () => {
-            this.selectedEvent = event;
-            this.selectedElement = nativeEvent.target;
-            requestAnimationFrame(() => requestAnimationFrame(() => this.selectedOpen = true))
-        }
 
-        if (this.selectedOpen) {
-            this.selectedOpen = false
-            requestAnimationFrame(() => requestAnimationFrame(() => open()))
-        } else {
-            open()
-        }
-        nativeEvent.stopPropagation()
-    };
-
-      showDeliveries(event:any) {
+    showDeliveries(event:any) {
         this.selectedDate = event.day.date;
         this.showList = true;
     }
