@@ -210,8 +210,8 @@ export default class CustomerOrder extends Vue {
     private deliveryDays = [];
     private selectedDeliveryDays = [];
     private deliveries = [
-        { type: "Ei enkelt levering 149 kr", selected: false },
         { type: "Abonnement (kr. 137 per levering)", selected: false },
+        { type: "Ei enkelt levering 149 kr", selected: false },
     ];
     private selectedDeliveries = [];
     private boxes = [
@@ -256,7 +256,6 @@ export default class CustomerOrder extends Vue {
     }
 
     async getVendorSchedule() {
-        console.log("hei")
         let vendors = await api.getAllVendors();
         let vendor = vendors[0]
         if (vendor) {
@@ -275,7 +274,6 @@ export default class CustomerOrder extends Vue {
         };
 
         let vendors = await api.getAllVendors();
-        console.log(vendors);
 
         let subscription = {
             vendorId: vendors![0].vendorId!,
