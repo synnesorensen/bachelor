@@ -12,7 +12,7 @@
                 <v-tab v-if="userprofile.isVendor">AdminKalender</v-tab>
                 <v-tab v-if="userprofile.isVendor">Firmaprofil</v-tab>
                 <v-tab v-if="userprofile.isVendor">Betalinger</v-tab>
-
+                <v-tab v-if="userprofile.isVendor">Kundeliste</v-tab>
 			</v-tabs>
             <v-spacer />
             <v-btn 
@@ -29,6 +29,7 @@
                 <v-tab-item v-if="userprofile.isVendor"><AdminOverview :userprofile="userprofile" /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminProfile :userprofile="userprofile" /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminPayments /></v-tab-item>
+                <v-tab-item v-if="userprofile.isVendor"><AdminCustomers :loggedInUser="loggedInUser" /></v-tab-item>
 			</v-tabs-items>
 		</v-main>
 	</v-container>
@@ -43,6 +44,7 @@ import CustomerInvoice from './Users/CustomerInvoice.vue';
 import AdminOverview from './Admin/AdminOverview.vue';
 import AdminProfile from './Admin/AdminProfile.vue';
 import AdminPayments from './Admin/AdminPayments.vue';
+import AdminCustomers from './Admin/AdminCustomers.vue';
 import * as interfaces from './../../../../server/src/interfaces'
 import { Prop } from 'vue-property-decorator';
 
@@ -53,7 +55,8 @@ import { Prop } from 'vue-property-decorator';
 		CustomerInvoice,
         AdminOverview,
         AdminProfile, 
-        AdminPayments
+        AdminPayments,
+        AdminCustomers
 	},
 })
 export default class AppBar extends Vue {
