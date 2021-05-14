@@ -259,12 +259,8 @@ export default class CustomerOrder extends Vue {
         console.log("hei")
         let vendors = await api.getAllVendors();
         let vendor = vendors[0]
-        console.log(vendors[0])
-        console.log(vendor)
         if (vendor) {
             this.deliveryDays = vendor.schedule;
-            console.log(this.deliveryDays);
-            console.log(this.deliveryDays[0]);
         }
     }
 
@@ -295,8 +291,7 @@ export default class CustomerOrder extends Vue {
         this.$emit("newUserprofile", newUserprofile);
     }
 
-    async beforeMount() {
-        console.log("hallo")
+    async created() {
         this.getVendorSchedule();
     }
 }
