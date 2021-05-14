@@ -188,6 +188,7 @@ import * as interfaces from "../../../../../server/src/interfaces";
 @Component
 export default class CustomerOrder extends Vue {
     @Prop() loggedInUser!: string;
+    private vendor: any;
     private firstName = "";
     private lastName = "";
     private address = "";
@@ -207,7 +208,7 @@ export default class CustomerOrder extends Vue {
         { no: 10, selected: false },
     ];
     private selectedNoOfMeals = 1;
-    private deliveryDays = [];
+    private deliveryDays: any = [];
     private selectedDeliveryDays = [];
     private deliveries = [
         { type: "Abonnement (kr. 137 per levering)", selected: false },
@@ -255,11 +256,11 @@ export default class CustomerOrder extends Vue {
         this.$emit("logout");
     }
 
-    async getVendorSchedule() {
+    async getVendor() {
         let vendors = await api.getAllVendors();
-        let vendor = vendors[0]
-        if (vendor) {
-            this.deliveryDays = vendor.schedule;
+        this.vendor = vendors![0]
+        if (this.vendor) {
+            this.deliveryDays = this.vendor.schedule;
         }
     }
 
@@ -273,10 +274,8 @@ export default class CustomerOrder extends Vue {
             isVendor: false,
         };
 
-        let vendors = await api.getAllVendors();
-
         let subscription = {
-            vendorId: vendors![0].vendorId!,
+            vendorId: this.vendor!.vendorId!,
             userId: this.loggedInUser,
             approved: false,
             paused: false,
@@ -290,7 +289,7 @@ export default class CustomerOrder extends Vue {
     }
 
     async created() {
-        this.getVendorSchedule();
+        this.getVendor();
     }
 }
 </script>
