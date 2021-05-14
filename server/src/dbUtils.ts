@@ -189,6 +189,27 @@ export async function deleteVendorInDb(vendorId: string): Promise<void> {
     await database.deleteItem(params).promise();
 }
 
+export async function getAllVendors(): Promise<Vendor[]> {
+    let params = {
+        TableName: settings.TABLENAME,
+        KeyConditionExpression: "#pk = :vendor and begins_with(#sk, :prefix)",
+        ExpressionAttributeNames: {
+            "#pk": "pk",
+            "#sk": "sk"
+        },
+        ExpressionAttributeValues: {
+            ":vendor": "v#",
+            ":prefix": "v#"
+        }
+    };
+
+    let dbResult = await documentClient.query(params).promise();
+    if (dbResult.Items.length == 0) {
+        return [];
+    }
+    // Gjøre ferdig 
+}
+
 export async function getUserprofileFromDb(userId: string): Promise<Userprofile> {
     let params = {
         TableName: settings.TABLENAME,

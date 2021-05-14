@@ -91,7 +91,19 @@ export class Api {
         await this.apiAxios.delete(url);
     }
 
-    // TODO: Lag en funksjon for å hente liste av vendors når tilhørende lambda er implementert.
+    async getAllVendors(): Promise<interfaces.Vendor | null> {
+        await this.ensureFreshToken();
+
+        try {
+            const vendor = await this.apiAxios.get(urlPrefix + "/vendors");
+            return vendor.data;
+        } catch (error) {
+            if (error.response.status == 404) {
+                return null;
+            }
+            throw (error);
+        }
+    }
 
     async getVendorSubscriptions(): Promise<interfaces.UserSubscription[]> {
         await this.ensureFreshToken();
