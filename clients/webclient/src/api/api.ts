@@ -91,18 +91,13 @@ export class Api {
         await this.apiAxios.delete(url);
     }
 
-    async getAllVendors(): Promise<interfaces.Vendor | null> {
+    async getAllVendors(): Promise<interfaces.Vendor[] | null> {
         await this.ensureFreshToken();
 
-        try {
-            const vendor = await this.apiAxios.get(urlPrefix + "/vendors");
-            return vendor.data;
-        } catch (error) {
-            if (error.response.status == 404) {
-                return null;
-            }
-            throw (error);
-        }
+        console.log("hetner vendors")
+        const vendors = await this.apiAxios.get(urlPrefix + "/vendors");
+        return vendors.data;
+
     }
 
     async getVendorSubscriptions(): Promise<interfaces.UserSubscription[]> {
@@ -213,7 +208,7 @@ export class Api {
 
     async updateDeliveries(deliveries:interfaces.Delivery[]): Promise<interfaces.Delivery[]> {
         await this.ensureFreshToken();
-        let changedDeliveries = await this.apiAxios.put(urlPrefix + "/v/deliveries");
+        let changedDeliveries = await this.apiAxios.put(urlPrefix + "/v/deliveries", deliveries);
         return changedDeliveries.data;
     }
 
