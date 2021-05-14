@@ -3,6 +3,7 @@ import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription, Summary, MenuItems } from './interfaces';
 import * as settings from '../../common/settings';
+import { isTemplateExpression } from 'typescript';
 
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
@@ -33,7 +34,6 @@ export async function getSubscriptionFromDb(vendorId: string, userId: string): P
             noOfMeals: subscriptionResult.Items[0].noOfMeals,
             box: subscriptionResult.Items[0].box
     };
-    
 }
 
 export async function putSubscriptionInDb(subscription: Subscription, isVendor: boolean): Promise<Subscription> {
@@ -97,6 +97,24 @@ export async function putSubscriptionInDb(subscription: Subscription, isVendor: 
     };
 }
 
+export async function updateApproval(vendorId: string, userId: string, approved: boolean): Promise<void> {
+    let UpdateExpression = "set approved = :approved";
+    let ExpressionAttributeValues: any = {
+        ":approved": { BOOL: approved }
+    }; 
+
+    let params = {
+        TableName: settings.TABLENAME,
+        Key: {
+            "pk": { S: "v#" + vendorId },
+            "sk": { S: "u#" + userId }
+        },
+        UpdateExpression,
+        ExpressionAttributeValues
+    };
+    await database.updateItem(params).promise();
+}
+
 export async function deleteSubscriptionInDb(vendorId: string, userId: string): Promise<void> {
     let params = {
         TableName: settings.TABLENAME,
@@ -137,6 +155,7 @@ export async function getVendorFromDb(vendorId: string): Promise<Vendor> {
 export async function putVendorInDb(vendor: Vendor, vendorId: string): Promise<Vendor> {
     let params = {
         TableName: settings.TABLENAME,
+        IndexName: "GSI1",
         Item: {
             pk: "v#" + vendorId,
             sk: "v#" + vendorId,
@@ -146,7 +165,9 @@ export async function putVendorInDb(vendor: Vendor, vendorId: string): Promise<V
             address: vendor.address,
             phone: vendor.phone,
             email: vendor.email,
-            schedule: vendor.schedule
+            schedule: vendor.schedule, 
+            GSI1_pk: "vendor",
+            GSI1_sk: "v#" + vendorId
         }
     }; 
 
@@ -170,6 +191,42 @@ export async function deleteVendorInDb(vendorId: string): Promise<void> {
         }
     };
     await database.deleteItem(params).promise();
+}
+
+export async function getAllVendors(): Promise<Vendor[]> {
+    let params = {
+        TableName: settings.TABLENAME,
+        IndexName: "GSI1",
+        KeyConditionExpression: "#GSI1_pk = :vendor and begins_with(#GSI1_sk, :prefix)",
+        ExpressionAttributeNames: {
+            "#GSI1_pk": "GSI1_pk",
+            "#GSI1_sk": "GSI1_sk"
+        },
+        ExpressionAttributeValues: {
+            ":vendor": "vendor",
+            ":prefix": "v#"
+        }
+    };
+
+    console.log(params)
+
+    let dbResult = await documentClient.query(params).promise();
+    if (dbResult.Items.length == 0) {
+        return [];
+    }
+    
+    let vendors:Vendor[] = await Promise.all(dbResult.Items.map(async (vendor) => {
+        return {
+            vendorId: vendor.pk.substr(2),
+            company: vendor.company,
+            fullname: vendor.fullname,
+            address: vendor.address,
+            phone: vendor.phone,
+            email: vendor.email,
+            schedule: vendor.schedule
+        }
+    }));
+    return vendors;
 }
 
 export async function getUserprofileFromDb(userId: string): Promise<Userprofile> {

@@ -266,8 +266,11 @@ export default class CustomerOrder extends Vue {
             isVendor: false
         };
 
+        let vendors = await api.getAllVendors();
+        console.log(vendors);
+
         let subscription = {
-            vendorId: "lunsj@hjul.no", // TODO: Hente valgt vendor sin id og schedule fra DB
+            vendorId: vendors![0].vendorId!,
             userId: this.loggedInUser,
             approved: false,
             paused: false,
