@@ -93,8 +93,6 @@ export class Api {
 
     async getAllVendors(): Promise<interfaces.Vendor[] | null> {
         await this.ensureFreshToken();
-
-        console.log("hetner vendors")
         const vendors = await this.apiAxios.get(urlPrefix + "/vendors");
         return vendors.data;
 
