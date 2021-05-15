@@ -188,7 +188,7 @@ import { MenuItems, Vendor} from "../../../../../server/src/interfaces";
 @Component
 export default class CustomerOrder extends Vue {
     @Prop() loggedInUser!: string;
-    private vendor!: Vendor;
+    private vendor: Vendor | null = null;
     private firstName = "";
     private lastName = "";
     private address = "";
