@@ -77,13 +77,12 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
-import { Userprofile, Vendor } from "../../../../../server/src/interfaces";
+import { Userprofile } from "../../../../../server/src/interfaces";
 import { request } from "node:http";
 
 @Component({})
 export default class CustomerOverview extends Vue {
     @Prop() userprofile!: Userprofile;
-    @Prop() vendor!: Vendor;
     private today = new Date().toISOString().substr(0, 10);
     private focus = new Date().toISOString().substr(0, 10);
     private type = "month";
@@ -122,12 +121,8 @@ export default class CustomerOverview extends Vue {
         let sub = await api.getUserSubscriptions();
         let schedule = sub[0].schedule;
 
-        const vendor = await api.getVendor(this.vendor.email);
-        let vendorSchedule = vendor!.schedule;
-        let vendorDeliveries = await api.getAllVendorsDeliveries(start.date, end.date);
-
         if (deliveries) {
-            deliveries.forEach((del) => {
+            deliveries.forEach((del: any) => {
                 const delStart = new Date(
                     `${del.deliverytime.substring(0, 10)}T00:00:00`
                 );
@@ -152,21 +147,26 @@ export default class CustomerOverview extends Vue {
             this.events = events;
         }
 
-        if (vendorDeliveries) {
-            vendorDeliveries.forEach((del: any) => {
+        const vendors = api.getAllVendors();
+        let vendor = vendors[0];
+
+        console.log(vendors);
+
+        if (vendor) {
+            vendor.forEach((del: any) => {
                 const delStart = new Date(
                     `${del.date.substring(0, 10)}T00:00:00`
                 );
                 const delEnd = new Date(
                     `${del.date.substring(0, 10)}T23:59:59`
                 );
-                const menu = vendorSchedule.find(({ id }) => id == del.menuId);
-
+                // const menu = vendor.find(({ id }) => id == del.menuId);
+                // console.log(menu);
                 events.push({
-                    name: menu!.menu,
+                    name: "Tirsdag",
+                    color: "orange",
                     start: delStart,
                     end: delEnd,
-                    color: "yellow",
                 });
             });
             this.events = events;
