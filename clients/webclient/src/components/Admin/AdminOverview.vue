@@ -96,7 +96,7 @@ export default class AdminOverview extends Vue {
         const vendor = await api.getVendor(this.userprofile!.email);
         let schedule = vendor!.schedule;
         let events: any[] = [];
-        let deliveries = await api.getAllVendorsDeliveries(start.date, end.date, true);
+        let deliveries = await api.getAllVendorsDeliveriesSummary(start.date, end.date);
         if (deliveries) {
             deliveries.forEach((del: any) => {
                 const delStart = new Date(`${del.date.substring(0,10)}T00:00:00`);

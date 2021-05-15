@@ -181,14 +181,26 @@ export class Api {
         await this.apiAxios.patch(urlPrefix + "/v/subscription?userId=" + encodeURIComponent(userId), body);
     }
 
-    async getAllVendorsDeliveries(startDate: string, endDate: string, summary?:boolean): Promise<interfaces.Delivery[] | interfaces.Summary[] | null> {
+    async getAllVendorsDeliveries(startDate: string, endDate: string): Promise<interfaces.Delivery[] | null> {
         await this.ensureFreshToken();
 
         try { 
             let url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(startDate) + "&end=" + endDate;
-            if (summary) {
-                url += "&summary=true"
+            const deliveries = await this.apiAxios.get(url);
+            return deliveries.data;
+        } catch (error) {
+            if (error.response.status == 404) {
+                return null;
             }
+            throw (error);
+        }
+    }
+
+    async getAllVendorsDeliveriesSummary(startDate: string, endDate: string): Promise<interfaces.Summary[] | null> {
+        await this.ensureFreshToken();
+
+        try { 
+            let url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(startDate) + "&end=" + endDate + "&summary=true";
             const deliveries = await this.apiAxios.get(url);
             return deliveries.data;
         } catch (error) {
