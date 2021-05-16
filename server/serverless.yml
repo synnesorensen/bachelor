@@ -76,6 +76,13 @@ functions:
           authorizer: authorizer
           path: /vendors
           method: get
+  singleVendor:
+    handler: src/singleVendor.mainHandler
+    events:
+      - http:
+          authorizer: authorizer
+          path: /singleVendor
+          method: get
   userSubscription:
     handler: src/userSubscription.mainHandler
     events:
