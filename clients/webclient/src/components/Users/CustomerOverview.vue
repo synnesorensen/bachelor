@@ -109,8 +109,10 @@ export default class CustomerOverview extends Vue {
     }
 
     async populateCalendar() {
-        let sub = await api.getUserSubscriptions();
-        let schedule = sub[0].schedule;
+        // Vendor sin schedule hentet fra subscription kan brukes når man skal hente inn vendor sin schedule som events i kalenderen:
+        let sub = await api.getSingleSubscription();
+        let schedule = sub.schedule;
+
         let events: any[] = [];
         if (this.start && this.end) {
             let deliveries = await api.getAllUsersDeliveries(this.start.date, this.end.date);

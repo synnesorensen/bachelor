@@ -180,10 +180,9 @@ export default class CustomerProfile extends Vue {
     }
     
     async created() {
-        const subs = await api.getUserSubscriptions();
-        if (subs != null && subs.length > 0) {
-            this.items = subs[0].schedule;
-            this.subscription = subs[0];
+        this.subscription = await api.getSingleSubscription();
+        if (this.subscription?.schedule) {
+            this.items = this.subscription.schedule;
         }
     }
     

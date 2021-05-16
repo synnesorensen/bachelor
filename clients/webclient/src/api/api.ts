@@ -103,9 +103,9 @@ export class Api {
         return vendors.data;
     }
 
-    async getSingleSubscription(): Promise<interfaces.VendorSubscription[]> {
+    async getSingleSubscription(): Promise<interfaces.VendorSubscription> {
         await this.ensureFreshToken();
-        const result = await this.apiAxios.get(urlPrefix + "/v/singleSubscription");
+        const result = await this.apiAxios.get(urlPrefix + "/singleSubscription");
         return result.data;
     }
 

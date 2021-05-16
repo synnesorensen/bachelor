@@ -35,12 +35,9 @@ export default class CustomerInvoice extends Vue {
     private nextInvoice = "";
 
     async created() {
-        let subs = await api.getUserSubscriptions();
-        if (subs) {
-            this.subscription = subs[0];
-            if (this.subscription.lastDeliveryDate) {
-                this.findDates();
-            } 
+        this.subscription = await api.getSingleSubscription();
+        if (this.subscription?.lastDeliveryDate) {
+            this.findDates();
         }
     }
     
