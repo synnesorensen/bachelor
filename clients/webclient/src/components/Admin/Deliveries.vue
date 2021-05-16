@@ -14,7 +14,7 @@
                 <td>{{item.phone}}</td>
                 <td>{{item.box}}</td>
                 <td>{{item.noOfMeals}}</td>
-                <td>{{item.allergies}}</td>
+                <td>{{item.allergies.toString()}}</td>
             </tr>
         </template>
     </v-data-table>

@@ -38,6 +38,9 @@
             <v-card v-if="showList">
                 <v-card-title>Dagens leveringer</v-card-title>
                 <Deliveries :date="selectedDate"/>
+                <v-card-actions class="justify-center">
+                    <v-btn color="primary" @click="cancelDelivery">Kanseller</v-btn>
+                </v-card-actions>
             </v-card>
         </v-col>
 	</v-row>
