@@ -59,8 +59,8 @@ export default class AdminOverview extends Vue {
     private today = new Date().toISOString().substr(0, 10);
 	private focus = new Date().toISOString().substr(0, 10);
 	private type = "month";
-	private start = null;
-	private end = null;
+	private start: any | null = null;
+	private end: any | null = null;
     private events: any[] = [];
     private showList = false;
     private selectedDate = "";
@@ -95,21 +95,23 @@ export default class AdminOverview extends Vue {
         const vendor = await api.getVendor(this.userprofile!.email);
         let schedule = vendor!.schedule;
         let events: any[] = [];
-        let deliveries = await api.getAllVendorsDeliveriesSummary(this.start.date, this.end.date);
-        if (deliveries) {
-            deliveries.forEach((del: any) => {
-                const delStart = new Date(`${del.date.substring(0,10)}T00:00:00`);
-                const delEnd = new Date(`${del.date.substring(0,10)}T23:59:59`);
-                const menu = schedule.find(({id}) => id == del.menuId);
+        if (this.start && this.end) {
+            let deliveries = await api.getAllVendorsDeliveriesSummary(this.start.date, this.end.date);
+            if (deliveries) {
+                deliveries.forEach((del: any) => {
+                    const delStart = new Date(`${del.date.substring(0,10)}T00:00:00`);
+                    const delEnd = new Date(`${del.date.substring(0,10)}T23:59:59`);
+                    const menu = schedule.find(({id}) => id == del.menuId);
 
-                events.push({
-                    name: menu!.menu + ": " + (del.count-del.cancelled) + "/" + del.count,
-                    start: delStart,
-                    end: delEnd, 
-                    color: (del.count == del.cancelled)? "grey" : "green" 
+                    events.push({
+                        name: menu!.menu + ": " + (del.count-del.cancelled) + "/" + del.count,
+                        start: delStart,
+                        end: delEnd, 
+                        color: (del.count == del.cancelled)? "grey" : "green" 
+                    });
                 });
-            });
-            this.events = events;
+                this.events = events;
+            }
         }
     }
 
