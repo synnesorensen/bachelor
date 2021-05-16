@@ -66,9 +66,10 @@ import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
 import { Delivery, Userprofile } from "../../../../../server/src/interfaces";
+
 @Component({})
+
 export default class CustomerOverview extends Vue {
-    private loading = false;
 	@Prop() userprofile!: Userprofile;
     private today = new Date().toISOString().substr(0, 10);
     private focus = new Date().toISOString().substr(0, 10);
@@ -79,28 +80,34 @@ export default class CustomerOverview extends Vue {
     private showCard = false;
     private selectedEvent:any = null;
     private selectedDate = "";
-    private dialog: boolean = false;
+
     mounted() {
         this.focus = "";
     }
+
     viewDay(day: any) {
         this.focus = day.date;
         this.type = "day";
     }
+
     setToday() {
         this.focus = "";
     }
+
     prev() {
         (this.$refs.calendar as any).prev();
     }
+
     next() {
         (this.$refs.calendar as any).next();
     }
+
     async getEvents({ start, end }: { start: any; end: any }) {
         this.start = start;
         this.end = end;
         this.populateCalendar();
     }
+
     async populateCalendar() {
         let sub = await api.getUserSubscriptions();
         let schedule = sub[0].schedule;
@@ -124,11 +131,13 @@ export default class CustomerOverview extends Vue {
             }
         }        
     }
+
     showEvent(event: any) {
         this.selectedEvent = event.event;
         this.selectedDate = event.day.date;
         this.showCard = true;
     }
+    
     async cancelDelivery() {
         const deliveries: Delivery[] = [];
         deliveries.push(this.selectedEvent.delivery);

@@ -116,6 +116,7 @@ import api from '../../api/api'
 import * as interfaces from "../../../../../server/src/interfaces";
 
 @Component
+
 export default class CustomerPayment extends Vue {
     @Prop() selectedUser!:interfaces.UserSubscription | null; 
     private dialog = false;
@@ -126,27 +127,31 @@ export default class CustomerPayment extends Vue {
     get selectedMonth() {
         return this.toYearMonth(this.nextMonth());
     }
+
     @Watch("selectedUser")
     async onChange() {
         if (this.selectedUser != null) {
             this.updateUnpaidDeliveries();
         }
     }
+
     async updateUnpaidDeliveries() {
-        let date = this.selectedUser!.lastDeliveryDate!;        // Er det ok med den siste ! ?
-        let lastDelivery = new Date(date);
+        if (this.selectedUser?.lastDeliveryDate) {
+            let date = this.selectedUser.lastDeliveryDate;
+            let lastDelivery = new Date(date);
             let selectedDate = new Date(this.nextMonth());
             if (selectedDate.getTime() < lastDelivery.getTime()) {
                 if (selectedDate.getUTCMonth() == lastDelivery.getUTCMonth()
                     && selectedDate.getUTCFullYear() == lastDelivery.getUTCFullYear()) {
-                    this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser!.userId, this.selectedMonth, this.selectedUser!.lastDeliveryDate);
+                    this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.userId, this.selectedMonth, this.selectedUser.lastDeliveryDate);
                 } else {
                     this.unpaidDeliveries = 0; 
                 }
             } else {
-                this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser!.userId, this.selectedMonth);
+                this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.userId, this.selectedMonth);
             }
             this.paidDeliveries = this.unpaidDeliveries;
+        }
     }
 
     nextMonth() {
@@ -167,15 +172,18 @@ export default class CustomerPayment extends Vue {
         this.monthOffset --;
         this.updateUnpaidDeliveries();
     }
+
     async next() {
         this.monthOffset ++;
         this.updateUnpaidDeliveries();
     }
-
+    
     async registerPayment() {
         let time = new Date(this.picker).toISOString();
-        await api.postNewDeliveries(time, this.paidDeliveries, this.selectedUser!.userId);
-        this.dialog = false;
+        if (this.selectedUser?.userId) {
+            await api.postNewDeliveries(time, this.paidDeliveries, this.selectedUser.userId);
+            this.dialog = false;
+        }
     }
     
 }

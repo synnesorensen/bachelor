@@ -158,6 +158,7 @@ import api from "../../api/api";
         CustomerOrder,
     },
 })
+
 export default class CustomerProfile extends Vue {
     @Prop() userprofile!: Userprofile;
     @Prop() loggedInUser!: string;
@@ -172,41 +173,45 @@ export default class CustomerProfile extends Vue {
         this.editUserprofile = true;
         this.showUserprofile = false;
     }
-
+    
     cancel() {
         this.editUserprofile = false;
         this.showUserprofile = true;
     }
-
+    
     async created() {
         const subs = await api.getUserSubscriptions();
-
         if (subs != null && subs.length > 0) {
             this.items = subs[0].schedule;
             this.subscription = subs[0];
         }
     }
-
+    
     async toggleSubscriptionPause() {
         this.dialog = false;
-        let sub = await api.getUserSubscription(this.subscription.vendorId);
-        this.subscription.paused = !this.subscription.paused;
-        sub.paused = this.subscription.paused;
-        await api.putUserSubscription(sub);
+        if (this.subscription) {
+            let sub = await api.getUserSubscription(this.subscription.vendorId);
+            if (sub) {
+                this.subscription.paused = !this.subscription.paused;
+                sub.paused = this.subscription.paused;
+                await api.putUserSubscription(sub);
+            }
+        }
     }
 
     get buttonText() {
-        if (this.subscription.paused) {
+        if (this.subscription?.paused) {
             return "Aktiver abonnement";
         } 
         return "Pause abonnement";
     }
 
     get dialogText() {
-        if (this.subscription.paused) {
+        if (this.subscription?.paused) {
             return "Du aktiverer nå ditt abonnement igjen";
         } 
         return "Du setter nå ditt abonnement på pause";
     }
 }
+
 </script>
