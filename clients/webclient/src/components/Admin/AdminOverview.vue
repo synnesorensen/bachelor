@@ -28,32 +28,14 @@
                     show-week
 					:now="today"
                     :events="events"
-                    @click:event="showEvent"
+                    @click:event="showDeliveries"
 					@change="getEvents"
 				>
 				</v-calendar>
-                <v-menu
-                    v-model="selectedOpen"
-                    :close-on-content-click="false"
-                    :activator="selectedElement"
-                    offset-x
-                >
-                    <v-card color="grey lighten-4" min-width="350px" flat >
-                        <v-toolbar :color="selectedEvent.color" dark >
-                            <v-toolbar-title v-html= "selectedEvent.name"></v-toolbar-title>
-                        </v-toolbar>
-                        <v-card-text>
-                            <v-card-actions>
-                                <v-btn text color="secondary" @click="showDeliveries" > Leveringer </v-btn>
-                                <v-btn text color="secondary" @click="cancelDelivery" > Kanseller levering </v-btn>
-                            </v-card-actions>
-                        </v-card-text>
-                    </v-card>
-                </v-menu>
 			</v-sheet>
 		</v-col>
         <v-col>
-            <Deliveries v-if="showDeliveries" :date="selectedDate"/>
+            <Deliveries v-if="showList" :date="selectedDate" @update="deliveriesUpdated" />
         </v-col>
 	</v-row>
     </main>
@@ -77,8 +59,8 @@ export default class AdminOverview extends Vue {
     private today = new Date().toISOString().substr(0, 10);
 	private focus = new Date().toISOString().substr(0, 10);
 	private type = "month";
-	private start = null;
-	private end = null;
+	private start: any | null = null;
+	private end: any | null = null;
     private events: any[] = [];
     private showList = false;
     private selectedDate = "";
@@ -102,65 +84,44 @@ export default class AdminOverview extends Vue {
 	next() {
 		(this.$refs.calendar as any).next();
 	}
-	updateRange(range: any) {
-		this.start = range.start;
-		this.end = range.end;
-	}
 
     async getEvents( {start, end}:{start:any, end:any} ) {
+        this.start = start;
+		this.end = end;
+        this.populateCalendar();
+    }
+
+    async populateCalendar() {
         const vendor = await api.getVendor(this.userprofile!.email);
         let schedule = vendor!.schedule;
         let events: any[] = [];
-        let deliveries = await api.getAllVendorsDeliveries(start.date, end.date, true);
-        if (deliveries) {
-            deliveries.forEach((del: any) => {
-                const delStart = new Date(`${del.date.substring(0,10)}T00:00:00`);
-                const delEnd = new Date(`${del.date.substring(0,10)}T23:59:59`);
-                const menu = schedule.find(({id}) => id == del.menuId);
+        if (this.start && this.end) {
+            let deliveries = await api.getAllVendorsDeliveriesSummary(this.start.date, this.end.date);
+            if (deliveries) {
+                deliveries.forEach((del: any) => {
+                    const delStart = new Date(`${del.date.substring(0,10)}T00:00:00`);
+                    const delEnd = new Date(`${del.date.substring(0,10)}T23:59:59`);
+                    const menu = schedule.find(({id}) => id == del.menuId);
 
-                events.push({
-                    name: menu!.menu,
-                    start: delStart,
-                    end: delEnd, 
-                    color: "green"
+                    events.push({
+                        name: menu!.menu + ": " + (del.count-del.cancelled) + "/" + del.count,
+                        start: delStart,
+                        end: delEnd, 
+                        color: (del.count == del.cancelled)? "grey" : "green" 
+                    });
                 });
-            });
-            this.events = events;
+                this.events = events;
+            }
         }
     }
-    
-    showEvent ( {nativeEvent, event}:{nativeEvent: any, event: any} ) {
-        const open = () => {
-            this.selectedEvent = event;
-            this.selectedElement = nativeEvent.target;
-            requestAnimationFrame(() => requestAnimationFrame(() => this.selectedOpen = true))
-        }
 
-        if (this.selectedOpen) {
-            this.selectedOpen = false
-            requestAnimationFrame(() => requestAnimationFrame(() => open()))
-        } else {
-            open()
-        }
-        nativeEvent.stopPropagation()
-    };
-
-      showDeliveries(event:any) {
+    showDeliveries(event:any) {
         this.selectedDate = event.day.date;
         this.showList = true;
     }
 
-    async cancelDelivery(event:any) {
-        this.selectedDate = event.day.date;
-        let deliveries = await api.getAllVendorsDeliveries(this.selectedDate, this.selectedDate);
-        if (deliveries) {
-            deliveries!.forEach((del: any) => {
-                del.cancelled = true;
-            });
-            await api.updateDeliveries(deliveries as Delivery[]);
-        }
-        let cancelledEvent = this.events.find(({start}) => start == this.selectedDate);
-        cancelledEvent.color = "grey";
+    deliveriesUpdated() {
+        this.populateCalendar();
     }
 }
 </script>

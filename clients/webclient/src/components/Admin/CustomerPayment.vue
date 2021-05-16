@@ -69,8 +69,8 @@
                 </v-col>
             </v-row>
         </v-card-text>
-        <v-card-actions>
-            <v-btn v-if="selectedUser" @click="dialog = true" color="primary">Registrer betaling </v-btn>
+        <v-card-actions v-if="selectedUser">
+            <v-btn  @click="dialog = true" color="primary">Registrer betaling </v-btn>
             <v-dialog v-model="dialog" max-width="400" max-height="800">
                 <v-card>
                     <v-card-title class="headline">

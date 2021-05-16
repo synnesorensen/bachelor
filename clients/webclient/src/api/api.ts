@@ -93,8 +93,6 @@ export class Api {
 
     async getAllVendors(): Promise<interfaces.Vendor[] | null> {
         await this.ensureFreshToken();
-
-        console.log("hetner vendors")
         const vendors = await this.apiAxios.get(urlPrefix + "/vendors");
         return vendors.data;
 
@@ -188,14 +186,26 @@ export class Api {
         await this.apiAxios.patch(urlPrefix + "/v/subscription?userId=" + encodeURIComponent(userId), body);
     }
 
-    async getAllVendorsDeliveries(startDate: string, endDate: string, summary?:boolean): Promise<interfaces.Delivery[] | interfaces.Summary[] | null> {
+    async getAllVendorsDeliveries(startDate: string, endDate: string): Promise<interfaces.Delivery[] | null> {
         await this.ensureFreshToken();
 
         try { 
             let url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(startDate) + "&end=" + endDate;
-            if (summary) {
-                url += "&summary=true"
+            const deliveries = await this.apiAxios.get(url);
+            return deliveries.data;
+        } catch (error) {
+            if (error.response.status == 404) {
+                return null;
             }
+            throw (error);
+        }
+    }
+
+    async getAllVendorsDeliveriesSummary(startDate: string, endDate: string): Promise<interfaces.Summary[] | null> {
+        await this.ensureFreshToken();
+
+        try { 
+            let url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(startDate) + "&end=" + endDate + "&summary=true";
             const deliveries = await this.apiAxios.get(url);
             return deliveries.data;
         } catch (error) {
@@ -270,6 +280,18 @@ export class Api {
 
         const response = await this.apiAxios.get(url);
         return parseInt(response.data.no);
+    }
+    
+    async getDeliveryDetails(start: string, end: string): Promise<interfaces.DeliveryDetail[]> {
+        await this.ensureFreshToken();
+        const response = await this.apiAxios.get(urlPrefix + "/v/deliveryDetails?start=" + start + "&end=" + end);
+        return response.data;
+    }
+
+    async cancelDeliveries(deliveries: interfaces.Delivery[]): Promise<boolean> {
+        await this.ensureFreshToken();
+        const response = await this.apiAxios.post(urlPrefix + "/cancelDeliveries", deliveries);
+        return response.status == 200;
     }
 }
 let api = new Api();
