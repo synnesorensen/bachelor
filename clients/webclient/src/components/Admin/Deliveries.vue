@@ -32,11 +32,12 @@ import Component from 'vue-class-component';
 import api from "../../api/api";
 import {DeliveryDetail} from "../../../../../server/src/interfaces"
 import { Prop, Watch } from 'vue-property-decorator';
-import Sortable from 'sortablejs'
+import Sortable from 'sortablejs';
 
 @Component({
 	components: {},
 })
+
 export default class Deliveries extends Vue {
     private loading = false;
     @Prop() date!: string;
@@ -88,13 +89,15 @@ export default class Deliveries extends Vue {
                 handle: ".handle",
                 animation: 150,
                 onEnd({newIndex, oldIndex}) {
-                    const rowSelected = _self.deliveryDetails.splice(oldIndex!, 1)[0];
-                    _self.deliveryDetails.splice(newIndex!, 0, rowSelected);
+                    if (oldIndex != undefined && newIndex != undefined) {
+                        const rowSelected = _self.deliveryDetails.splice(oldIndex, 1)[0];
+                        _self.deliveryDetails.splice(newIndex, 0, rowSelected);
+                    }
                 }
             });
         }
     }
-
+    
     async cancelDeliveries() {
         if (!await api.cancelDeliveries(this.deliveryDetails)) {
             alert ("Something went wrong");

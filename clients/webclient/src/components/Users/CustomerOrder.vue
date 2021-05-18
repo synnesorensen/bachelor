@@ -183,7 +183,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
-import { MenuItems, Vendor} from "../../../../../server/src/interfaces";
+import { MenuItems, Subscription, Vendor} from "../../../../../server/src/interfaces";
 
 @Component
 export default class CustomerOrder extends Vue {
@@ -257,35 +257,37 @@ export default class CustomerOrder extends Vue {
     }
 
     async getVendor() {
-        let vendors = await api.getAllVendors();
-        this.vendor = vendors![0]
+        this.vendor = await api.getSingleVendor();
         if (this.vendor) {
+            console.log(this.vendor)
             this.deliveryDays = this.vendor.schedule;
         }
     }
 
     async sendToDb() {
-        let newUserprofile = {
-            fullname: this.firstName + " " + this.lastName,
-            address: this.address + " " + this.postNo + " " + this.postPlace,
-            phone: this.phone.toString(),
-            email: this.loggedInUser,
-            allergies: this.selectedAllergies,
-            isVendor: false,
-        };
+        if (this.vendor?.vendorId) {
+            let newUserprofile = {
+                fullname: this.firstName + " " + this.lastName,
+                address: this.address + " " + this.postNo + " " + this.postPlace,
+                phone: this.phone.toString(),
+                email: this.loggedInUser,
+                allergies: this.selectedAllergies,
+                isVendor: false,
+            };
 
-        let subscription = {
-            vendorId: this.vendor!.vendorId!,
-            userId: this.loggedInUser,
-            approved: false,
-            paused: false,
-            schedule: this.selectedDeliveryDays,
-            noOfMeals: this.selectedNoOfMeals,
-            box: this.selectedBox,
-        };
-        await api.putUserprofile(newUserprofile);
-        await api.putUserSubscription(subscription);
-        this.$emit("newUserprofile", newUserprofile);
+            let subscription:Subscription = {
+                vendorId: this.vendor.vendorId,
+                userId: this.loggedInUser,
+                approved: false,
+                paused: false,
+                schedule: this.selectedDeliveryDays,
+                noOfMeals: this.selectedNoOfMeals,
+                box: this.selectedBox
+            };
+            await api.putUserprofile(newUserprofile);
+            await api.putUserSubscription(subscription);
+            this.$emit("newUserprofile", newUserprofile);
+        }
     }
 
     async created() {
