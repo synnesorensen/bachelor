@@ -259,7 +259,6 @@ export default class CustomerOrder extends Vue {
     async getVendor() {
         this.vendor = await api.getSingleVendor();
         if (this.vendor) {
-            console.log(this.vendor)
             this.deliveryDays = this.vendor.schedule;
         }
     }
