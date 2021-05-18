@@ -72,9 +72,6 @@
                     <v-btn @click="sendToDb" color="primary" class="ma-1"
                         >Send inn</v-btn
                     >
-                    <v-btn @click="cancel" color="secondary" class="ma-1"
-                        >Avbryt</v-btn
-                    >
                 </v-col>
             </v-row>
         </v-container>

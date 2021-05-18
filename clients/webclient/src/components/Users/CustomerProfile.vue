@@ -128,7 +128,23 @@
         </div>
         <div v-if="editUserprofile">
             <v-row>
-                <v-col :cols="1">
+                <v-col>
+                    <CustomerEdit :loggedInUser="loggedInUser" />
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col :cols="8">
+                    <v-btn
+                        v-if="editUserprofile"
+                        color="primary"
+                        @click="cancel"
+                    >
+                        Send Inn
+                    </v-btn>
+                </v-col>
+            </v-row>
+                        <v-row>
+                <v-col :cols="8">
                     <v-btn
                         v-if="editUserprofile"
                         color="secondary"
@@ -136,9 +152,6 @@
                     >
                         Avbryt
                     </v-btn>
-                </v-col>
-                <v-col>
-                    <CustomerEdit :loggedInUser="loggedInUser" />
                 </v-col>
             </v-row>
         </div>
@@ -200,11 +213,9 @@ export default class CustomerProfile extends Vue {
             let del = await api.getUserSubscription(this.subscription.vendorId);
             if (del != null) {
                 if (del.paused) {
-                    console.log(del.paused);
                     del.paused = false;
                     await api.putUserSubscription(del);
                 } else {
-                    console.log(del.paused);
                     del.paused = true;
                     await api.putUserSubscription(del);
                 }
