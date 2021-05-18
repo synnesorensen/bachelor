@@ -1,7 +1,7 @@
 import 'source-map-support/register'
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription, Summary, MenuItems, DeliveryDetail } from './interfaces';
+import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription, MenuItems, DeliveryDetail } from './interfaces';
 import * as settings from '../../common/settings';
 
 const database = new DynamoDB({ region: settings.REGION });
@@ -142,6 +142,7 @@ export async function getVendorFromDb(vendorId: string): Promise<Vendor> {
         return undefined;
     }
     return {
+        vendorId,
         company: dbResult.Items[0].company,
         fullname: dbResult.Items[0].fullname,
         address: dbResult.Items[0].address,
@@ -171,6 +172,7 @@ export async function getSingleVendorFromDb(): Promise<Vendor | null> {
         return null;
     }
     return {
+        vendorId: dbResult.Items[0].email, 
         company: dbResult.Items[0].company,
         fullname: dbResult.Items[0].fullname,
         address: dbResult.Items[0].address,
@@ -201,6 +203,7 @@ export async function putVendorInDb(vendor: Vendor, vendorId: string): Promise<V
 
     await documentClient.put(params).promise();
     return {
+        vendorId,
         company: vendor.company,
         fullname: vendor.fullname,
         address: vendor.address,
@@ -235,8 +238,6 @@ export async function getAllVendors(): Promise<Vendor[]> {
             ":prefix": "v#"
         }
     };
-
-    console.log(params)
 
     let dbResult = await documentClient.query(params).promise();
     if (dbResult.Items.length == 0) {
