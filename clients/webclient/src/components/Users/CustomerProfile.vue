@@ -111,9 +111,9 @@
                         <v-btn
                             color="green darken-1"
                             text
-                            @click="pauseDelivery()"
+                            @click="toggleSubscriptionPause()"
                         >
-                            OK!
+                            OK
                         </v-btn>
                         <v-btn
                             color="green darken-1"
@@ -161,12 +161,8 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import {
-    MenuItems,
-    Userprofile,
-    VendorSubscription,
-} from "../../../../../server/src/interfaces";
-import CustomerEdit from "./CustomerEdit.vue";
+import {MenuItems, Userprofile, VendorSubscription } from "../../../../../server/src/interfaces";
+import CustomerOrder from "./CustomerOrder.vue";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
 
@@ -175,6 +171,7 @@ import api from "../../api/api";
         CustomerEdit,
     },
 })
+
 export default class CustomerProfile extends Vue {
     @Prop() userprofile!: Userprofile;
     @Prop() loggedInUser!: string;
@@ -184,61 +181,49 @@ export default class CustomerProfile extends Vue {
     private editUserprofile: boolean = false;
     private showUserprofile: boolean = true;
     private dialog: boolean = false;
-    private switchText: boolean = false;
-    private buttonText: string = "";
-    private dialogText: string = "";
 
     sendToCustomerOrder() {
         this.editUserprofile = true;
         this.showUserprofile = false;
     }
-
+    
     cancel() {
         this.editUserprofile = false;
         this.showUserprofile = true;
     }
-
+    
     async created() {
-        const subs = await api.getUserSubscriptions();
-
-        if (subs != null) {
-            this.items = subs[0].schedule;
-            this.subscription = subs[0];
+        this.subscription = await api.getSingleSubscription();
+        if (this.subscription?.schedule) {
+            this.items = this.subscription.schedule;
         }
     }
-
-    async pauseDelivery() {
+    
+    async toggleSubscriptionPause() {
         this.dialog = false;
-        if (this.subscription != null) {
-            let del = await api.getUserSubscription(this.subscription.vendorId);
-            if (del != null) {
-                if (del.paused) {
-                    del.paused = false;
-                    await api.putUserSubscription(del);
-                } else {
-                    del.paused = true;
-                    await api.putUserSubscription(del);
-                }
+        if (this.subscription) {
+            let sub = await api.getUserSubscription(this.subscription.vendorId);
+            if (sub) {
+                this.subscription.paused = !this.subscription.paused;
+                sub.paused = this.subscription.paused;
+                await api.putUserSubscription(sub);
             }
         }
     }
 
-    async changeText() {
-        if (this.subscription != null) {
-            if (this.subscription.paused) {
-                this.switchText = true;
-                this.buttonText = "Aktiver abonnement";
-                this.dialogText = "Du aktiverer nå ditt abonnement igjen";
-            } else {
-                this.switchText = false;
-                this.buttonText = "Pause abonnement";
-                this.dialogText = "Du setter nå ditt abonnement på pause";
-            }
-        }
+    get buttonText() {
+        if (this.subscription?.paused) {
+            return "Aktiver abonnement";
+        } 
+        return "Pause abonnement";
     }
 
-    updated() {
-        this.changeText();
+    get dialogText() {
+        if (this.subscription?.paused) {
+            return "Du aktiverer nå ditt abonnement igjen";
+        } 
+        return "Du setter nå ditt abonnement på pause";
     }
 }
+
 </script>

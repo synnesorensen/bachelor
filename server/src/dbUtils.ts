@@ -1,7 +1,7 @@
 import 'source-map-support/register'
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription, Summary, MenuItems } from './interfaces';
+import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription, Summary, MenuItems, DeliveryDetail } from './interfaces';
 import * as settings from '../../common/settings';
 
 const database = new DynamoDB({ region: settings.REGION });
@@ -151,9 +151,39 @@ export async function getVendorFromDb(vendorId: string): Promise<Vendor> {
     };
 }
 
+export async function getSingleVendorFromDb(): Promise<Vendor | null> {
+    let params = {
+        TableName: settings.TABLENAME,
+        IndexName: "GSI1",
+        Limit: 1,
+        KeyConditionExpression: "#GSI1_pk = :vendor and begins_with(#GSI1_sk, :prefix)",
+        ExpressionAttributeNames: {
+            "#GSI1_pk": "GSI1_pk",
+            "#GSI1_sk": "GSI1_sk"
+        },
+        ExpressionAttributeValues: {
+            ":vendor": "vendor",
+            ":prefix": "v#"
+        }
+    };
+    let dbResult = await documentClient.query(params).promise();
+    if (dbResult.Items.length == 0) {
+        return null;
+    }
+    return {
+        company: dbResult.Items[0].company,
+        fullname: dbResult.Items[0].fullname,
+        address: dbResult.Items[0].address,
+        phone: dbResult.Items[0].phone,
+        email: dbResult.Items[0].email,
+        schedule: dbResult.Items[0].schedule
+    };
+}
+
 export async function putVendorInDb(vendor: Vendor, vendorId: string): Promise<Vendor> {
     let params = {
         TableName: settings.TABLENAME,
+        IndexName: "GSI1",
         Item: {
             pk: "v#" + vendorId,
             sk: "v#" + vendorId,
@@ -163,7 +193,9 @@ export async function putVendorInDb(vendor: Vendor, vendorId: string): Promise<V
             address: vendor.address,
             phone: vendor.phone,
             email: vendor.email,
-            schedule: vendor.schedule
+            schedule: vendor.schedule, 
+            GSI1_pk: "vendor",
+            GSI1_sk: "v#" + vendorId
         }
     }; 
 
@@ -187,6 +219,42 @@ export async function deleteVendorInDb(vendorId: string): Promise<void> {
         }
     };
     await database.deleteItem(params).promise();
+}
+
+export async function getAllVendors(): Promise<Vendor[]> {
+    let params = {
+        TableName: settings.TABLENAME,
+        IndexName: "GSI1",
+        KeyConditionExpression: "#GSI1_pk = :vendor and begins_with(#GSI1_sk, :prefix)",
+        ExpressionAttributeNames: {
+            "#GSI1_pk": "GSI1_pk",
+            "#GSI1_sk": "GSI1_sk"
+        },
+        ExpressionAttributeValues: {
+            ":vendor": "vendor",
+            ":prefix": "v#"
+        }
+    };
+
+    console.log(params)
+
+    let dbResult = await documentClient.query(params).promise();
+    if (dbResult.Items.length == 0) {
+        return [];
+    }
+    
+    let vendors:Vendor[] = await Promise.all(dbResult.Items.map(async (vendor) => {
+        return {
+            vendorId: vendor.pk.substr(2),
+            company: vendor.company,
+            fullname: vendor.fullname,
+            address: vendor.address,
+            phone: vendor.phone,
+            email: vendor.email,
+            schedule: vendor.schedule
+        }
+    }));
+    return vendors;
 }
 
 export async function getUserprofileFromDb(userId: string): Promise<Userprofile> {
@@ -425,6 +493,64 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
     return result;
 }
 
+export async function getOnlySubscriptionForUser(userId: string): Promise<VendorSubscription> {
+    let params = {
+        TableName: settings.TABLENAME,
+        IndexName: "GSI1",
+        Limit: 1,
+        KeyConditionExpression: "#GSI1_pk = :user and begins_with(#GSI1_sk, :prefix)",
+        ExpressionAttributeNames: {
+            "#GSI1_pk": "GSI1_pk",
+            "#GSI1_sk": "GSI1_sk"
+        },
+        ExpressionAttributeValues: {
+            ":user": "u#" + userId,
+            ":prefix": "v#"
+        }
+    };
+
+    let dbResult = await documentClient.query(params).promise();
+
+    if (dbResult.Items.length == 0) {
+        return undefined;
+    }
+    let sub:Subscription = {
+        vendorId: dbResult.Items[0].pk,
+        userId,
+        approved: dbResult.Items[0].approved,
+        paused: dbResult.Items[0].paused,
+        schedule: dbResult.Items[0].schedule.values,
+        noOfMeals: dbResult.Items[0].noOfMeals,
+        box: dbResult.Items[0].box
+    };
+     
+    let params2 = {
+        TableName: settings.TABLENAME,
+        Limit: 1,
+        KeyConditionExpression: "#pk = :pk and #sk = :pk",
+        ExpressionAttributeNames: {
+            "#pk": "pk",
+            "#sk": "sk"
+        },
+        ExpressionAttributeValues: {
+            ":pk": dbResult.Items[0].pk
+        }
+    };
+    
+    let vendor = await documentClient.query(params2).promise();
+    
+    return {
+        vendorId: sub.vendorId.substr(2),
+        company: vendor.Items[0].company,
+        approved: sub.approved,
+        paused: sub.paused,
+        schedule: vendor.Items[0].schedule,
+        noOfMeals: sub.noOfMeals,
+        box: sub.box,
+        lastDeliveryDate: (await findLatestDelivery(sub.vendorId.substr(2), userId))?.deliverytime.substr(0, 10)
+    };
+}
+
 export async function getUsersDeliveries(userId: string, startDate: string, endDate: string): Promise<Delivery[]> {
     let params = {
         TableName: settings.TABLENAME,
@@ -445,6 +571,7 @@ export async function getUsersDeliveries(userId: string, startDate: string, endD
 
     let deliveries = dbResult.Items.map((del) => {
         return {
+            vendorId: del.pk.substr(2),
             userId,
             deliverytime: del.deliverytime,
             menuId: del.menuId,
@@ -621,7 +748,7 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
     }
 }
 
-export async function getAllDeliveriesFromAllSubscribers(vendorId: string, startTime: string, endTime: string): Promise<Delivery[] | Summary[]> {
+export async function getAllDeliveriesFromAllSubscribers(vendorId: string, startTime: string, endTime: string): Promise<Delivery[]> {
     let endDate = new Date(endTime);
     endDate.setDate(endDate.getDate() + 1);
     let nextDay = endDate.toISOString().substr(0, 10);
@@ -682,3 +809,55 @@ export async function findLatestDelivery(vendorId: string, userId: string):Promi
         cancelled: dbResult.Items[0].cancelled
     }
 } 
+
+export async function getDeliveryDetails(vendorId: string, startDate: string, endDate: string): Promise<DeliveryDetail[]> {
+    const deliveries = await getAllDeliveriesFromAllSubscribers(vendorId, startDate, endDate);
+    const userSubscriptions = await getSubscriptionsForVendor(vendorId);
+    const deliveryDetails: DeliveryDetail[] = [];
+    deliveries.forEach( del => {
+        let sub = userSubscriptions!.find(({userId}) => userId == del.userId);
+        if (sub) {
+            const deliveryDetail: DeliveryDetail = {
+                ...del,
+                paused: sub.paused,
+                noOfMeals: sub.noOfMeals,
+                box: sub.box,
+                fullname: sub.fullname,
+                address: sub.address,
+                phone: sub.phone,
+                email: sub.email, 
+                allergies: sub.allergies
+            }
+            deliveryDetails.push(deliveryDetail);
+        }
+    });
+    return deliveryDetails;
+}
+export async function cancelDeliveries(userId: string, deliveries: Delivery[]) {
+    const promises = [];
+    for (let delivery of deliveries) {
+        if (delivery.userId == userId || delivery.vendorId == userId) {
+            promises.push(cancelDelivery(delivery));
+        } else {
+            console.log("UserId " + userId + " tried to delete delivery that they do not own.")
+        }
+    }
+    await Promise.all(promises);
+}
+
+function cancelDelivery(delivery:Delivery) {
+    let UpdateExpression = "set cancelled = :cancelled";
+        let ExpressionAttributeValues: any = {
+        ":cancelled": { BOOL: true }
+        }; 
+        const params = {
+            TableName: settings.TABLENAME,
+            Key: {
+                "pk": { S: "v#" + delivery.vendorId },
+                "sk": { S: "d#" + delivery.deliverytime + "#u#" + delivery.userId }
+            },
+            UpdateExpression,
+            ExpressionAttributeValues
+        };
+        return database.updateItem(params).promise();
+}
