@@ -304,6 +304,12 @@ export class Api {
         const response = await this.apiAxios.post(urlPrefix + "/cancelDeliveries", deliveries);
         return response.status == 200;
     }
+
+    async scheduleToDates(vendorId: string, startDate: string): Promise<interfaces.Delivery[]> {
+        await this.ensureFreshToken();
+        const deliveries = await this.apiAxios.get(urlPrefix + "/scheduleDates?vendorId=" + encodeURIComponent(vendorId) + "&startDate=" + startDate);
+        return deliveries.data;
+    }
 }
 let api = new Api();
 export default api;
