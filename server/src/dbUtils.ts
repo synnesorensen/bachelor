@@ -1,9 +1,8 @@
 import 'source-map-support/register'
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription, Summary, MenuItems, DeliveryDetail } from './interfaces';
+import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription, MenuItems, DeliveryDetail } from './interfaces';
 import * as settings from '../../common/settings';
-import { isTemplateExpression } from 'typescript';
 
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
@@ -143,6 +142,37 @@ export async function getVendorFromDb(vendorId: string): Promise<Vendor> {
         return undefined;
     }
     return {
+        vendorId,
+        company: dbResult.Items[0].company,
+        fullname: dbResult.Items[0].fullname,
+        address: dbResult.Items[0].address,
+        phone: dbResult.Items[0].phone,
+        email: dbResult.Items[0].email,
+        schedule: dbResult.Items[0].schedule
+    };
+}
+
+export async function getSingleVendorFromDb(): Promise<Vendor | null> {
+    let params = {
+        TableName: settings.TABLENAME,
+        IndexName: "GSI1",
+        Limit: 1,
+        KeyConditionExpression: "#GSI1_pk = :vendor and begins_with(#GSI1_sk, :prefix)",
+        ExpressionAttributeNames: {
+            "#GSI1_pk": "GSI1_pk",
+            "#GSI1_sk": "GSI1_sk"
+        },
+        ExpressionAttributeValues: {
+            ":vendor": "vendor",
+            ":prefix": "v#"
+        }
+    };
+    let dbResult = await documentClient.query(params).promise();
+    if (dbResult.Items.length == 0) {
+        return null;
+    }
+    return {
+        vendorId: dbResult.Items[0].email, 
         company: dbResult.Items[0].company,
         fullname: dbResult.Items[0].fullname,
         address: dbResult.Items[0].address,
@@ -173,6 +203,7 @@ export async function putVendorInDb(vendor: Vendor, vendorId: string): Promise<V
 
     await documentClient.put(params).promise();
     return {
+        vendorId,
         company: vendor.company,
         fullname: vendor.fullname,
         address: vendor.address,
@@ -207,8 +238,6 @@ export async function getAllVendors(): Promise<Vendor[]> {
             ":prefix": "v#"
         }
     };
-
-    console.log(params)
 
     let dbResult = await documentClient.query(params).promise();
     if (dbResult.Items.length == 0) {
@@ -465,6 +494,64 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
     return result;
 }
 
+export async function getOnlySubscriptionForUser(userId: string): Promise<VendorSubscription> {
+    let params = {
+        TableName: settings.TABLENAME,
+        IndexName: "GSI1",
+        Limit: 1,
+        KeyConditionExpression: "#GSI1_pk = :user and begins_with(#GSI1_sk, :prefix)",
+        ExpressionAttributeNames: {
+            "#GSI1_pk": "GSI1_pk",
+            "#GSI1_sk": "GSI1_sk"
+        },
+        ExpressionAttributeValues: {
+            ":user": "u#" + userId,
+            ":prefix": "v#"
+        }
+    };
+
+    let dbResult = await documentClient.query(params).promise();
+
+    if (dbResult.Items.length == 0) {
+        return undefined;
+    }
+    let sub:Subscription = {
+        vendorId: dbResult.Items[0].pk,
+        userId,
+        approved: dbResult.Items[0].approved,
+        paused: dbResult.Items[0].paused,
+        schedule: dbResult.Items[0].schedule.values,
+        noOfMeals: dbResult.Items[0].noOfMeals,
+        box: dbResult.Items[0].box
+    };
+     
+    let params2 = {
+        TableName: settings.TABLENAME,
+        Limit: 1,
+        KeyConditionExpression: "#pk = :pk and #sk = :pk",
+        ExpressionAttributeNames: {
+            "#pk": "pk",
+            "#sk": "sk"
+        },
+        ExpressionAttributeValues: {
+            ":pk": dbResult.Items[0].pk
+        }
+    };
+    
+    let vendor = await documentClient.query(params2).promise();
+    
+    return {
+        vendorId: sub.vendorId.substr(2),
+        company: vendor.Items[0].company,
+        approved: sub.approved,
+        paused: sub.paused,
+        schedule: vendor.Items[0].schedule,
+        noOfMeals: sub.noOfMeals,
+        box: sub.box,
+        lastDeliveryDate: (await findLatestDelivery(sub.vendorId.substr(2), userId))?.deliverytime.substr(0, 10)
+    };
+}
+
 export async function getUsersDeliveries(userId: string, startDate: string, endDate: string): Promise<Delivery[]> {
     let params = {
         TableName: settings.TABLENAME,
@@ -485,6 +572,7 @@ export async function getUsersDeliveries(userId: string, startDate: string, endD
 
     let deliveries = dbResult.Items.map((del) => {
         return {
+            vendorId: del.pk.substr(2),
             userId,
             deliverytime: del.deliverytime,
             menuId: del.menuId,

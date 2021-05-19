@@ -62,11 +62,11 @@
                 :search="search"
                 class="elevation-1"
                 >
-            <template v-slot:[`item.controls`]="props">
-                <v-btn class="mx-2" fab dark small color="green" @click="approve(props.item)">
-                    <v-icon dark>mdi-checkbox-marked-circle-outline</v-icon>
-                </v-btn>
-            </template>
+                <template v-slot:[`item.controls`]="props">
+                    <v-btn class="mx-2" fab dark small color="green" @click="approve(props.item)">
+                        <v-icon dark>mdi-checkbox-marked-circle-outline</v-icon>
+                    </v-btn>
+                </template>
             </v-data-table>
         </v-card>
     </v-container>
@@ -83,19 +83,23 @@ import { UserSubscription } from '../../../../../server/src/interfaces';
 	components: {
 	},
 })
+
 export default class AdminCustomers extends Vue {
     @Prop() loggedInUser!: string;
-    private users: UserSubscription[] = []
+    private users: UserSubscription[] = [];
+
     get activeUsers() {
         return this.users.filter((user) => {
             return user.approved && !user.paused;
         });
     }
+
     get pausedUsers() {
         return this.users.filter((user) => {
             return user.approved && user.paused;
         });
     }
+
     get unapprovedUsers() {
         return this.users.filter((user) => {
             return !user.approved;
@@ -149,13 +153,14 @@ export default class AdminCustomers extends Vue {
             return menuItem.day;
         });
     }
-
+    
     async approve(item: UserSubscription) {
         try {
             await api.updateApproval(item.userId, true);
             item.approved = true;
         } catch (err) {
-            console.log(err)    // Lag dialogboks her.
+            alert("Noe gikk galt, prøv igjen senere.");
+            console.log(err);
         }
     }
 }
