@@ -81,7 +81,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
-import { Delivery, Userprofile } from "../../../../../server/src/interfaces";
+import { Delivery, Userprofile, Vendor } from "../../../../../server/src/interfaces";
 
 @Component({})
 export default class CustomerOverview extends Vue {
@@ -99,20 +99,16 @@ export default class CustomerOverview extends Vue {
     mounted() {
         this.focus = "";
     }
-
     viewDay(day: any) {
         this.focus = day.date;
         this.type = "day";
     }
-
     setToday() {
         this.focus = "";
     }
-
     prev() {
         (this.$refs.calendar as any).prev();
     }
-
     next() {
         (this.$refs.calendar as any).next();
     }
@@ -126,29 +122,17 @@ export default class CustomerOverview extends Vue {
     async populateCalendar() {
         let sub = await api.getSingleSubscription();
         let usersSchedule = sub.schedule;
-        let vendor = await api.getSingleVendor();
-        let vendorDeliveries = await api.scheduleToDates(
-            vendor.vendorId,
-            this.start.date
-        );
+        const vendor:Vendor = await api.getSingleVendor();
+        let vendorDeliveries = await api.scheduleToDates(vendor.vendorId, this.start.date);
 
         let events: any[] = [];
         if (this.start && this.end) {
-            let deliveries = await api.getAllUsersDeliveries(
-                this.start.date,
-                this.end.date
-            );
+            let deliveries = await api.getAllUsersDeliveries(this.start.date, this.end.date);
             if (deliveries) {
                 deliveries.forEach((del) => {
-                    const delStart = new Date(
-                        `${del.deliverytime.substring(0, 10)}T00:00:00`
-                    );
-                    const delEnd = new Date(
-                        `${del.deliverytime.substring(0, 10)}T23:59:59`
-                    );
-                    const menu = usersSchedule.find(
-                        ({ id }) => id == del.menuId
-                    );
+                    const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
+                    const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
+                    const menu = usersSchedule.find(({ id }) => id == del.menuId);
                     events.push({
                         name: del.cancelled ? "Kansellert" : menu!.menu,
                         start: delStart,
@@ -161,16 +145,9 @@ export default class CustomerOverview extends Vue {
 
             if (vendorDeliveries) {
                 vendorDeliveries.forEach((del) => {
-                    const delStart = new Date(
-                        `${del.deliverytime.substring(0, 10)}T00:00:00`
-                    );
-                    const delEnd = new Date(
-                        `${del.deliverytime.substring(0, 10)}T23:59:59`
-                    );
-                    
-                    const menu = vendor.schedule.find(
-                        ({ id }) => id == del.menuId
-                    );
+                    const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
+                    const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
+                    const menu = vendor.schedule.find(({ id }) => id == del.menuId);
                     if (!deliveries?.find(({ deliverytime }) => deliverytime == del.deliverytime)) {
                         events.push({
                             name: menu!.menu,
