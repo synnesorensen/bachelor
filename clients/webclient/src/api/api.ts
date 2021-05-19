@@ -97,7 +97,7 @@ export class Api {
         return vendors.data;
     }
 
-    async getSingleVendor(): Promise<interfaces.Vendor | null> {
+    async getSingleVendor(): Promise<interfaces.Vendor> {
         await this.ensureFreshToken();
         const vendors = await this.apiAxios.get(urlPrefix + "/singleVendor");
         return vendors.data;
