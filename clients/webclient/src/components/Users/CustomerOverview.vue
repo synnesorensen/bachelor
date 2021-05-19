@@ -109,9 +109,8 @@ export default class CustomerOverview extends Vue {
     }
 
     async populateCalendar() {
-        // Vendor sin schedule hentet fra subscription kan brukes når man skal hente inn vendor sin schedule som events i kalenderen:
         let sub = await api.getSingleSubscription();
-        let schedule = sub.schedule;
+        let usersSchedule = sub.schedule;
 
         let events: any[] = [];
         if (this.start && this.end) {
@@ -120,7 +119,7 @@ export default class CustomerOverview extends Vue {
                 deliveries.forEach((del) => {
                     const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
                     const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
-                    const menu = schedule.find(({ id }) => id == del.menuId);
+                    const menu = usersSchedule.find(({ id }) => id == del.menuId);
                     events.push({
                         name: del.cancelled? "Kansellert" : menu!.menu,
                         start: delStart,

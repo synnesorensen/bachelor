@@ -160,6 +160,14 @@ functions:
           authorizer: authorizer
           path: /cancelDeliveries
           method: post
+  scheduleToDates:
+    handler: src/scheduleToDates.mainHandler
+    events:
+      - http:
+          authorizer: authorizer
+          path: /scheduleDates
+          method: get
+
 
 resources:
   Resources:
