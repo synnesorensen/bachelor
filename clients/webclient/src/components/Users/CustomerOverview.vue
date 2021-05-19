@@ -13,10 +13,22 @@
                         >
                             I dag
                         </v-btn>
-                        <v-btn fab text stmall color="grey darken-2" @click="prev">
+                        <v-btn
+                            fab
+                            text
+                            stmall
+                            color="grey darken-2"
+                            @click="prev"
+                        >
                             <v-icon small>mdi-chevron-left</v-icon>
                         </v-btn>
-                        <v-btn fab text stmall color="grey darken-2" @click="next">
+                        <v-btn
+                            fab
+                            text
+                            stmall
+                            color="grey darken-2"
+                            @click="next"
+                        >
                             <v-icon small>mdi-chevron-right</v-icon>
                         </v-btn>
                         <v-toolbar-title v-if="$refs.calendar">
@@ -51,8 +63,12 @@
                         {{ this.selectedDate }}?
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn color="primary" @click="cancelDelivery()" >OK</v-btn>
-                        <v-btn color="secondary" @click="showCard = false">Avbryt</v-btn>
+                        <v-btn color="primary" @click="cancelDelivery()"
+                            >OK</v-btn
+                        >
+                        <v-btn color="secondary" @click="showCard = false"
+                            >Avbryt</v-btn
+                        >
                     </v-card-actions>
                 </v-card>
             </v-col>
@@ -68,17 +84,16 @@ import api from "../../api/api";
 import { Delivery, Userprofile } from "../../../../../server/src/interfaces";
 
 @Component({})
-
 export default class CustomerOverview extends Vue {
     @Prop() userprofile!: Userprofile;
     private today = new Date().toISOString().substr(0, 10);
     private focus = new Date().toISOString().substr(0, 10);
     private type = "month";
-	private start: any | null = null;
-	private end: any | null = null;
+    private start: any | null = null;
+    private end: any | null = null;
     private events: any[] = [];
     private showCard = false;
-    private selectedEvent:any = null;
+    private selectedEvent: any = null;
     private selectedDate = "";
 
     mounted() {
@@ -111,26 +126,64 @@ export default class CustomerOverview extends Vue {
     async populateCalendar() {
         let sub = await api.getSingleSubscription();
         let usersSchedule = sub.schedule;
+        let vendor = await api.getSingleVendor();
+        let vendorDeliveries = await api.scheduleToDates(
+            vendor.vendorId,
+            this.start.date
+        );
 
         let events: any[] = [];
         if (this.start && this.end) {
-            let deliveries = await api.getAllUsersDeliveries(this.start.date, this.end.date);
+            let deliveries = await api.getAllUsersDeliveries(
+                this.start.date,
+                this.end.date
+            );
             if (deliveries) {
                 deliveries.forEach((del) => {
-                    const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
-                    const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
-                    const menu = usersSchedule.find(({ id }) => id == del.menuId);
+                    const delStart = new Date(
+                        `${del.deliverytime.substring(0, 10)}T00:00:00`
+                    );
+                    const delEnd = new Date(
+                        `${del.deliverytime.substring(0, 10)}T23:59:59`
+                    );
+                    const menu = usersSchedule.find(
+                        ({ id }) => id == del.menuId
+                    );
                     events.push({
-                        name: del.cancelled? "Kansellert" : menu!.menu,
+                        name: del.cancelled ? "Kansellert" : menu!.menu,
                         start: delStart,
                         end: delEnd,
-                        color: del.cancelled? "grey" : "green",
-                        delivery: del
+                        color: del.cancelled ? "grey" : "green",
+                        delivery: del,
                     });
+                });
+            }
+
+            if (vendorDeliveries) {
+                vendorDeliveries.forEach((del) => {
+                    const delStart = new Date(
+                        `${del.deliverytime.substring(0, 10)}T00:00:00`
+                    );
+                    const delEnd = new Date(
+                        `${del.deliverytime.substring(0, 10)}T23:59:59`
+                    );
+                    
+                    const menu = vendor.schedule.find(
+                        ({ id }) => id == del.menuId
+                    );
+                    if (!deliveries?.find(({ deliverytime }) => deliverytime == del.deliverytime)) {
+                        events.push({
+                            name: menu!.menu,
+                            start: delStart,
+                            end: delEnd,
+                            color: "amber darken-1",
+                            delivery: del,
+                        });
+                    }
                 });
                 this.events = events;
             }
-        }        
+        }
     }
 
     showEvent(event: any) {
@@ -138,12 +191,12 @@ export default class CustomerOverview extends Vue {
         this.selectedDate = event.day.date;
         this.showCard = true;
     }
-    
+
     async cancelDelivery() {
         const deliveries: Delivery[] = [];
         deliveries.push(this.selectedEvent.delivery);
-        if (!await api.cancelDeliveries(deliveries)) {
-            alert ("Something went wrong");
+        if (!(await api.cancelDeliveries(deliveries))) {
+            alert("Something went wrong");
         } else {
             this.populateCalendar();
             this.selectedEvent.delivery.cancelled = true;
