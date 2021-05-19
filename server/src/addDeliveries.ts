@@ -1,7 +1,7 @@
 import 'source-map-support/register'
-import { Delivery, MenuItems, WeekTime } from './interfaces';
+import { Delivery, MenuItems, Vendor, WeekTime } from './interfaces';
 import { getDeliveryDates } from './timeHandling'
-import { getSubscriptionsForUser } from './dbUtils'
+import { getSubscriptionsForUser, getVendorFromDb } from './dbUtils'
 
 export async function generateDeliveries(EarliestStartDate: Date, userId: string, vendor: string, noOfDeliveries: number): Promise<Delivery[]> {
     let subscriptions = await getSubscriptionsForUser(userId);
@@ -20,6 +20,21 @@ export async function generateDeliveries(EarliestStartDate: Date, userId: string
         return {
             vendorId: vendor,
             userId,
+            deliverytime: date.date.toISOString(),
+            menuId: date.menuId!,
+            cancelled: false
+        }
+    });
+}
+
+export async function generateDeliveriesForVendor(EarliestStartDate: Date, vendor: Vendor, noOfDeliveries: number): Promise<Delivery[]> {
+    let weekTimes:WeekTime[] = scheduleToWeekTimes(vendor.schedule)
+
+    let deliveryDates = getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries);
+    return deliveryDates.map((date) => {
+        return {
+            vendorId: vendor.vendorId,
+            userId: vendor.vendorId,
             deliverytime: date.date.toISOString(),
             menuId: date.menuId!,
             cancelled: false
