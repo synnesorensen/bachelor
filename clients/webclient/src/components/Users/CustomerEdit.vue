@@ -47,7 +47,7 @@
             </v-row>
             <v-row>
                 <v-col>
-                    <v-btn @click="sendToDb(component)" color="primary" class="ma-1"
+                    <v-btn @click="sendToDb" color="primary" class="ma-1"
                         >Send inn</v-btn
                     >
                 </v-col>
@@ -77,10 +77,6 @@ export default class CustomerEdit extends Vue {
     private phone = "";
     private email = "";
     private allergies: string[] = [];
-    private show = true;
-    private editUserprofile: boolean = true;
-    private showUserprofile: boolean = false;
-    private component = CustomerEdit;
 
     async fillForm() {
         let user = await api.getUserprofile();
@@ -108,7 +104,7 @@ export default class CustomerEdit extends Vue {
         return value.length >= 8 || "Vennligst oppgi et gyldig telefonnummer";
     }
 
-    async sendToDb(component) {
+    async sendToDb() {
         let updateUserprofile = {
             fullname: this.fullname,
             address: this.address,
@@ -119,9 +115,6 @@ export default class CustomerEdit extends Vue {
         };
 
         await api.putUserprofile(updateUserprofile);
-        this.editUserprofile = false;
-        this.showUserprofile = true;
-        component = CustomerProfile;
     }
 }
 </script>
