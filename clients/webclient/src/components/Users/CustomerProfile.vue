@@ -143,7 +143,7 @@
                     </v-btn>
                 </v-col>
             </v-row>
-                        <v-row>
+            <v-row>
                 <v-col :cols="8">
                     <v-btn
                         v-if="editUserprofile"
@@ -162,7 +162,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import {MenuItems, Userprofile, VendorSubscription } from "../../../../../server/src/interfaces";
-import CustomerOrder from "./CustomerOrder.vue";
+import CustomerEdit from "./CustomerEdit.vue";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
 
