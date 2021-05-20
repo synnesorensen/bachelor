@@ -136,17 +136,6 @@
                 <v-col :cols="8">
                     <v-btn
                         v-if="editUserprofile"
-                        color="primary"
-                        @click="cancel"
-                    >
-                        Send Inn
-                    </v-btn>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col :cols="8">
-                    <v-btn
-                        v-if="editUserprofile"
                         color="secondary"
                         @click="cancel"
                     >
