@@ -91,7 +91,23 @@ export class Api {
         await this.apiAxios.delete(url);
     }
 
-    // TODO: Lag en funksjon for å hente liste av vendors når tilhørende lambda er implementert.
+    async getAllVendors(): Promise<interfaces.Vendor[] | null> {
+        await this.ensureFreshToken();
+        const vendors = await this.apiAxios.get(urlPrefix + "/vendors");
+        return vendors.data;
+    }
+
+    async getSingleVendor(): Promise<interfaces.Vendor> {
+        await this.ensureFreshToken();
+        const vendors = await this.apiAxios.get(urlPrefix + "/singleVendor");
+        return vendors.data;
+    }
+
+    async getSingleSubscription(): Promise<interfaces.VendorSubscription> {
+        await this.ensureFreshToken();
+        const result = await this.apiAxios.get(urlPrefix + "/singleSubscription");
+        return result.data;
+    }
 
     async getVendorSubscriptions(): Promise<interfaces.UserSubscription[]> {
         await this.ensureFreshToken();
@@ -181,14 +197,26 @@ export class Api {
         await this.apiAxios.patch(urlPrefix + "/v/subscription?userId=" + encodeURIComponent(userId), body);
     }
 
-    async getAllVendorsDeliveries(startDate: string, endDate: string, summary?:boolean): Promise<interfaces.Delivery[] | interfaces.Summary[] | null> {
+    async getAllVendorsDeliveries(startDate: string, endDate: string): Promise<interfaces.Delivery[] | null> {
         await this.ensureFreshToken();
 
         try { 
             let url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(startDate) + "&end=" + endDate;
-            if (summary) {
-                url += "&summary=true"
+            const deliveries = await this.apiAxios.get(url);
+            return deliveries.data;
+        } catch (error) {
+            if (error.response.status == 404) {
+                return null;
             }
+            throw (error);
+        }
+    }
+
+    async getAllVendorsDeliveriesSummary(startDate: string, endDate: string): Promise<interfaces.Summary[] | null> {
+        await this.ensureFreshToken();
+
+        try { 
+            let url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(startDate) + "&end=" + endDate + "&summary=true";
             const deliveries = await this.apiAxios.get(url);
             return deliveries.data;
         } catch (error) {
@@ -201,7 +229,7 @@ export class Api {
 
     async updateDeliveries(deliveries:interfaces.Delivery[]): Promise<interfaces.Delivery[]> {
         await this.ensureFreshToken();
-        let changedDeliveries = await this.apiAxios.put(urlPrefix + "/v/deliveries");
+        let changedDeliveries = await this.apiAxios.put(urlPrefix + "/v/deliveries", deliveries);
         return changedDeliveries.data;
     }
 
@@ -263,6 +291,24 @@ export class Api {
 
         const response = await this.apiAxios.get(url);
         return parseInt(response.data.no);
+    }
+    
+    async getDeliveryDetails(start: string, end: string): Promise<interfaces.DeliveryDetail[]> {
+        await this.ensureFreshToken();
+        const response = await this.apiAxios.get(urlPrefix + "/v/deliveryDetails?start=" + start + "&end=" + end);
+        return response.data;
+    }
+
+    async cancelDeliveries(deliveries: interfaces.Delivery[]): Promise<boolean> {
+        await this.ensureFreshToken();
+        const response = await this.apiAxios.post(urlPrefix + "/cancelDeliveries", deliveries);
+        return response.status == 200;
+    }
+
+    async scheduleToDates(vendorId: string, startDate: string): Promise<interfaces.Delivery[]> {
+        await this.ensureFreshToken();
+        const deliveries = await this.apiAxios.get(urlPrefix + "/scheduleDates?vendorId=" + encodeURIComponent(vendorId) + "&startDate=" + startDate);
+        return deliveries.data;
     }
 }
 let api = new Api();

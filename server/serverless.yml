@@ -69,6 +69,27 @@ functions:
           path: /vendor
           method: any
           cors: true
+  vendors:
+    handler: src/vendors.mainHandler
+    events:
+      - http:
+          authorizer: authorizer
+          path: /vendors
+          method: get
+  singleVendor:
+    handler: src/singleVendor.mainHandler
+    events:
+      - http:
+          authorizer: authorizer
+          path: /singleVendor
+          method: get
+  singleSubscription:
+    handler: src/singleSubscription.mainHandler
+    events:
+      - http:
+          authorizer: authorizer
+          path: /singleSubscription
+          method: get
   userSubscription:
     handler: src/userSubscription.mainHandler
     events:
@@ -125,6 +146,28 @@ functions:
           authorizer: authorizer
           path: /unpaidDeliveries
           method: get
+  deliveryDetails:
+    handler: src/deliveryDetails.mainHandler
+    events:
+      - http:
+          authorizer: authorizer
+          path: /v/deliveryDetails
+          method: get
+  cancelDeliveries:
+    handler: src/cancelDeliveries.mainHandler
+    events:
+      - http:
+          authorizer: authorizer
+          path: /cancelDeliveries
+          method: post
+  scheduleToDates:
+    handler: src/scheduleToDates.mainHandler
+    events:
+      - http:
+          authorizer: authorizer
+          path: /scheduleDates
+          method: get
+
 
 resources:
   Resources:
