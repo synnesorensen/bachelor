@@ -45,6 +45,10 @@ describe('Subscription vendor http test', () => {
         expect(getResult[0].paused).to.equal(true);
         expect(getResult[0].schedule.length).to.equal(2);
 
+        const getSingleResult = await user.getSingleSubscription();
+        expect(getSingleResult.vendorId).to.equal(vendormail);
+        expect(getSingleResult.approved).to.equal(false);
+
         const userSub = await user.getUserSubscription(vendormail);
         expect(userSub.vendorId).to.equal(vendormail);
         expect(userSub.userId).to.equal(usermail);

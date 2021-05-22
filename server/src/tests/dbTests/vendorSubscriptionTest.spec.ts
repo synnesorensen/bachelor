@@ -34,6 +34,7 @@ describe('Test of vendor subscriptions', () => {
             isVendor: false
         };
         const vendor1 = {
+            vendorId: "testVendorId10",
             company: "Delikatessen",
             fullname: "Bakemester Harepus",
             address: "Hakkebakkeskogen",
@@ -55,6 +56,7 @@ describe('Test of vendor subscriptions', () => {
             ]
         };
         const vendor2 = {
+            vendorId: "testVendorId20",
             company: "Asian Fusion",
             fullname: "Kim Lee",
             address: "Osloveien 45",
