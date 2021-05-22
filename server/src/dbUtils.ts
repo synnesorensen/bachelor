@@ -30,6 +30,8 @@ export async function getSubscriptionFromDb(vendorId: string, userId: string): P
             userId,
             approved: subscriptionResult.Items[0].approved? subscriptionResult.Items[0].approved : false,
             paused: subscriptionResult.Items[0].paused,
+            datePaused:subscriptionResult.Items[0].datePaused,
+            outstandingDeliveries: subscriptionResult.Items[0].outstandingDeliveries,
             schedule: subscriptionResult.Items[0].schedule.values, 
             noOfMeals: subscriptionResult.Items[0].noOfMeals,
             box: subscriptionResult.Items[0].box
@@ -558,7 +560,7 @@ export async function getUsersDeliveries(userId: string, startDate: string, endD
     if (endDate) {
         KeyConditionExpression += "#GSI2_sk BETWEEN :prefix1 and :prefix2";
     } else {
-        KeyConditionExpression += "#GSI2_sk GE :prefix1";
+        KeyConditionExpression += "#GSI2_sk >= :prefix1";
     }
     let params = {
         TableName: settings.TABLENAME,
@@ -870,7 +872,7 @@ function cancelDelivery(delivery:Delivery) {
         return database.updateItem(params).promise();
 }
 
-export async function pauseSubscription(userId: string, vendorId: string, time: string) {
+export async function pauseSubscription(userId: string, vendorId: string, time: string): Promise<Subscription> {
     let outstandingDeliveries = await getUsersDeliveries(userId, time);
     let noOfDeliveries = outstandingDeliveries.length;
     
@@ -882,7 +884,7 @@ export async function pauseSubscription(userId: string, vendorId: string, time: 
         let ExpressionAttributeValues: any = {
         ":paused": { BOOL: true },
         ":datePaused": { S: time },
-        ":outstandingDeliveries": { N: noOfDeliveries }
+        ":outstandingDeliveries": { N: noOfDeliveries.toString() }
         }; 
         const params = {
             TableName: settings.TABLENAME,
@@ -891,23 +893,35 @@ export async function pauseSubscription(userId: string, vendorId: string, time: 
                 "sk": { S: "u#" + userId }
             },
             UpdateExpression,
-            ExpressionAttributeValues
+            ExpressionAttributeValues,
+            ReturnValues: "ALL_NEW"
         };
-        return database.updateItem(params).promise();
+        let result = await database.updateItem(params).promise();
+
+        return {
+            vendorId: result.Attributes.pk.S.substr(2),
+            userId: result.Attributes.sk.S.substr(2),
+            approved: result.Attributes.approved.BOOL,
+            paused: result.Attributes.paused.BOOL,
+            datePaused: result.Attributes.datePaused.S,
+            outstandingDeliveries: parseInt(result.Attributes.outstandingDeliveries.N),
+            schedule: result.Attributes.schedule.SS,
+            noOfMeals: parseInt(result.Attributes.noOfMeals.N),
+            box: result.Attributes.box.S
+        }
 }
 
-export async function unPauseSubscription(userId: string, vendorId: string, time: string) {
+export async function unPauseSubscription(userId: string, vendorId: string, time: string): Promise<Subscription> {
     let sub = await getSubscriptionFromDb(vendorId, userId);
     let outstandingDeliveries = sub.outstandingDeliveries;
+
     let date = new Date(time);
-    let deliveries = await generateDeliveries(date, userId, vendorId, outstandingDeliveries)
+    let deliveries = await generateDeliveries(date, userId, vendorId, outstandingDeliveries);
     await saveDeliveriesToDb(deliveries);
 
-    let UpdateExpression = "set paused = :paused, datePaused = :datePaused, outstandingDeliveries = :outstandingDeliveries";
+    let UpdateExpression = "SET paused = :paused REMOVE datePaused, outstandingDeliveries";
         let ExpressionAttributeValues: any = {
-        ":paused": { BOOL: false },
-        ":datePaused": null,
-        ":outstandingDeliveries": null
+        ":paused": { BOOL: false }
         }; 
         const params = {
             TableName: settings.TABLENAME,
@@ -916,7 +930,17 @@ export async function unPauseSubscription(userId: string, vendorId: string, time
                 "sk": { S: "u#" + userId }
             },
             UpdateExpression,
-            ExpressionAttributeValues
+            ExpressionAttributeValues,
+            ReturnValues: "ALL_NEW"
         };
-        return database.updateItem(params).promise();
+        let result = await database.updateItem(params).promise();
+        return {
+            vendorId: result.Attributes.pk.S.substr(2),
+            userId: result.Attributes.sk.S.substr(2),
+            approved: result.Attributes.approved.BOOL,
+            paused: result.Attributes.paused.BOOL,
+            schedule: result.Attributes.schedule.SS,
+            noOfMeals: parseInt(result.Attributes.noOfMeals.N),
+            box: result.Attributes.box.S
+        }
 }

@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { deleteSubscriptionInDb, getSubscriptionFromDb, pauseSubscription, putSubscriptionInDb } from './dbUtils'
+import { deleteSubscriptionInDb, getSubscriptionFromDb, pauseSubscription, putSubscriptionInDb, unPauseSubscription } from './dbUtils'
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -137,7 +137,11 @@ async function postUserSubscription(event: APIGatewayProxyEvent): Promise<APIGat
             body: JSON.stringify(sub)
         };
     } else if (action == "unpause") {
-        // DB metode 
+        const sub = await unPauseSubscription(userId, vendorId, time);
+        return {
+            statusCode: 200,
+            body: JSON.stringify(sub)
+        };
     } else {
         return {
             statusCode: 400,

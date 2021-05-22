@@ -101,3 +101,8 @@ export interface Summary {
     count: number, 
     cancelled: number
 }
+
+export interface Action {
+    action: "pause" | "unpause",
+    time: string
+}
