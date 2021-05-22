@@ -3,6 +3,7 @@ import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription, MenuItems, DeliveryDetail } from './interfaces';
 import * as settings from '../../common/settings';
+import { generateDeliveries } from './addDeliveries';
 
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
@@ -94,32 +95,6 @@ export async function putSubscriptionInDb(subscription: Subscription, isVendor: 
         noOfMeals: parseInt(dbItem.Attributes.noOfMeals.N),
         box: dbItem.Attributes.box.S
     };
-}
-
-export async function pauseSubscription(userId: string, vendorId: string, time: string) {
-    let outstandingDeliveries = await getUsersDeliveries(userId, time);
-    let noOfDeliveries = outstandingDeliveries.length;
-    
-    for (let del of outstandingDeliveries) {
-        await deleteDeliveryInDb(vendorId, userId, del.deliverytime);
-    }
-
-    let UpdateExpression = "set paused = :paused, datePaused = :datePaused, outstandingDeliveries = :outstandingDeliveries";
-        let ExpressionAttributeValues: any = {
-        ":paused": { BOOL: true },
-        ":datePaused": { S: time },
-        ":outstandingDeliveries": { N: noOfDeliveries }
-        }; 
-        const params = {
-            TableName: settings.TABLENAME,
-            Key: {
-                "pk": { S: "v#" + vendorId },
-                "sk": { S: "u#" + userId }
-            },
-            UpdateExpression,
-            ExpressionAttributeValues
-        };
-        return database.updateItem(params).promise();
 }
 
 export async function updateApproval(vendorId: string, userId: string, approved: boolean): Promise<void> {
@@ -888,6 +863,57 @@ function cancelDelivery(delivery:Delivery) {
             Key: {
                 "pk": { S: "v#" + delivery.vendorId },
                 "sk": { S: "d#" + delivery.deliverytime + "#u#" + delivery.userId }
+            },
+            UpdateExpression,
+            ExpressionAttributeValues
+        };
+        return database.updateItem(params).promise();
+}
+
+export async function pauseSubscription(userId: string, vendorId: string, time: string) {
+    let outstandingDeliveries = await getUsersDeliveries(userId, time);
+    let noOfDeliveries = outstandingDeliveries.length;
+    
+    for (let del of outstandingDeliveries) {
+        await deleteDeliveryInDb(vendorId, userId, del.deliverytime);
+    }
+
+    let UpdateExpression = "set paused = :paused, datePaused = :datePaused, outstandingDeliveries = :outstandingDeliveries";
+        let ExpressionAttributeValues: any = {
+        ":paused": { BOOL: true },
+        ":datePaused": { S: time },
+        ":outstandingDeliveries": { N: noOfDeliveries }
+        }; 
+        const params = {
+            TableName: settings.TABLENAME,
+            Key: {
+                "pk": { S: "v#" + vendorId },
+                "sk": { S: "u#" + userId }
+            },
+            UpdateExpression,
+            ExpressionAttributeValues
+        };
+        return database.updateItem(params).promise();
+}
+
+export async function unPauseSubscription(userId: string, vendorId: string, time: string) {
+    let sub = await getSubscriptionFromDb(vendorId, userId);
+    let outstandingDeliveries = sub.outstandingDeliveries;
+    let date = new Date(time);
+    let deliveries = await generateDeliveries(date, userId, vendorId, outstandingDeliveries)
+    await saveDeliveriesToDb(deliveries);
+
+    let UpdateExpression = "set paused = :paused, datePaused = :datePaused, outstandingDeliveries = :outstandingDeliveries";
+        let ExpressionAttributeValues: any = {
+        ":paused": { BOOL: false },
+        ":datePaused": null,
+        ":outstandingDeliveries": null
+        }; 
+        const params = {
+            TableName: settings.TABLENAME,
+            Key: {
+                "pk": { S: "v#" + vendorId },
+                "sk": { S: "u#" + userId }
             },
             UpdateExpression,
             ExpressionAttributeValues

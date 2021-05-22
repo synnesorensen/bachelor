@@ -160,13 +160,6 @@ functions:
           authorizer: authorizer
           path: /cancelDeliveries
           method: post
-  pauseSubscription:
-    handler: src/pauseSubscription.mainHandler
-    events:
-      - http:
-          authorizer: authorizer
-          path: /u/pauseSubscription
-          method: post
   scheduleToDates:
     handler: src/scheduleToDates.mainHandler
     events:

@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { deleteSubscriptionInDb, getSubscriptionFromDb, putSubscriptionInDb } from './dbUtils'
+import { deleteSubscriptionInDb, getSubscriptionFromDb, pauseSubscription, putSubscriptionInDb } from './dbUtils'
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -11,6 +11,9 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     }
     if (event.httpMethod == "PUT") {
         return putUserSubscription(event);
+    }
+    if (event.httpMethod == "POST") {
+        return postUserSubscription(event);
     }
     if (event.httpMethod == "DELETE") {
         return deleteUserSubscription(event);
@@ -91,6 +94,56 @@ async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
         statusCode: 200,
         body: JSON.stringify(subscription)
     };
+}
+
+async function postUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let userId = getUserInfoFromEvent(event);
+    let body = JSON.parse(event.body);
+
+    if (!event.queryStringParameters) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter" }'
+        };
+    }
+    let vendorId = event.queryStringParameters["vendorId"];
+
+    if (!vendorId) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter vendorId" }'
+        };
+    }
+
+    let time = body.time;
+    if (!time) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing attribute time" }'
+        };
+    }
+
+    let action = body.action;
+    if (!action) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing attribute action" }'
+        };
+    }
+    if (action == "pause") {
+        const sub = await pauseSubscription(userId, vendorId, time);
+        return {
+            statusCode: 200,
+            body: JSON.stringify(sub)
+        };
+    } else if (action == "unpause") {
+        // DB metode 
+    } else {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Action not supported" }'
+        };
+    }
 }
 
 async function deleteUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
