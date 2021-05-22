@@ -12,6 +12,7 @@ export interface Subscription {
     userId: string,
     approved: boolean,
     paused: boolean,
+    datePaused?: string,
     schedule: string[],
     noOfMeals: number,
     box: string
