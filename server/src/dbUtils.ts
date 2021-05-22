@@ -97,10 +97,18 @@ export async function putSubscriptionInDb(subscription: Subscription, isVendor: 
 }
 
 export async function pauseSubscription(userId: string, vendorId: string, time: string) {
-    let UpdateExpression = "set paused = :paused, datePaused = :datePaused";
+    let outstandingDeliveries = await getUsersDeliveries(userId, time);
+    let noOfDeliveries = outstandingDeliveries.length;
+    
+    for (let del of outstandingDeliveries) {
+        await deleteDeliveryInDb(vendorId, userId, del.deliverytime);
+    }
+
+    let UpdateExpression = "set paused = :paused, datePaused = :datePaused, outstandingDeliveries = :outstandingDeliveries";
         let ExpressionAttributeValues: any = {
         ":paused": { BOOL: true },
-        ":datePaused": { S: time }
+        ":datePaused": { S: time },
+        ":outstandingDeliveries": { N: noOfDeliveries }
         }; 
         const params = {
             TableName: settings.TABLENAME,
@@ -570,11 +578,17 @@ export async function getOnlySubscriptionForUser(userId: string): Promise<Vendor
     };
 }
 
-export async function getUsersDeliveries(userId: string, startDate: string, endDate: string): Promise<Delivery[]> {
+export async function getUsersDeliveries(userId: string, startDate: string, endDate?: string): Promise<Delivery[]> {
+    let KeyConditionExpression = "#GSI2_pk = :user and ";
+    if (endDate) {
+        KeyConditionExpression += "#GSI2_sk BETWEEN :prefix1 and :prefix2";
+    } else {
+        KeyConditionExpression += "#GSI2_sk GE :prefix1";
+    }
     let params = {
         TableName: settings.TABLENAME,
         IndexName: "GSI2",
-        KeyConditionExpression: "#GSI2_pk = :user and #GSI2_sk BETWEEN :prefix1 and :prefix2",
+        KeyConditionExpression,
         ExpressionAttributeNames: {
             "#GSI2_pk": "GSI2_pk",
             "#GSI2_sk": "GSI2_sk"

@@ -13,6 +13,7 @@ export interface Subscription {
     approved: boolean,
     paused: boolean,
     datePaused?: string,
+    outstandingDeliveries?: number,
     schedule: string[],
     noOfMeals: number,
     box: string
