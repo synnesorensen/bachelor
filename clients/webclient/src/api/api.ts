@@ -183,6 +183,13 @@ export class Api {
         }
     }
 
+    async pauseSubscription(): Promise<interfaces.Subscription> {
+        await this.ensureFreshToken();
+        const pausedSubscription = await this.apiAxios.put(urlPrefix + "/u/pauseSubscription");
+        return pausedSubscription.data;
+
+    }
+
     async deleteUserSubscription(id: string) {
         await this.ensureFreshToken();
         const url = urlPrefix + "/u/subscription?vendorId=" + encodeURIComponent(id);

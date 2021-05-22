@@ -96,6 +96,24 @@ export async function putSubscriptionInDb(subscription: Subscription, isVendor: 
     };
 }
 
+export async function pauseSubscription(userId: string, vendorId: string, time: string) {
+    let UpdateExpression = "set paused = :paused, datePaused = :datePaused";
+        let ExpressionAttributeValues: any = {
+        ":paused": { BOOL: true },
+        ":datePaused": { S: time }
+        }; 
+        const params = {
+            TableName: settings.TABLENAME,
+            Key: {
+                "pk": { S: "v#" + vendorId },
+                "sk": { S: "u#" + userId }
+            },
+            UpdateExpression,
+            ExpressionAttributeValues
+        };
+        return database.updateItem(params).promise();
+}
+
 export async function updateApproval(vendorId: string, userId: string, approved: boolean): Promise<void> {
     let UpdateExpression = "set approved = :approved";
     let ExpressionAttributeValues: any = {
