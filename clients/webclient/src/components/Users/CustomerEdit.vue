@@ -46,10 +46,19 @@
                 {{ this.allergies }}
             </v-row>
             <v-row>
-                <v-col>
+                <v-col :cols="2">
                     <v-btn @click="sendToDb" color="primary" class="ma-1"
                         >Send inn</v-btn
                     >
+                </v-col>
+                <v-col>
+                    <v-btn
+                        class="ma-1"
+                        color="secondary"
+                        @click="cancel"
+                    >
+                        Avbryt
+                    </v-btn>
                 </v-col>
             </v-row>
         </v-container>
@@ -116,6 +125,10 @@ export default class CustomerEdit extends Vue {
 
         await api.putUserprofile(updateUserprofile);
         this.$emit("save");
+    }
+
+    cancel() {
+        this.$emit("cancel");
     }
 }
 </script>
