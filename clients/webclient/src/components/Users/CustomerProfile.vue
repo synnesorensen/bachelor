@@ -129,7 +129,8 @@
         <div v-if="editUserprofile">
             <v-row>
                 <v-col>
-                    <CustomerEdit :loggedInUser="loggedInUser" />
+                    <CustomerEdit :loggedInUser="loggedInUser"
+                    @save="save" />
                 </v-col>
             </v-row>
             <v-row>
@@ -178,6 +179,10 @@ export default class CustomerProfile extends Vue {
     
     cancel() {
         this.editUserprofile = false;
+        this.showUserprofile = true;
+    }
+
+    save() {
         this.showUserprofile = true;
     }
     
