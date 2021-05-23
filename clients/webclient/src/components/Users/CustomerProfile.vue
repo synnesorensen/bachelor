@@ -184,6 +184,7 @@ export default class CustomerProfile extends Vue {
 
     save() {
         this.showUserprofile = true;
+        this.editUserprofile = false;
     }
     
     async created() {
