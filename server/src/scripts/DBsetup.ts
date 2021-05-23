@@ -63,6 +63,7 @@ export async function addUsersToDb() {
 }
 
 const vendor = {
+    vendorId: dbVendor,
     company: "Delikatessen",
     fullname: "Bakermester Harepus",
     address: "Hakkebakkeskogen",

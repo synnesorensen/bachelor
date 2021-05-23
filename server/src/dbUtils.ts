@@ -843,8 +843,11 @@ export async function getDeliveryDetails(vendorId: string, startDate: string, en
     });
     return deliveryDetails;
 }
-export async function cancelDeliveries(userId: string, deliveries: Delivery[]) {
-    const promises = [];
+export async function cancelDeliveries(userId: string, deliveries: Delivery[]): Promise<number> {
+    if (deliveries.length < 1) {
+        return 0;
+    }
+    const promises: Promise<boolean>[] = [];
     for (let delivery of deliveries) {
         if (delivery.userId == userId || delivery.vendorId == userId) {
             promises.push(cancelDelivery(delivery));
@@ -852,10 +855,22 @@ export async function cancelDeliveries(userId: string, deliveries: Delivery[]) {
             console.log("UserId " + userId + " tried to delete delivery that they do not own.")
         }
     }
-    await Promise.all(promises);
+    let results = await Promise.all(promises);
+    // Counting how many deliveries that were cancelled:
+    let count = 0;
+    results.forEach( res => {
+        if (res) {
+            count++;
+        }
+    });
+    return count;
 }
 
-function cancelDelivery(delivery:Delivery) {
+async function cancelDelivery(delivery:Delivery): Promise<boolean> {
+    const dbDel = await getDeliveryFromDb(delivery.vendorId, delivery.userId, delivery.deliverytime);
+    if (!dbDel || dbDel.cancelled) {
+        return false;
+    }
     let UpdateExpression = "set cancelled = :cancelled";
         let ExpressionAttributeValues: any = {
         ":cancelled": { BOOL: true }
@@ -869,7 +884,15 @@ function cancelDelivery(delivery:Delivery) {
             UpdateExpression,
             ExpressionAttributeValues
         };
-        return database.updateItem(params).promise();
+        await database.updateItem(params).promise();
+
+        // Moving cancelled delivery to the end of period:
+        const latestDel = await findLatestDelivery(delivery.vendorId, delivery.userId);
+        const date = new Date(latestDel.deliverytime);
+        let movedDels = await generateDeliveries(date, delivery.userId, delivery.vendorId, 1);
+        await saveDeliveriesToDb(movedDels);
+
+        return true;
 }
 
 export async function pauseSubscription(userId: string, vendorId: string, time: string): Promise<Subscription> {

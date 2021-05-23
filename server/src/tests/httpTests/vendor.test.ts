@@ -62,11 +62,11 @@ describe('Vendor http test', () => {
         expect(getSingleResult.vendorId).to.equal(vendormail);
         
         /*
-        Sletting fungerer, men kommenterer vekk da det skaper problemer for annen test*/
+        Sletting fungerer, men kommenterer vekk da det skaper problemer for annen test
         await vendor.deleteVendor(vendormail);
         const newResult = await vendor.getVendor(vendormail);
         expect(newResult).to.equal(null);
-        await vendor.putVendor(vendorProfile, vendormail);
+        await vendor.putVendor(vendorProfile, vendormail);*/
     });
     afterEach(async function () {
         await vendor.logout();

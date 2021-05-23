@@ -57,7 +57,7 @@ describe('Subscription test', () => {
 
         await deleteSubscriptionInDb("testVendorId55", "testUserId55");
         const newResult = await getSubscriptionFromDb("testVendorId55", "testUserId55");
-        expect(newResult).to.equal(undefined);
+        expect(newResult).to.equal(null);
         await deleteVendorInDb("testVendorId55");
     });
 });
