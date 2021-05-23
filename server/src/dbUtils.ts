@@ -3,11 +3,12 @@ import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription, MenuItems, DeliveryDetail } from './interfaces';
 import * as settings from '../../common/settings';
+import { generateDeliveries } from './addDeliveries';
 
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
 
-export async function getSubscriptionFromDb(vendorId: string, userId: string): Promise<Subscription | undefined> {
+export async function getSubscriptionFromDb(vendorId: string, userId: string): Promise<Subscription | null> {
     let subscriptionParams = {
         TableName: settings.TABLENAME,
         KeyConditionExpression: "#pk = :vendor and #sk = :userId",
@@ -22,13 +23,15 @@ export async function getSubscriptionFromDb(vendorId: string, userId: string): P
     }
     let subscriptionResult = await documentClient.query(subscriptionParams).promise();
     if (subscriptionResult.Items.length == 0) {
-        return undefined;
+        return null;
     }
     return {
             vendorId,
             userId,
             approved: subscriptionResult.Items[0].approved? subscriptionResult.Items[0].approved : false,
             paused: subscriptionResult.Items[0].paused,
+            datePaused:subscriptionResult.Items[0].datePaused,
+            outstandingDeliveries: subscriptionResult.Items[0].outstandingDeliveries,
             schedule: subscriptionResult.Items[0].schedule.values, 
             noOfMeals: subscriptionResult.Items[0].noOfMeals,
             box: subscriptionResult.Items[0].box
@@ -552,11 +555,17 @@ export async function getOnlySubscriptionForUser(userId: string): Promise<Vendor
     };
 }
 
-export async function getUsersDeliveries(userId: string, startDate: string, endDate: string): Promise<Delivery[]> {
+export async function getUsersDeliveries(userId: string, startDate: string, endDate?: string): Promise<Delivery[]> {
+    let KeyConditionExpression = "#GSI2_pk = :user and ";
+    if (endDate) {
+        KeyConditionExpression += "#GSI2_sk BETWEEN :prefix1 and :prefix2";
+    } else {
+        KeyConditionExpression += "#GSI2_sk >= :prefix1";
+    }
     let params = {
         TableName: settings.TABLENAME,
         IndexName: "GSI2",
-        KeyConditionExpression: "#GSI2_pk = :user and #GSI2_sk BETWEEN :prefix1 and :prefix2",
+        KeyConditionExpression,
         ExpressionAttributeNames: {
             "#GSI2_pk": "GSI2_pk",
             "#GSI2_sk": "GSI2_sk"
@@ -861,4 +870,82 @@ function cancelDelivery(delivery:Delivery) {
             ExpressionAttributeValues
         };
         return database.updateItem(params).promise();
+}
+
+export async function pauseSubscription(userId: string, vendorId: string, time: string): Promise<Subscription> {
+    let outstandingDeliveries = await getUsersDeliveries(userId, time);
+    let noOfDeliveries = outstandingDeliveries.length;
+    
+    for (let del of outstandingDeliveries) {
+        await deleteDeliveryInDb(vendorId, userId, del.deliverytime);
+    }
+
+    let UpdateExpression = "set paused = :paused, datePaused = :datePaused, outstandingDeliveries = :outstandingDeliveries";
+        let ExpressionAttributeValues: any = {
+        ":paused": { BOOL: true },
+        ":datePaused": { S: time },
+        ":outstandingDeliveries": { N: noOfDeliveries.toString() }
+        }; 
+        const params = {
+            TableName: settings.TABLENAME,
+            Key: {
+                "pk": { S: "v#" + vendorId },
+                "sk": { S: "u#" + userId }
+            },
+            UpdateExpression,
+            ExpressionAttributeValues,
+            ReturnValues: "ALL_NEW"
+        };
+        let result = await database.updateItem(params).promise();
+
+        return {
+            vendorId: result.Attributes.pk.S.substr(2),
+            userId: result.Attributes.sk.S.substr(2),
+            approved: result.Attributes.approved.BOOL,
+            paused: result.Attributes.paused.BOOL,
+            datePaused: result.Attributes.datePaused.S,
+            outstandingDeliveries: parseInt(result.Attributes.outstandingDeliveries.N),
+            schedule: result.Attributes.schedule.SS,
+            noOfMeals: parseInt(result.Attributes.noOfMeals.N),
+            box: result.Attributes.box.S
+        }
+}
+
+export async function unPauseSubscription(userId: string, vendorId: string, time: string): Promise<Subscription> {
+    let sub = await getSubscriptionFromDb(vendorId, userId);
+    if (!sub) {
+        throw ("Subscription not found for user id: " + userId);
+    }
+    if (!sub.paused) {
+        throw ("Trying to unpause an active subscription.")
+    }
+    let outstandingDeliveries = sub.outstandingDeliveries;
+    let date = new Date(time);
+    let deliveries = await generateDeliveries(date, userId, vendorId, outstandingDeliveries);
+    await saveDeliveriesToDb(deliveries);
+
+    let UpdateExpression = "SET paused = :paused REMOVE datePaused, outstandingDeliveries";
+        let ExpressionAttributeValues: any = {
+        ":paused": { BOOL: false }
+        }; 
+        const params = {
+            TableName: settings.TABLENAME,
+            Key: {
+                "pk": { S: "v#" + vendorId },
+                "sk": { S: "u#" + userId }
+            },
+            UpdateExpression,
+            ExpressionAttributeValues,
+            ReturnValues: "ALL_NEW"
+        };
+        let result = await database.updateItem(params).promise();
+        return {
+            vendorId: result.Attributes.pk.S.substr(2),
+            userId: result.Attributes.sk.S.substr(2),
+            approved: result.Attributes.approved.BOOL,
+            paused: result.Attributes.paused.BOOL,
+            schedule: result.Attributes.schedule.SS,
+            noOfMeals: parseInt(result.Attributes.noOfMeals.N),
+            box: result.Attributes.box.S
+        }
 }

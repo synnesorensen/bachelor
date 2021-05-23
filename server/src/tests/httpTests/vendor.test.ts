@@ -18,11 +18,12 @@ describe('Vendor http test', () => {
     });
     it('Putting, getting and deleting a vendor', async () => {
         const vendorProfile = {
+            vendorId: vendormail,
             company: "Delikatessen",
             fullname: "Bakermester Harepus",
             address: "Hakkebakkeskogen",
             phone: "6688552",
-            email: "ingrid.elisabeth.hjelle+test97@gmail.com",
+            email: vendormail,
             isVendor: true,
             schedule: [
                 {
@@ -56,13 +57,16 @@ describe('Vendor http test', () => {
         expect(getResult.schedule[0].id).to.equal("2");
         expect(getResult.schedule[1].id).to.equal("3");
 
+        const getSingleResult = await vendor.getSingleVendor();
+        expect(getSingleResult.company).to.equal("Delikatessen");
+        expect(getSingleResult.vendorId).to.equal(vendormail);
         
         /*
-        Sletting fungerer, men kommenterer vekk da det skaper problemer for annen test
+        Sletting fungerer, men kommenterer vekk da det skaper problemer for annen test*/
         await vendor.deleteVendor(vendormail);
         const newResult = await vendor.getVendor(vendormail);
         expect(newResult).to.equal(null);
-        await vendor.putVendor(vendorProfile, vendormail);*/
+        await vendor.putVendor(vendorProfile, vendormail);
     });
     afterEach(async function () {
         await vendor.logout();
