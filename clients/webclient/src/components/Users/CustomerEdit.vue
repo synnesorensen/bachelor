@@ -40,16 +40,30 @@
                 </v-col>
             </v-row>
             <v-row>
-                <h4>Dine registrerte alleriger er</h4>
-            </v-row>
-            <v-row>
-                {{ this.allergies }}
+                <v-col :cols="2">
+                    <p class="font-weight-black">
+                        <label for="allergylist">Mine allergier</label>
+                    </p>
+                </v-col>
+                <v-col>
+                    <p
+                        class="font-weight-light"
+                        v-for="allergy in allergies"
+                        :key="allergy"
+                        id="allergylist"
+                    >
+                        {{ allergy }}
+                    </p>
+                </v-col>
             </v-row>
             <v-row>
                 <v-col>
-                    <v-btn @click="sendToDb" color="primary" class="ma-1"
-                        >Send inn</v-btn
-                    >
+                    <v-btn @click="sendToDb" color="primary" class="ma-1">
+                        Send inn
+                    </v-btn>
+                    <v-btn color="secondary" @click="cancel" class="ma-1">
+                        Avbryt
+                    </v-btn>
                 </v-col>
             </v-row>
         </v-container>
@@ -116,6 +130,10 @@ export default class CustomerEdit extends Vue {
 
         await api.putUserprofile(updateUserprofile);
         this.$emit("save");
+    }
+
+    cancel() {
+        this.$emit("cancel");
     }
 }
 </script>

@@ -130,18 +130,8 @@
             <v-row>
                 <v-col>
                     <CustomerEdit :loggedInUser="loggedInUser"
-                    @save="save" />
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col :cols="8">
-                    <v-btn
-                        v-if="editUserprofile"
-                        color="secondary"
-                        @click="cancel"
-                    >
-                        Avbryt
-                    </v-btn>
+                    @save="save"
+                    @cancel="cancel" />
                 </v-col>
             </v-row>
         </div>
