@@ -8,7 +8,7 @@ import { generateDeliveries } from './addDeliveries';
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
 
-export async function getSubscriptionFromDb(vendorId: string, userId: string): Promise<Subscription | undefined> {
+export async function getSubscriptionFromDb(vendorId: string, userId: string): Promise<Subscription | null> {
     let subscriptionParams = {
         TableName: settings.TABLENAME,
         KeyConditionExpression: "#pk = :vendor and #sk = :userId",
@@ -23,7 +23,7 @@ export async function getSubscriptionFromDb(vendorId: string, userId: string): P
     }
     let subscriptionResult = await documentClient.query(subscriptionParams).promise();
     if (subscriptionResult.Items.length == 0) {
-        return undefined;
+        return null;
     }
     return {
             vendorId,
@@ -913,8 +913,13 @@ export async function pauseSubscription(userId: string, vendorId: string, time: 
 
 export async function unPauseSubscription(userId: string, vendorId: string, time: string): Promise<Subscription> {
     let sub = await getSubscriptionFromDb(vendorId, userId);
+    if (!sub) {
+        throw ("Subscription not found for user id: " + userId);
+    }
+    if (!sub.paused) {
+        throw ("Trying to unpause an active subscription.")
+    }
     let outstandingDeliveries = sub.outstandingDeliveries;
-
     let date = new Date(time);
     let deliveries = await generateDeliveries(date, userId, vendorId, outstandingDeliveries);
     await saveDeliveriesToDb(deliveries);

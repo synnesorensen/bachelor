@@ -7,17 +7,17 @@ import 'mocha';
 import { afterEach, beforeEach } from 'mocha';
 import { Action } from 'src/interfaces';
 
-let user = null; 
-let vendor = null;
+let userApi = null; 
+let vendorApi = null;
 let usermail = testUser;
 let vendormail = testVend;
 
 describe('Subscription vendor http test', () => {
     beforeEach(async function () {
-        vendor = new Api();
-        user = new Api();
-        await user.login(testUser, testPass);
-        await vendor.login(testVend, testVendPass);
+        vendorApi = new Api();
+        userApi = new Api();
+        await userApi.login(testUser, testPass);
+        await vendorApi.login(testVend, testVendPass);
     });
 
     it('Putting, getting and deleting a subscription', async () => {
@@ -30,7 +30,7 @@ describe('Subscription vendor http test', () => {
             noOfMeals: 1,
             box: "engangsboks"
         };
-        const vendorProfile = {
+        const vendor = {
             vendorId: vendormail,
             company: "Delikatessen",
             fullname: "Bakermester Harepus",
@@ -61,47 +61,48 @@ describe('Subscription vendor http test', () => {
             allergies: ["melk"],
             isVendor: true
         };
-        await vendor.putUserprofile(userprofile);
-        await vendor.putVendor(vendorProfile, vendormail);
-        await user.putUserSubscription(sub);
-        let deliveries = await vendor.postNewDeliveries("2021-06-01T00:10:00.000Z", 8, usermail);
+        await vendorApi.putUserprofile(userprofile);
+        await vendorApi.putVendor(vendor, vendormail);
+        await userApi.putUserSubscription(sub);
+        
+        let deliveries = await vendorApi.postNewDeliveries("2021-06-01T00:00:00.000Z", 8, usermail);
         expect(deliveries.length).equal(8);
-        await user.getAllUsersDeliveries("2021-06-01T00:10:00.000Z", "2021-06-30T00:10:00.000Z");
+        let addedDeliveries = await userApi.getAllUsersDeliveries("2021-06-01T00:00:00.000Z", "2021-06-23T23:59:00.000Z");
+        expect(addedDeliveries.length).equal(8);
 
         let action1: Action = {
             action: "pause",
-            time: "2021-06-09T00:10:00.000Z"
+            time: "2021-06-09T00:00:00.000Z"
         }
-        await user.postSubscription(vendormail, action1);
-        let getDel1 = await user.getAllUsersDeliveries("2021-06-01T00:10:00.000Z", "2021-06-30T00:10:00.000Z");
+        await userApi.postSubscription(vendormail, action1);
+        let getDel1 = await userApi.getAllUsersDeliveries("2021-06-01T00:00:00.000Z", "2021-06-23T23:59:00.000Z");
         
         // Expect to only return deliveries that has a date before the date of pausing subscription:
         expect(getDel1.length).equal(3);
 
         let action2: Action = {
             action: "unpause",
-            time: "2021-06-16T00:10:00.000Z"
+            time: "2021-06-16T00:00:00.000Z"
         }
-        await user.postSubscription(vendormail, action2);
-        let getDel2 = await user.getAllUsersDeliveries("2021-06-16T00:10:00.000Z", "2021-07-30T00:10:00.000Z");
+        await userApi.postSubscription(vendormail, action2);
+        let getDel2 = await userApi.getAllUsersDeliveries("2021-06-16T00:00:00.000Z", "2021-07-30T23:59:00.000Z");
         
         // Expect to return no of deliveries that was left in period when pausing the subscription:
         expect(getDel2.length).equal(5);
 
-        await vendor.deleteDelivery(vendormail, usermail, "2021-06-22T00:10:00.000Z");
-        await vendor.deleteDelivery(vendormail, usermail, "2021-06-23T00:10:00.000Z");
-        await vendor.deleteDelivery(vendormail, usermail, "2021-06-29T00:10:00.000Z");
-        await vendor.deleteDelivery(vendormail, usermail, "2021-06-30T00:10:00.000Z");
-        await vendor.deleteDelivery(vendormail, usermail, "2021-06-22T00:10:00.000Z")
-        await vendor.deleteDelivery(vendormail, usermail, "2021-07-06T00:10:00.000Z");
-        await vendor.deleteUserSubscription(vendormail);
-        await vendor.deleteUserprofile();
-        await vendor.deleteVendor(vendormail);
-        await vendor.deleteUserprofile();
+        let allDeliveries = await userApi.getAllUsersDeliveries("2021-06-01T00:00:00.000Z", "2021-06-30T23:59:00.000Z");
+        let promises: Promise<void>[] = [];
+        for (let del of allDeliveries) {
+            promises.push(vendorApi.deleteDelivery(del.vendorId, del.userId, del.deliverytime));
+        }
+        promises.push(userApi.deleteUserSubscription(vendormail));
+        promises.push(vendorApi.deleteUserprofile());
+        promises.push(vendorApi.deleteVendor(vendormail));
+        await Promise.all(promises);
     });
-    
+
     afterEach(async function () {
-        await vendor.logout();
-        await user.logout();
+        await vendorApi.logout();
+        await userApi.logout();
     });
-});
+}); 
