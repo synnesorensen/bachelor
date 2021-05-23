@@ -70,7 +70,7 @@
             </v-row>
         </v-card-text>
         <v-card-actions v-if="selectedUser">
-            <v-btn  @click="dialog = true" color="primary">Registrer betaling </v-btn>
+            <v-btn  @click="showPaymentDialog" color="primary">Registrer betaling</v-btn>
             <v-dialog v-model="dialog" max-width="400" max-height="800">
                 <v-card>
                     <v-card-title class="headline">
@@ -84,7 +84,8 @@
                         <v-date-picker
                             v-model="picker"
                             no-title
-                            scrollable>
+
+                            >
                         </v-date-picker>
                     </v-card-text>
                     <v-card-actions>
@@ -127,6 +128,26 @@ export default class CustomerPayment extends Vue {
     get selectedMonth() {
         return this.toYearMonth(this.nextMonth());
     }
+    nextMonth() {
+        let now = new Date();
+        return new Date(now.getFullYear(), now.getMonth()+this.monthOffset, 1);
+    }
+    async prev() {
+        this.monthOffset --;
+        this.updateUnpaidDeliveries();
+    }
+    async next() {
+        this.monthOffset ++;
+        this.updateUnpaidDeliveries();
+    }
+    toYearMonth(date:Date) {
+        let monthNo = date.getMonth() + 1; 
+        let month = monthNo.toString();
+        if (monthNo < 10) {
+            month = "0" + monthNo;
+        }
+        return date.getFullYear().toString() + "-" + month;  
+    }
 
     @Watch("selectedUser")
     async onChange() {
@@ -141,8 +162,8 @@ export default class CustomerPayment extends Vue {
             let lastDelivery = new Date(date);
             let selectedDate = new Date(this.nextMonth());
             if (selectedDate.getTime() < lastDelivery.getTime()) {
-                if (selectedDate.getUTCMonth() == lastDelivery.getUTCMonth()
-                    && selectedDate.getUTCFullYear() == lastDelivery.getUTCFullYear()) {
+                if (selectedDate.getMonth() == lastDelivery.getUTCMonth()
+                    && selectedDate.getFullYear() == lastDelivery.getUTCFullYear()) {
                     this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.userId, this.selectedMonth, this.selectedUser.lastDeliveryDate);
                 } else {
                     this.unpaidDeliveries = 0; 
@@ -151,40 +172,24 @@ export default class CustomerPayment extends Vue {
                 this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.userId, this.selectedMonth);
             }
             this.paidDeliveries = this.unpaidDeliveries;
+        } else {
+            this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.userId, this.selectedMonth);
+            this.paidDeliveries = this.unpaidDeliveries;
         }
-    }
-
-    nextMonth() {
-        let now = new Date();
-        return new Date(now.getFullYear(), now.getMonth()+this.monthOffset, 1);
-    }
-
-    toYearMonth(date:Date) {
-        let monthNo = date.getMonth() + 1; 
-        let month = monthNo.toString();
-        if (monthNo < 10) {
-            month = "0" + monthNo;
-        }
-        return date.getFullYear().toString() + "-" + month;  
-    }
-
-    async prev() {
-        this.monthOffset --;
-        this.updateUnpaidDeliveries();
-    }
-
-    async next() {
-        this.monthOffset ++;
-        this.updateUnpaidDeliveries();
     }
     
     async registerPayment() {
         let time = new Date(this.picker).toISOString();
         if (this.selectedUser?.userId) {
-            await api.postNewDeliveries(time, this.paidDeliveries, this.selectedUser.userId);
+            let newDels = await api.postNewDeliveries(time, this.paidDeliveries, this.selectedUser.userId);
+            this.selectedUser.lastDeliveryDate = newDels[newDels.length-1].deliverytime.substr(0, 10);
+            this.unpaidDeliveries = this.unpaidDeliveries - this.paidDeliveries;
             this.dialog = false;
         }
     }
-    
+    showPaymentDialog() {
+        this.picker = this.selectedMonth + "-01";
+        this.dialog = true;
+    }
 }
 </script>
