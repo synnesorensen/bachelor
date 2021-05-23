@@ -115,6 +115,7 @@ export default class CustomerEdit extends Vue {
         };
 
         await api.putUserprofile(updateUserprofile);
+        this.$emit("save");
     }
 }
 </script>
