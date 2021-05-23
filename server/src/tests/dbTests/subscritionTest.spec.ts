@@ -7,6 +7,7 @@ import 'mocha';
 describe('Subscription test', () => {
     it('Putting, getting and deleting a subscription', async () => {
         const vendor = {
+            vendorId: "testVendorId55",
             company: "Delikatessen",
             fullname: "Bakermester Harepus",
             address: "Hakkebakkeskogen",

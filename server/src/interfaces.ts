@@ -12,6 +12,8 @@ export interface Subscription {
     userId: string,
     approved: boolean,
     paused: boolean,
+    datePaused?: string,
+    outstandingDeliveries?: number,
     schedule: string[],
     noOfMeals: number,
     box: string
@@ -98,4 +100,9 @@ export interface Summary {
     date: string,
     count: number, 
     cancelled: number
+}
+
+export interface Action {
+    action: "pause" | "unpause",
+    time: string
 }

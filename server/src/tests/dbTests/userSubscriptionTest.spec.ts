@@ -7,6 +7,7 @@ import 'mocha';
 describe('Test of user subscriptions', () => {
     it('Getting list of subscriptions with users info from DB', async () => {
         const vendor = {
+            vendorId: "testVendorId40",
             company: "Delikatessen",
             fullname: "Bakermester Harepus",
             address: "Hakkebakkeskogen",
