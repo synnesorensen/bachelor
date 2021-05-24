@@ -90,7 +90,7 @@ import CustomerProfile from "../Users/CustomerProfile.vue";
 export default class CustomerEdit extends Vue {
     @Prop() userprofile!: Userprofile;
 
-        private allergies = [
+    private allergies = [
         { name: "gluten", selected: false },
         { name: "skalldyr", selected: false },
         { name: "egg", selected: false },
@@ -106,7 +106,7 @@ export default class CustomerEdit extends Vue {
         { name: "lupin", selected: false },
         { name: "bløtdyr", selected: false },
     ];
-        private selectedAllergies = this.userprofile.allergies;
+    private selectedAllergies = this.userprofile.allergies;
 
     numbers(value: string) {
         return (
@@ -119,7 +119,6 @@ export default class CustomerEdit extends Vue {
     }
 
     async sendToDb() {
-        
         await api.putUserprofile(this.userprofile);
         this.$emit("switchToCustomerProfile");
     }

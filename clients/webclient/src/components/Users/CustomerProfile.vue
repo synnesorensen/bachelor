@@ -115,7 +115,11 @@
                                     text
                                     @click="toggleSubscriptionPause()"
                                 >
-                                    {{subscription.paused? "Aktiver" : "Sett på pause" }}
+                                    {{
+                                        subscription.paused
+                                            ? "Aktiver"
+                                            : "Sett på pause"
+                                    }}
                                 </v-btn>
                                 <v-btn
                                     color="green darken-1"
@@ -146,7 +150,12 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import {Action, MenuItems, Userprofile, VendorSubscription } from "../../../../../server/src/interfaces";
+import {
+    Action,
+    MenuItems,
+    Userprofile,
+    VendorSubscription,
+} from "../../../../../server/src/interfaces";
 import CustomerEdit from "./CustomerEdit.vue";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
@@ -194,10 +203,10 @@ export default class CustomerProfile extends Vue {
                 } else {
                     time.setDate(time.getDate() + 2);
                 }
-                let action:Action = {
+                let action: Action = {
                     time: time.toISOString().substr(0, 10),
-                    action: sub.paused? "pause" : "unpause"
-                }
+                    action: sub.paused ? "pause" : "unpause",
+                };
                 await api.postSubscription(sub.vendorId, action);
                 this.subscription.paused = sub.paused;
             }
@@ -216,7 +225,7 @@ export default class CustomerProfile extends Vue {
             return "Du aktiverer nå ditt abonnement igjen. \
             Sjekk din kalender for å se når leveranser du eventuelt har til gode \
             vil bli levert. ";
-        } 
+        }
         return "Ved å sette ditt abonnement på pause vil dine kommende leveranser bli avbestilt.\
         Disse vil du få tilbake når du starter opp igjen abonnementet ditt. \
         Hvis du setter abonnementet ditt på pause etter klokken 10:00 dagen før du har en levering, \
@@ -224,6 +233,4 @@ export default class CustomerProfile extends Vue {
         Sjekk din kalender for å se når din siste levering er.";
     }
 }
-
-
 </script>
