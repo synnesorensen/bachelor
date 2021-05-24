@@ -159,7 +159,7 @@ export default class CustomerOverview extends Vue {
                 });
             }
 
-            if (vendorDeliveries) {
+            if (vendorDeliveries && !this.subscription.paused) {
                 vendorDeliveries.forEach((del) => {
                     const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
                     const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
@@ -175,8 +175,8 @@ export default class CustomerOverview extends Vue {
                         });
                     }
                 });
-                this.events = events;
             }
+            this.events = events;
         }
     }
 
