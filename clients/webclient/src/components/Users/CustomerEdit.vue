@@ -40,21 +40,25 @@
                 </v-col>
             </v-row>
             <v-row>
-                <v-col :cols="2">
-                    <p class="font-weight-black">
-                        <label for="allergylist">Mine allergier</label>
-                    </p>
-                </v-col>
-                <v-col>
-                    <p
-                        class="font-weight-light"
-                        v-for="allergy in userprofile.allergies"
-                        :key="allergy"
-                        id="allergylist"
+                <h4>Har du noen allergier</h4>
+            </v-row>
+            <v-row>
+                <v-chip-group
+                    v-model="selectedAllergies"
+                    active-class="blue--text text--accent-4"
+                    multiple
+                >
+                    <v-chip
+                        v-for="allergy in allergies"
+                        v-bind:key="allergy.name"
+                        v-bind:value="allergy.name"
+                        v-model="allergy.selected"
+                        filter
+                        outlined
                     >
-                        {{ allergy }}
-                    </p>
-                </v-col>
+                        {{ allergy.name }}
+                    </v-chip>
+                </v-chip-group>
             </v-row>
             <v-row>
                 <v-col>
@@ -85,6 +89,24 @@ import CustomerProfile from "../Users/CustomerProfile.vue";
 })
 export default class CustomerEdit extends Vue {
     @Prop() userprofile!: Userprofile;
+
+        private allergies = [
+        { name: "Gluten", selected: false },
+        { name: "Skalldyr", selected: false },
+        { name: "Egg", selected: false },
+        { name: "Fisk", selected: false },
+        { name: "Peanøtter", selected: false },
+        { name: "Nøtter", selected: false },
+        { name: "Melk", selected: false },
+        { name: "Soya", selected: false },
+        { name: "Selleri", selected: false },
+        { name: "Sennep", selected: false },
+        { name: "Sesam", selected: false },
+        { name: "Svovel", selected: false },
+        { name: "Lupin", selected: false },
+        { name: "Bløtdyr", selected: false },
+    ];
+        private selectedAllergies = this.userprofile.allergies;
 
     numbers(value: string) {
         return (
