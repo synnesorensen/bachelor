@@ -148,7 +148,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import {MenuItems, Userprofile, VendorSubscription } from "../../../../../server/src/interfaces";
+import {Action, MenuItems, Userprofile, VendorSubscription } from "../../../../../server/src/interfaces";
 import CustomerOrder from "./CustomerOrder.vue";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
@@ -192,7 +192,17 @@ export default class CustomerProfile extends Vue {
             if (sub) {
                 this.subscription.paused = !this.subscription.paused;
                 sub.paused = this.subscription.paused;
-                await api.putUserSubscription(sub);
+                let time = new Date(Date.now());
+                if (time.getHours() < 10) {
+                    time.setDate(time.getDate() + 1);
+                } else {
+                    time.setDate(time.getDate() + 2);
+                }
+                let action:Action = {
+                    time: time.toISOString().substr(0, 10),
+                    action: sub.paused? "pause" : "unpause"
+                }
+                await api.postSubscription(sub.vendorId, action);
                 this.subscription.paused = sub.paused;
             }
         }
