@@ -99,6 +99,15 @@
                 </v-col>
             </v-row>
             <v-row>
+                    <v-btn
+                        v-if="showUserprofile"
+                        color="primary"
+                        @click="switchToSubscriptionEdit"
+                    >
+                        <v-icon left>mdi-pencil</v-icon>Endre abonnement
+                    </v-btn>
+            </v-row>
+            <v-row>
                 <v-btn @click="dialog = true" color="primary">
                     {{ this.buttonText }}
                 </v-btn>
@@ -144,6 +153,17 @@
                 </v-col>
             </v-row>
         </div>
+        <div v-if="editSubscription">
+            <v-row>
+                <v-col>
+                    <CustomerSubscriptionEdit 
+                        :userprofile="userprofile"
+                        :subscription="subscription"
+                        @switchToCustomerProfile="switchToCustomerProfile"
+                    />
+                </v-col>
+            </v-row>
+        </div>
     </v-container>
 </template>
 
@@ -157,12 +177,14 @@ import {
     VendorSubscription,
 } from "../../../../../server/src/interfaces";
 import CustomerEdit from "./CustomerEdit.vue";
+import CustomerSubscriptionEdit from "./CustomerSubscriptionEdit.vue";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
 
 @Component({
     components: {
         CustomerEdit,
+        CustomerSubscriptionEdit,
     },
 })
 export default class CustomerProfile extends Vue {
@@ -172,16 +194,25 @@ export default class CustomerProfile extends Vue {
     private items: MenuItems[] | null = [];
     private editUserprofile: boolean = false;
     private showUserprofile: boolean = true;
+    private editSubscription = false;
     private dialog: boolean = false;
 
     switchToCustomerEdit() {
         this.editUserprofile = true;
         this.showUserprofile = false;
+        this.editSubscription = false;
     }
 
     switchToCustomerProfile() {
         this.editUserprofile = false;
         this.showUserprofile = true;
+        this.editSubscription = false;
+    }
+
+    switchToSubscriptionEdit() {
+        this.editUserprofile = false;
+        this.showUserprofile = false;
+        this.editSubscription = true;
     }
 
     async created() {
