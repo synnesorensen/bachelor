@@ -54,7 +54,15 @@
                 </v-sheet>
             </v-col>
             <v-col>
-                <v-card v-if="showCard && !selectedEvent.delivery.cancelled">
+                <v-card v-if="selectedEvent && !selectedEvent.ordered">
+                    <v-card-title class="headline">
+                        {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}}
+                    </v-card-title>
+                    <v-card-text>
+                        Lunsj på Hjul tilbyr leveranse på denne dagen. Hvis du ønsker å abonnere på denne leveringen, endre ditt abonnement før neste periode starter.  
+                    </v-card-text>
+                </v-card>
+                <v-card v-else-if="selectedEvent && !selectedEvent.delivery.cancelled">
                     <v-card-title class="headline">
                         {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}}
                     </v-card-title>
@@ -83,7 +91,15 @@
                             <span>Det er for sent å avbestille denne leveringen</span>
                         </v-tooltip>
                     </v-card-actions>
-                    <v-card-text>{{errorMsg}}</v-card-text>
+                </v-card>
+                <v-card v-else-if="selectedEvent">
+                    <v-card-title class="headline">
+                        {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}}
+                    </v-card-title>
+                    <v-card-text>
+                        Denne leveransen er kansellert. Dersom du har kansellert en leveranse og angrer, kan du sende en mail til 
+                        lunsj@hjul.no med informasjon om hvilken dato det gjelder. 
+                    </v-card-text>
                 </v-card>
             </v-col>
         </v-row>
@@ -101,16 +117,15 @@ import { Delivery, Userprofile, Vendor, VendorSubscription } from "../../../../.
 export default class CustomerOverview extends Vue {
     @Prop() userprofile!: Userprofile;
     @Prop() subscription!: VendorSubscription;
+    @Prop() loggedInUser!: string;
     private today = new Date().toISOString().substr(0, 10);
     private focus = new Date().toISOString().substr(0, 10);
     private type = "month";
     private start: any | null = null;
     private end: any | null = null;
     private events: any[] = [];
-    private showCard = false;
     private selectedEvent: any = null;
     private selectedDate = "";
-    private errorMsg = "";
 
     mounted() {
         this.focus = "";
@@ -164,12 +179,12 @@ export default class CustomerOverview extends Vue {
                     const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
                     const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
                     const menu = vendor.schedule.find(({ id }) => id == del.menuId);
-                    if (!deliveries?.find(({ deliverytime }) => deliverytime == del.deliverytime)) {
+                    if (!deliveries?.find(({ deliverytime }) => deliverytime == del.deliverytime) && new Date(del.deliverytime) > new Date(Date.now())) {
                         events.push({
                             name: menu!.menu,
                             start: delStart,
                             end: delEnd,
-                            color: new Date(del.deliverytime) > new Date(Date.now())? "amber" : "grey",
+                            color: "amber",
                             delivery: del,
                             ordered: false
                         });
@@ -183,7 +198,7 @@ export default class CustomerOverview extends Vue {
     showEvent(event: any) {
         this.selectedEvent = event.event;
         this.selectedDate = event.day.date;
-        this.showCard = this.selectedEvent.ordered; 
+        console.log(this.selectedEvent)
     }
 
     get cancelable() {
@@ -201,6 +216,19 @@ export default class CustomerOverview extends Vue {
             this.populateCalendar();
             this.selectedEvent.delivery.cancelled = true;
         }
+    }
+
+    // Kan implementeres hvis vendor ønsker å tilby ekstra kjøp. 
+    async orderDelivery() {
+        let delivery = {
+            vendorId: this.selectedEvent.del.vendorId,
+            userId: this.loggedInUser,
+            deliverytime: this.selectedEvent.del.deliverytime,
+            menuId: this.selectedEvent.del.menuId,
+            cancelled: false
+        }
+        await api.putDelivery(this.subscription.vendorId, this.loggedInUser, delivery);
+        // TODO: Håndtere regningen!?
     }
 
     toLocalPresentation(lastDeliveryDate: string) {
