@@ -9,7 +9,7 @@
                     <v-btn
                         v-if="showUserprofile"
                         color="primary"
-                        @click="sendToCustomerOrder"
+                        @click="switchToCustomerEdit"
                     >
                         <v-icon left>mdi-pencil</v-icon>Endre profil
                     </v-btn>
@@ -131,8 +131,7 @@
                 <v-col>
                     <CustomerEdit
                         :userprofile="userprofile"
-                        @save="save"
-                        @cancel="cancel"
+                        @switchToCustomerProfile="switchToCustomerProfile"
                     />
                 </v-col>
             </v-row>
@@ -167,20 +166,20 @@ export default class CustomerProfile extends Vue {
     private showUserprofile: boolean = true;
     private dialog: boolean = false;
 
-    sendToCustomerOrder() {
+    switchToCustomerEdit() {
         this.editUserprofile = true;
         this.showUserprofile = false;
     }
 
-    cancel() {
+    switchToCustomerProfile() {
         this.editUserprofile = false;
         this.showUserprofile = true;
     }
 
-    save() {
-        this.showUserprofile = true;
-        this.editUserprofile = false;
-    }
+    // save() {
+    //     this.showUserprofile = true;
+    //     this.editUserprofile = false;
+    // }
 
     async created() {
         this.subscription = await api.getSingleSubscription();
