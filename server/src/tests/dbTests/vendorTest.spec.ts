@@ -1,12 +1,13 @@
 require('dotenv').config();
 import 'source-map-support/register';
-import { putVendorInDb, getVendorFromDb, deleteVendorInDb } from '../../dbUtils';
+import { putVendorInDb, getVendorFromDb, deleteVendorInDb, getSingleVendorFromDb } from '../../dbUtils';
 import { expect } from 'chai';
 import 'mocha';
 
 describe('Vendor profile test', () => {
     it('Putting, getting and deleting a vendor', async () => {
         const vendor = {
+            vendorId: "testVendorId11",
             company: "Delikatessen",
             fullname: "Bakermester Harepus",
             address: "Hakkebakkeskogen",
@@ -43,6 +44,14 @@ describe('Vendor profile test', () => {
         expect(getResult.phone).to.equal("6688552");
         expect(getResult.schedule[0].id).to.equal("1");
         expect(getResult.schedule[1].id).to.equal("2");
+
+        const getSingleResult = await getSingleVendorFromDb();
+        expect(getSingleResult.company).to.equal("Delikatessen");
+        expect(getSingleResult.fullname).to.equal("Bakermester Harepus");
+        expect(getSingleResult.address).to.equal("Hakkebakkeskogen");
+        expect(getSingleResult.phone).to.equal("6688552");
+        expect(getSingleResult.schedule[0].id).to.equal("1");
+        expect(getSingleResult.schedule[1].id).to.equal("2");
 
         await deleteVendorInDb("testVendorId11");
         const newResult = await getVendorFromDb("testVendorId11");

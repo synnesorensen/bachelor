@@ -285,7 +285,9 @@ export default class CustomerOrder extends Vue {
             };
             await api.putUserprofile(newUserprofile);
             await api.putUserSubscription(subscription);
+            let newSubscription = api.getSingleSubscription();
             this.$emit("newUserprofile", newUserprofile);
+            this.$emit("newSubscription", newSubscription);
         }
     }
 

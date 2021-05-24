@@ -6,7 +6,7 @@
 				<v-toolbar-title class="titleName">Lunsj på midlertidige hjul</v-toolbar-title>
 			</div>
 			<v-tabs v-model="tab" align-with-title>
-				<v-tab v-if="!userprofile.isVendor">Kundekalender</v-tab>
+				<v-tab v-if="!userprofile.isVendor" @click="$refs.customerOverview.populateCalendar()">Kundekalender</v-tab>
 				<v-tab v-if="!userprofile.isVendor">Kundeprofil</v-tab>
 				<v-tab v-if="!userprofile.isVendor">Faktura</v-tab>
                 <v-tab v-if="userprofile.isVendor">AdminKalender</v-tab>
@@ -23,9 +23,9 @@
 		</v-app-bar>
 		<v-main>
 			<v-tabs-items v-model="tab">
-				<v-tab-item v-if="!userprofile.isVendor"><CustomerOverview :userprofile="userprofile" /></v-tab-item>
-				<v-tab-item v-if="!userprofile.isVendor"><CustomerProfile :userprofile="userprofile" :loggedInUser="loggedInUser" /> </v-tab-item>
-				<v-tab-item v-if="!userprofile.isVendor"><CustomerInvoice :userprofile="userprofile" /></v-tab-item>
+				<v-tab-item v-if="!userprofile.isVendor"><CustomerOverview :userprofile="userprofile" :subscription="subscription" ref="customerOverview" /></v-tab-item>
+				<v-tab-item v-if="!userprofile.isVendor"><CustomerProfile :userprofile="userprofile" :subscription="subscription" :loggedInUser="loggedInUser" /> </v-tab-item>
+				<v-tab-item v-if="!userprofile.isVendor"><CustomerInvoice :userprofile="userprofile" :subscription="subscription" /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminOverview :userprofile="userprofile" /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminProfile :userprofile="userprofile" /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminPayments /></v-tab-item>
@@ -61,17 +61,12 @@ import { Prop } from 'vue-property-decorator';
 })
 export default class AppBar extends Vue {
     @Prop() userprofile!: interfaces.Userprofile;
+    @Prop() subscription!: interfaces.VendorSubscription;
     @Prop() loggedInUser!: string; 
 	private tab = 0;
 
     logout() {
         this.$emit("logout");
     }
-
-    newUserprofile() {
-        this.$emit("newUserprofile", this.newUserprofile)
-    }
-  
-
 }
 </script>

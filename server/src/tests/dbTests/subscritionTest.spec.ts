@@ -7,6 +7,7 @@ import 'mocha';
 describe('Subscription test', () => {
     it('Putting, getting and deleting a subscription', async () => {
         const vendor = {
+            vendorId: "testVendorId55",
             company: "Delikatessen",
             fullname: "Bakermester Harepus",
             address: "Hakkebakkeskogen",
@@ -56,7 +57,7 @@ describe('Subscription test', () => {
 
         await deleteSubscriptionInDb("testVendorId55", "testUserId55");
         const newResult = await getSubscriptionFromDb("testVendorId55", "testUserId55");
-        expect(newResult).to.equal(undefined);
+        expect(newResult).to.equal(null);
         await deleteVendorInDb("testVendorId55");
     });
 });

@@ -56,20 +56,34 @@
             <v-col>
                 <v-card v-if="showCard && !selectedEvent.delivery.cancelled">
                     <v-card-title class="headline">
-                        Kansellere levering
+                        {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}}
                     </v-card-title>
                     <v-card-text>
-                        Er du sikker på at du ønsker å kansellere levering den
-                        {{ this.selectedDate }}?
+                        Det er mulig å avbestille en måltid frem til klokken 10:00 dagen før levering. 
+                        Dersom du har kansellert en leveranse og angrer, kan du sende en mail til 
+                        lunsj@hjul.no med informasjon om hvilken dato det gjelder. 
+                        Kansellerte måltid vil bli flyttet til neste måned, og faktura for neste periode 
+                        vil bli justert i henhold til antall avbestillinger. 
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn color="primary" @click="cancelDelivery()"
-                            >OK</v-btn
-                        >
-                        <v-btn color="secondary" @click="showCard = false"
-                            >Avbryt</v-btn
-                        >
+                        <v-tooltip :disabled="cancelable" bottom>
+                            <template v-slot:activator="{ on }">
+                                <div v-on="on">
+                                    <v-btn 
+                                        :disabled="!cancelable" 
+                                        color="primary" 
+                                        small 
+                                        v-on="on"
+                                        @click="cancelDelivery()"
+                                        >
+                                        Kanseller
+                                    </v-btn>
+                                </div>
+                            </template>
+                            <span>Det er for sent å avbestille denne leveringen</span>
+                        </v-tooltip>
                     </v-card-actions>
+                    <v-card-text>{{errorMsg}}</v-card-text>
                 </v-card>
             </v-col>
         </v-row>
@@ -81,11 +95,12 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
-import { Delivery, Userprofile, Vendor } from "../../../../../server/src/interfaces";
+import { Delivery, Userprofile, Vendor, VendorSubscription } from "../../../../../server/src/interfaces";
 
 @Component({})
 export default class CustomerOverview extends Vue {
     @Prop() userprofile!: Userprofile;
+    @Prop() subscription!: VendorSubscription;
     private today = new Date().toISOString().substr(0, 10);
     private focus = new Date().toISOString().substr(0, 10);
     private type = "month";
@@ -95,6 +110,7 @@ export default class CustomerOverview extends Vue {
     private showCard = false;
     private selectedEvent: any = null;
     private selectedDate = "";
+    private errorMsg = "";
 
     mounted() {
         this.focus = "";
@@ -120,8 +136,7 @@ export default class CustomerOverview extends Vue {
     }
 
     async populateCalendar() {
-        let sub = await api.getSingleSubscription();
-        let usersSchedule = sub.schedule;
+        let usersSchedule = this.subscription.schedule;
         const vendor:Vendor = await api.getSingleVendor();
         let vendorDeliveries = await api.scheduleToDates(vendor.vendorId, this.start.date);
 
@@ -137,13 +152,14 @@ export default class CustomerOverview extends Vue {
                         name: del.cancelled ? "Kansellert" : menu!.menu,
                         start: delStart,
                         end: delEnd,
-                        color: del.cancelled ? "grey" : "green",
+                        color: new Date(del.deliverytime) < new Date(Date.now()) || del.cancelled ? "grey" : "green",
                         delivery: del,
+                        ordered: true
                     });
                 });
             }
 
-            if (vendorDeliveries) {
+            if (vendorDeliveries && !this.subscription.paused) {
                 vendorDeliveries.forEach((del) => {
                     const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
                     const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
@@ -153,20 +169,27 @@ export default class CustomerOverview extends Vue {
                             name: menu!.menu,
                             start: delStart,
                             end: delEnd,
-                            color: "amber darken-1",
+                            color: new Date(del.deliverytime) > new Date(Date.now())? "amber" : "grey",
                             delivery: del,
+                            ordered: false
                         });
                     }
                 });
-                this.events = events;
             }
+            this.events = events;
         }
     }
 
     showEvent(event: any) {
         this.selectedEvent = event.event;
         this.selectedDate = event.day.date;
-        this.showCard = true;
+        this.showCard = this.selectedEvent.ordered; 
+    }
+
+    get cancelable() {
+        const dayBefore = new Date(this.selectedDate).setDate(new Date(this.selectedDate).getDate() - 1);
+        const dayBeforeAt10 = new Date(dayBefore).setHours(10);
+        return Date.now() < dayBeforeAt10;
     }
 
     async cancelDelivery() {
@@ -178,6 +201,11 @@ export default class CustomerOverview extends Vue {
             this.populateCalendar();
             this.selectedEvent.delivery.cancelled = true;
         }
+    }
+
+    toLocalPresentation(lastDeliveryDate: string) {
+        const delDate = new Date(lastDeliveryDate);
+        return delDate.toLocaleDateString();
     }
 }
 </script>
