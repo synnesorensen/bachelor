@@ -152,7 +152,7 @@ export default class CustomerOverview extends Vue {
                         name: del.cancelled ? "Kansellert" : menu!.menu,
                         start: delStart,
                         end: delEnd,
-                        color: del.cancelled ? "grey" : "green",
+                        color: new Date(del.deliverytime) < new Date(Date.now()) || del.cancelled ? "grey" : "green",
                         delivery: del,
                         ordered: true
                     });
@@ -169,7 +169,7 @@ export default class CustomerOverview extends Vue {
                             name: menu!.menu,
                             start: delStart,
                             end: delEnd,
-                            color: "amber",
+                            color: new Date(del.deliverytime) > new Date(Date.now())? "amber" : "grey",
                             delivery: del,
                             ordered: false
                         });
