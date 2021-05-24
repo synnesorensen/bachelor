@@ -121,7 +121,6 @@ export default class CustomerEdit extends Vue {
     async sendToDb() {
         
         await api.putUserprofile(this.userprofile);
-        console.log(this.userprofile)
         this.$emit("switchToCustomerProfile");
     }
 
