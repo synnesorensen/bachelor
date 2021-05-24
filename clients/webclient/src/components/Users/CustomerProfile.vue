@@ -161,7 +161,6 @@ export default class CustomerProfile extends Vue {
     @Prop() loggedInUser!: string;
     @Prop() subscription!: VendorSubscription;
     private items: MenuItems[] | null = [];
-    private allergies = this.userprofile.allergies;
     private editUserprofile: boolean = false;
     private showUserprofile: boolean = true;
     private dialog: boolean = false;
@@ -175,11 +174,6 @@ export default class CustomerProfile extends Vue {
         this.editUserprofile = false;
         this.showUserprofile = true;
     }
-
-    // save() {
-    //     this.showUserprofile = true;
-    //     this.editUserprofile = false;
-    // }
 
     async created() {
         if (this.subscription?.schedule) {

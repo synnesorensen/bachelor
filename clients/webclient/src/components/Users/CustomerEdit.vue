@@ -44,7 +44,7 @@
             </v-row>
             <v-row>
                 <v-chip-group
-                    v-model="selectedAllergies"
+                    v-model="userprofile.allergies"
                     active-class="blue--text text--accent-4"
                     multiple
                 >
@@ -91,20 +91,20 @@ export default class CustomerEdit extends Vue {
     @Prop() userprofile!: Userprofile;
 
         private allergies = [
-        { name: "Gluten", selected: false },
-        { name: "Skalldyr", selected: false },
-        { name: "Egg", selected: false },
-        { name: "Fisk", selected: false },
-        { name: "Peanøtter", selected: false },
-        { name: "Nøtter", selected: false },
-        { name: "Melk", selected: false },
-        { name: "Soya", selected: false },
-        { name: "Selleri", selected: false },
-        { name: "Sennep", selected: false },
-        { name: "Sesam", selected: false },
-        { name: "Svovel", selected: false },
-        { name: "Lupin", selected: false },
-        { name: "Bløtdyr", selected: false },
+        { name: "gluten", selected: false },
+        { name: "skalldyr", selected: false },
+        { name: "egg", selected: false },
+        { name: "fisk", selected: false },
+        { name: "peanøtter", selected: false },
+        { name: "nøtter", selected: false },
+        { name: "melk", selected: false },
+        { name: "soya", selected: false },
+        { name: "selleri", selected: false },
+        { name: "sennep", selected: false },
+        { name: "sesam", selected: false },
+        { name: "svovel", selected: false },
+        { name: "lupin", selected: false },
+        { name: "bløtdyr", selected: false },
     ];
         private selectedAllergies = this.userprofile.allergies;
 
@@ -119,7 +119,9 @@ export default class CustomerEdit extends Vue {
     }
 
     async sendToDb() {
+        
         await api.putUserprofile(this.userprofile);
+        console.log(this.userprofile)
         this.$emit("switchToCustomerProfile");
     }
 
