@@ -5,7 +5,7 @@
                 <p class="font-weight-medium"> Siste levering i denne perioden: </p>
             </v-col>
             <v-col>
-                <p class="font-weight-light"> {{lastPaid}} </p>
+                <p class="font-weight-light"> {{ toLocalPresentation(lastPaid)}} </p>
             </v-col>
         </v-row>
         <v-row>
@@ -49,6 +49,11 @@ export default class CustomerInvoice extends Vue {
             }
         }
         return "";
+    }
+
+    toLocalPresentation(lastDeliveryDate: string) {
+        const delDate = new Date(lastDeliveryDate);
+        return delDate.toLocaleDateString();
     }
 }
 </script>
