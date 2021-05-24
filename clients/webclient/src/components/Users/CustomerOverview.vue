@@ -56,20 +56,34 @@
             <v-col>
                 <v-card v-if="showCard && !selectedEvent.delivery.cancelled">
                     <v-card-title class="headline">
-                        Kansellere levering
+                        {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}}
                     </v-card-title>
                     <v-card-text>
-                        Er du sikker på at du ønsker å kansellere levering den
-                        {{ this.selectedDate }}?
+                        Det er mulig å avbestille en måltid frem til klokken 10:00 dagen før levering. 
+                        Dersom du har kansellert en leveranse og angrer, kan du sende en mail til 
+                        lunsj@hjul.no med informasjon om hvilken dato det gjelder. 
+                        Kansellerte måltid vil bli flyttet til neste måned, og faktura for neste periode 
+                        vil bli justert i henhold til antall avbestillinger. 
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn color="primary" @click="cancelDelivery()"
-                            >OK</v-btn
-                        >
-                        <v-btn color="secondary" @click="showCard = false"
-                            >Avbryt</v-btn
-                        >
+                        <v-tooltip :disabled="cancelable" bottom>
+                            <template v-slot:activator="{ on }">
+                                <div v-on="on">
+                                    <v-btn 
+                                        :disabled="!cancelable" 
+                                        color="primary" 
+                                        small 
+                                        v-on="on"
+                                        @click="cancelDelivery()"
+                                        >
+                                        Kanseller
+                                    </v-btn>
+                                </div>
+                            </template>
+                            <span>Det er for sent å avbestille denne leveringen</span>
+                        </v-tooltip>
                     </v-card-actions>
+                    <v-card-text>{{errorMsg}}</v-card-text>
                 </v-card>
             </v-col>
         </v-row>
@@ -96,6 +110,7 @@ export default class CustomerOverview extends Vue {
     private showCard = false;
     private selectedEvent: any = null;
     private selectedDate = "";
+    private errorMsg = "";
 
     mounted() {
         this.focus = "";
@@ -139,6 +154,7 @@ export default class CustomerOverview extends Vue {
                         end: delEnd,
                         color: del.cancelled ? "grey" : "green",
                         delivery: del,
+                        ordered: true
                     });
                 });
             }
@@ -153,8 +169,9 @@ export default class CustomerOverview extends Vue {
                             name: menu!.menu,
                             start: delStart,
                             end: delEnd,
-                            color: "amber darken-1",
+                            color: "amber",
                             delivery: del,
+                            ordered: false
                         });
                     }
                 });
@@ -166,7 +183,14 @@ export default class CustomerOverview extends Vue {
     showEvent(event: any) {
         this.selectedEvent = event.event;
         this.selectedDate = event.day.date;
-        this.showCard = true;
+        console.log(this.selectedEvent)
+        this.showCard = this.selectedEvent.ordered; 
+    }
+
+    get cancelable() {
+        const dayBefore = new Date(this.selectedDate).setDate(new Date(this.selectedDate).getDate() - 1);
+        const dayBeforeAt10 = new Date(dayBefore).setHours(10);
+        return Date.now() < dayBeforeAt10;
     }
 
     async cancelDelivery() {
@@ -178,6 +202,11 @@ export default class CustomerOverview extends Vue {
             this.populateCalendar();
             this.selectedEvent.delivery.cancelled = true;
         }
+    }
+
+    toLocalPresentation(lastDeliveryDate: string) {
+        const delDate = new Date(lastDeliveryDate);
+        return delDate.toLocaleDateString();
     }
 }
 </script>
