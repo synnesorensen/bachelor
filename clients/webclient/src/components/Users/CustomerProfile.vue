@@ -162,7 +162,7 @@ import api from "../../api/api";
 export default class CustomerProfile extends Vue {
     @Prop() userprofile!: Userprofile;
     @Prop() loggedInUser!: string;
-    private subscription: VendorSubscription | null = null;
+    @Prop() subscription!: VendorSubscription;
     private items: MenuItems[] | null = [];
     private allergies = this.userprofile.allergies;
     private editUserprofile: boolean = false;
@@ -180,7 +180,6 @@ export default class CustomerProfile extends Vue {
     }
     
     async created() {
-        this.subscription = await api.getSingleSubscription();
         if (this.subscription?.schedule) {
             this.items = this.subscription.schedule;
         }
@@ -194,6 +193,7 @@ export default class CustomerProfile extends Vue {
                 this.subscription.paused = !this.subscription.paused;
                 sub.paused = this.subscription.paused;
                 await api.putUserSubscription(sub);
+                this.subscription.paused = sub.paused;
             }
         }
     }

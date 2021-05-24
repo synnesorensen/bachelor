@@ -1,7 +1,7 @@
 require('dotenv').config();
 import 'source-map-support/register';
 import { putSubscriptionInDb, putUserprofileInDb, putVendorInDb, saveDeliveriesToDb } from '../dbUtils';
-import {dbUser1, dbUser2, dbUser3, dbUser4, dbUser5, dbVendor} from '../../../common/settings'
+import {dbUser1, dbUser2, dbUser3, dbUser4, dbUser5, dbUser6, dbVendor} from '../../../common/settings'
 import { generateDeliveries } from './../addDeliveries';
 
 const userprofile1 = {
@@ -44,6 +44,14 @@ const userprofile5 = {
     allergies: [],
     isVendor: false
 }
+const userprofile6 = {
+    fullname: "Penny Pøbel",
+    address: "Ukjent",
+    phone: "67890123",
+    email: dbUser6,
+    allergies: ["melk"],
+    isVendor: false
+}
 const userprofileVendor = {
     fullname: "Helene Haare",
     address: "Hakkebakken 2 5003 Skogen",
@@ -59,6 +67,7 @@ export async function addUsersToDb() {
     await putUserprofileInDb(userprofile3, dbUser3);
     await putUserprofileInDb(userprofile4, dbUser4);
     await putUserprofileInDb(userprofile5, dbUser5);
+    await putUserprofileInDb(userprofile6, dbUser6);
     await putUserprofileInDb(userprofileVendor, dbVendor);
 }
 
@@ -140,6 +149,15 @@ const sub5 = {
     noOfMeals: 1,
     box: "Gjenbruksboks"
 }
+const sub6 = {
+    vendorId: dbVendor,
+    userId: dbUser6,
+    approved: true,
+    paused: false,
+    schedule: ["41"], 
+    noOfMeals: 1,
+    box: "Gjenbruksboks"
+}
 
 export async function addSubsToDb() {
     await putSubscriptionInDb(sub1, false);
@@ -147,6 +165,7 @@ export async function addSubsToDb() {
     await putSubscriptionInDb(sub3, false);
     await putSubscriptionInDb(sub4, false);
     await putSubscriptionInDb(sub5, false);
+    await putSubscriptionInDb(sub6, false);
 }
 
 export async function addDeliveriesToDb() {

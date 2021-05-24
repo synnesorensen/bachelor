@@ -81,11 +81,12 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
-import { Delivery, Userprofile, Vendor } from "../../../../../server/src/interfaces";
+import { Delivery, Userprofile, Vendor, VendorSubscription } from "../../../../../server/src/interfaces";
 
 @Component({})
 export default class CustomerOverview extends Vue {
     @Prop() userprofile!: Userprofile;
+    @Prop() subscription!: VendorSubscription;
     private today = new Date().toISOString().substr(0, 10);
     private focus = new Date().toISOString().substr(0, 10);
     private type = "month";
@@ -120,8 +121,7 @@ export default class CustomerOverview extends Vue {
     }
 
     async populateCalendar() {
-        let sub = await api.getSingleSubscription();
-        let usersSchedule = sub.schedule;
+        let usersSchedule = this.subscription.schedule;
         const vendor:Vendor = await api.getSingleVendor();
         let vendorDeliveries = await api.scheduleToDates(vendor.vendorId, this.start.date);
 

@@ -412,7 +412,7 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
             phone: user.phone,
             email: user.email,
             allergies: user.allergies,
-            lastDeliveryDate: (await findLatestDelivery(sub.vendorId, sub.userId.substr(2)))?.deliverytime.substr(0, 10)
+            lastDeliveryDate: (await findLatestDelivery(sub.vendorId, sub.userId.substr(2)))?.deliverytime
         }
     }));
     return result;
@@ -491,7 +491,7 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
             schedule: subSchedule,
             noOfMeals: sub.noOfMeals,
             box: sub.box,
-            lastDeliveryDate: (await findLatestDelivery(sub.vendorId.substr(2), userId))?.deliverytime.substr(0, 10)
+            lastDeliveryDate: (await findLatestDelivery(sub.vendorId.substr(2), userId))?.deliverytime
         }
     }));
     return result;
@@ -551,7 +551,7 @@ export async function getOnlySubscriptionForUser(userId: string): Promise<Vendor
         schedule: vendor.Items[0].schedule,
         noOfMeals: sub.noOfMeals,
         box: sub.box,
-        lastDeliveryDate: (await findLatestDelivery(sub.vendorId.substr(2), userId))?.deliverytime.substr(0, 10)
+        lastDeliveryDate: (await findLatestDelivery(sub.vendorId.substr(2), userId))?.deliverytime
     };
 }
 

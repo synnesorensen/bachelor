@@ -3,14 +3,15 @@
         <AppBar 
             :loggedInUser="loggedInUser"
             :userprofile="userprofile"
+            :subscription="subscription"
             v-if="authorized && userprofile != null" 
-            @logout="logout" 
-            @newUserprofile="newUserprofile" />
+            @logout="logout" />
         <LoginDialog v-if="!authorized" @loggedIn="loggedIn" :showDialog="!authorized" />
         <CustomerOrder 
                 :loggedInUser="loggedInUser" 
                 v-if="userprofile==null && authorized" 
                 @newUserprofile="newUserprofile"
+                @newSubscription="newSubscription"
                 @logout="logout" />
 	</v-app>
 </template>
@@ -35,6 +36,7 @@ import { getUserInfo } from '../../../server/src/auth/getUserFromJwt'
 })
 export default class App extends Vue {
     private userprofile: interfaces.Userprofile | null = null;
+    private subscription: interfaces.VendorSubscription | null = null;
     private jwtToken = "";
     private authorized = false;
     private loggedInUser: string | null = null;
@@ -54,6 +56,7 @@ export default class App extends Vue {
         localStorage.setItem("token", this.jwtToken);
         api.setApiBearerToken(this.jwtToken);
         this.userprofile = await api.getUserprofile();
+        this.subscription = await api.getSingleSubscription();
         this.loggedInUser = getUserInfo(this.jwtToken);
         this.authorized = true;
     }
@@ -68,6 +71,10 @@ export default class App extends Vue {
 
     newUserprofile(userprofile: interfaces.Userprofile) {
         this.userprofile = userprofile;
+    }
+  
+    newSubscription(subscription: interfaces.VendorSubscription) {
+        this.subscription = subscription;
     }
 
 
