@@ -542,13 +542,17 @@ export async function getOnlySubscriptionForUser(userId: string): Promise<Vendor
     };
     
     let vendor = await documentClient.query(params2).promise();
+    let subSchedule: MenuItems[]= [];
+        sub.schedule.forEach((item) => {
+            subSchedule.push(vendor.Items[0].schedule.find(({id}) => id === item));
+        });
     
     return {
         vendorId: sub.vendorId.substr(2),
         company: vendor.Items[0].company,
         approved: sub.approved,
         paused: sub.paused,
-        schedule: vendor.Items[0].schedule,
+        schedule: subSchedule,
         noOfMeals: sub.noOfMeals,
         box: sub.box,
         lastDeliveryDate: (await findLatestDelivery(sub.vendorId.substr(2), userId))?.deliverytime
