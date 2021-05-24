@@ -10,7 +10,7 @@
                 <v-col>
                     <v-text-field
                         label="Fullt navn"
-                        v-model="fullname"
+                        v-model="userprofile.fullname"
                     ></v-text-field>
                 </v-col>
             </v-row>
@@ -18,7 +18,7 @@
                 <v-col>
                     <v-text-field
                         label="Adresse"
-                        v-model="address"
+                        v-model="userprofile.address"
                     ></v-text-field>
                 </v-col>
             </v-row>
@@ -27,14 +27,14 @@
                     <v-text-field
                         :rules="[numbers, phoneNoLength]"
                         label="Telefonnummer"
-                        v-model="phone"
+                        v-model="userprofile.phone"
                         required
                     ></v-text-field>
                 </v-col>
                 <v-col>
                     <v-text-field
                         label="E-post"
-                        v-model="email"
+                        v-model="userprofile.email"
                         required
                     ></v-text-field>
                 </v-col>
@@ -48,7 +48,7 @@
                 <v-col>
                     <p
                         class="font-weight-light"
-                        v-for="allergy in allergies"
+                        v-for="allergy in userprofile.allergies"
                         :key="allergy"
                         id="allergylist"
                     >
@@ -84,29 +84,7 @@ import CustomerProfile from "../Users/CustomerProfile.vue";
     },
 })
 export default class CustomerEdit extends Vue {
-    @Prop() loggedInUser!: string;
     @Prop() userprofile!: Userprofile;
-    private fullname = "";
-    private address = "";
-    private phone = "";
-    private email = "";
-    private allergies: string[] = [];
-
-    async fillForm() {
-        let user = await api.getUserprofile();
-        if (user) {
-            this.fullname = user.fullname;
-            this.address = user.address;
-            this.phone = user.phone;
-            this.email = user.email;
-            this.allergies = user.allergies;
-            console.log(this.userprofile);
-        }
-    }
-
-    async beforeMount() {
-        this.fillForm();
-    }
 
     numbers(value: string) {
         return (
@@ -119,20 +97,19 @@ export default class CustomerEdit extends Vue {
     }
 
     async sendToDb() {
-        let updateUserprofile = {
-            fullname: this.fullname,
-            address: this.address,
-            phone: this.phone.toString(),
-            email: this.email,
-            allergies: this.allergies,
-            isVendor: false,
-        };
-
-        await api.putUserprofile(updateUserprofile);
+        await api.putUserprofile(this.userprofile);
         this.$emit("save");
     }
 
-    cancel() {
+    async cancel() {
+        let unchangedUserprofile = await api.getUserprofile();
+        if (unchangedUserprofile) {
+            this.userprofile.fullname = unchangedUserprofile.fullname;
+            this.userprofile.address = unchangedUserprofile.address;
+            this.userprofile.phone = unchangedUserprofile.phone;
+            this.userprofile.email = unchangedUserprofile.email;
+            this.userprofile.allergies = unchangedUserprofile.allergies;
+        }
         this.$emit("cancel");
     }
 }

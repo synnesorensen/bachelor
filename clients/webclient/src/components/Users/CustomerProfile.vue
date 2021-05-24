@@ -129,9 +129,11 @@
         <div v-if="editUserprofile">
             <v-row>
                 <v-col>
-                    <CustomerEdit :loggedInUser="loggedInUser"
-                    @save="save"
-                    @cancel="cancel" />
+                    <CustomerEdit
+                        :userprofile="userprofile"
+                        @save="save"
+                        @cancel="cancel"
+                    />
                 </v-col>
             </v-row>
         </div>
@@ -141,7 +143,11 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import {MenuItems, Userprofile, VendorSubscription } from "../../../../../server/src/interfaces";
+import {
+    MenuItems,
+    Userprofile,
+    VendorSubscription,
+} from "../../../../../server/src/interfaces";
 import CustomerEdit from "./CustomerEdit.vue";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
@@ -151,7 +157,6 @@ import api from "../../api/api";
         CustomerEdit,
     },
 })
-
 export default class CustomerProfile extends Vue {
     @Prop() userprofile!: Userprofile;
     @Prop() loggedInUser!: string;
@@ -166,7 +171,7 @@ export default class CustomerProfile extends Vue {
         this.editUserprofile = true;
         this.showUserprofile = false;
     }
-    
+
     cancel() {
         this.editUserprofile = false;
         this.showUserprofile = true;
@@ -176,14 +181,14 @@ export default class CustomerProfile extends Vue {
         this.showUserprofile = true;
         this.editUserprofile = false;
     }
-    
+
     async created() {
         this.subscription = await api.getSingleSubscription();
         if (this.subscription?.schedule) {
             this.items = this.subscription.schedule;
         }
     }
-    
+
     async toggleSubscriptionPause() {
         this.dialog = false;
         if (this.subscription) {
@@ -199,16 +204,15 @@ export default class CustomerProfile extends Vue {
     get buttonText() {
         if (this.subscription?.paused) {
             return "Aktiver abonnement";
-        } 
+        }
         return "Pause abonnement";
     }
 
     get dialogText() {
         if (this.subscription?.paused) {
             return "Du aktiverer nå ditt abonnement igjen";
-        } 
+        }
         return "Du setter nå ditt abonnement på pause";
     }
 }
-
 </script>
