@@ -104,24 +104,28 @@
                 </v-btn>
                 <v-dialog v-model="dialog" persistent max-width="300">
                     <v-card>
-                        <v-card-title class="headline">
-                            {{ this.buttonText }}
-                        </v-card-title>
-                        <v-card-text> {{ this.dialogText }} </v-card-text>
-                        <v-btn
-                            color="green darken-1"
-                            text
-                            @click="toggleSubscriptionPause()"
-                        >
-                            OK
-                        </v-btn>
-                        <v-btn
-                            color="green darken-1"
-                            text
-                            @click="dialog = false"
-                        >
-                            Avbryt
-                        </v-btn>
+                        <v-container>
+                            <v-card-title class="headline">
+                                {{ this.buttonText }}
+                            </v-card-title>
+                            <v-card-text> {{ this.dialogText }} </v-card-text>
+                            <v-row class="pa-4" align="center" justify="center">
+                                <v-btn
+                                    color="green darken-1"
+                                    text
+                                    @click="toggleSubscriptionPause()"
+                                >
+                                    {{subscription.paused? "Aktiver" : "Sett på pause" }}
+                                </v-btn>
+                                <v-btn
+                                    color="green darken-1"
+                                    text
+                                    @click="dialog = false"
+                                >
+                                    Avbryt
+                                </v-btn>
+                            </v-row>
+                        </v-container>
                     </v-card>
                 </v-dialog>
             </v-row>
@@ -217,10 +221,17 @@ export default class CustomerProfile extends Vue {
 
     get dialogText() {
         if (this.subscription?.paused) {
-            return "Du aktiverer nå ditt abonnement igjen";
+            return "Du aktiverer nå ditt abonnement igjen. \
+            Sjekk din kalender for å se når leveranser du eventuelt har til gode \
+            vil bli levert. ";
         } 
-        return "Du setter nå ditt abonnement på pause";
+        return "Ved å sette ditt abonnement på pause vil dine kommende leveranser bli avbestilt.\
+        Disse vil du få tilbake når du starter opp igjen abonnementet ditt. \
+        Hvis du setter abonnementet ditt på pause etter klokken 10:00 dagen før du har en levering, \
+        vil denne leveransen fortsatt bli levert. \
+        Sjekk din kalender for å se når din siste levering er.";
     }
 }
+
 
 </script>
