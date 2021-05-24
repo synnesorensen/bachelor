@@ -152,14 +152,14 @@ export default class CustomerOverview extends Vue {
                         name: del.cancelled ? "Kansellert" : menu!.menu,
                         start: delStart,
                         end: delEnd,
-                        color: del.cancelled ? "grey" : "green",
+                        color: new Date(del.deliverytime) < new Date(Date.now()) || del.cancelled ? "grey" : "green",
                         delivery: del,
                         ordered: true
                     });
                 });
             }
 
-            if (vendorDeliveries) {
+            if (vendorDeliveries && !this.subscription.paused) {
                 vendorDeliveries.forEach((del) => {
                     const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
                     const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
@@ -169,21 +169,20 @@ export default class CustomerOverview extends Vue {
                             name: menu!.menu,
                             start: delStart,
                             end: delEnd,
-                            color: "amber",
+                            color: new Date(del.deliverytime) > new Date(Date.now())? "amber" : "grey",
                             delivery: del,
                             ordered: false
                         });
                     }
                 });
-                this.events = events;
             }
+            this.events = events;
         }
     }
 
     showEvent(event: any) {
         this.selectedEvent = event.event;
         this.selectedDate = event.day.date;
-        console.log(this.selectedEvent)
         this.showCard = this.selectedEvent.ordered; 
     }
 
