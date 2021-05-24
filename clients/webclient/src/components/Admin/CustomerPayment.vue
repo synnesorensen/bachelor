@@ -47,7 +47,7 @@
                     <p class="font-weight-medium"> Siste betalte levering </p>
                 </v-col>
                 <v-col>
-                    <p class="font-weight-light"> {{selectedUser.lastDeliveryDate}} </p>
+                    <p class="font-weight-light"> {{toLocalPresentation(selectedUser.lastDeliveryDate)}} </p>
                 </v-col>
             </v-row>
             <v-row>
@@ -172,7 +172,7 @@ export default class CustomerPayment extends Vue {
                 this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.userId, this.selectedMonth);
             }
             this.paidDeliveries = this.unpaidDeliveries;
-        } else {
+        } else if (this.selectedUser) {
             this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.userId, this.selectedMonth);
             this.paidDeliveries = this.unpaidDeliveries;
         }
@@ -182,14 +182,20 @@ export default class CustomerPayment extends Vue {
         let time = new Date(this.picker).toISOString();
         if (this.selectedUser?.userId) {
             let newDels = await api.postNewDeliveries(time, this.paidDeliveries, this.selectedUser.userId);
-            this.selectedUser.lastDeliveryDate = newDels[newDels.length-1].deliverytime.substr(0, 10);
+            this.selectedUser.lastDeliveryDate = newDels[newDels.length-1].deliverytime;
             this.unpaidDeliveries = this.unpaidDeliveries - this.paidDeliveries;
             this.dialog = false;
         }
     }
+
     showPaymentDialog() {
         this.picker = this.selectedMonth + "-01";
         this.dialog = true;
+    }
+
+    toLocalPresentation(lastDeliveryDate: string) {
+        const delDate = new Date(lastDeliveryDate);
+        return delDate.toLocaleDateString();
     }
 }
 </script>
