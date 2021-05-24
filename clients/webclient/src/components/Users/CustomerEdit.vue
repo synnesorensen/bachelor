@@ -98,7 +98,7 @@ export default class CustomerEdit extends Vue {
 
     async sendToDb() {
         await api.putUserprofile(this.userprofile);
-        this.$emit("save");
+        this.$emit("switchToCustomerProfile");
     }
 
     async cancel() {
@@ -110,7 +110,7 @@ export default class CustomerEdit extends Vue {
             this.userprofile.email = unchangedUserprofile.email;
             this.userprofile.allergies = unchangedUserprofile.allergies;
         }
-        this.$emit("cancel");
+        this.$emit("switchToCustomerProfile");
     }
 }
 </script>
