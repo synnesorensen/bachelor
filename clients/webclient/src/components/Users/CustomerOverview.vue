@@ -183,7 +183,6 @@ export default class CustomerOverview extends Vue {
     showEvent(event: any) {
         this.selectedEvent = event.event;
         this.selectedDate = event.day.date;
-        console.log(this.selectedEvent)
         this.showCard = this.selectedEvent.ordered; 
     }
 
