@@ -23,7 +23,7 @@
 		</v-app-bar>
 		<v-main>
 			<v-tabs-items v-model="tab">
-				<v-tab-item v-if="!userprofile.isVendor"><CustomerOverview :userprofile="userprofile" :subscription="subscription" ref="customerOverview" /></v-tab-item>
+				<v-tab-item v-if="!userprofile.isVendor"><CustomerOverview :userprofile="userprofile" :subscription="subscription" :loggedInUser="loggedInUser" ref="customerOverview" /></v-tab-item>
 				<v-tab-item v-if="!userprofile.isVendor"><CustomerProfile :userprofile="userprofile" :subscription="subscription" :loggedInUser="loggedInUser" /> </v-tab-item>
 				<v-tab-item v-if="!userprofile.isVendor"><CustomerInvoice :userprofile="userprofile" :subscription="subscription" /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminOverview :userprofile="userprofile" /></v-tab-item>
