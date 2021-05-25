@@ -114,7 +114,13 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
-import { MenuItems, Subscription, Userprofile, Vendor, VendorSubscription} from "../../../../../server/src/interfaces";
+import {
+    MenuItems,
+    Subscription,
+    Userprofile,
+    Vendor,
+    VendorSubscription,
+} from "../../../../../server/src/interfaces";
 
 @Component
 export default class CustomerOrder extends Vue {
@@ -188,26 +194,25 @@ export default class CustomerOrder extends Vue {
         this.vendor = await api.getSingleVendor();
         if (this.vendor) {
             this.deliveryDays = this.vendor.schedule;
-            console.log(this.deliveryDays)
-            console.log(this.subscription.schedule)
+            console.log(this.deliveryDays);
+            console.log(this.subscription.schedule);
             this.subscription.schedule.forEach((s) => this.x.push(s.id));
         }
     }
 
     async sendToDb() {
         if (this.vendor?.vendorId) {
-
-            let subscription:Subscription = {
+            let subscription: Subscription = {
                 vendorId: this.vendor.vendorId,
                 userId: this.loggedInUser,
                 approved: false,
                 paused: false,
                 schedule: this.selectedDeliveryDays,
                 noOfMeals: this.selectedNoOfMeals,
-                box: this.selectedBox
+                box: this.selectedBox,
             };
             await api.putUserSubscription(subscription);
-            console.log(this.subscription)
+            console.log(this.subscription);
             this.$emit("switchToCustomerProfile");
         }
     }

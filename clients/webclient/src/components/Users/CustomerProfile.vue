@@ -2,20 +2,6 @@
     <v-container v-if="subscription">
         <div v-if="showUserprofile">
             <v-row>
-                <v-col :cols="5">
-                    <h1 class="primary--text">Min profil</h1>
-                </v-col>
-                <v-col>
-                    <v-btn
-                        v-if="showUserprofile"
-                        color="primary"
-                        @click="switchToCustomerEdit"
-                    >
-                        <v-icon left>mdi-pencil</v-icon>Endre profil
-                    </v-btn>
-                </v-col>
-            </v-row>
-            <v-row>
                 <v-col :cols="2">
                     <p class="font-weight-black">Navn</p>
                 </v-col>
@@ -99,15 +85,6 @@
                 </v-col>
             </v-row>
             <v-row>
-                    <v-btn
-                        v-if="showUserprofile"
-                        color="primary"
-                        @click="switchToSubscriptionEdit"
-                    >
-                        <v-icon left>mdi-pencil</v-icon>Endre abonnement
-                    </v-btn>
-            </v-row>
-            <v-row>
                 <v-btn @click="dialog = true" color="primary">
                     {{ this.buttonText }}
                 </v-btn>
@@ -141,27 +118,6 @@
                         </v-container>
                     </v-card>
                 </v-dialog>
-            </v-row>
-        </div>
-        <div v-if="editUserprofile">
-            <v-row>
-                <v-col>
-                    <CustomerEdit
-                        :userprofile="userprofile"
-                        @switchToCustomerProfile="switchToCustomerProfile"
-                    />
-                </v-col>
-            </v-row>
-        </div>
-        <div v-if="editSubscription">
-            <v-row>
-                <v-col>
-                    <CustomerSubscriptionEdit 
-                        :userprofile="userprofile"
-                        :subscription="subscription"
-                        @switchToCustomerProfile="switchToCustomerProfile"
-                    />
-                </v-col>
             </v-row>
         </div>
     </v-container>

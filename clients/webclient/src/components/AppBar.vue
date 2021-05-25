@@ -24,7 +24,7 @@
 		<v-main>
 			<v-tabs-items v-model="tab">
 				<v-tab-item v-if="!userprofile.isVendor"><CustomerOverview :userprofile="userprofile" :subscription="subscription" ref="customerOverview" /></v-tab-item>
-				<v-tab-item v-if="!userprofile.isVendor"><CustomerProfile :userprofile="userprofile" :subscription="subscription" :loggedInUser="loggedInUser" /> </v-tab-item>
+				<v-tab-item v-if="!userprofile.isVendor"><CustomerProfileTabs :userprofile="userprofile" :subscription="subscription" :loggedInUser="loggedInUser" /> </v-tab-item>
 				<v-tab-item v-if="!userprofile.isVendor"><CustomerInvoice :userprofile="userprofile" :subscription="subscription" /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminOverview :userprofile="userprofile" /></v-tab-item>
                 <v-tab-item v-if="userprofile.isVendor"><AdminProfile :userprofile="userprofile" /></v-tab-item>
@@ -39,7 +39,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import CustomerOverview from './Users/CustomerOverview.vue';
-import CustomerProfile from './Users/CustomerProfile.vue';
+import CustomerProfileTabs from './Users/CustomerProfileTabs.vue';
 import CustomerInvoice from './Users/CustomerInvoice.vue';
 import AdminOverview from './Admin/AdminOverview.vue';
 import AdminProfile from './Admin/AdminProfile.vue';
@@ -51,7 +51,7 @@ import { Prop } from 'vue-property-decorator';
 @Component({
 	components: {
 		CustomerOverview,
-		CustomerProfile,
+		CustomerProfileTabs,
 		CustomerInvoice,
         AdminOverview,
         AdminProfile, 
