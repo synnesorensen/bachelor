@@ -132,7 +132,6 @@ export default class CustomerEdit extends Vue {
             this.userprofile.email = unchangedUserprofile.email;
             this.userprofile.allergies = unchangedUserprofile.allergies;
         }
-        this.$emit("switchToCustomerProfile");
     }
 }
 </script>

@@ -3,7 +3,7 @@
         <v-container>
             <v-row>
                 <v-col>
-                    <h1>Bestillingsforespørsel</h1>
+                    <h1>Endre abonnement</h1>
                 </v-col>
             </v-row>
             <v-row>
@@ -45,26 +45,6 @@
                         outlined
                     >
                         {{ deliveryDay.day + " " + deliveryDay.menu }}
-                    </v-chip>
-                </v-chip-group>
-            </v-row>
-            <v-row>
-                <h4>Hvor mange leveringer ønsker du?</h4>
-            </v-row>
-            <v-row>
-                <v-chip-group
-                    v-model="selectedDeliveries"
-                    active-class="blue--text text--accent-4"
-                    mandatory
-                >
-                    <v-chip
-                        v-for="delivery in deliveries"
-                        v-bind:key="delivery.type"
-                        v-model="delivery.selected"
-                        filter
-                        outlined
-                    >
-                        {{ delivery.type }}
                     </v-chip>
                 </v-chip-group>
             </v-row>
@@ -128,7 +108,7 @@ export default class CustomerOrder extends Vue {
     @Prop() loggedInUser!: string;
     @Prop() subscription!: VendorSubscription;
     private vendor: Vendor | null = null;
-    private x: any = [];
+    private pushSchedule: any = [];
     private meals = [
         { no: 1, selected: false },
         { no: 2, selected: false },
@@ -141,14 +121,11 @@ export default class CustomerOrder extends Vue {
         { no: 9, selected: false },
         { no: 10, selected: false },
     ];
-    private selectedNoOfMeals = 1;
+    private selectedNoOfMeals = this.subscription.noOfMeals;
     private deliveryDays: MenuItems[] = [];
-    private selectedDeliveryDays = this.x;
-    private deliveries = [
-        { type: "Abonnement (kr. 137 per levering)", selected: false },
-        { type: "Ei enkelt levering 149 kr", selected: false },
-    ];
-    private selectedDeliveries = [];
+    private selectedDeliveryDays = [];
+
+
     private boxes = [
         { type: "Engangsboks", selected: false },
         { type: "Gjenbruksbokser (depositum kr 218)", selected: false },
@@ -190,39 +167,32 @@ export default class CustomerOrder extends Vue {
         this.$emit("logout");
     }
 
-    async getVendor() {
-        this.vendor = await api.getSingleVendor();
-        if (this.vendor) {
-            this.deliveryDays = this.vendor.schedule;
-            console.log(this.deliveryDays);
-            console.log(this.subscription.schedule);
-            this.subscription.schedule.forEach((s) => this.x.push(s.id));
-        }
-    }
-
     async sendToDb() {
         if (this.vendor?.vendorId) {
-            let subscription: Subscription = {
-                vendorId: this.vendor.vendorId,
-                userId: this.loggedInUser,
+            let sub: Subscription = {
+                vendorId: this.subscription.vendorId,
+                userId: this.userprofile.email,
                 approved: false,
                 paused: false,
                 schedule: this.selectedDeliveryDays,
                 noOfMeals: this.selectedNoOfMeals,
                 box: this.selectedBox,
             };
-            await api.putUserSubscription(subscription);
+
+            //this.subscription.schedule = this.selectedDeliveryDays;
+            await api.putUserSubscription(sub);
             console.log(this.subscription);
-            this.$emit("switchToCustomerProfile");
         }
     }
 
-    async created() {
-        this.getVendor();
-    }
+    async cancel() {
+        let unchangedSubscription = await api.getSingleSubscription();
+        if(unchangedSubscription) {
+            this.selectedNoOfMeals = unchangedSubscription.noOfMeals;
+            this.selectedDeliveryDays = unchangedSubscription.schedule;
+            this.selectedBox = unchangedSubscription.box;
 
-    cancel() {
-        this.$emit("switchToCustomerProfile");
+        }
     }
 }
 </script>

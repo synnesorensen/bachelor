@@ -53,14 +53,5 @@ export default class CustomerProfileTabs extends Vue {
     @Prop() loggedInUser!: string;
     @Prop() subscription!: VendorSubscription;
     private tab = 0;
-    private showUserprofile: boolean = true;
-    private editUserprofile: boolean = false;
-    private editSubscription = false;
-
-    switchToCustomerEdit() {
-        this.editUserprofile = true;
-        this.showUserprofile = false;
-        this.editSubscription = false;
-    }
 }
 </script>
