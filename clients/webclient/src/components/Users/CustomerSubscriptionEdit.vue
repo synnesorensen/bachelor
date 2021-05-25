@@ -2,9 +2,7 @@
     <v-form>
         <v-container>
             <v-row>
-                <v-col>
-                    <h1>Endre abonnement</h1>
-                </v-col>
+                <h1 class="primary--text">Endre abonnement</h1>
             </v-row>
             <v-row>
                 <h4>Antall porsjoner</h4>
@@ -122,9 +120,8 @@ export default class CustomerOrder extends Vue {
         { no: 10, selected: false },
     ];
     private selectedNoOfMeals = this.subscription.noOfMeals;
-    private deliveryDays: MenuItems[] = [];
+    private deliveryDays = [];
     private selectedDeliveryDays = [];
-
 
     private boxes = [
         { type: "Engangsboks", selected: false },
@@ -167,6 +164,11 @@ export default class CustomerOrder extends Vue {
         this.$emit("logout");
     }
 
+    async listDays() {
+        this.vendor = await api.getSingleVendor();
+        this.deliveryDays = this.vendor.schedule;
+    }
+
     async sendToDb() {
         if (this.vendor?.vendorId) {
             let sub: Subscription = {
@@ -187,12 +189,14 @@ export default class CustomerOrder extends Vue {
 
     async cancel() {
         let unchangedSubscription = await api.getSingleSubscription();
-        if(unchangedSubscription) {
+        if (unchangedSubscription) {
             this.selectedNoOfMeals = unchangedSubscription.noOfMeals;
             this.selectedDeliveryDays = unchangedSubscription.schedule;
             this.selectedBox = unchangedSubscription.box;
-
         }
+    }
+    async beforeMount() {
+        this.listDays();
     }
 }
 </script>

@@ -3,7 +3,7 @@
         <v-container>
             <v-row>
                 <v-col>
-                    <h1>Endre profil</h1>
+                    <h1 class="primary--text">Endre profil</h1>
                 </v-col>
             </v-row>
             <v-row class="text-center">
@@ -28,13 +28,6 @@
                         :rules="[numbers, phoneNoLength]"
                         label="Telefonnummer"
                         v-model="userprofile.phone"
-                        required
-                    ></v-text-field>
-                </v-col>
-                <v-col>
-                    <v-text-field
-                        label="E-post"
-                        v-model="userprofile.email"
                         required
                     ></v-text-field>
                 </v-col>

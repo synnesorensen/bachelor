@@ -1,6 +1,11 @@
 <template>
-    <v-container v-if="subscription">
-        <div v-if="showUserprofile">
+    <v-container>
+        <div>
+            <v-row>
+                <v-col :cols="5">
+                    <h1 class="primary--text">Min profil</h1>
+                </v-col>
+            </v-row>
             <v-row>
                 <v-col :cols="2">
                     <p class="font-weight-black">Navn</p>
