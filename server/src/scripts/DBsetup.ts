@@ -82,20 +82,26 @@ const vendor = {
         {
             "id": "2",
             "day": "Tirsdag",
-            "time": "1000",
+            "time": "36000000",
             "menu": "Lunsj"
         },
         {
             "id": "3",
             "day": "Onsdag",
-            "time": "1000",
+            "time": "36000000",
             "menu": "Lunsj"
         },
         {
             "id": "41",
             "day": "Torsdag",
-            "time": "1000",
+            "time": "36000000",
             "menu": "Lunsj med fisk"
+        },
+        {
+            "id": "42",
+            "day": "Torsdag",
+            "time": "50400000",
+            "menu": "Middag med fisk"
         }
     ]
 };

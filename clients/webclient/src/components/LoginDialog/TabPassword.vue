@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-card>
         <v-card-title class="headline">Glemt passord?</v-card-title>
         <v-card-text>
             <v-text-field 
@@ -7,14 +7,15 @@
                 v-model="username"
                 label="Fyll inn epost-adresse" 
                 required
-                >
+                @keyup.enter="sendPassword"
+            >
             </v-text-field>
             <v-text-field 
                 v-if="showVerification"
                 label="Fyll inn kode fra epost" 
                 required
                 v-model="code"
-                >
+            >
             </v-text-field>
             <v-text-field 
                 v-if="showVerification"
@@ -23,7 +24,7 @@
                 v-model="password1"
                 type="password"
                 :rules="[checkPassword]"
-                >
+            >
             </v-text-field>
             <v-text-field 
                 v-if="showVerification"
@@ -32,7 +33,8 @@
                 v-model="password2"
                 type="password"
                 :rules="[checkEqual]"
-                >
+                @keyup.enter="verifyPassword"
+            >
             </v-text-field>
         </v-card-text>
         <p style="color:red;"> {{errorMsg}}</p>
@@ -54,7 +56,7 @@
             Send
             </v-btn>
         </v-card-actions>
-    </v-container>
+    </v-card>
 </template>
 
 
@@ -93,13 +95,15 @@ export default class TabPassword extends Vue {
 
     async verifyPassword() {
         try {
+            this.$emit("showSpinner", true);
             await this.Auth.forgotPasswordSubmit(this.username, this.code, this.password2);
             let signedInUser = await this.Auth.signIn(this.username, this.password2);
             this.$emit("loggedIn", signedInUser.signInUserSession.idToken.jwtToken);
+            this.$emit("showSpinner", false);
         } catch (err) {
             this.errorMsg = err.message;
+            this.$emit("showSpinner", false);
         }
     }
-
 }
 </script>

@@ -17,6 +17,8 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
 
     let start = event.queryStringParameters["start"];
     let end = event.queryStringParameters["end"];
+    let startTime = start += "T00:00:00.000T";
+    let endTime = end += "T23:59:59.000T";
 
     if (!start) {
         return {
@@ -31,7 +33,7 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
         };
     }
 
-    let deliveries = await getUsersDeliveries(userId, start, end);
+    let deliveries = await getUsersDeliveries(userId, startTime, endTime);
     return {
         statusCode: 200,
         body: JSON.stringify(deliveries)

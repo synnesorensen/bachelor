@@ -1,19 +1,25 @@
 <template>
 	<v-container v-if="subscription">
-		<v-row>
+        <v-row>
             <v-col :cols="2">
                 <p class="font-weight-medium"> Siste levering i denne perioden: </p>
             </v-col>
-            <v-col>
+            <v-col v-if="subscription.approved">
                 <p class="font-weight-light"> {{ toLocalPresentation(lastPaid)}} </p>
+            </v-col>
+            <v-col v-else>
+                <p class="font-weight-light"> Det er ikke registrert betaling for leveranser i denne perioden. </p>
             </v-col>
         </v-row>
         <v-row>
             <v-col :cols="2">
                 <p class="font-weight-medium"> Neste faktura må betales innen: </p>
             </v-col>
-            <v-col>
+            <v-col v-if="subscription.approved">
                 <p class="font-weight-light"> {{nextInvoice}} </p>
+            </v-col>
+            <v-col v-else>
+                <p class="font-weight-light"> Du vil få tilsendt faktura for neste periode så snart abonnementet ditt er blitt godkjent. </p>
             </v-col>
         </v-row>
 	</v-container>

@@ -1,57 +1,69 @@
 <template>
-    <v-form>
-        <v-container>
+    <v-container>
+        <v-form v-model="isFormValid">
             <v-row>
                 <v-col>
                     <h1>Bestillingsforespørsel</h1>
                 </v-col>
             </v-row>
-            <v-row class="text-center">
-                <v-col>
-                    <v-text-field
-                        label="Fornavn"
-                        v-model="firstName"
-                    ></v-text-field>
-                </v-col>
-                <v-col>
-                    <v-text-field
-                        label="Etternavn"
-                        v-model="lastName"
-                    ></v-text-field>
-                </v-col>
-            </v-row>
-            <v-row class="text-center">
-                <v-col>
-                    <v-text-field
-                        label="Gateadresse"
-                        v-model="address"
-                    ></v-text-field>
-                </v-col>
-            </v-row>
-            <v-row class="text-center">
-                <v-col cols="4">
-                    <v-text-field
-                        :rules="[numbers, postNoLength]"
-                        label="Postnummer"
-                        v-model="postNo"
-                        required
-                    ></v-text-field>
-                </v-col>
-                <v-col>
-                    <v-text-field
-                        label="Poststed"
-                        v-model="postPlace"
-                    ></v-text-field>
-                </v-col>
-            </v-row>
-            <v-row class="text-center">
-                <v-col cols="4">
-                    <v-text-field
-                        :rules="[numbers, phoneNoLength]"
-                        label="Telefonnummer"
-                        v-model="phone"
-                        required
-                    ></v-text-field>
+            <v-row>
+                <v-col cols="5">
+                    <v-row dense class="text-center">
+                        <v-col>
+                            <v-text-field
+                                label="Fornavn"
+                                v-model="firstName"
+                                required
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row dense class="text-center">
+                        <v-col>
+                            <v-text-field
+                                label="Etternavn"
+                                v-model="lastName"
+                                required
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row dense class="text-center">
+                        <v-col>
+                            <v-text-field
+                                label="Gateadresse"
+                                v-model="address"
+                                required
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row dense class="text-center">
+                        <v-col>
+                            <v-text-field
+                                :rules="[numbers, postNoLength]"
+                                label="Postnummer"
+                                v-model="postNo"
+                                required
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row dense class="text-center">
+                        <v-col>
+                            <v-text-field
+                                label="Poststed"
+                                v-model="postPlace"
+                                required
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row dense class="text-center">
+                        <v-col>
+                            <v-text-field
+                                :rules="[numbers, phoneNoLength]"
+                                label="Telefonnummer"
+                                v-model="phone"
+                                required
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
                 </v-col>
             </v-row>
             <v-row>
@@ -162,20 +174,37 @@
                 <v-text-field
                     label="Annen informasjon du vil legge til?"
                     v-model="add"
+                    
                 ></v-text-field>
             </v-row>
             <v-row>
                 <v-col>
-                    <v-btn @click="sendToDb" color="primary" class="ma-1"
-                        >Send inn</v-btn
-                    >
-                    <v-btn @click="logout" color="secondary" class="ma-1"
-                        >Avbryt</v-btn
-                    >
+                    <v-tooltip :disabled="isFormValid" left>
+                        <template v-slot:activator="{ on }">
+                            <div v-on="on">
+                                <v-btn 
+                                    @click="sendToDb" 
+                                    color="primary" 
+                                    :disabled="!isFormValid"
+                                    class="mx-2"
+                                >
+                                    Send inn
+                                </v-btn>
+                                <v-btn 
+                                    @click="logout" 
+                                    color="secondary"
+                                    class="mx-2"
+                                >
+                                    Avbryt
+                                </v-btn>
+                            </div>
+                        </template>
+                        <span>Vennligst fyll ut alle påkrevde felt</span>
+                    </v-tooltip>
                 </v-col>
             </v-row>
-        </v-container>
-    </v-form>
+        </v-form>
+    </v-container>
 </template>
 
 <script lang="ts">
@@ -187,6 +216,7 @@ import { MenuItems, Subscription, Vendor} from "../../../../../server/src/interf
 
 @Component
 export default class CustomerOrder extends Vue {
+    private isFormValid = false;
     @Prop() loggedInUser!: string;
     private vendor: Vendor | null = null;
     private firstName = "";
@@ -237,20 +267,7 @@ export default class CustomerOrder extends Vue {
         { name: "Bløtdyr", selected: false },
     ];
     private selectedAllergies = [];
-    private add = "";
-
-    // Rules:
-    numbers(value: string) {
-        return (
-            !isNaN(parseInt(value)) || "Vennligst oppgi et gyldig postnummer"
-        );
-    }
-    postNoLength(value: string) {
-        return value.length == 4 || "Vennligst oppgi et gyldig postnummer";
-    }
-    phoneNoLength(value: string) {
-        return value.length >= 8 || "Vennligst oppgi et gyldig telefonnummer";
-    }
+    private add = "";               // TODO: Knytte dette feltet til epost sendt til vendor ved registrering
 
     logout() {
         this.$emit("logout");
@@ -293,6 +310,17 @@ export default class CustomerOrder extends Vue {
 
     async created() {
         this.getVendor();
+    }
+
+    // Rules:
+    numbers(value: string) {
+        return !isNaN(parseInt(value)) || "Vennligst oppgi kun siffer";
+    }
+    postNoLength(value: string) {
+        return value.length == 4 || "Vennligst oppgi et postnummer bestående av 4 siffer";
+    }
+    phoneNoLength(value: string) {
+        return value.length >= 8 || "Vennligst oppgi et telefonnummer bestående av 8 siffer";
     }
 }
 </script>

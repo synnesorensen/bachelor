@@ -13,18 +13,16 @@ provider:
   runtime: nodejs12.x
   lambdaHashingVersion: 20201221
   region: eu-north-1
-  httpApi:
-    cors: true
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:eu-north-1:*:table/${env:TABLENAME}"
+        - "DynamoDB:*"
+      Resource: "*"
+  environment:
+    VUE_APP_AWS_COGNITO_USER_POOL_ID: ${env:VUE_APP_AWS_COGNITO_USER_POOL_ID}
+    VUE_APP_AWS_COGNITO_APP_CLIENT_ID: ${env:VUE_APP_AWS_COGNITO_APP_CLIENT_ID}
+    TABLENAME: ${env:TABLENAME}
+    BUCKETNAME: ${env:BUCKETNAME}
 
  
 custom:
@@ -39,7 +37,7 @@ custom:
 
   s3Sync:
     - bucketName: testbucketforbachelor2021
-      localDir: ../clients/client/dist
+      localDir: ../clients/webclient/dist
       deleteRemoved: true
       acl: public-read
       followSymlinks: true
@@ -76,6 +74,7 @@ functions:
           authorizer: authorizer
           path: /vendors
           method: get
+          cors: true
   singleVendor:
     handler: src/singleVendor.mainHandler
     events:
@@ -83,6 +82,7 @@ functions:
           authorizer: authorizer
           path: /singleVendor
           method: get
+          cors: true
   singleSubscription:
     handler: src/singleSubscription.mainHandler
     events:
@@ -90,6 +90,7 @@ functions:
           authorizer: authorizer
           path: /singleSubscription
           method: get
+          cors: true
   userSubscription:
     handler: src/userSubscription.mainHandler
     events:
@@ -97,6 +98,7 @@ functions:
           authorizer: authorizer
           path: /u/subscription
           method: any
+          cors: true
   vendorSubscription:
     handler: src/vendorSubscription.mainHandler
     events:
@@ -104,6 +106,7 @@ functions:
           authorizer: authorizer
           path: /v/subscription
           method: any
+          cors: true
   vendorSubscriptions:
     handler: src/vendorSubscriptions.mainHandler
     events: 
@@ -111,6 +114,7 @@ functions:
           authorizer: authorizer
           path: /v/subscriptions
           method: get
+          cors: true
   userSubscriptions:
     handler: src/userSubscriptions.mainHandler
     events: 
@@ -118,6 +122,7 @@ functions:
           authorizer: authorizer
           path: /u/subscriptions
           method: get
+          cors: true
   userDeliveries:
     handler: src/userDeliveries.mainHandler
     events: 
@@ -125,6 +130,7 @@ functions:
           authorizer: authorizer
           path: /u/deliveries
           method: get
+          cors: true
   delivery:
     handler: src/delivery.mainHandler
     events:
@@ -132,6 +138,7 @@ functions:
           authorizer: authorizer
           path: /delivery
           method: any
+          cors: true
   vendorDeliveries:
     handler: src/vendorDeliveries.mainHandler
     events:
@@ -139,6 +146,7 @@ functions:
           authorizer: authorizer
           path: /v/deliveries
           method: any
+          cors: true
   unpaidDeliveries:
     handler: src/unpaidDeliveries.mainHandler
     events:
@@ -146,6 +154,7 @@ functions:
           authorizer: authorizer
           path: /unpaidDeliveries
           method: get
+          cors: true
   deliveryDetails:
     handler: src/deliveryDetails.mainHandler
     events:
@@ -153,6 +162,7 @@ functions:
           authorizer: authorizer
           path: /v/deliveryDetails
           method: get
+          cors: true
   cancelDeliveries:
     handler: src/cancelDeliveries.mainHandler
     events:
@@ -160,6 +170,7 @@ functions:
           authorizer: authorizer
           path: /cancelDeliveries
           method: post
+          cors: true
   scheduleToDates:
     handler: src/scheduleToDates.mainHandler
     events:
@@ -167,6 +178,7 @@ functions:
           authorizer: authorizer
           path: /scheduleDates
           method: get
+          cors: true
 
 
 resources:
@@ -219,3 +231,12 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: "ALL"
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
