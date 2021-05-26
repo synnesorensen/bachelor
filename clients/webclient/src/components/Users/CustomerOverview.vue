@@ -54,6 +54,15 @@
                 </v-sheet>
             </v-col>
             <v-col>
+                <v-card v-if="!subscription.approved">
+                    <v-card-title class="headline">
+                        Velkommen til Lunsj på Hjul
+                    </v-card-title>
+                    <v-card-text>
+                        Så snart det er blitt verifisert at du bor innenfor leveringsområdet til Lunsj på hjul, vil du motta faktura for kommende periode.
+                        Når denne er betalt vil du kunne se dine leveranser i kalenderen. Ta kontakt med Lunsj på Hjul dersom det er noe du lurer på.   
+                    </v-card-text>
+                </v-card>
                 <v-card v-if="selectedEvent && !selectedEvent.ordered">
                     <v-card-title class="headline">
                         {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}}
@@ -173,8 +182,7 @@ export default class CustomerOverview extends Vue {
                     });
                 });
             }
-
-            if (vendorDeliveries && !this.subscription.paused) {
+            if (vendorDeliveries && !this.subscription.paused && this.subscription.approved) {
                 vendorDeliveries.forEach((del) => {
                     const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
                     const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
