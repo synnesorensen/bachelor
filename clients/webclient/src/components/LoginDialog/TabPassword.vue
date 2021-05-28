@@ -95,6 +95,7 @@ export default class TabPassword extends Vue {
 
     async verifyPassword() {
         try {
+            this.errorMsg = "";
             this.$emit("showSpinner", true);
             await this.Auth.forgotPasswordSubmit(this.username, this.code, this.password2);
             let signedInUser = await this.Auth.signIn(this.username, this.password2);

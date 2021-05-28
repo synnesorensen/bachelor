@@ -49,6 +49,7 @@ export default class TabLogin extends Vue {
     async login() {
         const Auth = getAuth();
         try {
+            this.errorMsg = "";
             this.$emit("showSpinner", true);
             let signedInUser = await Auth.signIn(this.username, this.password);
             this.$emit("loggedIn", signedInUser.signInUserSession.idToken.jwtToken);

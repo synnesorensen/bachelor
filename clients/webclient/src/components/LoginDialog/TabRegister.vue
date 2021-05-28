@@ -101,6 +101,7 @@ export default class TabRegister extends Vue {
             password: this.password2
         }
         try {
+            this.errorMsg1 = "";
             let signUp = await this.Auth.signUp(params);
             this.showCodeVerification = true;
         } catch (err) {
@@ -109,6 +110,7 @@ export default class TabRegister extends Vue {
     }
     async verifyCode() {
         try {
+            this.errorMsg1 = "";
             this.$emit("showSpinner", true);
             let confirmedSignUp = await this.Auth.confirmSignUp(this.username, this.code);
             if (confirmedSignUp === "SUCCESS") {
