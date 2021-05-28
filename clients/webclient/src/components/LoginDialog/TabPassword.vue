@@ -78,7 +78,7 @@ export default class TabPassword extends Vue {
     
     // Rules:
     checkPassword(pass1: string) {
-        return pass1.length > 6 || "Passord må være minst 6 bokstaver";
+        return pass1.length >= 8 || "Passord må være minst 8 bokstaver";
     }
     checkEqual(pass2: string) {
         return pass2 === this.password1 || "Passordene er ikke like"
