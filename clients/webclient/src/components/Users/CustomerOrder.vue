@@ -334,7 +334,6 @@ export default class CustomerOrder extends Vue {
                 noOfMeals: this.selectedNoOfMeals,
                 box: this.selectedBox
             };
-            console.log("test", newUserprofile)
             await api.putUserprofile(newUserprofile);
             await api.putUserSubscription(subscription);
             let newSubscription = api.getSingleSubscription();
