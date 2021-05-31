@@ -9,6 +9,7 @@ describe('User profile test', () => {
         let userprofile = {
             fullname: "Navn",
             address: "Skogen",
+            deliveryaddress: "Havet",
             phone: "12345",
             email: "hallo@post.no",
             allergies: ["melk"],
@@ -18,6 +19,7 @@ describe('User profile test', () => {
         const putResult = await putUserprofileInDb(userprofile, "testUserId44");
         expect(putResult.fullname).to.equal("Navn");
         expect(putResult.address).to.equal("Skogen");
+        expect(putResult.deliveryaddress).to.equal("havet");
         expect(putResult.phone).to.equal("12345");
         expect(putResult.email).to.equal("hallo@post.no");
         expect(putResult.allergies).to.eql(["melk"]);

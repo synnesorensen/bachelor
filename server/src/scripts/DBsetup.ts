@@ -7,6 +7,7 @@ import { generateDeliveries } from './../addDeliveries';
 const userprofile1 = {
     fullname: "Ole Olsen",
     address: "Smauet 110 5000 Sentrum",
+    deliveryaddress: "Damsgårdsveien 50 5020 Bergen",
     phone: "12345678",
     email: dbUser1,
     allergies: ["melk"],
@@ -15,6 +16,7 @@ const userprofile1 = {
 const userprofile2 = {
     fullname: "Olga Karidotter",
     address: "Sollien 8 5001 Lien",
+    deliveryaddress: "Månelien 12 5002 Sentrum",
     phone: "23456789",
     email: dbUser2,
     allergies: [],
@@ -23,6 +25,7 @@ const userprofile2 = {
 const userprofile3 = {
     fullname: "Stig Hugo",
     address: "Lauvstien 31 5000 Sentrum",
+    deliveryaddress: "Bærstien 5 5005 Nøstet",
     phone: "34567890",
     email: dbUser3,
     allergies: ["løk, svovel"],
@@ -31,6 +34,7 @@ const userprofile3 = {
 const userprofile4 = {
     fullname: "Katy Sekken",
     address: "Oppoverbakken 17 5000 Sentrum",
+    deliveryaddress: "Ripshaugen 39 5020 Bergen",
     phone: "45678901",
     email: dbUser4,
     allergies: ["gluten"],
@@ -39,6 +43,7 @@ const userprofile4 = {
 const userprofile5 = {
     fullname: "Jan Jankovich",
     address: "Lykkegata 8 5002 Øvreåsen",
+    deliveryaddress: "Smilevegen 1 5000 Sentrum",
     phone: "56789012",
     email: dbUser5,
     allergies: [],
@@ -47,6 +52,7 @@ const userprofile5 = {
 const userprofile6 = {
     fullname: "Penny Pøbel",
     address: "Ukjent",
+    deliveryaddress: "Kronstadhuset 99 5500 Kronstad",
     phone: "67890123",
     email: dbUser6,
     allergies: ["melk"],
@@ -55,6 +61,7 @@ const userprofile6 = {
 const userprofileVendor = {
     fullname: "Helene Haare",
     address: "Hakkebakken 2 5003 Skogen",
+    deliveryaddress: "Skogstien 22 5020 Bergen",
     phone: "67890123",
     email: dbVendor,
     allergies: [],
