@@ -27,7 +27,7 @@
             </v-row>
             <v-row>
                 <v-col :cols="2">
-                    <p class="font-weight-black">Hjemadresse</p>
+                    <p class="font-weight-black">Hjemamedresse</p>
                 </v-col>
                 <v-col>
                     <p class="font-weight-light">{{ userprofile.address }}</p>
