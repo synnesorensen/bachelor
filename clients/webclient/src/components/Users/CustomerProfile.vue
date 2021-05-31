@@ -27,10 +27,18 @@
             </v-row>
             <v-row>
                 <v-col :cols="2">
-                    <p class="font-weight-black">Adresse</p>
+                    <p class="font-weight-black">Hjemadresse</p>
                 </v-col>
                 <v-col>
                     <p class="font-weight-light">{{ userprofile.address }}</p>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col :cols="2">
+                    <p class="font-weight-black">Leverinsgadresse</p>
+                </v-col>
+                <v-col>
+                    <p class="font-weight-light">{{ userprofile.deliveryaddress }}</p>
                 </v-col>
             </v-row>
             <v-row>
