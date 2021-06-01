@@ -56,6 +56,7 @@ describe('Subscription vendor http test', () => {
         let userprofile = {
             fullname: "Admin Adminsen",
             address: "Hjemme",
+            deliveryaddress: "Nøstet 12",
             phone: "98765432",
             email: vendormail,
             allergies: ["melk"],

@@ -29,7 +29,7 @@
                     <v-row dense class="text-center">
                         <v-col>
                             <v-text-field
-                                label="Gateadresse"
+                                label="Hjemmeadresse"
                                 v-model="address"
                                 required
                             ></v-text-field>
@@ -48,8 +48,36 @@
                     <v-row dense class="text-center">
                         <v-col>
                             <v-text-field
-                                label="Poststed"
+                                label="Poststed hjemmeadresse"
                                 v-model="postPlace"
+                                required
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row dense class="text-center">
+                        <v-col>
+                            <v-text-field
+                                label="Leveringsadresse"
+                                v-model="deliveryaddress"
+                                required
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row dense class="text-center">
+                        <v-col>
+                            <v-text-field
+                                :rules="[numbers, postNoLength]"
+                                label="Postnummer"
+                                v-model="delPostNo"
+                                required
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row dense class="text-center">
+                        <v-col>
+                            <v-text-field
+                                label="Poststed leveringsadresse"
+                                v-model="delPostPlace"
                                 required
                             ></v-text-field>
                         </v-col>
@@ -103,6 +131,7 @@
                         v-model="deliveryDay.selected"
                         filter
                         outlined
+                        min="this.test"
                     >
                         {{ deliveryDay.day + " " + deliveryDay.menu }}
                     </v-chip>
@@ -224,7 +253,11 @@ export default class CustomerOrder extends Vue {
     private address = "";
     private postNo = 0;
     private postPlace = "";
+    private deliveryaddress = "";
+    private delPostNo = 0;
+    private delPostPlace = "";
     private phone = 0;
+    private test = 1;
     private meals = [
         { no: 1, selected: false },
         { no: 2, selected: false },
@@ -285,6 +318,7 @@ export default class CustomerOrder extends Vue {
             let newUserprofile = {
                 fullname: this.firstName + " " + this.lastName,
                 address: this.address + " " + this.postNo + " " + this.postPlace,
+                deliveryaddress: this.deliveryaddress + " " + this.delPostNo + " " + this.delPostPlace,
                 phone: this.phone.toString(),
                 email: this.loggedInUser,
                 allergies: this.selectedAllergies,
