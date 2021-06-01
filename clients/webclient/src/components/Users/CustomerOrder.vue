@@ -29,7 +29,7 @@
                     <v-row dense class="text-center">
                         <v-col>
                             <v-text-field
-                                label="Hjemmedresse"
+                                label="Hjemmeadresse"
                                 v-model="address"
                                 required
                             ></v-text-field>
