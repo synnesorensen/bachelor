@@ -1,36 +1,55 @@
 <template>
-	<v-container>
-		<v-app-bar app flat color="primary" dark class="appbar">
-			<div class="d-flex align-center">
-				<v-icon class="pr-8" x-large color="white">mdi-bike</v-icon>
-				<v-toolbar-title class="titleName">Lunsj på midlertidige hjul</v-toolbar-title>
-			</div>
-			<v-tabs v-model="tab" align-with-title>
-				<v-tab v-if="!userprofile.isVendor" @click="$refs.customerOverview.populateCalendar()">Kundekalender</v-tab>
-				<v-tab v-if="!userprofile.isVendor">Kundeprofil</v-tab>
-				<v-tab v-if="!userprofile.isVendor">Faktura</v-tab>
-                <v-tab v-if="userprofile.isVendor">AdminKalender</v-tab>
-                <v-tab v-if="userprofile.isVendor">Firmaprofil</v-tab>
-                <v-tab v-if="userprofile.isVendor">Betalinger</v-tab>
-                <v-tab v-if="userprofile.isVendor">Kundeliste</v-tab>
-			</v-tabs>
+	<v-container class="overflow-hidden"    >
+		<v-app-bar 
+            app 
+            color="primary" 
+            dark
+            src="..\..\assets\smorblomst_crop.jpg"
+        >
+            <template v-slot:img="{ props }">
+                <v-img
+                    v-bind="props"
+                    gradient="to top right, rgba(100,115,100,.8), rgba(25,32,25,0)"
+                    required
+                >
+                </v-img>
+            </template>
+			<v-toolbar-title 
+                class="font-weight-medium"
+            >
+                Lunsj på  hjul
+            </v-toolbar-title>
+            <v-spacer></v-spacer>
+            <template v-slot:extension>
+                <v-tabs v-model="tab" align-with-title >
+                    <v-tab v-if="!userprofile.isVendor" @click="$refs.customerOverview.populateCalendar()">Kundekalender</v-tab>
+                    <v-tab v-if="!userprofile.isVendor">Kundeprofil</v-tab>
+                    <v-tab v-if="!userprofile.isVendor">Faktura</v-tab>
+                    <v-tab v-if="userprofile.isVendor">AdminKalender</v-tab>
+                    <v-tab v-if="userprofile.isVendor">Firmaprofil</v-tab>
+                    <v-tab v-if="userprofile.isVendor">Betalinger</v-tab>
+                    <v-tab v-if="userprofile.isVendor">Kundeliste</v-tab>
+                </v-tabs>
+            </template>
             <v-spacer />
             <v-btn 
-                color="secondary" 
+                color="grey" 
                 @click="logout">
                 Logg ut
             </v-btn>
 		</v-app-bar>
 		<v-main>
-			<v-tabs-items v-model="tab">
-				<v-tab-item v-if="!userprofile.isVendor"><CustomerOverview :userprofile="userprofile" :subscription="subscription" :loggedInUser="loggedInUser" ref="customerOverview" /></v-tab-item>
-				<v-tab-item v-if="!userprofile.isVendor"><CustomerProfile :userprofile="userprofile" :subscription="subscription" :loggedInUser="loggedInUser" /> </v-tab-item>
-				<v-tab-item v-if="!userprofile.isVendor"><CustomerInvoice :userprofile="userprofile" :subscription="subscription" /></v-tab-item>
-                <v-tab-item v-if="userprofile.isVendor"><AdminOverview :userprofile="userprofile" /></v-tab-item>
-                <v-tab-item v-if="userprofile.isVendor"><AdminProfile :userprofile="userprofile" /></v-tab-item>
-                <v-tab-item v-if="userprofile.isVendor"><AdminPayments /></v-tab-item>
-                <v-tab-item v-if="userprofile.isVendor"><AdminCustomers :loggedInUser="loggedInUser" /></v-tab-item>
-			</v-tabs-items>
+            <v-container fluid>
+                <v-tabs-items v-model="tab">
+                    <v-tab-item v-if="!userprofile.isVendor"><CustomerOverview :userprofile="userprofile" :subscription="subscription" :loggedInUser="loggedInUser" ref="customerOverview" /></v-tab-item>
+                    <v-tab-item v-if="!userprofile.isVendor"><CustomerProfile :userprofile="userprofile" :subscription="subscription" :loggedInUser="loggedInUser" /> </v-tab-item>
+                    <v-tab-item v-if="!userprofile.isVendor"><CustomerInvoice :userprofile="userprofile" :subscription="subscription" /></v-tab-item>
+                    <v-tab-item v-if="userprofile.isVendor"><AdminOverview :userprofile="userprofile" /></v-tab-item>
+                    <v-tab-item v-if="userprofile.isVendor"><AdminProfile :userprofile="userprofile" /></v-tab-item>
+                    <v-tab-item v-if="userprofile.isVendor"><AdminPayments /></v-tab-item>
+                    <v-tab-item v-if="userprofile.isVendor"><AdminCustomers :loggedInUser="loggedInUser" /></v-tab-item>
+                </v-tabs-items>
+            </v-container>
 		</v-main>
 	</v-container>
 </template>

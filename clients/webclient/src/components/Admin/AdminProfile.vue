@@ -5,7 +5,6 @@
                 <h2>Registrert informasjon</h2>
             </v-col>
         </v-row>
-        <v-row />
         <v-row>
             <v-col :cols="2">
                 <p class="font-weight-medium">Navn</p>
