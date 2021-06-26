@@ -6,13 +6,13 @@
             :subscription="subscription"
             v-if="authorized && userprofile != null" 
             @logout="logout" />
-        <LoginDialog v-if="!authorized" @loggedIn="loggedIn" :showDialog="!authorized" />
         <CustomerOrder 
                 :loggedInUser="loggedInUser" 
                 v-if="userprofile==null && authorized" 
                 @newUserprofile="newUserprofile"
                 @newSubscription="newSubscription"
                 @logout="logout" />
+        <router-view></router-view>
 	</v-app>
 </template>
 
