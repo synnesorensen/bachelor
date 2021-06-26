@@ -6,7 +6,10 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col :cols="2">
+            <v-col v-if="$vuetify.breakpoint.xsOnly">
+                <p class="font-weight-medium">Navn</p>
+            </v-col>
+            <v-col v-else :cols="2">
                 <p class="font-weight-medium">Navn</p>
             </v-col>
             <v-col>
@@ -14,7 +17,10 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col :cols="2">
+            <v-col v-if="$vuetify.breakpoint.xsOnly">
+                <p class="font-weight-medium">Firmanavn</p>
+            </v-col>
+            <v-col v-else :cols="2">
                 <p class="font-weight-medium">Firmanavn</p>
             </v-col>
             <v-col>
@@ -22,7 +28,10 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col :cols="2">
+            <v-col v-if="$vuetify.breakpoint.xsOnly">
+                <p class="font-weight-medium">Adresse</p>
+            </v-col>
+            <v-col v-else :cols="2">
                 <p class="font-weight-medium">Adresse</p>
             </v-col>
             <v-col>
@@ -30,7 +39,10 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col :cols="2">
+            <v-col v-if="$vuetify.breakpoint.xsOnly">
+                <p class="font-weight-medium">Telefonnummer</p>
+            </v-col>
+            <v-col v-else :cols="2">
                 <p class="font-weight-medium">Telefonnummer</p>
             </v-col>
             <v-col>
@@ -38,7 +50,10 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col :cols="2">
+            <v-col v-if="$vuetify.breakpoint.xsOnly">
+                <p class="font-weight-medium">E-post</p>
+            </v-col>
+            <v-col v-else :cols="2">
                 <p class="font-weight-medium">E-post</p>
             </v-col>
             <v-col>
@@ -46,7 +61,10 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col :cols="2">
+            <v-col v-if="$vuetify.breakpoint.xsOnly">
+                <p class="font-weight-medium">Leveringsplan</p>
+            </v-col>
+            <v-col v-else :cols="2">
                 <p class="font-weight-medium">Leveringsplan</p>
             </v-col>
             <v-col>
