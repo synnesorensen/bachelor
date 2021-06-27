@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-card>
         <v-card-title class="headline">Logg inn til din konto</v-card-title>
         <v-card-text>
             <p>Vennligst oppgi brukernavn og passord</p>
@@ -7,18 +7,17 @@
                 v-model="username" 
                 label="Brukernavn" 
                 required
-                >
+            >
             </v-text-field>
             <v-text-field 
                 v-model="password" 
                 label="Passord" 
                 required
                 type="password"
+                @keyup.enter="login"
                 >
             </v-text-field>
-            <p 
-                style="color:red;"
-                >
+            <p style="color:red;">
                 {{errorMsg}}
             </p>
         </v-card-text>
@@ -27,12 +26,11 @@
             <v-btn 
                 color="success" 
                 @click="login"
-                >
+            >
                 Logg inn
             </v-btn>
         </v-card-actions>
-
-    </v-container>
+    </v-card>
 </template>
 
 
@@ -51,11 +49,14 @@ export default class TabLogin extends Vue {
     async login() {
         const Auth = getAuth();
         try {
+            this.errorMsg = "";
+            this.$emit("showSpinner", true);
             let signedInUser = await Auth.signIn(this.username, this.password);
             this.$emit("loggedIn", signedInUser.signInUserSession.idToken.jwtToken);
-
+            this.$emit("showSpinner", false);
         } catch (err) {
             this.errorMsg = "Feil brukernavn eller passord."
+            this.$emit("showSpinner", false);
         }
     }
 }

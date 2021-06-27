@@ -1,12 +1,12 @@
 <template>
-    <v-container>
+    <v-card>
         <v-card-title class="headline">Registrer konto</v-card-title>
         <v-card-text>
             <v-text-field 
                 label="Fyll inn epost-adresse" 
                 required
                 v-model="username"
-                >
+            >
             </v-text-field>
             <v-text-field 
                 v-if="!showCodeVerification"
@@ -24,14 +24,16 @@
                 v-model="password2"
                 type="password"
                 :rules="[checkEqual]"
+                @keyup.enter="register"
             >
             </v-text-field>
             <p style="color:red;"> {{errorMsg1}}</p>
             <v-text-field 
-            v-if="showCodeVerification"
-            label="Fyll inn kode fra epost" 
-            required
-            v-model="code"
+                v-if="showCodeVerification"
+                label="Fyll inn kode fra epost" 
+                required
+                v-model="code"
+                @keyup.enter="verifyCode"
             >
             </v-text-field>
             <p style="color:red;"> {{errorMsg2}}</p>
@@ -55,7 +57,7 @@
             Verifiser
             </v-btn>
         </v-card-actions>
-    </v-container>
+    </v-card>
 </template>
 
 
@@ -79,7 +81,7 @@ export default class TabRegister extends Vue {
     // Rules:
 
     checkPassword(pass1: string) {
-        return pass1.length > 8 || "Passord må være minst 8 bokstaver";
+        return pass1.length >= 8 || "Passord må være minst 8 bokstaver";
     }
     checkEqual(pass2: string) {
         return pass2 === this.password1 || "Passordene er ikke like"
@@ -99,6 +101,7 @@ export default class TabRegister extends Vue {
             password: this.password2
         }
         try {
+            this.errorMsg1 = "";
             let signUp = await this.Auth.signUp(params);
             this.showCodeVerification = true;
         } catch (err) {
@@ -107,13 +110,17 @@ export default class TabRegister extends Vue {
     }
     async verifyCode() {
         try {
+            this.errorMsg1 = "";
+            this.$emit("showSpinner", true);
             let confirmedSignUp = await this.Auth.confirmSignUp(this.username, this.code);
             if (confirmedSignUp === "SUCCESS") {
                 let signedInUser = await this.Auth.signIn(this.username, this.password2);
                 this.$emit("loggedIn", signedInUser.signInUserSession.idToken.jwtToken);
+                this.$emit("showSpinner", false);
             }
         } catch (err) {
             this.errorMsg2 = err.message;
+            this.$emit("showSpinner", false);
         }
     }
 }

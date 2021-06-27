@@ -28,6 +28,7 @@ describe('Test of vendor subscriptions', () => {
         const user1 = {
             fullname: "Navn Navnesen",
             address: "Skogen 110",
+            deliveryaddress: "Nøstet 4",
             phone: "123456",
             email: "gjøk@skogen.no", 
             allergies: [""],

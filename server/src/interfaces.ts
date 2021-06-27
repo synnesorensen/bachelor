@@ -1,6 +1,7 @@
 export interface Userprofile {
     fullname: string,
     address: string,
+    deliveryaddress: string,
     phone: string,
     email: string, 
     allergies: string[], 
