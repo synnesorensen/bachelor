@@ -11,9 +11,7 @@
                     <p class="font-weight-black">Navn</p>
                 </v-col>
                 <v-col>
-                    <p class="font-weight-light">
-                        {{ userprofile.fullname }}
-                    </p>
+                    <p class="font-weight-light">{{ $store.getters.userprofile.fullname }}</p>
                 </v-col>
             </v-row>
             <v-row>
@@ -21,7 +19,7 @@
                     <p class="font-weight-black">Hjemmeadresse</p>
                 </v-col>
                 <v-col>
-                    <p class="font-weight-light">{{ userprofile.address }}</p>
+                    <p class="font-weight-light">{{ $store.getters.userprofile.address }}</p>
                 </v-col>
             </v-row>
             <v-row>
@@ -29,7 +27,7 @@
                     <p class="font-weight-black">Leveringsadresse</p>
                 </v-col>
                 <v-col>
-                    <p class="font-weight-light">{{ userprofile.deliveryaddress }}</p>
+                    <p class="font-weight-light">{{ $store.getters.userprofile.deliveryaddress }}</p>
                 </v-col>
             </v-row>
             <v-row>
@@ -37,7 +35,7 @@
                     <p class="font-weight-black">Telefonnummer</p>
                 </v-col>
                 <v-col>
-                    <p class="font-weight-light">{{ userprofile.phone }}</p>
+                    <p class="font-weight-light">{{ $store.getters.userprofile.phone }}</p>
                 </v-col>
             </v-row>
             <v-row>
@@ -45,7 +43,7 @@
                     <p class="font-weight-black">Epost</p>
                 </v-col>
                 <v-col>
-                    <p class="font-weight-light">{{ userprofile.email }}</p>
+                    <p class="font-weight-light">{{ $store.getters.userprofile.email }}</p>
                 </v-col>
             </v-row>
             <v-row>
@@ -57,7 +55,7 @@
                 <v-col>
                     <p
                         class="font-weight-light"
-                        v-for="allergy in userprofile.allergies"
+                        v-for="allergy in $store.getters.userprofile.allergies"
                         :key="allergy"
                         id="allergylist"
                     >
@@ -70,9 +68,7 @@
                     <p class="font-weight-black">Antall porsjoner</p>
                 </v-col>
                 <v-col>
-                    <p class="font-weight-light">
-                        {{ subscription.noOfMeals }}
-                    </p>
+                    <p class="font-weight-light">{{ $store.getters.subscription.noOfMeals }}</p>
                 </v-col>
             </v-row>
             <v-row>
@@ -80,7 +76,7 @@
                     <p class="font-weight-black">Valgt boks</p>
                 </v-col>
                 <v-col>
-                    <p class="font-weight-light">{{ subscription.box }}</p>
+                    <p class="font-weight-light">{{ $store.getters.subscription.box }}</p>
                 </v-col>
             </v-row>
             <v-row>
@@ -114,11 +110,7 @@
                                     text
                                     @click="toggleSubscriptionPause()"
                                 >
-                                    {{
-                                        subscription.paused
-                                            ? "Aktiver"
-                                            : "Sett på pause"
-                                    }}
+                                    {{ $store.getters.subscription.paused? "Aktiver": "Sett på pause" }}
                                 </v-btn>
                                 <v-btn
                                     color="green darken-1"
@@ -139,12 +131,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import {
-    Action,
-    MenuItems,
-    Userprofile,
-    VendorSubscription,
-} from "../../../../../server/src/interfaces";
+import {Action, MenuItems, Userprofile, VendorSubscription} from "../../../../../server/src/interfaces";
 import CustomerEdit from "./CustomerEdit.vue";
 import CustomerSubscriptionEdit from "./CustomerSubscriptionEdit.vue";
 import { Prop } from "vue-property-decorator";
@@ -153,18 +140,15 @@ import api from "../../api/api";
 @Component({
     components: {
         CustomerEdit,
-        CustomerSubscriptionEdit,
+        CustomerSubscriptionEdit
     },
 })
 export default class CustomerProfile extends Vue {
-    @Prop() userprofile!: Userprofile;
-    @Prop() loggedInUser!: string;
-    @Prop() subscription!: VendorSubscription;
     private items: MenuItems[] | null = [];
-    private editUserprofile: boolean = false;
-    private showUserprofile: boolean = true;
+    private editUserprofile = false;
+    private showUserprofile = true;
     private editSubscription = false;
-    private dialog: boolean = false;
+    private dialog = false;
 
     switchToCustomerEdit() {
         this.editUserprofile = true;
@@ -185,18 +169,18 @@ export default class CustomerProfile extends Vue {
     }
 
     async created() {
-        if (this.subscription?.schedule) {
-            this.items = this.subscription.schedule;
+        if (this.$store.getters.subscription?.schedule) {
+            this.items = this.$store.getters.subscription.schedule;
         }
     }
 
     async toggleSubscriptionPause() {
         this.dialog = false;
-        if (this.subscription) {
-            let sub = await api.getUserSubscription(this.subscription.vendorId);
+        if (this.$store.getters.subscription) {
+            let sub = await api.getUserSubscription(this.$store.getters.subscription.vendorId);
             if (sub) {
-                this.subscription.paused = !this.subscription.paused;
-                sub.paused = this.subscription.paused;
+                this.$store.getters.subscription.paused = !this.$store.getters.subscription.paused;
+                sub.paused = this.$store.getters.subscription.paused;
                 let time = new Date(Date.now());
                 if (time.getHours() < 10) {
                     time.setDate(time.getDate() + 1);
@@ -208,20 +192,20 @@ export default class CustomerProfile extends Vue {
                     action: sub.paused ? "pause" : "unpause",
                 };
                 await api.postSubscription(sub.vendorId, action);
-                this.subscription.paused = sub.paused;
+                this.$store.getters.subscription.paused = sub.paused;
             }
         }
     }
 
     get buttonText() {
-        if (this.subscription?.paused) {
+        if (this.$store.getters.subscription?.paused) {
             return "Aktiver abonnement";
         }
         return "Pause abonnement";
     }
 
     get dialogText() {
-        if (this.subscription?.paused) {
+        if (this.$store.getters.subscription?.paused) {
             return "Du aktiverer nå ditt abonnement igjen. \
             Sjekk din kalender for å se når leveranser du eventuelt har til gode \
             vil bli levert. ";

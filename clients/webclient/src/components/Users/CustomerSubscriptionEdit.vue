@@ -90,21 +90,11 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
-import {
-    MenuItems,
-    Subscription,
-    Userprofile,
-    Vendor,
-    VendorSubscription,
-} from "../../../../../server/src/interfaces";
+import {MenuItems, Subscription, Vendor} from "../../../../../server/src/interfaces";
 
 @Component
 export default class CustomerOrder extends Vue {
-    @Prop() userprofile!: Userprofile;
-    @Prop() loggedInUser!: string;
-    @Prop() subscription!: VendorSubscription;
     private vendor: Vendor | null = null;
     private pushSchedule: any = [];
     private meals = [
@@ -119,9 +109,9 @@ export default class CustomerOrder extends Vue {
         { no: 9, selected: false },
         { no: 10, selected: false },
     ];
-    private selectedNoOfMeals = this.subscription.noOfMeals;
-    private deliveryDays = [];
-    private selectedDeliveryDays = [];
+    private selectedNoOfMeals = this.$store.getters.subscription.noOfMeals;
+    private deliveryDays: MenuItems[] = [];
+    private selectedDeliveryDays: MenuItems[] = [];
 
     private boxes = [
         { type: "Engangsboks", selected: false },
@@ -172,18 +162,15 @@ export default class CustomerOrder extends Vue {
     async sendToDb() {
         if (this.vendor?.vendorId) {
             let sub: Subscription = {
-                vendorId: this.subscription.vendorId,
-                userId: this.userprofile.email,
+                vendorId: this.$store.getters.subscription.vendorId,
+                userId: this.$store.getters.userprofile.email,
                 approved: false,
                 paused: false,
-                schedule: this.selectedDeliveryDays,
+                schedule: this.selectedDeliveryDays.map((item) => item.id),
                 noOfMeals: this.selectedNoOfMeals,
                 box: this.selectedBox,
             };
-
-            //this.subscription.schedule = this.selectedDeliveryDays;
             await api.putUserSubscription(sub);
-            console.log(this.subscription);
         }
     }
 

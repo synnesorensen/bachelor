@@ -31,8 +31,14 @@ export const store = new Vuex.Store({
         }
     }, 
     getters: {
-        getLoggedInUser(state) {
-            
+        loggedInUser(state) {
+            return state.username;
+        },
+        userprofile(state) {
+            return state.userprofile;
+        },
+        subscription(state) {
+            return state.subscription;
         }
     }, 
     actions: {

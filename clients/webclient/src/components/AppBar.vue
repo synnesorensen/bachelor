@@ -1,5 +1,5 @@
 <template>
-	<v-container class="overflow-hidden"    >
+	<v-container class="overflow-hidden" v-if="$store.getters.userprofile && $store.getters.subscription">
 		<v-app-bar 
             app 
             color="primary" 
@@ -22,13 +22,13 @@
             <v-spacer></v-spacer>
             <template v-slot:extension>
                 <v-tabs v-model="tab" align-with-title >
-                    <v-tab v-if="!userprofile.isVendor" @click="$refs.customerOverview.populateCalendar()">Kundekalender</v-tab>
-                    <v-tab v-if="!userprofile.isVendor">Kundeprofil</v-tab>
-                    <v-tab v-if="!userprofile.isVendor">Faktura</v-tab>
-                    <v-tab v-if="userprofile.isVendor">AdminKalender</v-tab>
-                    <v-tab v-if="userprofile.isVendor">Firmaprofil</v-tab>
-                    <v-tab v-if="userprofile.isVendor">Betalinger</v-tab>
-                    <v-tab v-if="userprofile.isVendor">Kundeliste</v-tab>
+                    <v-tab v-if="!$store.getters.userprofile.isVendor" @click="$refs.customerOverview.populateCalendar()">Kundekalender</v-tab>
+                    <v-tab v-if="!$store.getters.userprofile.isVendor">Kundeprofil</v-tab>
+                    <v-tab v-if="!$store.getters.userprofile.isVendor">Faktura</v-tab>
+                    <v-tab v-if="$store.getters.userprofile.isVendor">AdminKalender</v-tab>
+                    <v-tab v-if="$store.getters.userprofile.isVendor">Firmaprofil</v-tab>
+                    <v-tab v-if="$store.getters.userprofile.isVendor">Betalinger</v-tab>
+                    <v-tab v-if="$store.getters.userprofile.isVendor">Kundeliste</v-tab>
                 </v-tabs>
             </template>
             <v-spacer />
@@ -41,13 +41,13 @@
 		<v-main>
             <v-container fluid>
                 <v-tabs-items v-model="tab">
-                    <v-tab-item v-if="!userprofile.isVendor"><CustomerOverview :userprofile="userprofile" :subscription="subscription" :loggedInUser="loggedInUser" ref="customerOverview" /></v-tab-item>
-                    <v-tab-item v-if="!userprofile.isVendor"><CustomerProfileTabs :userprofile="userprofile" :subscription="subscription" :loggedInUser="loggedInUser" /> </v-tab-item>
-                    <v-tab-item v-if="!userprofile.isVendor"><CustomerInvoice :userprofile="userprofile" :subscription="subscription" /></v-tab-item>
-                    <v-tab-item v-if="userprofile.isVendor"><AdminOverview :userprofile="userprofile" /></v-tab-item>
-                    <v-tab-item v-if="userprofile.isVendor"><AdminProfile :userprofile="userprofile" /></v-tab-item>
-                    <v-tab-item v-if="userprofile.isVendor"><AdminPayments /></v-tab-item>
-                    <v-tab-item v-if="userprofile.isVendor"><AdminCustomers :loggedInUser="loggedInUser" /></v-tab-item>
+                    <v-tab-item v-if="!$store.getters.userprofile.isVendor"><CustomerOverview ref="customerOverview" /></v-tab-item>
+                    <v-tab-item v-if="!$store.getters.userprofile.isVendor"><CustomerProfileTabs /> </v-tab-item>
+                    <v-tab-item v-if="!$store.getters.userprofile.isVendor"><CustomerInvoice /></v-tab-item>
+                    <v-tab-item v-if="$store.getters.userprofile.isVendor"><AdminOverview /></v-tab-item>
+                    <v-tab-item v-if="$store.getters.userprofile.isVendor"><AdminProfile  /></v-tab-item>
+                    <v-tab-item v-if="$store.getters.userprofile.isVendor"><AdminPayments /></v-tab-item>
+                    <v-tab-item v-if="$store.getters.userprofile.isVendor"><AdminCustomers /></v-tab-item>
                 </v-tabs-items>
             </v-container>
 		</v-main>
@@ -79,9 +79,6 @@ import { Prop } from 'vue-property-decorator';
 	},
 })
 export default class AppBar extends Vue {
-    @Prop() userprofile!: interfaces.Userprofile;
-    @Prop() subscription!: interfaces.VendorSubscription;
-    @Prop() loggedInUser!: string; 
 	private tab = 0;
 
     logout() {

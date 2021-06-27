@@ -54,7 +54,7 @@
                 </v-sheet>
             </v-col>
             <v-col>
-                <v-card v-if="!subscription.approved">
+                <v-card v-if="!$store.getters.subscription.approved">
                     <v-card-title class="headline">
                         Velkommen til Lunsj på Hjul
                     </v-card-title>
@@ -124,9 +124,6 @@ import { Delivery, Userprofile, Vendor, VendorSubscription } from "../../../../.
 
 @Component({})
 export default class CustomerOverview extends Vue {
-    @Prop() userprofile!: Userprofile;
-    @Prop() subscription!: VendorSubscription;
-    @Prop() loggedInUser!: string;
     private today = new Date().toISOString().substr(0, 10);
     private focus = new Date().toISOString().substr(0, 10);
     private type = "month";
@@ -160,9 +157,10 @@ export default class CustomerOverview extends Vue {
     }
 
     async populateCalendar() {
-        let usersSchedule = this.subscription.schedule;
+        const usersSub:VendorSubscription = this.$store.getters.subscription;
+        const usersSchedule = usersSub.schedule;
         const vendor:Vendor = await api.getSingleVendor();
-        let vendorDeliveries = await api.scheduleToDates(vendor.vendorId, this.start.date);
+        const vendorDeliveries = await api.scheduleToDates(vendor.vendorId, this.start.date);
 
         let events: any[] = [];
         if (this.start && this.end) {
@@ -182,7 +180,7 @@ export default class CustomerOverview extends Vue {
                     });
                 });
             }
-            if (vendorDeliveries && !this.subscription.paused && this.subscription.approved) {
+            if (vendorDeliveries && !this.$store.getters.subscription.paused && this.$store.getters.subscription.approved) {
                 vendorDeliveries.forEach((del) => {
                     const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
                     const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
@@ -230,12 +228,12 @@ export default class CustomerOverview extends Vue {
     async orderDelivery() {
         let delivery = {
             vendorId: this.selectedEvent.del.vendorId,
-            userId: this.loggedInUser,
+            userId: this.$store.getters.loggedInUser,
             deliverytime: this.selectedEvent.del.deliverytime,
             menuId: this.selectedEvent.del.menuId,
             cancelled: false
         }
-        await api.putDelivery(this.subscription.vendorId, this.loggedInUser, delivery);
+        await api.putDelivery(this.$store.getters.subscription.vendorId, this.$store.getters.loggedInUser, delivery);
         // TODO: Håndtere regningen!?
     }
 

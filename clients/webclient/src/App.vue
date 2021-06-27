@@ -1,11 +1,5 @@
 <template>
 	<v-app>
-        <AppBar 
-            :loggedInUser="loggedInUser"
-            :userprofile="userprofile"
-            :subscription="subscription"
-            v-if="authorized && userprofile != null" 
-            @logout="logout" />
         <CustomerOrder 
                 :loggedInUser="loggedInUser" 
                 v-if="userprofile==null && authorized" 

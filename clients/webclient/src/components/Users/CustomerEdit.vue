@@ -10,7 +10,7 @@
                 <v-col>
                     <v-text-field
                         label="Fullt navn"
-                        v-model="userprofile.fullname"
+                        v-model="$store.getters.userprofile.fullname"
                     ></v-text-field>
                 </v-col>
             </v-row>
@@ -18,7 +18,7 @@
                 <v-col>
                     <v-text-field
                         label="Adresse"
-                        v-model="userprofile.address"
+                        v-model="$store.getters.userprofile.address"
                     ></v-text-field>
                 </v-col>
             </v-row>
@@ -27,7 +27,7 @@
                     <v-text-field
                         :rules="[numbers, phoneNoLength]"
                         label="Telefonnummer"
-                        v-model="userprofile.phone"
+                        v-model="$store.getters.userprofile.phone"
                         required
                     ></v-text-field>
                 </v-col>
@@ -37,7 +37,7 @@
             </v-row>
             <v-row>
                 <v-chip-group
-                    v-model="userprofile.allergies"
+                    v-model="$store.getters.userprofile.allergies"
                     active-class="blue--text text--accent-4"
                     multiple
                 >
@@ -81,8 +81,6 @@ import CustomerProfile from "../Users/CustomerProfile.vue";
     },
 })
 export default class CustomerEdit extends Vue {
-    @Prop() userprofile!: Userprofile;
-
     private allergies = [
         { name: "gluten", selected: false },
         { name: "skalldyr", selected: false },
@@ -99,7 +97,7 @@ export default class CustomerEdit extends Vue {
         { name: "lupin", selected: false },
         { name: "bløtdyr", selected: false },
     ];
-    private selectedAllergies = this.userprofile.allergies;
+    private selectedAllergies = this.$store.getters.userprofile.allergies;
 
     numbers(value: string) {
         return (
@@ -112,18 +110,18 @@ export default class CustomerEdit extends Vue {
     }
 
     async sendToDb() {
-        await api.putUserprofile(this.userprofile);
+        await api.putUserprofile(this.$store.getters.userprofile);
         this.$emit("switchToCustomerProfile");
     }
 
     async cancel() {
         let unchangedUserprofile = await api.getUserprofile();
         if (unchangedUserprofile) {
-            this.userprofile.fullname = unchangedUserprofile.fullname;
-            this.userprofile.address = unchangedUserprofile.address;
-            this.userprofile.phone = unchangedUserprofile.phone;
-            this.userprofile.email = unchangedUserprofile.email;
-            this.userprofile.allergies = unchangedUserprofile.allergies;
+            this.$store.getters.userprofile.fullname = unchangedUserprofile.fullname;
+            this.$store.getters.userprofile.address = unchangedUserprofile.address;
+            this.$store.getters.userprofile.phone = unchangedUserprofile.phone;
+            this.$store.getters.userprofile.email = unchangedUserprofile.email;
+            this.$store.getters.userprofile.allergies = unchangedUserprofile.allergies;
         }
     }
 }
