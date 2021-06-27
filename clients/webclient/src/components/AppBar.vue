@@ -39,7 +39,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import CustomerOverview from './Users/CustomerOverview.vue';
-import CustomerProfile from './Users/CustomerProfile.vue';
+import CustomerProfileTabs from './Users/CustomerProfileTabs.vue';
 import CustomerInvoice from './Users/CustomerInvoice.vue';
 import AdminOverview from './Admin/AdminOverview.vue';
 import AdminProfile from './Admin/AdminProfile.vue';
@@ -51,7 +51,7 @@ import { Prop } from 'vue-property-decorator';
 @Component({
 	components: {
 		CustomerOverview,
-		CustomerProfile,
+		CustomerProfileTabs,
 		CustomerInvoice,
         AdminOverview,
         AdminProfile, 
