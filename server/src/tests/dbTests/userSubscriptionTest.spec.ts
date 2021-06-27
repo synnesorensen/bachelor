@@ -40,6 +40,7 @@ describe('Test of user subscriptions', () => {
         const user1 = {
             fullname: "Navn Navnesen",
             address: "Skogen 110",
+            deliveryaddress: "Nøstet 3",
             phone: "123456",
             email: "gjøk@skogen.no", 
             allergies: [],
@@ -57,6 +58,7 @@ describe('Test of user subscriptions', () => {
         const user2 = {
             fullname: "Name Nameson",
             address: "Viken 84",
+            deliveryaddress: "Hjørnet 2",
             phone: "456789",
             email: "party@viken.no",
             allergies: ["melk"],
