@@ -59,8 +59,8 @@
                     </v-row>
                     <v-row>
                         <v-col>
-                            <v-btn @click="prev()">Forrige</v-btn>
-                            <v-btn @click="next()">Neste</v-btn>
+                            <v-btn class="ma-1" @click="prev()">Forrige</v-btn>
+                            <v-btn class="ma-1" @click="next()">Neste</v-btn>
                         </v-col>
                     </v-row>
                 </v-col>

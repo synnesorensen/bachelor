@@ -48,6 +48,7 @@
         <v-row>
             <v-col :xl="2" :lg="2" :md="2" :sm="2">
                 <p class="font-weight-medium">Leveringsplan</p>
+            </v-col>
             <v-col>
                 <div v-for="item in items" v-bind:key="item.id">
                     <p class="font-weight-light" > {{item.day + "  -  " + item.menu}} </p>
