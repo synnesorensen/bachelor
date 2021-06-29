@@ -6,10 +6,7 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col v-if="$vuetify.breakpoint.xsOnly">
-                <p class="font-weight-medium">Navn</p>
-            </v-col>
-            <v-col v-else :cols="2">
+            <v-col :xl="2" :lg="2" :md="2" :sm="2">
                 <p class="font-weight-medium">Navn</p>
             </v-col>
             <v-col>
@@ -17,10 +14,7 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col v-if="$vuetify.breakpoint.xsOnly">
-                <p class="font-weight-medium">Firmanavn</p>
-            </v-col>
-            <v-col v-else :cols="2">
+            <v-col :xl="2" :lg="2" :md="2" :sm="2">
                 <p class="font-weight-medium">Firmanavn</p>
             </v-col>
             <v-col>
@@ -28,10 +22,7 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col v-if="$vuetify.breakpoint.xsOnly">
-                <p class="font-weight-medium">Adresse</p>
-            </v-col>
-            <v-col v-else :cols="2">
+            <v-col :xl="2" :lg="2" :md="2" :sm="2">
                 <p class="font-weight-medium">Adresse</p>
             </v-col>
             <v-col>
@@ -39,10 +30,7 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col v-if="$vuetify.breakpoint.xsOnly">
-                <p class="font-weight-medium">Telefonnummer</p>
-            </v-col>
-            <v-col v-else :cols="2">
+            <v-col :xl="2" :lg="2" :md="2" :sm="2">
                 <p class="font-weight-medium">Telefonnummer</p>
             </v-col>
             <v-col>
@@ -50,10 +38,7 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col v-if="$vuetify.breakpoint.xsOnly">
-                <p class="font-weight-medium">E-post</p>
-            </v-col>
-            <v-col v-else :cols="2">
+            <v-col :xl="2" :lg="2" :md="2" :sm="2">
                 <p class="font-weight-medium">E-post</p>
             </v-col>
             <v-col>
@@ -61,12 +46,8 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col v-if="$vuetify.breakpoint.xsOnly">
+            <v-col :xl="2" :lg="2" :md="2" :sm="2">
                 <p class="font-weight-medium">Leveringsplan</p>
-            </v-col>
-            <v-col v-else :cols="2">
-                <p class="font-weight-medium">Leveringsplan</p>
-            </v-col>
             <v-col>
                 <div v-for="item in items" v-bind:key="item.id">
                     <p class="font-weight-light" > {{item.day + "  -  " + item.menu}} </p>
@@ -81,16 +62,14 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import api from "../../api/api";
 import * as interfaces from "../../../../../server/src/interfaces"
-import { Prop } from "vue-property-decorator";
 
 @Component
 export default class CustomerProfile extends Vue {
-    @Prop() userprofile!: interfaces.Userprofile;
     private vendorProfile:interfaces.Vendor | null = null;
     private items: interfaces.MenuItems[] | null = [];
     
     async created() {
-        const vendor = await api.getVendor(this.userprofile.email);
+        const vendor = await api.getVendor(this.$store.getters.loggedInUser);
         this.vendorProfile = vendor;
 
         if (this.vendorProfile != null) {
