@@ -131,7 +131,6 @@
                         v-model="deliveryDay.selected"
                         filter
                         outlined
-                        min="this.test"
                     >
                         {{ deliveryDay.day + " " + deliveryDay.menu }}
                     </v-chip>
@@ -257,7 +256,6 @@ export default class CustomerOrder extends Vue {
     private delPostNo = 0;
     private delPostPlace = "";
     private phone = 0;
-    private test = 1;
     private meals = [
         { no: 1, selected: false },
         { no: 2, selected: false },
@@ -337,7 +335,7 @@ export default class CustomerOrder extends Vue {
             await api.putUserprofile(newUserprofile);
             await api.putUserSubscription(subscription);
             let newSubscription = api.getSingleSubscription();
-            this.$emit("newUserprofile", newUserprofile);
+            this.$emit("newUserprofile", newUserprofile);       // Putte i store
             this.$emit("newSubscription", newSubscription);
         }
     }

@@ -131,10 +131,9 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import {Action, MenuItems, Userprofile, VendorSubscription} from "../../../../../server/src/interfaces";
+import {Action, MenuItems} from "../../../../../server/src/interfaces";
 import CustomerEdit from "./CustomerEdit.vue";
 import CustomerSubscriptionEdit from "./CustomerSubscriptionEdit.vue";
-import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
 
 @Component({

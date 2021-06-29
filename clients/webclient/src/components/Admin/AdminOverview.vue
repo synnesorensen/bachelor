@@ -5,15 +5,33 @@
                 <v-sheet height="64">
                     <v-spacer />
                     <v-toolbar flat>
-                        <v-btn outlined @click="setToday"> I dag </v-btn>
-                        <v-btn fab text small @click="prev">
+                        <v-btn 
+                            outlined 
+                            class="mr-4"
+                            @click="setToday"
+                        > 
+                            I dag 
+                        </v-btn>
+                        <v-btn 
+                            fab 
+                            text 
+                            small 
+                            class="mr-4"
+                            @click="prev"
+                        >
                             <v-icon small>mdi-chevron-left</v-icon>
                         </v-btn>
-                        <v-btn fab text small @click="next">
+                        <v-btn 
+                            fab 
+                            text 
+                            small 
+                            class="mr-4"
+                            @click="next"
+                        >
                             <v-icon small>mdi-chevron-right</v-icon>
                         </v-btn>
                         <v-toolbar-title v-if="$refs.calendar">
-                            {{ $refs.calendar.title }}
+                            {{ $refs.calendar.title.toUpperCase() }}
                         </v-toolbar-title>
                     </v-toolbar>
                 </v-sheet>

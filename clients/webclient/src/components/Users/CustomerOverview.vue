@@ -8,7 +8,6 @@
                         <v-btn
                             outlined
                             class="mr-4"
-                            color="grey darken-2"
                             @click="setToday"
                         >
                             I dag
@@ -16,8 +15,8 @@
                         <v-btn
                             fab
                             text
-                            stmall
-                            color="grey darken-2"
+                            small
+                            class="mr-4"
                             @click="prev"
                         >
                             <v-icon small>mdi-chevron-left</v-icon>
@@ -25,14 +24,14 @@
                         <v-btn
                             fab
                             text
-                            stmall
-                            color="grey darken-2"
+                            small
+                            class="mr-4"
                             @click="next"
                         >
                             <v-icon small>mdi-chevron-right</v-icon>
                         </v-btn>
                         <v-toolbar-title v-if="$refs.calendar">
-                            {{ $refs.calendar.title }}
+                            {{ $refs.calendar.title.toUpperCase() }}
                         </v-toolbar-title>
                     </v-toolbar>
                 </v-sheet>
