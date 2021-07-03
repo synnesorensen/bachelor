@@ -1,7 +1,7 @@
 <template>
 	<v-container>
         <v-row>
-            <v-col :cols="2">
+            <v-col :xl="2" :lg="3">
                 <p class="font-weight-medium"> Siste levering i denne perioden: </p>
             </v-col>
             <v-col v-if="$store.getters.subscription.approved">
@@ -12,7 +12,7 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col :cols="2">
+            <v-col :xl="2" :lg="3">
                 <p class="font-weight-medium"> Neste faktura må betales innen: </p>
             </v-col>
             <v-col v-if="$store.getters.subscription.approved">

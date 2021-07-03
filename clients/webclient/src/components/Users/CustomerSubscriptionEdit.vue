@@ -94,6 +94,7 @@ import api from "../../api/api";
 import {MenuItems, Subscription, Vendor} from "../../../../../server/src/interfaces";
 
 @Component
+
 export default class CustomerOrder extends Vue {
     private vendor: Vendor | null = null;
     private pushSchedule: any = [];

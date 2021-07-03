@@ -7,7 +7,7 @@
         </v-tabs>
         <v-spacer />
         <v-tabs-items v-model="tab">
-            <v-tab-item><CustomerProfile/></v-tab-item>
+            <v-tab-item><Profile/></v-tab-item>
             <v-tab-item><CustomerEdit /></v-tab-item>
             <v-tab-item><CustomerSubscriptionEdit/></v-tab-item>
         </v-tabs-items>
@@ -17,13 +17,13 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import CustomerProfile from "./CustomerProfile.vue";
+import Profile from "./Profile.vue";
 import CustomerEdit from "./CustomerEdit.vue";
 import CustomerSubscriptionEdit from "./CustomerSubscriptionEdit.vue";
 
 @Component({
     components: {
-        CustomerProfile,
+        Profile,
         CustomerEdit,
         CustomerSubscriptionEdit,
     },

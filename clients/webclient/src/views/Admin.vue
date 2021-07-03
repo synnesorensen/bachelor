@@ -8,7 +8,7 @@
             <template v-slot:img="{ props }">
                 <v-img
                     v-bind="props"
-                    gradient="to top right, rgba(100,115,100,.8), rgba(25,32,25,0)"
+                    gradient="to top right, rgba(80,115,80,1), rgba(25,32,25,0)"
                     required
                 >
                 </v-img>
@@ -37,10 +37,10 @@
 		<v-main>
             <v-container fluid>
                 <v-tabs-items v-model="tab">
-                    <v-tab-item><AdminOverview /></v-tab-item>
-                    <v-tab-item><AdminProfile  /></v-tab-item>
-                    <v-tab-item><AdminPayments /></v-tab-item>
-                    <v-tab-item><AdminCustomers /></v-tab-item>
+                    <v-tab-item><AdminCalendar /></v-tab-item>
+                    <v-tab-item><Profile  /></v-tab-item>
+                    <v-tab-item><Payments /></v-tab-item>
+                    <v-tab-item><Customers /></v-tab-item>
                 </v-tabs-items>
             </v-container>
 		</v-main>
@@ -53,17 +53,17 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import AdminOverview from '../components/Admin/AdminOverview.vue';
-import AdminProfile from '../components/Admin/AdminProfile.vue';
-import AdminPayments from '../components/Admin/AdminPayments.vue';
-import AdminCustomers from '../components/Admin/AdminCustomers.vue'
+import AdminCalendar from '../components/Admin/AdminCalendar.vue';
+import Profile from '../components/Admin/Profile.vue';
+import Payments from '../components/Admin/Payments.vue';
+import Customers from '../components/Admin/Customers.vue'
 
 @Component({
 	components: {
-        AdminOverview,
-        AdminProfile, 
-        AdminPayments,
-        AdminCustomers
+        AdminCalendar,
+        Profile, 
+        Payments,
+        Customers
 	},
 })
 export default class AppBar extends Vue {

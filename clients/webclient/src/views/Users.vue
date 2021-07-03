@@ -8,7 +8,7 @@
             <template v-slot:img="{ props }">
                 <v-img
                     v-bind="props"
-                    gradient="to top right, rgba(100,115,100,.8), rgba(25,32,25,0)"
+                    gradient="to top right, rgba(80,115,80,1), rgba(25,32,25,0)"
                     required
                 >
                 </v-img>
@@ -37,9 +37,9 @@
 		<v-main>
             <v-container fluid>
                 <v-tabs-items v-model="tab">
-                    <v-tab-item><CustomerOverview ref="customerOverview" /></v-tab-item>
+                    <v-tab-item><UserCalendar ref="customerOverview" /></v-tab-item>
                     <v-tab-item><CustomerProfileTabs /> </v-tab-item>
-                    <v-tab-item><CustomerInvoice /></v-tab-item>
+                    <v-tab-item><Invoice /></v-tab-item>
                     <v-tab-item><Information /></v-tab-item>
                 </v-tabs-items>
             </v-container>
@@ -50,16 +50,16 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import CustomerOverview from '../components/Users/CustomerOverview.vue';
+import UserCalendar from '../components/Users/UserCalendar.vue';
 import CustomerProfileTabs from '../components/Users/CustomerProfileTabs.vue';
-import CustomerInvoice from '../components/Users/CustomerInvoice.vue';
+import Invoice from '../components/Users/Invoice.vue';
 import Information from '../components/Users/Information.vue';
 
 @Component({
 	components: {
-		CustomerOverview,
+		UserCalendar,
 		CustomerProfileTabs,
-		CustomerInvoice,
+		Invoice,
         Information
 	},
 })

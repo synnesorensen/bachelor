@@ -122,7 +122,7 @@ import api from "../../api/api";
 import { Delivery, Userprofile, Vendor, VendorSubscription } from "../../../../../server/src/interfaces";
 
 @Component({})
-export default class CustomerOverview extends Vue {
+export default class UserCalendar extends Vue {
     private today = new Date().toISOString().substr(0, 10);
     private focus = new Date().toISOString().substr(0, 10);
     private type = "month";

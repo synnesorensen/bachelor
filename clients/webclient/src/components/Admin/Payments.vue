@@ -24,7 +24,7 @@ import * as interfaces from "../../../../../server/src/interfaces";
         CustomerPayment
 	},
 })
-export default class AdminPayments extends Vue {
+export default class Payments extends Vue {
     private selectedUser: interfaces.UserSubscription | null = null;
 
     userSelected(user: interfaces.UserSubscription) {

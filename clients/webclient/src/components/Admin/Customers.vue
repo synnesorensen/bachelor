@@ -83,7 +83,7 @@ import { UserSubscription } from '../../../../../server/src/interfaces';
 	}
 })
 
-export default class AdminCustomers extends Vue {
+export default class Customers extends Vue {
     private users: UserSubscription[] = [];
 
     get activeUsers() {

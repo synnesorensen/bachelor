@@ -1,7 +1,7 @@
 <template>
-    <main>
+    <v-container>
         <v-row>
-            <v-col>
+            <v-col :xl="6">
                 <v-sheet height="64">
                     <v-spacer />
                     <v-toolbar flat>
@@ -56,7 +56,7 @@
                 <Deliveries :date="selectedDate" @update="deliveriesUpdated" />
             </v-col>
         </v-row>
-    </main>
+    </v-container>
 </template>
 
 <script lang="ts">
@@ -71,7 +71,7 @@ import api from "../../api/api";
     },
 })
 
-export default class AdminOverview extends Vue {
+export default class AdminCalendar extends Vue {
     private today = new Date().toISOString().substr(0, 10);
 	private focus = new Date().toISOString().substr(0, 10);
 	private type = "month";

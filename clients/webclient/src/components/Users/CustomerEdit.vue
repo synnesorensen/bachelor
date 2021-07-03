@@ -70,10 +70,8 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
-import { Userprofile } from "../../../../../server/src/interfaces";
-import CustomerProfile from "../Users/CustomerProfile.vue";
+import CustomerProfile from "./Profile.vue";
 
 @Component({
     components: {
