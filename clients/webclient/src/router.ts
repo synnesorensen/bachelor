@@ -1,5 +1,6 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from 'vue';
+import VueRouter, { Route } from 'vue-router';
+import {store} from './store';
 
 Vue.use(VueRouter);
 
@@ -10,9 +11,21 @@ const routes = [
         component: () => import ("./views/Welcome.vue")
     },
     {
-        path: "/app",
-        name: "app",
-        component: () => import ("./views/Appapp.vue")
+        path: "/user",
+        name: "user",
+        component: () => import ("./views/Users.vue")
+    },
+    {
+        path: "/admin",
+        name: "admin",
+        beforeEnter: (to: Route, from: Route, next: Function) => {
+            if (to.name == 'admin' && !store.getters.userprofile.isVendor) {
+                next({ name: 'welcome' });
+            } else {
+                next(); 
+            }
+        },
+        component: () => import ("./views/Admin.vue")
     },
     {   path: '*',
         redirect: '/welcome' }
@@ -23,4 +36,13 @@ const router = new VueRouter({
     mode: 'history',
     routes
 });
+
+router.beforeEach((to, _, next) => {
+    if (to.name !== 'welcome' && !store.getters.userprofile) {
+        next({ name: 'welcome' });
+    } else {
+        next();
+    } 
+});
+
 export default router;

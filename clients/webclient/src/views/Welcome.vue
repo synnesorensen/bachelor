@@ -32,7 +32,6 @@ export default class Welcome extends Vue{
         this.$store.dispatch("loggedInUser", jwt);
         this.showLogInBox = false;
         this.showRegisterBox = false;
-        this.$router.push({name: 'app'})
     }
 };
 </script>

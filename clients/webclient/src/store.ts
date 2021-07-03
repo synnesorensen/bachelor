@@ -2,7 +2,9 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import {Userprofile, VendorSubscription} from '../../../server/src/interfaces'
 import api from '../src/api/api';
+import router from './router';
 import { getUserInfo } from '../../../server/src/auth/getUserFromJwt';
+import getAuth from './components/LoginDialog/auth';
 
 Vue.use(Vuex);
 interface State {
@@ -51,6 +53,21 @@ export const store = new Vuex.Store({
             context.commit("setSubscription", subscription);
             const username = getUserInfo(jwt);
             context.commit("setUsername", username);
+            if (userprofile?.isVendor) {
+                router.push({name: 'admin'});
+            } else {
+                router.push({name: 'user'});
+            }
+        },
+        async logout(context) {
+            const Auth = getAuth();
+            Auth.signOut();
+            localStorage.removeItem("token");
+            api.setApiBearerToken("");
+            context.commit("setUserprofile", null);
+            context.commit("setSubscription", null);
+            context.commit("setUsername", "");
+            router.push({name: 'welcome'});
         }
     }
 });
