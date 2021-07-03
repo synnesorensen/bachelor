@@ -44,20 +44,21 @@ export const store = new Vuex.Store({
         }
     }, 
     actions: {
-        async loggedInUser(context, jwt) {
-            localStorage.setItem("token", jwt);
-            api.setApiBearerToken(jwt);
+        async loggedInUser(context, payload) {
+            localStorage.setItem("token", payload.jwt);
+            api.setApiBearerToken(payload.jwt);
             const userprofile = await api.getUserprofile();
             context.commit("setUserprofile", userprofile);
             const subscription = await api.getSingleSubscription();
             context.commit("setSubscription", subscription);
-            const username = getUserInfo(jwt);
+            const username = getUserInfo(payload.jwt);
             context.commit("setUsername", username);
             if (userprofile?.isVendor) {
                 router.push({name: 'admin'});
             } else {
                 router.push({name: 'user'});
             }
+            payload.callback();
         },
         async logout(context) {
             const Auth = getAuth();

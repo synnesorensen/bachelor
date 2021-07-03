@@ -29,9 +29,13 @@ export default class Welcome extends Vue{
     private showRegisterBox = false;
 
     loggedIn(jwt: string) {
-        this.$store.dispatch("loggedInUser", jwt);
-        this.showLogInBox = false;
-        this.showRegisterBox = false;
+        const self = this;
+        this.$store.dispatch("loggedInUser", {
+            jwt, 
+            callback: () => {
+                self.showLogInBox = false;
+                self.showRegisterBox = false;
+        }});
     }
 };
 </script>
