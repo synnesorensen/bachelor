@@ -1,130 +1,126 @@
 <template>
     <v-container>
-        <div>
-            <v-row>
-                <v-col :cols="5">
-                    <h1 class="primary--text">Min profil</h1>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col :cols="2">
-                    <p class="font-weight-black">Navn</p>
-                </v-col>
-                <v-col>
-                    <p class="font-weight-light">{{ $store.getters.userprofile.fullname }}</p>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col :cols="2">
-                    <p class="font-weight-black">Hjemmeadresse</p>
-                </v-col>
-                <v-col>
-                    <p class="font-weight-light">{{ $store.getters.userprofile.address }}</p>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col :cols="2">
-                    <p class="font-weight-black">Leveringsadresse</p>
-                </v-col>
-                <v-col>
-                    <p class="font-weight-light">{{ $store.getters.userprofile.deliveryaddress }}</p>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col :cols="2">
-                    <p class="font-weight-black">Telefonnummer</p>
-                </v-col>
-                <v-col>
-                    <p class="font-weight-light">{{ $store.getters.userprofile.phone }}</p>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col :cols="2">
-                    <p class="font-weight-black">Epost</p>
-                </v-col>
-                <v-col>
-                    <p class="font-weight-light">{{ $store.getters.userprofile.email }}</p>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col :cols="2">
-                    <p class="font-weight-black">
-                        <label for="allergylist">Mine allergier</label>
-                    </p>
-                </v-col>
-                <v-col>
-                    <p
-                        class="font-weight-light"
-                        v-for="allergy in $store.getters.userprofile.allergies"
-                        :key="allergy"
-                        id="allergylist"
-                    >
-                        {{ allergy }}
-                    </p>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col :cols="2">
-                    <p class="font-weight-black">Antall porsjoner</p>
-                </v-col>
-                <v-col>
-                    <p class="font-weight-light">{{ $store.getters.subscription.noOfMeals }}</p>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col :cols="2">
-                    <p class="font-weight-black">Valgt boks</p>
-                </v-col>
-                <v-col>
-                    <p class="font-weight-light">{{ $store.getters.subscription.box }}</p>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col :cols="2">
-                    <p class="font-weight-black">Leveringsdag</p>
-                </v-col>
-                <v-col>
-                    <p
-                        class="font-weight-light"
-                        v-for="item in items"
-                        v-bind:key="item.id"
-                    >
-                        {{ item.day + "  -  " + item.menu }}
-                    </p>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-btn @click="dialog = true" color="primary">
-                    {{ this.buttonText }}
-                </v-btn>
-                <v-dialog v-model="dialog" persistent max-width="300">
-                    <v-card>
-                        <v-container>
-                            <v-card-title class="headline">
-                                {{ this.buttonText }}
-                            </v-card-title>
-                            <v-card-text> {{ this.dialogText }} </v-card-text>
-                            <v-row class="pa-4" align="center" justify="center">
-                                <v-btn
-                                    color="green darken-1"
-                                    text
-                                    @click="toggleSubscriptionPause()"
-                                >
-                                    {{ $store.getters.subscription.paused? "Aktiver": "Sett på pause" }}
-                                </v-btn>
-                                <v-btn
-                                    color="green darken-1"
-                                    text
-                                    @click="dialog = false"
-                                >
-                                    Avbryt
-                                </v-btn>
-                            </v-row>
-                        </v-container>
-                    </v-card>
-                </v-dialog>
-            </v-row>
-        </div>
+        <v-row>
+            <v-col>
+                <h2>Min profil</h2>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col :xl="2" :lg="2" :md="2" :sm="2">
+                <p class="font-weight-medium">Navn</p>
+            </v-col>
+            <v-col>
+                <p class="font-weight-light">{{ $store.getters.userprofile.fullname }}</p>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col :xl="2" :lg="2" :md="2" :sm="2">
+                <p class="font-weight-medium">Hjemmeadresse</p>
+            </v-col>
+            <v-col>
+                <p class="font-weight-light">{{ $store.getters.userprofile.address }}</p>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col :xl="2" :lg="2" :md="2" :sm="2">
+                <p class="font-weight-medium">Leveringsadresse</p>
+            </v-col>
+            <v-col>
+                <p class="font-weight-light">{{ $store.getters.userprofile.deliveryaddress }}</p>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col :xl="2" :lg="2" :md="2" :sm="2">
+                <p class="font-weight-medium">Telefonnummer</p>
+            </v-col>
+            <v-col>
+                <p class="font-weight-light">{{ $store.getters.userprofile.phone }}</p>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col :xl="2" :lg="2" :md="2" :sm="2">
+                <p class="font-weight-medium">Epost</p>
+            </v-col>
+            <v-col>
+                <p class="font-weight-light">{{ $store.getters.userprofile.email }}</p>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col :xl="2" :lg="2" :md="2" :sm="2">
+                <p class="font-weight-medium">Allergier</p>
+            </v-col>
+            <v-col>
+                <p
+                    class="font-weight-light"
+                    v-for="allergy in $store.getters.userprofile.allergies"
+                    :key="allergy"
+                    id="allergylist"
+                >
+                    {{ allergy }}
+                </p>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col :xl="2" :lg="2" :md="2" :sm="2">
+                <p class="font-weight-medium">Antall porsjoner</p>
+            </v-col>
+            <v-col>
+                <p class="font-weight-light">{{ $store.getters.subscription.noOfMeals }}</p>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col :xl="2" :lg="2" :md="2" :sm="2">
+                <p class="font-weight-medium">Valgt boks</p>
+            </v-col>
+            <v-col>
+                <p class="font-weight-light">{{ $store.getters.subscription.box }}</p>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col :xl="2" :lg="2" :md="2" :sm="2">
+                <p class="font-weight-medium">Leveringsdag</p>
+            </v-col>
+            <v-col>
+                <p
+                    class="font-weight-light"
+                    v-for="item in items"
+                    v-bind:key="item.id"
+                >
+                    {{ item.day + ": " + item.menu }}
+                </p>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-btn @click="dialog = true" color="primary">
+                {{ this.buttonText }}
+            </v-btn>
+            <v-dialog v-model="dialog" persistent max-width="300">
+                <v-card>
+                    <v-container>
+                        <v-card-title class="headline">
+                            {{ this.buttonText }}
+                        </v-card-title>
+                        <v-card-text> {{ this.dialogText }} </v-card-text>
+                        <v-row class="pa-4" align="center" justify="center">
+                            <v-btn
+                                color="green darken-1"
+                                text
+                                @click="toggleSubscriptionPause()"
+                            >
+                                {{ $store.getters.subscription.paused? "Aktiver": "Sett på pause" }}
+                            </v-btn>
+                            <v-btn
+                                color="green darken-1"
+                                text
+                                @click="dialog = false"
+                            >
+                                Avbryt
+                            </v-btn>
+                        </v-row>
+                    </v-container>
+                </v-card>
+            </v-dialog>
+        </v-row>
     </v-container>
 </template>
 
