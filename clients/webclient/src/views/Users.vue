@@ -1,5 +1,5 @@
 <template>
-	<v-container class="overflow-hidden" v-if="$store.getters.userprofile && $store.getters.subscription">
+	<v-container class="overflow-hidden" v-if="$store.getters.userprofile">
 		<v-app-bar 
             app 
             dark
@@ -65,7 +65,7 @@
             <v-container fluid>
                 <v-tabs-items v-model="tab">
                     <v-tab-item><UserCalendar ref="customerOverview" /></v-tab-item>
-                    <v-tab-item><CustomerProfileTabs /> </v-tab-item>
+                    <v-tab-item><Profile /> </v-tab-item>
                     <v-tab-item><Invoice /></v-tab-item>
                     <v-tab-item><Information /></v-tab-item>
                 </v-tabs-items>
@@ -78,14 +78,14 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import UserCalendar from '../components/Users/UserCalendar.vue';
-import CustomerProfileTabs from '../components/Users/CustomerProfileTabs.vue';
+import Profile from '../components/Users/Profile.vue';
 import Invoice from '../components/Users/Invoice.vue';
 import Information from '../components/Users/Information.vue';
 
 @Component({
 	components: {
 		UserCalendar,
-		CustomerProfileTabs,
+		Profile,
 		Invoice,
         Information
 	},

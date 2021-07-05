@@ -16,6 +16,11 @@ const routes = [
         component: () => import ("./views/Users.vue")
     },
     {
+        path: "/register",
+        name: "register",
+        component: () => import ("./views/RegisterAccount.vue")
+    },
+    {
         path: "/admin",
         name: "admin",
         beforeEnter: (to: Route, from: Route, next: Function) => {
@@ -38,7 +43,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, _, next) => {
-    if (to.name !== 'welcome' && !store.getters.userprofile) {
+    if (!store.getters.token) {
         next({ name: 'welcome' });
     } else {
         next();
