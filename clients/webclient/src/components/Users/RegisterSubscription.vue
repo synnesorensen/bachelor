@@ -3,99 +3,11 @@
         <v-form v-model="isFormValid">
             <v-row>
                 <v-col>
-                    <h1>Bestillingsforespørsel</h1>
+                    <h1>Registrere abonnement</h1>
                 </v-col>
             </v-row>
             <v-row>
-                <v-col cols="5">
-                    <v-row dense class="text-center">
-                        <v-col>
-                            <v-text-field
-                                label="Fornavn"
-                                v-model="firstName"
-                                required
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row dense class="text-center">
-                        <v-col>
-                            <v-text-field
-                                label="Etternavn"
-                                v-model="lastName"
-                                required
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row dense class="text-center">
-                        <v-col>
-                            <v-text-field
-                                label="Hjemmeadresse"
-                                v-model="address"
-                                required
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row dense class="text-center">
-                        <v-col>
-                            <v-text-field
-                                :rules="[numbers, postNoLength]"
-                                label="Postnummer"
-                                v-model="postNo"
-                                required
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row dense class="text-center">
-                        <v-col>
-                            <v-text-field
-                                label="Poststed hjemmeadresse"
-                                v-model="postPlace"
-                                required
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row dense class="text-center">
-                        <v-col>
-                            <v-text-field
-                                label="Leveringsadresse"
-                                v-model="deliveryaddress"
-                                required
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row dense class="text-center">
-                        <v-col>
-                            <v-text-field
-                                :rules="[numbers, postNoLength]"
-                                label="Postnummer"
-                                v-model="delPostNo"
-                                required
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row dense class="text-center">
-                        <v-col>
-                            <v-text-field
-                                label="Poststed leveringsadresse"
-                                v-model="delPostPlace"
-                                required
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row dense class="text-center">
-                        <v-col>
-                            <v-text-field
-                                :rules="[numbers, phoneNoLength]"
-                                label="Telefonnummer"
-                                v-model="phone"
-                                required
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
-                </v-col>
-            </v-row>
-            <v-row>
-                <h4>Antall porsjoner</h4>
+                <p class="font-weight-medium">Antall porsjoner:</p>
             </v-row>
             <v-row>
                 <v-chip-group
@@ -116,7 +28,7 @@
                 </v-chip-group>
             </v-row>
             <v-row>
-                <h4>Velg leveringsdager</h4>
+                <p class="font-weight-medium">Leveringsdag(er):</p>
             </v-row>
             <v-row>
                 <v-chip-group
@@ -137,27 +49,7 @@
                 </v-chip-group>
             </v-row>
             <v-row>
-                <h4>Hvor mange leveringer ønsker du?</h4>
-            </v-row>
-            <v-row>
-                <v-chip-group
-                    v-model="selectedDeliveries"
-                    active-class="blue--text text--accent-4"
-                    mandatory
-                >
-                    <v-chip
-                        v-for="delivery in deliveries"
-                        v-bind:key="delivery.type"
-                        v-model="delivery.selected"
-                        filter
-                        outlined
-                    >
-                        {{ delivery.type }}
-                    </v-chip>
-                </v-chip-group>
-            </v-row>
-            <v-row>
-                <h4>Hvilken type bokser ønsker du?</h4>
+                <p class="font-weight-medium">Type boks:</p>
             </v-row>
             <v-row>
                 <v-chip-group
@@ -177,60 +69,6 @@
                     </v-chip>
                 </v-chip-group>
             </v-row>
-            <v-row>
-                <h4>Har du noen allergier</h4>
-            </v-row>
-            <v-row>
-                <v-chip-group
-                    v-model="selectedAllergies"
-                    active-class="blue--text text--accent-4"
-                    multiple
-                >
-                    <v-chip
-                        v-for="allergy in allergies"
-                        v-bind:key="allergy.name"
-                        v-bind:value="allergy.name"
-                        v-model="allergy.selected"
-                        filter
-                        outlined
-                    >
-                        {{ allergy.name }}
-                    </v-chip>
-                </v-chip-group>
-            </v-row>
-            <v-row>
-                <v-text-field
-                    label="Annen informasjon du vil legge til?"
-                    v-model="add"
-                    
-                ></v-text-field>
-            </v-row>
-            <v-row>
-                <v-col>
-                    <v-tooltip :disabled="isFormValid" left>
-                        <template v-slot:activator="{ on }">
-                            <div v-on="on">
-                                <v-btn 
-                                    @click="sendToDb" 
-                                    color="primary" 
-                                    :disabled="!isFormValid"
-                                    class="mx-2"
-                                >
-                                    Send inn
-                                </v-btn>
-                                <v-btn 
-                                    @click="logout" 
-                                    color="secondary"
-                                    class="mx-2"
-                                >
-                                    Avbryt
-                                </v-btn>
-                            </div>
-                        </template>
-                        <span>Vennligst fyll ut alle påkrevde felt</span>
-                    </v-tooltip>
-                </v-col>
-            </v-row>
         </v-form>
     </v-container>
 </template>
@@ -238,24 +76,13 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
 import { MenuItems, Subscription, Vendor} from "../../../../../server/src/interfaces";
 
 @Component
 export default class CustomerOrder extends Vue {
     private isFormValid = false;
-    @Prop() loggedInUser!: string;
     private vendor: Vendor | null = null;
-    private firstName = "";
-    private lastName = "";
-    private address = "";
-    private postNo = 0;
-    private postPlace = "";
-    private deliveryaddress = "";
-    private delPostNo = 0;
-    private delPostPlace = "";
-    private phone = 0;
     private meals = [
         { no: 1, selected: false },
         { no: 2, selected: false },
@@ -271,38 +98,11 @@ export default class CustomerOrder extends Vue {
     private selectedNoOfMeals = 1;
     private deliveryDays: MenuItems[] = [];
     private selectedDeliveryDays = [];
-    private deliveries = [
-        { type: "Abonnement (kr. 137 per levering)", selected: false },
-        { type: "Ei enkelt levering 149 kr", selected: false },
-    ];
-    private selectedDeliveries = [];
     private boxes = [
         { type: "Engangsboks", selected: false },
         { type: "Gjenbruksbokser (depositum kr 218)", selected: false },
     ];
     private selectedBox = "";
-    private allergies = [
-        { name: "Gluten", selected: false },
-        { name: "Skalldyr", selected: false },
-        { name: "Egg", selected: false },
-        { name: "Fisk", selected: false },
-        { name: "Peanøtter", selected: false },
-        { name: "Nøtter", selected: false },
-        { name: "Melk", selected: false },
-        { name: "Soya", selected: false },
-        { name: "Selleri", selected: false },
-        { name: "Sennep", selected: false },
-        { name: "Sesam", selected: false },
-        { name: "Svovel", selected: false },
-        { name: "Lupin", selected: false },
-        { name: "Bløtdyr", selected: false },
-    ];
-    private selectedAllergies = [];
-    private add = "";               // TODO: Knytte dette feltet til epost sendt til vendor ved registrering
-
-    logout() {
-        this.$emit("logout");
-    }
 
     async getVendor() {
         this.vendor = await api.getSingleVendor();
@@ -312,47 +112,20 @@ export default class CustomerOrder extends Vue {
     }
 
     async sendToDb() {
-        if (this.vendor?.vendorId) {
-            let newUserprofile = {
-                fullname: this.firstName + " " + this.lastName,
-                address: this.address + " " + this.postNo + " " + this.postPlace,
-                deliveryaddress: this.deliveryaddress + " " + this.delPostNo + " " + this.delPostPlace,
-                phone: this.phone.toString(),
-                email: this.loggedInUser,
-                allergies: this.selectedAllergies,
-                isVendor: false,
-            };
-
-            let subscription:Subscription = {
-                vendorId: this.vendor.vendorId,
-                userId: this.loggedInUser,
-                approved: false,
-                paused: false,
-                schedule: this.selectedDeliveryDays,
-                noOfMeals: this.selectedNoOfMeals,
-                box: this.selectedBox
-            };
-            await api.putUserprofile(newUserprofile);
-            await api.putUserSubscription(subscription);
-            let newSubscription = api.getSingleSubscription();
-            this.$emit("newUserprofile", newUserprofile);       // Putte i store
-            this.$emit("newSubscription", newSubscription);
-        }
+        let subscription:Subscription = {
+            vendorId: this.vendor!.vendorId,
+            userId: this.$store.getters.loggedInUser,
+            approved: false,
+            paused: false,
+            schedule: this.selectedDeliveryDays,
+            noOfMeals: this.selectedNoOfMeals,
+            box: this.selectedBox
+        };
+        await api.putUserSubscription(subscription);
+        let newSubscription = api.getSingleSubscription();
+        this.$emit("newSubscription", newSubscription);
     }
 
-    async created() {
-        this.getVendor();
-    }
 
-    // Rules:
-    numbers(value: string) {
-        return !isNaN(parseInt(value)) || "Vennligst oppgi kun siffer";
-    }
-    postNoLength(value: string) {
-        return value.length == 4 || "Vennligst oppgi et postnummer bestående av 4 siffer";
-    }
-    phoneNoLength(value: string) {
-        return value.length >= 8 || "Vennligst oppgi et telefonnummer bestående av 8 siffer";
-    }
 }
 </script>

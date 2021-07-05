@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {Userprofile, VendorSubscription} from '../../../server/src/interfaces'
+import {Userprofile, Vendor, VendorSubscription} from '../../../server/src/interfaces'
 import api from '../src/api/api';
 import router from './router';
 import { getUserInfo } from '../../../server/src/auth/getUserFromJwt';
@@ -10,13 +10,15 @@ Vue.use(Vuex);
 interface State {
     userprofile: Userprofile | null,
     subscription: VendorSubscription | null,
-    username: string
+    username: string, 
+    vendor: Vendor | null
 }
 
 let state: State = {
     userprofile: null,
     subscription: null,
-    username: ""
+    username: "",
+    vendor: null
 }
 
 export const store = new Vuex.Store({
@@ -30,6 +32,9 @@ export const store = new Vuex.Store({
         },
         setUsername(state, username) {
             state.username = username;
+        },
+        setVendor(state, vendor) {
+            state.vendor = vendor;
         }
     }, 
     getters: {
@@ -41,24 +46,38 @@ export const store = new Vuex.Store({
         },
         subscription(state) {
             return state.subscription;
+        }, 
+        token() {
+            return localStorage.getItem("token");
+        }, 
+        vendor(state) {
+            return state.vendor;
         }
     }, 
     actions: {
         async loggedInUser(context, payload) {
             localStorage.setItem("token", payload.jwt);
             api.setApiBearerToken(payload.jwt);
-            const userprofile = await api.getUserprofile();
-            context.commit("setUserprofile", userprofile);
-            const subscription = await api.getSingleSubscription();
-            context.commit("setSubscription", subscription);
             const username = getUserInfo(payload.jwt);
             context.commit("setUsername", username);
-            if (userprofile?.isVendor) {
-                router.push({name: 'admin'});
+            const vendor = api.getSingleVendor();
+            context.commit("setVendor", vendor);
+
+            const userprofile = await api.getUserprofile();
+            if (!userprofile) {
+                router.push({name: 'register'});
             } else {
-                router.push({name: 'user'});
+                context.commit("setUserprofile", userprofile);
+                const subscription = await api.getSingleSubscription();
+                context.commit("setSubscription", subscription);
+            
+                if (userprofile?.isVendor) {
+                    router.push({name: 'admin'});
+                } else {
+                    router.push({name: 'user'});
+                }
+                payload.callback();
             }
-            payload.callback();
         },
         async logout(context) {
             const Auth = getAuth();
