@@ -6,8 +6,8 @@
                 <v-tab>Glemt passord</v-tab>
             </v-tabs>
             <v-tabs-items v-model="tab">
-                <v-tab-item  :transition="false" :reverse-transition="false"><TabLogin @showSpinner="showSpin" @loggedIn="loggedIn" /></v-tab-item>
-                <v-tab-item :transition="false" :reverse-transition="false"><TabPassword @showSpinner="showSpin" @loggedIn="loggedIn" /></v-tab-item>
+                <v-tab-item  :transition="false" :reverse-transition="false"><TabLogin @showSpinner="showSpin" @loggedIn="loggedIn" @closeDialog="closeDialog" /></v-tab-item>
+                <v-tab-item :transition="false" :reverse-transition="false"><TabPassword @showSpinner="showSpin" @loggedIn="loggedIn" @closeDialog="closeDialog" /></v-tab-item>
             </v-tabs-items>
         </v-card>
         <v-overlay absolute opacity="0.1" v-if="showSpinner">
@@ -46,6 +46,10 @@ export default class LoginDialog extends Vue {
 
     showSpin(value:boolean) {
         this.showSpinner = value;
+    }
+
+    closeDialog() {
+        this.$emit("closeDialog", true);
     }
 }
 </script> 

@@ -24,6 +24,12 @@
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn 
+                color="error" 
+                @click="cancel"
+            >
+            Avbryt
+            </v-btn>
+            <v-btn 
                 color="success" 
                 @click="login"
             >
@@ -58,6 +64,10 @@ export default class TabLogin extends Vue {
             this.errorMsg = "Feil brukernavn eller passord."
             this.$emit("showSpinner", false);
         }
+    }
+
+    cancel() {
+        this.$emit("closeDialog", true);
     }
 }
 </script>

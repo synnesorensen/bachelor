@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="showDialog" persistent max-width="500">
         <v-card>
-            <TabRegister @showSpinner="showSpin" @loggedIn="loggedIn" />
+            <TabRegister @showSpinner="showSpin" @loggedIn="loggedIn" @closeDialog="closeDialog" />
         </v-card>
         <v-overlay absolute opacity="0.1" v-if="showSpinner">
             <v-progress-circular
@@ -37,6 +37,10 @@ export default class RegisterDialog extends Vue {
 
     showSpin(value:boolean) {
         this.showSpinner = value;
+    }
+
+    closeDialog() {
+        this.$emit("closeDialog", true);
     }
 }
 </script> 
