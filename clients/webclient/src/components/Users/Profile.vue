@@ -95,12 +95,12 @@
                                 sm="6"
                             >
                                 <v-select
-                                v-model="selectedAllergies"
-                                :items="allergies"
-                                solo
-                                chips
-                                label="Velg alle aktuelle"
-                                multiple
+                                    v-model="selectedAllergies"
+                                    :items="allergies"
+                                    solo
+                                    chips
+                                    label="Velg alle aktuelle"
+                                    multiple
                                 ></v-select>
                             </v-col>
                             <v-col v-else>
@@ -171,21 +171,40 @@
                                 sm="6"
                             >
                                 <v-select
-                                v-model="selectedBox"
-                                :items="boxes"
-                                solo
-                                label="Velg leveringsboks"
+                                    v-model="selectedBox"
+                                    :items="boxes"
+                                    solo
+                                    label="Velg leveringsboks"
                                 ></v-select>
                             </v-col>
                             <v-col v-else>
                                 <p class="font-weight-light">{{ $store.getters.subscription.box }}</p>
                             </v-col>
                         </v-row>
-                        <v-row v-if="!editModeSub">
+                        <v-row>
                             <v-col>
                                 <p class="font-weight-medium">Leveringsdag</p>
                             </v-col>
-                            <v-col>
+                            <template v-if="editModeSub">
+                                <v-select
+                                    label='Leveringsdager'
+                                    v-model='selectedSchedule'
+                                    :items='vendorSchedule'
+                                    item-value='id'
+                                    item-text='day'
+                                    return-object
+                                    solo
+                                    multiple
+                                >
+                                    <template slot='selection' slot-scope='{ item }'>
+                                        {{ item.day }} - {{ item.menu }}
+                                    </template>
+                                    <template slot='item' slot-scope='{ item }'>
+                                        {{ item.day }} - {{ item.menu }}
+                                    </template>
+                                </v-select>
+                            </template>
+                            <v-col v-else>
                                 <p
                                     class="font-weight-light"
                                     v-for="item in $store.getters.subscription.schedule"
@@ -194,27 +213,6 @@
                                     {{ item.day + ": " + item.menu }}
                                 </p>
                             </v-col>
-                        </v-row>
-                        <v-row v-if="editModeSub">
-                            <p class="font-weight-medium">Leveringsdag</p>
-                        </v-row>
-                        <v-row v-if="editModeSub">
-                            <v-chip-group
-                                v-model="selectedSchedule"
-                                active-class="blue--text text--accent-4"
-                                multiple
-                            >
-                                <v-chip
-                                    v-for="item in vendorSchedule"
-                                    v-bind:key="item"
-                                    v-bind:value="item"
-                                    v-model="item.selected"
-                                    filter
-                                    outlined
-                                >
-                                    {{ item.day + " " + item.menu }}
-                                </v-chip>
-                            </v-chip-group>
                         </v-row>
                     </v-card-text>
                     <v-card-actions v-if="editModeSub">
@@ -270,14 +268,11 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import {Action, MenuItems, Subscription, Vendor} from "../../../../../server/src/interfaces";
-import CustomerEdit from "./CustomerEdit.vue";
-import CustomerSubscriptionEdit from "./CustomerSubscriptionEdit.vue";
 import api from "../../api/api";
 
 @Component({
     components: {
-        CustomerEdit,
-        CustomerSubscriptionEdit
+
     },
 })
 export default class CustomerProfile extends Vue {
@@ -293,7 +288,7 @@ export default class CustomerProfile extends Vue {
     private selectedBox = "";
     private vendor: Vendor | null = null;
     private vendorSchedule: MenuItems[] = [];
-    private selectedSchedule: string[] = [];
+    private selectedSchedule: MenuItems[] = [];
 
     async mounted() {
         this.selectedAllergies = this.$store.getters.userprofile.allergies;
@@ -376,17 +371,21 @@ export default class CustomerProfile extends Vue {
     }
 
     async updateSubscription() {
-        console.log(this.selectedSchedule);
+        let result: string[] = this.selectedSchedule.map( (item) => {
+            return item.id;
+        });
         let sub: Subscription = {
-                vendorId: this.$store.getters.subscription.vendorId,
-                userId: this.$store.getters.userprofile.email,
-                approved: false,
-                paused: false,
-                schedule: this.selectedSchedule,
-                noOfMeals: this.selectedNoOfMeals,
-                box: this.selectedBox,
-            };
-            await api.putUserSubscription(sub);
+            vendorId: this.$store.getters.subscription.vendorId,
+            userId: this.$store.getters.userprofile.email,
+            approved: false,
+            paused: false,
+            schedule: result,
+            noOfMeals: this.selectedNoOfMeals,
+            box: this.selectedBox,
+        };
+        await api.putUserSubscription(sub);
+        let updated = await api.getSingleSubscription();
+        this.$store.commit("setSubscription", updated);
         this.editModeSub = false;
     }
 
