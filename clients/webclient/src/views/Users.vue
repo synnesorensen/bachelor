@@ -15,7 +15,7 @@
                 </v-img>
             </template>
 			<v-toolbar-title 
-                class="font-weight-medium"
+                class="headline"
             >
                 Lunsj på  hjul
             </v-toolbar-title>

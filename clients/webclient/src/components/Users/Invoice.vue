@@ -16,7 +16,7 @@
                 <p class="font-weight-medium"> Neste faktura må betales innen: </p>
             </v-col>
             <v-col v-if="$store.getters.subscription.approved">
-                <p class="font-weight-light"> {{nextInvoice}} </p>
+                <p class="font-weight-light"> {{toLocalPresentation(nextInvoice)}} </p>
             </v-col>
             <v-col v-else>
                 <p class="font-weight-light"> Du vil få tilsendt faktura for neste periode så snart abonnementet ditt er blitt godkjent. </p>
