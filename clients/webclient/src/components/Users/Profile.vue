@@ -31,7 +31,7 @@
                                 ></v-text-field>
                             </v-col>
                             <v-col v-else>
-                                <p class="font-weight-light">{{ $store.getters.userprofile.fullname }}</p>
+                                <p class="font-weight-regular">{{ $store.getters.userprofile.fullname }}</p>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -45,7 +45,7 @@
                                 ></v-text-field>
                             </v-col>
                             <v-col v-else>
-                                <p class="font-weight-light">{{ $store.getters.userprofile.address }}</p>
+                                <p class="font-weight-regular">{{ $store.getters.userprofile.address }}</p>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -59,7 +59,7 @@
                                 ></v-text-field>
                             </v-col>
                             <v-col v-else>
-                                <p class="font-weight-light">{{ $store.getters.userprofile.deliveryaddress }}</p>
+                                <p class="font-weight-regular">{{ $store.getters.userprofile.deliveryaddress }}</p>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -74,7 +74,7 @@
                                 ></v-text-field>
                             </v-col>
                             <v-col v-else>
-                                <p class="font-weight-light">{{ $store.getters.userprofile.phone }}</p>
+                                <p class="font-weight-regular">{{ $store.getters.userprofile.phone }}</p>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -82,7 +82,7 @@
                                 <p class="font-weight-medium">Epost</p>
                             </v-col>
                             <v-col>
-                                <p class="font-weight-light">{{ $store.getters.userprofile.email }}</p>
+                                <p class="font-weight-regular">{{ $store.getters.userprofile.email }}</p>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -105,7 +105,7 @@
                             </v-col>
                             <v-col v-else>
                                 <p
-                                    class="font-weight-light"
+                                    class="font-weight-regular"
                                     v-for="allergy in $store.getters.userprofile.allergies"
                                     :key="allergy"
                                     id="allergylist"
@@ -253,11 +253,92 @@
                     </v-card-actions>
                     <v-card-text v-if="!$store.getters.subscription">
                         <br />
-                        <p class="font-weight-light">Du har ikke tegnet et abonnement. Dersom du ønsker faste leveringer en eller flere dager i uken, kan du sette opp et abonnement ved å trykke på knappen.</p>
+                        <p v-if="!goToReg" class="font-weight-regular">
+                            Du har ikke tegnet et abonnement. Dersom du ønsker faste leveringer en eller flere dager i uken, 
+                            kan du sette opp et abonnement ved å trykke på knappen.
+                        </p>
                     </v-card-text>
-                    <v-card-actions v-if="!$store.getters.subscription">
-                        <v-btn text color="orange">Registrer et abonnement</v-btn>
+                    <v-card-actions v-if="!$store.getters.subscription && !goToReg">
+                        <v-btn @click="goToReg=true" text color="orange">Registrer et abonnement</v-btn>
                     </v-card-actions>
+                    <v-card-text v-if="goToReg">
+                        <v-form v-model="isFormValid">
+                            <v-row>
+                                <p class="font-weight-medium">Velg antall porsjoner:</p>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="auto">
+                                    <v-select
+                                        v-model="selectedNoOfMeals"
+                                        :items="noOfMeals"
+                                        solo
+                                        :rules="[(v) => !!v || 'Item is required']"
+                                        required
+                                        label="Antall porsjoner"
+                                    ></v-select>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <p class="font-weight-medium">Velg type leveringsboks:</p>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="auto">
+                                    <v-select
+                                        v-model="selectedBox"
+                                        :items="boxes"
+                                        solo
+                                        :rules="[(v) => !!v || 'Item is required']"
+                                        required
+                                        label="Type boks"
+                                    ></v-select>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <p class="font-weight-medium">Velg leveringsdag(er):</p>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="auto">
+                                    <template>
+                                        <v-select
+                                            label='Leveringsdager'
+                                            v-model='selectedSchedule'
+                                            :items='vendorSchedule'
+                                            item-value='id'
+                                            item-text='day'
+                                            return-object
+                                            solo
+                                            required
+                                            multiple
+                                        >
+                                            <template slot='selection' slot-scope='{ item }'>
+                                                {{ item.day }} - {{ item.menu }}
+                                            </template>
+                                            <template slot='item' slot-scope='{ item }'>
+                                                {{ item.day }} - {{ item.menu }}
+                                            </template>
+                                        </v-select>
+                                    </template>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-btn 
+                                    @click="cancelReg" 
+                                    color="error"
+                                    class="ma-2"
+                                >
+                                    Avbryt
+                                </v-btn>
+                                <v-btn 
+                                    @click="makeSub" 
+                                    :disabled="!isFormValid || hasValue()"
+                                    color="success" 
+                                    class="ma-2"
+                                >
+                                    Send inn
+                                </v-btn>
+                            </v-row>
+                        </v-form>
+                    </v-card-text>
                 </v-card>
             </v-col>
         </v-row>
@@ -276,6 +357,7 @@ import api from "../../api/api";
     },
 })
 export default class CustomerProfile extends Vue {
+    private isFormValid = false;
     private items: MenuItems[] | null = [];
     private dialog = false;
     private editModeProfile = false;
@@ -283,12 +365,13 @@ export default class CustomerProfile extends Vue {
     private allergies = ["Gluten","Skalldyr","Egg","Fisk","Peanøtter","Nøtter","Melk", "Soya", "Selleri","Sennep", "Sesam", "Svovel", "Lupin", "Bløtdyr"];
     private selectedAllergies: string[] = [];
     private noOfMeals = [1,2,3,4,5,6,7,8,9,10];
-    private selectedNoOfMeals = 0;
+    private selectedNoOfMeals = 1;
     private boxes = ["Engangsboks", "Gjenbruksbokser (depositum kr 218)"];
     private selectedBox = "";
     private vendor: Vendor | null = null;
     private vendorSchedule: MenuItems[] = [];
     private selectedSchedule: MenuItems[] = [];
+    private goToReg = false;
 
     async mounted() {
         this.selectedAllergies = this.$store.getters.userprofile.allergies;
@@ -399,12 +482,39 @@ export default class CustomerProfile extends Vue {
         this.editModeSub = false;
     }
 
+    async makeSub() {
+        let result: string[] = this.selectedSchedule.map( (item) => {
+            return item.id;
+        });
+        let sub: Subscription = {
+            vendorId: this.vendor!.vendorId,
+            userId: this.$store.getters.userprofile.email,
+            approved: false,
+            paused: false,
+            schedule: result,
+            noOfMeals: this.selectedNoOfMeals,
+            box: this.selectedBox,
+        };
+        await api.putUserSubscription(sub);
+        let updated = await api.getSingleSubscription();
+        this.$store.commit("setSubscription", updated);
+        this.goToReg = false;
+    }
+
+    cancelReg() {
+        // Tømme felt eller noe sånn?
+        this.goToReg = false;
+    }
+
     // Rules
     numbers(value: string) {
         return (!isNaN(parseInt(value)) || "Vennligst oppgi et gyldig nummer");
     }
     phoneNoLength(value: string) {
         return value.length >= 8 || "Vennligst oppgi et gyldig telefonnummer (8 siffer)";
+    }
+    hasValue() {
+      return this.selectedSchedule == undefined || null
     }
 }
 </script>

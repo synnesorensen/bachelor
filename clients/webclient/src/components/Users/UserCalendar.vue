@@ -165,13 +165,11 @@ export default class UserCalendar extends Vue {
         let events: any[] = [];
         if (this.start && this.end) {
             let deliveries = await api.getAllUsersDeliveries(this.start.date, this.end.date);
-            console.log(deliveries)
             if (deliveries) {
                 deliveries.forEach((del) => {
                     const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
                     const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
                     const menu = vendorSchedule.find(({ id }) => id == del.menuId);
-                    console.log(menu)
                     events.push({
                         name: del.cancelled ? "Kansellert" : menu!.menu,
                         start: delStart,
