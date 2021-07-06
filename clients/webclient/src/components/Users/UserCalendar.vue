@@ -1,8 +1,8 @@
 <template>
     <main>
-        <v-row class="fill-height">
+        <v-row>
             <v-col>
-                <v-sheet height="64">
+                <v-sheet>
                     <v-spacer></v-spacer>
                     <v-toolbar flat>
                         <v-btn
@@ -36,7 +36,7 @@
                     </v-toolbar>
                 </v-sheet>
                 <v-spacer></v-spacer>
-                <v-sheet height="600">
+                <v-sheet>
                     <v-calendar
                         ref="calendar"
                         v-model="focus"
@@ -67,8 +67,26 @@
                         {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}}
                     </v-card-title>
                     <v-card-text>
-                        Lunsj på Hjul tilbyr leveranse på denne dagen. Hvis du ønsker å abonnere på denne leveringen, endre ditt abonnement før neste periode starter.  
+                        Det er mulig å bestille frem til klokken 10:00 dagen før levering. Ønsker du å bestille {{selectedEvent.name + " den " + toLocalPresentation(selectedDate)}}?
                     </v-card-text>
+                    <v-card-actions>
+                        <v-tooltip :disabled="cancelable" bottom>
+                            <template v-slot:activator="{ on }">
+                                <div v-on="on">
+                                    <v-btn 
+                                        :disabled="!cancelable" 
+                                        color="primary" 
+                                        small 
+                                        v-on="on"
+                                        @click="orderDelivery()"
+                                        >
+                                        Bestill
+                                    </v-btn>
+                                </div>
+                            </template>
+                            <span>Det er for sent å bestille denne leveringen</span>
+                        </v-tooltip>
+                    </v-card-actions>
                 </v-card>
                 <v-card v-else-if="selectedEvent && !selectedEvent.delivery.cancelled">
                     <v-card-title class="headline">
@@ -117,9 +135,8 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
 import api from "../../api/api";
-import { Delivery, Userprofile, Vendor, VendorSubscription } from "../../../../../server/src/interfaces";
+import { Delivery, Vendor, VendorSubscription } from "../../../../../server/src/interfaces";
 
 @Component({})
 export default class UserCalendar extends Vue {
@@ -204,7 +221,6 @@ export default class UserCalendar extends Vue {
     showEvent(event: any) {
         this.selectedEvent = event.event;
         this.selectedDate = event.day.date;
-        console.log(this.selectedEvent)
     }
 
     get cancelable() {
@@ -224,7 +240,6 @@ export default class UserCalendar extends Vue {
         }
     }
 
-    // Kan implementeres hvis vendor ønsker å tilby ekstra kjøp. 
     async orderDelivery() {
         let delivery = {
             vendorId: this.selectedEvent.del.vendorId,

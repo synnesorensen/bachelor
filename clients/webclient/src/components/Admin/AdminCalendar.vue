@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
             <v-col :xl="6">
-                <v-sheet height="64">
+                <v-sheet>
                     <v-spacer />
                     <v-toolbar flat>
                         <v-btn 
@@ -36,7 +36,7 @@
                     </v-toolbar>
                 </v-sheet>
                 <v-spacer />
-                <v-sheet height="600">
+                <v-sheet>
                     <v-calendar
                         ref="calendar"
                         v-model="focus"

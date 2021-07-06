@@ -20,7 +20,7 @@ export interface Subscription {
     box: string
 }
 
-// User on admin pages: Returns all subscribers that a vendor/company has. 
+// Used on admin pages: Returns all subscribers that a vendor/company has. 
 export interface UserSubscription {
     vendorId: string,
     userId: string,
