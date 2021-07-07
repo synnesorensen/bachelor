@@ -36,7 +36,7 @@
                     </v-toolbar>
                 </v-sheet>
                 <v-spacer />
-                <v-sheet>
+                <v-sheet height="600">
                     <v-calendar
                         ref="calendar"
                         v-model="focus"

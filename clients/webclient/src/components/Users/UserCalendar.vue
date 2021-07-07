@@ -36,7 +36,7 @@
                     </v-toolbar>
                 </v-sheet>
                 <v-spacer></v-spacer>
-                <v-sheet>
+                <v-sheet height="600">
                     <v-calendar
                         ref="calendar"
                         v-model="focus"
@@ -66,8 +66,12 @@
                     <v-card-title class="headline">
                         {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}}
                     </v-card-title>
-                    <v-card-text>
-                        Det er mulig å bestille frem til klokken 10:00 dagen før levering. Ønsker du å bestille {{selectedEvent.name + " den " + toLocalPresentation(selectedDate)}}?
+                    <v-card-text v-if="cancelable">
+                        Det er mulig å bestille frem til klokken 10:00 dagen før levering. Ønsker du å bestille 
+                        <p class="font-weight-medium">{{selectedEvent.name + " den " + toLocalPresentation(selectedDate)}}?</p>
+                    </v-card-text>
+                    <v-card-text v-if="!cancelable">
+                        Det er ikke mulig å bestille etter til klokken 10:00 dagen før levering.
                     </v-card-text>
                     <v-card-actions>
                         <v-tooltip :disabled="cancelable" bottom>
@@ -242,14 +246,15 @@ export default class UserCalendar extends Vue {
 
     async orderDelivery() {
         let delivery = {
-            vendorId: this.selectedEvent.del.vendorId,
+            vendorId: this.selectedEvent.delivery.vendorId,
             userId: this.$store.getters.loggedInUser,
-            deliverytime: this.selectedEvent.del.deliverytime,
-            menuId: this.selectedEvent.del.menuId,
+            deliverytime: this.selectedEvent.delivery.deliverytime,
+            menuId: this.selectedEvent.delivery.menuId,
             cancelled: false
         }
         await api.putDelivery(this.$store.getters.subscription.vendorId, this.$store.getters.loggedInUser, delivery);
-        // TODO: Håndtere regningen!?
+        this.selectedEvent.ordered = true;
+        this.populateCalendar();
     }
 
     toLocalPresentation(lastDeliveryDate: string) {
