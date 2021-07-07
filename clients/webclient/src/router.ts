@@ -6,17 +6,39 @@ Vue.use(VueRouter);
 
 const routes = [
     {
-        path: "/welcome",
+        path: "/velkommen",
         name: "welcome",
         component: () => import ("./views/Welcome.vue")
     },
     {
         path: "/user",
         name: "user",
-        component: () => import ("./views/Users.vue")
+        component: () => import ("./views/Users.vue"),
+        children: [
+            {
+              path: 'profil',
+              name: 'userProfile',
+              component: () => import ("./components/Users/Profile.vue")
+            },
+            {
+                path: 'kalender',
+                name: 'userCalendar',
+                component: () => import ("./components/Users/UserCalendar.vue")
+            },
+            {
+                path: 'faktura',
+                name: 'invoice',
+                component: () => import ("./components/Users/Invoice.vue")
+            },
+            {
+                path: 'info',
+                name: 'info',
+                component: () => import ("./components/Users/Information.vue")
+            }
+        ]
     },
     {
-        path: "/register",
+        path: "/registrer",
         name: "register",
         component: () => import ("./views/RegisterAccount.vue")
     },
@@ -30,10 +52,32 @@ const routes = [
                 next(); 
             }
         },
-        component: () => import ("./views/Admin.vue")
+        component: () => import ("./views/Admin.vue"),
+        children: [
+            {
+              path: 'profil',
+              name: 'adminProfile',
+              component: () => import ("./components/Admin/Profile.vue")
+            },
+            {
+                path: 'kalender',
+                name: 'adminCalendar',
+                component: () => import ("./components/Admin/AdminCalendar.vue")
+            },
+            {
+                path: 'betaling',
+                name: 'payments',
+                component: () => import ("./components/Admin/Payments.vue")
+            },
+            {
+                path: 'kunder',
+                name: 'customers',
+                component: () => import ("./components/Admin/Customers.vue")
+            }
+        ]
     },
     {   path: '*',
-        redirect: '/welcome' }
+        redirect: '/velkommen' }
 ];
 
 

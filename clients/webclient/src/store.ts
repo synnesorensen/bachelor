@@ -72,9 +72,9 @@ export const store = new Vuex.Store({
                 context.commit("setSubscription", subscription);
             
                 if (userprofile?.isVendor) {
-                    router.push({name: 'admin'});
+                    router.push({name: 'adminCalendar'});
                 } else {
-                    router.push({name: 'user'});
+                    router.push({name: 'userCalendar'});
                 }
                 payload.callback();
             }

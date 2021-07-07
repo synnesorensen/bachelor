@@ -502,7 +502,7 @@ export default class CustomerProfile extends Vue {
     }
 
     cancelReg() {
-        // Tømme felt eller noe sånn?
+        this.$store.commit("setSubscription", null);
         this.goToReg = false;
     }
 

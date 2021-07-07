@@ -26,10 +26,10 @@
                     align-with-title 
                     class="d-none d-sm-flex"
                 >
-                    <v-tab @click="$refs.customerOverview.populateCalendar()">Kalender</v-tab>
-                    <v-tab>Kundeprofil</v-tab>
-                    <v-tab>Faktura</v-tab>
-                    <v-tab>Informasjon</v-tab>
+                    <v-tab to="/user/kalender" @click="$refs.customerOverview.populateCalendar()">Kalender</v-tab>
+                    <v-tab to="/user/profil">Kundeprofil</v-tab>
+                    <v-tab to="/user/faktura">Faktura</v-tab>
+                    <v-tab to="/user/info">Informasjon</v-tab>
                 </v-tabs>
             </template>
             <v-spacer />
@@ -62,14 +62,7 @@
             </v-list>
         </v-navigation-drawer>
 		<v-main>
-            <v-container fluid>
-                <v-tabs-items v-model="tab">
-                    <v-tab-item><UserCalendar ref="customerOverview" /></v-tab-item>
-                    <v-tab-item><Profile /> </v-tab-item>
-                    <v-tab-item><Invoice /></v-tab-item>
-                    <v-tab-item><Information /></v-tab-item>
-                </v-tabs-items>
-            </v-container>
+            <router-view ref="customerOverview"></router-view>
 		</v-main>
 	</v-container>
 </template>

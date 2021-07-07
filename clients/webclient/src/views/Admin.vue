@@ -26,10 +26,10 @@
                     align-with-title 
                     class="d-none d-sm-flex"
                 >
-                    <v-tab>Kalender</v-tab>
-                    <v-tab>Firmaprofil</v-tab>
-                    <v-tab>Betalinger</v-tab>
-                    <v-tab>Kundeliste</v-tab>
+                    <v-tab to="/admin/kalender">Kalender</v-tab>
+                    <v-tab to="/admin/profil">Firmaprofil</v-tab>
+                    <v-tab to="/admin/betaling">Betalinger</v-tab>
+                    <v-tab to="/admin/kunder">Kundeliste</v-tab>
                 </v-tabs>
             </template>
             <v-spacer />
@@ -62,14 +62,7 @@
             </v-list>
         </v-navigation-drawer>
 		<v-main>
-            <v-container fluid>
-                <v-tabs-items v-model="tab">
-                    <v-tab-item><AdminCalendar /></v-tab-item>
-                    <v-tab-item><Profile  /></v-tab-item>
-                    <v-tab-item><Payments /></v-tab-item>
-                    <v-tab-item><Customers /></v-tab-item>
-                </v-tabs-items>
-            </v-container>
+            <router-view></router-view>
 		</v-main>
 	</v-container>
     <v-container v-else>
