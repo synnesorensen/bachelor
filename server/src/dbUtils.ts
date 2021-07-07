@@ -280,7 +280,7 @@ export async function getUserprofileFromDb(userId: string): Promise<Userprofile>
     return {
         fullname: dbResult.Items[0].fullname,
         address: dbResult.Items[0].address,
-        deliveryaddress: dbResult.Items[0].deliveryaddress,
+        deliveryAddress: dbResult.Items[0].deliveryAddress,
         phone: dbResult.Items[0].phone,
         email: dbResult.Items[0].email, 
         allergies: dbResult.Items[0].allergies,
@@ -297,7 +297,7 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
             EntityType: "Userprofile", 
             fullname: userprofile.fullname, 
             address: userprofile.address, 
-            deliveryaddress: userprofile.deliveryaddress,
+            deliveryAddress: userprofile.deliveryAddress,
             phone: userprofile.phone, 
             email: userprofile.email, 
             allergies: userprofile.allergies,
@@ -309,7 +309,7 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
     return {
         fullname: userprofile.fullname,
         address: userprofile.address,
-        deliveryaddress: userprofile.deliveryaddress,
+        deliveryAddress: userprofile.deliveryAddress,
         phone: userprofile.phone,
         email: userprofile.email,
         allergies: userprofile.allergies,

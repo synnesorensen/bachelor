@@ -54,12 +54,12 @@
                             </v-col>
                             <v-col v-if="editModeProfile">
                                 <v-text-field
-                                    v-model="$store.getters.userprofile.deliveryaddress"
+                                    v-model="$store.getters.userprofile.deliveryAddress"
                                     solo
                                 ></v-text-field>
                             </v-col>
                             <v-col v-else>
-                                <p class="font-weight-regular">{{ $store.getters.userprofile.deliveryaddress }}</p>
+                                <p class="font-weight-regular">{{ $store.getters.userprofile.deliveryAddress }}</p>
                             </v-col>
                         </v-row>
                         <v-row>

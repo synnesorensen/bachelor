@@ -7,7 +7,7 @@ import { generateDeliveries } from './../addDeliveries';
 const userprofile1 = {
     fullname: "Ole Olsen",
     address: "Smauet 110 5000 Sentrum",
-    deliveryaddress: "Damsgårdsveien 50 5020 Bergen",
+    deliveryAddress: "Smauet 110 5000 Sentrum",
     phone: "12345678",
     email: dbUser1,
     allergies: ["melk"],
@@ -16,7 +16,7 @@ const userprofile1 = {
 const userprofile2 = {
     fullname: "Olga Karidotter",
     address: "Sollien 8 5001 Lien",
-    deliveryaddress: "Månelien 12 5002 Sentrum",
+    deliveryAddress: "Sollien 8 5001 Lien",
     phone: "23456789",
     email: dbUser2,
     allergies: [],
@@ -25,7 +25,7 @@ const userprofile2 = {
 const userprofile3 = {
     fullname: "Stig Hugo",
     address: "Lauvstien 31 5000 Sentrum",
-    deliveryaddress: "Bærstien 5 5005 Nøstet",
+    deliveryAddress: "Lauvstien 31 5000 Sentrum",
     phone: "34567890",
     email: dbUser3,
     allergies: ["løk, svovel"],
@@ -34,7 +34,7 @@ const userprofile3 = {
 const userprofile4 = {
     fullname: "Katy Sekken",
     address: "Oppoverbakken 17 5000 Sentrum",
-    deliveryaddress: "Ripshaugen 39 5020 Bergen",
+    deliveryAddress: "Oppoverbakken 17 5000 Sentrum",
     phone: "45678901",
     email: dbUser4,
     allergies: ["gluten"],
@@ -43,7 +43,7 @@ const userprofile4 = {
 const userprofile5 = {
     fullname: "Jan Jankovich",
     address: "Lykkegata 8 5002 Øvreåsen",
-    deliveryaddress: "Smilevegen 1 5000 Sentrum",
+    deliveryAddress: "Lykkegata 8 5002 Øvreåsen",
     phone: "56789012",
     email: dbUser5,
     allergies: [],
@@ -51,8 +51,8 @@ const userprofile5 = {
 }
 const userprofile6 = {
     fullname: "Penny Pøbel",
-    address: "Ukjent",
-    deliveryaddress: "Kronstadhuset 99 5500 Kronstad",
+    address: "Kroken 3 5000 Sentrum",
+    deliveryAddress: "Kroken 3 5000 Sentrum",
     phone: "67890123",
     email: dbUser6,
     allergies: ["melk"],
@@ -61,7 +61,7 @@ const userprofile6 = {
 const userprofileVendor = {
     fullname: "Helene Haare",
     address: "Hakkebakken 2 5003 Skogen",
-    deliveryaddress: "Skogstien 22 5020 Bergen",
+    deliveryAddress: "Hakkebakken 2 5003 Skogen",
     phone: "67890123",
     email: dbVendor,
     allergies: [],
@@ -182,7 +182,7 @@ export async function addSubsToDb() {
 }
 
 export async function addDeliveriesToDb() {
-    let date = new Date("2021-05-01");
+    let date = new Date("2021-08-01");
     let deliveries1 = await generateDeliveries(date, dbUser1, dbVendor, 8);
     await saveDeliveriesToDb(deliveries1);
     let deliveries2 = await generateDeliveries(date, dbUser2, dbVendor, 4);
