@@ -4,7 +4,7 @@
             <v-col :xl="2" :lg="3">
                 <p class="font-weight-medium"> Siste levering i denne perioden: </p>
             </v-col>
-            <v-col v-if="$store.getters.subscription.approved">
+            <v-col v-if="$store.getters.subscription">
                 <p class="font-weight-light"> {{ toLocalPresentation(lastPaid)}} </p>
             </v-col>
             <v-col v-else>
@@ -15,7 +15,7 @@
             <v-col :xl="2" :lg="3">
                 <p class="font-weight-medium"> Neste faktura må betales innen: </p>
             </v-col>
-            <v-col v-if="$store.getters.subscription.approved">
+            <v-col v-if="$store.getters.subscription">
                 <p class="font-weight-light"> {{toLocalPresentation(nextInvoice)}} </p>
             </v-col>
             <v-col v-else>

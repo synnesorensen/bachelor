@@ -58,7 +58,7 @@
                         <v-col>
                             <v-text-field
                                 label="Leveringsadresse"
-                                v-model="deliveryaddress"
+                                v-model="deliveryAddress"
                                 required
                             ></v-text-field>
                         </v-col>
@@ -137,7 +137,7 @@
                                 </v-btn>
                                 <v-btn 
                                     @click="sendToDb" 
-                                    color="primary" 
+                                    color="success" 
                                     :disabled="!isFormValid"
                                     class="ma-2"
                                 >
@@ -168,7 +168,7 @@ export default class RegisterAccount extends Vue {
     private address = "";
     private postNo = "";
     private postPlace = "";
-    private deliveryaddress = "";
+    private deliveryAddress = "";
     private delPostNo = "";
     private delPostPlace = "";
     private phone = "";
@@ -177,21 +177,18 @@ export default class RegisterAccount extends Vue {
     private add = "";               // TODO: Knytte dette feltet til epost sendt til vendor ved registrering
 
     async sendToDb() {
-        if (this.vendor?.vendorId) {
-            let newUserprofile = {
-                fullname: this.firstName + " " + this.lastName,
-                address: this.address + " " + this.postNo + " " + this.postPlace,
-                deliveryaddress: this.deliveryaddress + " " + this.delPostNo + " " + this.delPostPlace,
-                phone: this.phone.toString(),
-                email: this.$store.getters.loggedInUser,
-                allergies: this.value,
-                isVendor: false,
-            };
-            await api.putUserprofile(newUserprofile);
-            this.$store.commit("setUserprofile", newUserprofile);
-            this.$emit("loggedIn", localStorage.getItem("token"));
-            // Her skjer det ikke noe mer
-        }
+        let newUserprofile = {
+            fullname: this.firstName + " " + this.lastName,
+            address: this.address + " " + this.postNo + " " + this.postPlace,
+            deliveryAddress: this.deliveryAddress + " " + this.delPostNo + " " + this.delPostPlace,
+            phone: this.phone.toString(),
+            email: this.$store.getters.loggedInUser,
+            allergies: this.value,
+            isVendor: false,
+        };
+        await api.putUserprofile(newUserprofile);
+        this.$store.commit("setUserprofile", newUserprofile);
+        this.$router.push({name: 'info'});
     }
 
     cancel() {

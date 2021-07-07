@@ -375,11 +375,13 @@ export default class CustomerProfile extends Vue {
 
     async mounted() {
         this.selectedAllergies = this.$store.getters.userprofile.allergies;
-        this.selectedNoOfMeals = this.$store.getters.subscription.noOfMeals;
-        this.selectedBox = this.$store.getters.subscription.box;
+        if (this.$store.getters.subscription) {
+            this.selectedNoOfMeals = this.$store.getters.subscription.noOfMeals;
+            this.selectedBox = this.$store.getters.subscription.box;
+            this.selectedSchedule = this.$store.getters.subscription.schedule;
+        }
         this.vendor = await api.getSingleVendor();
         this.vendorSchedule = this.vendor.schedule;
-        this.selectedSchedule = this.$store.getters.subscription.schedule;
     }
 
     async toggleSubscriptionPause() {
