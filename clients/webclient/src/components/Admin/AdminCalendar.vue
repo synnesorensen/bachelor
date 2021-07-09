@@ -31,7 +31,7 @@
                             <v-icon small>mdi-chevron-right</v-icon>
                         </v-btn>
                         <v-toolbar-title v-if="$refs.calendar">
-                            {{ $refs.calendar.title.toUpperCase() }}
+                            {{ $refs.calendar.title.charAt(0).toUpperCase() + $refs.calendar.title.slice(1) }}
                         </v-toolbar-title>
                     </v-toolbar>
                 </v-sheet>

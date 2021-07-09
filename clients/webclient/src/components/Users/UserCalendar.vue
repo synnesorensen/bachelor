@@ -31,12 +31,12 @@
                             <v-icon small>mdi-chevron-right</v-icon>
                         </v-btn>
                         <v-toolbar-title v-if="$refs.calendar">
-                            {{ $refs.calendar.title.toUpperCase() }}
+                            {{ $refs.calendar.title.charAt(0).toUpperCase() + $refs.calendar.title.slice(1) }}
                         </v-toolbar-title>
                     </v-toolbar>
                 </v-sheet>
                 <v-spacer></v-spacer>
-                <v-sheet height="600">
+                <v-sheet height="680">
                     <v-calendar
                         ref="calendar"
                         v-model="focus"
@@ -50,19 +50,16 @@
                         @change="getEvents"
                     >
                     </v-calendar>
+                    <v-overlay absolute opacity="0.1" v-if="showSpinner">
+                        <v-progress-circular
+                            indeterminate
+                            size="64"
+                        ></v-progress-circular>
+                    </v-overlay>
                 </v-sheet>
             </v-col>
             <v-col>
-                <v-card v-if="!$store.getters.subscription.approved">
-                    <v-card-title class="headline">
-                        Velkommen til Lunsj på Hjul
-                    </v-card-title>
-                    <v-card-text>
-                        Så snart det er blitt verifisert at du bor innenfor leveringsområdet til Lunsj på hjul, vil du motta faktura for kommende periode.
-                        Når denne er betalt vil du kunne se dine leveranser i kalenderen. Ta kontakt med Lunsj på Hjul dersom det er noe du lurer på.   
-                    </v-card-text>
-                </v-card>
-                <v-card v-if="selectedEvent && !selectedEvent.ordered">
+                <v-card :class="{'fixed': !$vuetify.breakpoint.xs}" v-if="selectedEvent && !selectedEvent.ordered">
                     <v-card-title class="headline">
                         {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}}
                     </v-card-title>
@@ -82,7 +79,7 @@
                                         color="primary" 
                                         small 
                                         v-on="on"
-                                        @click="orderDelivery()"
+                                        @click="orderDialog=true"
                                         >
                                         Bestill
                                     </v-btn>
@@ -90,9 +87,29 @@
                             </template>
                             <span>Det er for sent å bestille denne leveringen</span>
                         </v-tooltip>
+                        <v-dialog v-model="orderDialog" persistent max-width="300">
+                            <v-card>
+                                <v-card-title class="headline">Bestilling</v-card-title>
+                                <v-card-text>
+                                    Er du sikker på at du vil bestille {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}} ?
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-btn 
+                                        color="success"
+                                        @click="orderDelivery()"
+                                    > Bestill levering
+                                    </v-btn>
+                                    <v-btn
+                                        color="error"
+                                        @click="orderDialog=false"
+                                    > Avbryt
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
                     </v-card-actions>
                 </v-card>
-                <v-card v-else-if="selectedEvent && !selectedEvent.delivery.cancelled">
+                <v-card :class="{'fixed': !$vuetify.breakpoint.xs}" v-else-if="selectedEvent && !selectedEvent.delivery.cancelled">
                     <v-card-title class="headline">
                         {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}}
                     </v-card-title>
@@ -112,7 +129,7 @@
                                         color="primary" 
                                         small 
                                         v-on="on"
-                                        @click="cancelDelivery()"
+                                        @click="cancelDialog=true"
                                         >
                                         Kanseller
                                     </v-btn>
@@ -120,9 +137,29 @@
                             </template>
                             <span>Det er for sent å avbestille denne leveringen</span>
                         </v-tooltip>
+                        <v-dialog v-model="cancelDialog" persistent max-width="300">
+                            <v-card>
+                                <v-card-title class="headline">Avbestilling</v-card-title>
+                                <v-card-text>
+                                    Er du sikker på at du vil avbestille {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}} ?
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-btn 
+                                        color="success"
+                                        @click="cancelDelivery()"
+                                    > Avbestill levering
+                                    </v-btn>
+                                    <v-btn
+                                        color="error"
+                                        @click="cancelDialog=false"
+                                    > Avbryt
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
                     </v-card-actions>
                 </v-card>
-                <v-card v-else-if="selectedEvent">
+                <v-card :class="{'fixed': !$vuetify.breakpoint.xs}" v-else-if="selectedEvent">
                     <v-card-title class="headline">
                         {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}}
                     </v-card-title>
@@ -152,6 +189,9 @@ export default class UserCalendar extends Vue {
     private events: any[] = [];
     private selectedEvent: any = null;
     private selectedDate = "";
+    private showSpinner = false;
+    private cancelDialog = false;
+    private orderDialog = false;
 
     mounted() {
         this.focus = "";
@@ -177,6 +217,7 @@ export default class UserCalendar extends Vue {
     }
 
     async populateCalendar() {
+        this.showSpinner = true;
         const usersSub:VendorSubscription = this.$store.getters.subscription;
         const usersSchedule = usersSub.schedule;
         const vendor:Vendor = await api.getSingleVendor();
@@ -220,6 +261,7 @@ export default class UserCalendar extends Vue {
             }
             this.events = events;
         }
+        this.showSpinner = false;
     }
 
     showEvent(event: any) {
@@ -242,6 +284,7 @@ export default class UserCalendar extends Vue {
             this.populateCalendar();
             this.selectedEvent.delivery.cancelled = true;
         }
+        this.cancelDialog = false;
     }
 
     async orderDelivery() {
@@ -254,6 +297,7 @@ export default class UserCalendar extends Vue {
         }
         await api.putDelivery(this.$store.getters.subscription.vendorId, this.$store.getters.loggedInUser, delivery);
         this.selectedEvent.ordered = true;
+        this.orderDialog = false;
         this.populateCalendar();
     }
 
@@ -263,3 +307,11 @@ export default class UserCalendar extends Vue {
     }
 }
 </script>
+
+<style scoped>
+
+.fixed {
+    position: fixed;
+}
+
+</style>

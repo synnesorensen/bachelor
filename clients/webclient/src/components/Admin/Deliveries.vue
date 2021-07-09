@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-card :class="{'fixed': !$vuetify.breakpoint.xs}" >
         <v-card-title>Leveringer for {{date}}</v-card-title>
         <v-data-table
             :loading="loading"
@@ -21,7 +21,27 @@
             </template>
         </v-data-table>
         <v-card-actions class="justify-center">
-            <v-btn color="primary" @click="cancelDeliveries">Kanseller alle</v-btn>
+            <v-btn color="primary" @click="cancelDialog=true">Kanseller alle</v-btn>
+            <v-dialog v-model="cancelDialog" persistent max-width="300">
+                <v-card>
+                    <v-card-title class="headline">Kansellering</v-card-title>
+                    <v-card-text>
+                        Er du sikker på at du vil kansellere alle leveranser denne dagen?
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn 
+                            color="success"
+                            @click="cancelDeliveries"
+                        > Avbestill levering
+                        </v-btn>
+                        <v-btn
+                            color="error"
+                            @click="cancelDialog=false"
+                        > Avbryt
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-card-actions>
     </v-card>
 </template>
@@ -40,6 +60,7 @@ import Sortable from 'sortablejs';
 
 export default class Deliveries extends Vue {
     private loading = false;
+    private cancelDialog = false;
     @Prop() date!: string;
     private start = "";
     private end = "";
@@ -106,6 +127,7 @@ export default class Deliveries extends Vue {
             this.deliveryDetails.forEach( del => {
                 del.cancelled = true;
             });
+            this.cancelDialog = false;
         }
     }
 }
@@ -116,4 +138,9 @@ export default class Deliveries extends Vue {
     cursor: move !important;
     cursor: -webkit-grabbing !important;
 }
+
+.fixed {
+    position: fixed;
+}
+
 </style>
