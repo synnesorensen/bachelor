@@ -462,7 +462,6 @@ export default class CustomerProfile extends Vue {
         let sub: Subscription = {
             vendorId: this.$store.getters.subscription.vendorId,
             userId: this.$store.getters.userprofile.email,
-            approved: false,
             paused: false,
             schedule: result,
             noOfMeals: this.selectedNoOfMeals,
@@ -491,7 +490,6 @@ export default class CustomerProfile extends Vue {
         let sub: Subscription = {
             vendorId: this.vendor!.vendorId,
             userId: this.$store.getters.userprofile.email,
-            approved: false,
             paused: false,
             schedule: result,
             noOfMeals: this.selectedNoOfMeals,

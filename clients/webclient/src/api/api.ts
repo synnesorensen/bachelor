@@ -200,7 +200,7 @@ export class Api {
         const body = {
             approved
         };
-        await this.apiAxios.patch(urlPrefix + "/v/subscription?userId=" + encodeURIComponent(userId), body);
+        await this.apiAxios.patch(urlPrefix + "/userprofile?userId=" + encodeURIComponent(userId), body);
     }
 
     async getAllVendorsDeliveries(startDate: string, endDate: string): Promise<interfaces.Delivery[] | null> {

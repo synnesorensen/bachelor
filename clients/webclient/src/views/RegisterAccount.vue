@@ -184,7 +184,8 @@ export default class RegisterAccount extends Vue {
             phone: this.phone.toString(),
             email: this.$store.getters.loggedInUser,
             allergies: this.value,
-            isVendor: false,
+            approved: false,
+            isVendor: false
         };
         await api.putUserprofile(newUserprofile);
         this.$store.commit("setUserprofile", newUserprofile);

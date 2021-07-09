@@ -11,6 +11,7 @@ const userprofile1 = {
     phone: "12345678",
     email: dbUser1,
     allergies: ["melk"],
+    approved: true,
     isVendor: false
 }
 const userprofile2 = {
@@ -20,6 +21,7 @@ const userprofile2 = {
     phone: "23456789",
     email: dbUser2,
     allergies: [],
+    approved: true,
     isVendor: false
 }
 const userprofile3 = {
@@ -29,6 +31,7 @@ const userprofile3 = {
     phone: "34567890",
     email: dbUser3,
     allergies: ["løk, svovel"],
+    approved: true,
     isVendor: false
 }
 const userprofile4 = {
@@ -38,6 +41,7 @@ const userprofile4 = {
     phone: "45678901",
     email: dbUser4,
     allergies: ["gluten"],
+    approved: true,
     isVendor: false
 }
 const userprofile5 = {
@@ -47,6 +51,7 @@ const userprofile5 = {
     phone: "56789012",
     email: dbUser5,
     allergies: [],
+    approved: true,
     isVendor: false
 }
 const userprofile6 = {
@@ -56,6 +61,7 @@ const userprofile6 = {
     phone: "67890123",
     email: dbUser6,
     allergies: ["melk"],
+    approved: true,
     isVendor: false
 }
 const userprofileVendor = {
@@ -65,17 +71,18 @@ const userprofileVendor = {
     phone: "67890123",
     email: dbVendor,
     allergies: [],
+    approved: true,
     isVendor: true
 }
 
 export async function addUsersToDb() {
-    await putUserprofileInDb(userprofile1, dbUser1);
-    await putUserprofileInDb(userprofile2, dbUser2);
-    await putUserprofileInDb(userprofile3, dbUser3);
-    await putUserprofileInDb(userprofile4, dbUser4);
-    await putUserprofileInDb(userprofile5, dbUser5);
-    await putUserprofileInDb(userprofile6, dbUser6);
-    await putUserprofileInDb(userprofileVendor, dbVendor);
+    await putUserprofileInDb(userprofile1, dbUser1, false);
+    await putUserprofileInDb(userprofile2, dbUser2, false);
+    await putUserprofileInDb(userprofile3, dbUser3, false);
+    await putUserprofileInDb(userprofile4, dbUser4, false);
+    await putUserprofileInDb(userprofile5, dbUser5, false);
+    await putUserprofileInDb(userprofile6, dbUser6, false);
+    await putUserprofileInDb(userprofileVendor, dbVendor, true);
 }
 
 const vendor = {
@@ -120,7 +127,6 @@ export async function addVendorToDb() {
 const sub1 = {
     vendorId: dbVendor,
     userId: dbUser1,
-    approved: true,
     paused: false,
     schedule: ["2", "3"], 
     noOfMeals: 1,
@@ -129,7 +135,6 @@ const sub1 = {
 const sub2 = {
     vendorId: dbVendor,
     userId: dbUser2,
-    approved: true,
     paused: false,
     schedule: ["2"], 
     noOfMeals: 1,
@@ -138,7 +143,6 @@ const sub2 = {
 const sub3 = {
     vendorId: dbVendor,
     userId: dbUser3,
-    approved: true,
     paused: false,
     schedule: ["41"], 
     noOfMeals: 1,
@@ -147,7 +151,6 @@ const sub3 = {
 const sub4 = {
     vendorId: dbVendor,
     userId: dbUser4,
-    approved: true,
     paused: false,
     schedule: ["3"], 
     noOfMeals: 1,
@@ -156,7 +159,6 @@ const sub4 = {
 const sub5 = {
     vendorId: dbVendor,
     userId: dbUser5,
-    approved: true,
     paused: false,
     schedule: ["2", "41"], 
     noOfMeals: 1,
@@ -165,7 +167,6 @@ const sub5 = {
 const sub6 = {
     vendorId: dbVendor,
     userId: dbUser6,
-    approved: true,
     paused: false,
     schedule: ["41"], 
     noOfMeals: 1,
@@ -173,12 +174,12 @@ const sub6 = {
 }
 
 export async function addSubsToDb() {
-    await putSubscriptionInDb(sub1, false);
-    await putSubscriptionInDb(sub2, false);
-    await putSubscriptionInDb(sub3, false);
-    await putSubscriptionInDb(sub4, false);
-    await putSubscriptionInDb(sub5, false);
-    await putSubscriptionInDb(sub6, false);
+    await putSubscriptionInDb(sub1);
+    await putSubscriptionInDb(sub2);
+    await putSubscriptionInDb(sub3);
+    await putSubscriptionInDb(sub4);
+    await putSubscriptionInDb(sub5);
+    await putSubscriptionInDb(sub6);
 }
 
 export async function addDeliveriesToDb() {

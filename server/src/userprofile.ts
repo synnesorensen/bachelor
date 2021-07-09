@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { deleteUserprofileInDb, getUserprofileFromDb, putUserprofileInDb } from './dbUtils';
+import { deleteUserprofileInDb, getUserprofileFromDb, putUserprofileInDb, updateApproval } from './dbUtils';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -11,6 +11,9 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     }
     if (event.httpMethod == "PUT") {
         return putUserprofile(event);
+    }
+    if (event.httpMethod == "PATCH") {
+        return updateUserprofile(event);
     }
     if (event.httpMethod == "DELETE") {
         return deleteUserprofile(event);
@@ -38,12 +41,53 @@ async function getUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 async function putUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     let userId = getUserInfoFromEvent(event);
     let body = JSON.parse(event.body);
-    let userprofile = await putUserprofileInDb(body, userId);
+    let userprofile = await putUserprofileInDb(body, userId, false);
 
     return {
         statusCode: 200,
         body: JSON.stringify(userprofile)
     };
+}
+
+async function updateUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let vendorId = getUserInfoFromEvent(event);
+    let vendor = await getUserprofileFromDb(vendorId);
+    
+    if (!vendor.isVendor) {
+        return {
+            statusCode: 403,
+            body: JSON.stringify({ message: "User " + vendorId + " is not a vendor" })
+        };
+    }
+    if (!event.queryStringParameters) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter userId" }'
+        };
+    }
+    let userId = event.queryStringParameters["userId"];
+
+    if (!userId) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter userId" }'
+        };
+    }
+    let body = JSON.parse(event.body);
+    
+    try {
+        await updateApproval(userId, body.approved)
+
+        return {
+            statusCode: 200,
+            body: '{ "message" : "Approval updated" }'
+        };
+    } catch (err) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify(err)
+        };
+    }
 }
 
 async function deleteUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {

@@ -31,7 +31,6 @@ describe('Test of user subscriptions', () => {
         const sub1 = {
             vendorId: "testVendorId40",
             userId: "testUserId1",
-            approved: true,
             paused: false,
             schedule: ["1", "2"], 
             noOfMeals: 1,
@@ -44,12 +43,12 @@ describe('Test of user subscriptions', () => {
             phone: "123456",
             email: "gjøk@skogen.no", 
             allergies: [],
+            approved: true,
             isVendor: false
         };
         const sub2 = {
             vendorId: "testVendorId40",
             userId: "testUserId2",
-            approved: false,
             paused: true,
             schedule: ["2"],
             noOfMeals: 1,
@@ -62,14 +61,15 @@ describe('Test of user subscriptions', () => {
             phone: "456789",
             email: "party@viken.no",
             allergies: ["melk"],
+            approved: false,
             isVendor: false
         };
 
         await putVendorInDb(vendor, "testVendorId40");
-        await putUserprofileInDb(user1, "testUserId1");
-        await putUserprofileInDb(user2, "testUserId2");
-        await putSubscriptionInDb(sub1, false);
-        await putSubscriptionInDb(sub2, false);
+        await putUserprofileInDb(user1, "testUserId1", false);
+        await putUserprofileInDb(user2, "testUserId2", false);
+        await putSubscriptionInDb(sub1);
+        await putSubscriptionInDb(sub2);
 
         const getResult = await getSubscriptionsForVendor("testVendorId40");
         expect(getResult.length).to.equal(2);

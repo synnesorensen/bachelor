@@ -219,7 +219,6 @@ export default class UserCalendar extends Vue {
     async populateCalendar() {
         this.showSpinner = true;
         const usersSub:VendorSubscription = this.$store.getters.subscription;
-        const usersSchedule = usersSub.schedule;
         const vendor:Vendor = await api.getSingleVendor();
         const vendorSchedule = vendor.schedule;
         const vendorDeliveries = await api.scheduleToDates(vendor.vendorId, this.start.date);
@@ -242,7 +241,7 @@ export default class UserCalendar extends Vue {
                     });
                 });
             }
-            if (vendorDeliveries && !this.$store.getters.subscription.paused && this.$store.getters.subscription.approved) {
+            if (vendorDeliveries) {
                 vendorDeliveries.forEach((del) => {
                     const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
                     const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);

@@ -13,10 +13,11 @@ describe('User profile test', () => {
             phone: "12345",
             email: "hallo@post.no",
             allergies: ["melk"],
+            approved: false,
             isVendor: false
         };
 
-        const putResult = await putUserprofileInDb(userprofile, "testUserId44");
+        const putResult = await putUserprofileInDb(userprofile, "testUserId44", false);
         expect(putResult.fullname).to.equal("Navn");
         expect(putResult.address).to.equal("Skogen");
         expect(putResult.deliveryAddress).to.equal("havet");
