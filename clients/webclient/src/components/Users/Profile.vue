@@ -222,7 +222,7 @@
                                 ></v-select>
                             </v-col>
                             <v-col v-else>
-                                <p class="font-weight-light">{{ $store.getters.subscription.noOfMeals }}</p>
+                                <p class="font-weight-regular">{{ $store.getters.subscription.noOfMeals }}</p>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -242,7 +242,7 @@
                                 ></v-select>
                             </v-col>
                             <v-col v-else>
-                                <p class="font-weight-light">{{ $store.getters.subscription.box }}</p>
+                                <p class="font-weight-regular">{{ $store.getters.subscription.box }}</p>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -270,7 +270,7 @@
                             </template>
                             <v-col v-else>
                                 <p
-                                    class="font-weight-light"
+                                    class="font-weight-regular"
                                     v-for="item in $store.getters.subscription.schedule"
                                     v-bind:key="item.id"
                                 >
@@ -587,7 +587,7 @@ export default class CustomerProfile extends Vue {
         if (subscription && this.vendor) {
             await api.deleteUserSubscription(this.vendor.vendorId);
         }
-        // TODO: Slette alle deliveries?
+        // TODO: Advare om resterende deliveries, og si at man ikke kan slette seg selv før disse er levert. Ta kontakt med AL for sletting av leveranser og evt refusjon hvis nødvendig. 
         await api.deleteUserprofile();
         this.deleteDialog = false;
         this.editModeProfile = false;

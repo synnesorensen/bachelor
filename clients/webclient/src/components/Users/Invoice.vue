@@ -5,10 +5,10 @@
                 <p class="font-weight-medium"> Siste levering i denne perioden: </p>
             </v-col>
             <v-col v-if="$store.getters.subscription">
-                <p class="font-weight-light"> {{ toLocalPresentation(lastPaid)}} </p>
+                <p class="font-weight-regular"> {{ toLocalPresentation(lastPaid)}} </p>
             </v-col>
             <v-col v-else>
-                <p class="font-weight-light"> Det er ikke registrert betaling for leveranser i denne perioden. </p>
+                <p class="font-weight-regular"> Det er ikke registrert betaling for leveranser i denne perioden. </p>
             </v-col>
         </v-row>
         <v-row>
@@ -16,10 +16,10 @@
                 <p class="font-weight-medium"> Neste faktura må betales innen: </p>
             </v-col>
             <v-col v-if="$store.getters.subscription">
-                <p class="font-weight-light"> {{toLocalPresentation(nextInvoice)}} </p>
+                <p class="font-weight-regular"> {{toLocalPresentation(nextInvoice)}} </p>
             </v-col>
             <v-col v-else>
-                <p class="font-weight-light"> Du vil få tilsendt faktura for neste periode så snart abonnementet ditt er blitt godkjent. </p>
+                <p class="font-weight-regular"> Du vil få tilsendt faktura for neste periode så snart abonnementet ditt er blitt godkjent. </p>
             </v-col>
         </v-row>
 	</v-container>
