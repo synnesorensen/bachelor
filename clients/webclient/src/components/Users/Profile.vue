@@ -24,7 +24,12 @@
                             <v-col :xl="3">
                                 <p class="font-weight-medium">Navn</p>
                             </v-col>
-                            <v-col v-if="editModeProfile">
+                            <v-col 
+                                v-if="editModeProfile"
+                                class="d-flex"
+                                cols="12"
+                                md="6"
+                            >
                                 <v-text-field
                                     v-model="$store.getters.userprofile.fullname"
                                     solo
@@ -38,7 +43,12 @@
                             <v-col :xl="3">
                                 <p class="font-weight-medium">Hjemmeadresse</p>
                             </v-col>
-                            <v-col v-if="editModeProfile">
+                            <v-col 
+                                v-if="editModeProfile"
+                                class="d-flex"
+                                cols="12"
+                                md="6"
+                            >
                                 <v-text-field
                                     v-model="$store.getters.userprofile.address"
                                     solo
@@ -52,7 +62,12 @@
                             <v-col :xl="3">
                                 <p class="font-weight-medium">Leveringsadresse</p>
                             </v-col>
-                            <v-col v-if="editModeProfile">
+                            <v-col 
+                                v-if="editModeProfile"
+                                class="d-flex"
+                                cols="12"
+                                md="6"
+                            >
                                 <v-text-field
                                     v-model="$store.getters.userprofile.deliveryAddress"
                                     solo
@@ -66,7 +81,12 @@
                             <v-col :xl="3">
                                 <p class="font-weight-medium">Telefonnummer</p>
                             </v-col>
-                            <v-col v-if="editModeProfile">
+                            <v-col 
+                                v-if="editModeProfile"
+                                class="d-flex"
+                                cols="12"
+                                md="6"
+                            >
                                 <v-text-field
                                     v-model="$store.getters.userprofile.phone"
                                     :rules="[numbers, phoneNoLength]"
@@ -92,7 +112,7 @@
                             <v-col v-if="editModeProfile"
                                 class="d-flex"
                                 cols="12"
-                                sm="6"
+                                md="6"
                             >
                                 <v-select
                                     v-model="selectedAllergies"
@@ -116,9 +136,53 @@
                         </v-row>
                     </v-card-text>
                     <v-card-actions v-if="editModeProfile">
+                        <v-col>
+                            <v-btn 
+                                text 
+                                color="orange" 
+                                @click="deleteDialog = true"
+                            >
+                                Slett meg
+                            </v-btn>
+                            <v-dialog v-model="deleteDialog" persistent max-width="500">
+                                <v-card>
+                                    <v-card-title class="headline">Sletting av registrerte opplysninger</v-card-title>
+                                    <v-card-text>
+                                        Er du sikker på at du vil slette alle dine registrerte opplysninger?<br />
+                                        Dette vil også slette eventuelle utestående leveranser du har til gode!
+                                    </v-card-text>
+                                    <v-card-actions>
+                                        <v-btn
+                                            color="grey"
+                                            @click="deleteDialog=false"
+                                        > Avbryt
+                                        </v-btn>
+                                        <v-btn 
+                                            color="orange"
+                                            @click="deleteMe()"
+                                        > Slett meg
+                                        </v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+                        </v-col>
                         <v-spacer></v-spacer>
-                        <v-btn @click="cancelEditProfile" color="error">Avbryt</v-btn>
-                        <v-btn @click="updateUserProfile" color="success">Lagre</v-btn>
+                        <v-col>
+                            <v-btn 
+                                @click="cancelEditProfile" 
+                                color="error"
+                                class="ma-1"
+                            >
+                                Avbryt
+                            </v-btn>
+                            <v-btn 
+                                @click="updateUserProfile" 
+                                color="success"
+                                class="ma-1"
+                            >
+                                Lagre
+                            </v-btn>
+                        </v-col>
                     </v-card-actions>
                 </v-card>
             </v-col>
@@ -217,8 +281,18 @@
                     </v-card-text>
                     <v-card-actions v-if="editModeSub">
                         <v-spacer></v-spacer>
-                        <v-btn @click="cancelEditSub" color="error">Avbryt</v-btn>
-                        <v-btn @click="updateSubscription" color="success">Lagre</v-btn>
+                        <v-btn 
+                            @click="cancelEditSub" 
+                            color="error"
+                        >
+                            Avbryt
+                        </v-btn>
+                        <v-btn 
+                            @click="updateSubscription" 
+                            color="success"
+                        >
+                            Lagre
+                        </v-btn>
                     </v-card-actions>
                     <v-card-actions v-if="$store.getters.subscription">
                         <v-btn @click="dialog = true" text color="orange">
@@ -372,6 +446,7 @@ export default class CustomerProfile extends Vue {
     private vendorSchedule: MenuItems[] = [];
     private selectedSchedule: MenuItems[] = [];
     private goToReg = false;
+    private deleteDialog = false;
 
     async mounted() {
         this.selectedAllergies = this.$store.getters.userprofile.allergies;
@@ -504,6 +579,20 @@ export default class CustomerProfile extends Vue {
     cancelReg() {
         this.$store.commit("setSubscription", null);
         this.goToReg = false;
+    }
+
+    async deleteMe() {
+        // Spinner start
+        let subscription = await api.getSingleSubscription()
+        if (subscription && this.vendor) {
+            await api.deleteUserSubscription(this.vendor.vendorId);
+        }
+        // TODO: Slette alle deliveries?
+        await api.deleteUserprofile();
+        this.deleteDialog = false;
+        this.editModeProfile = false;
+        // Ny dialog som bekrefter slettingen, deretter redirect til info ?
+        // Spinner slutt 
     }
 
     // Rules
