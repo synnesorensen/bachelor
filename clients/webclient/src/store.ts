@@ -56,6 +56,9 @@ export const store = new Vuex.Store({
     }, 
     actions: {
         async loggedInUser(context, payload) {
+            if(!payload.jwt) {
+                return;
+            }
             localStorage.setItem("token", payload.jwt);
             api.setApiBearerToken(payload.jwt);
             const username = getUserInfo(payload.jwt);

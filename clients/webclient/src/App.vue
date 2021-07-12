@@ -16,9 +16,14 @@ export default class App extends Vue {
 
     mounted() {
         const token = localStorage.getItem("token");
-        if (token) {
-            this.$store.dispatch("loggedInUser", token);
-        } 
+        if(token==null || token=="undefined") {
+            this.$router.push({ name: "welcome" });
+        } else {
+            this.$store.dispatch("loggedInUser", { 
+                jwt: token,
+                callback: () => {}
+            });
+        }
     }
 }
 </script>
