@@ -18,10 +18,11 @@
                             <v-icon>mdi-pencil</v-icon>
                         </v-btn>
                     </v-app-bar>
+                    <v-form v-model="isFormValid">
                     <v-card-text>
                         <br />
                         <v-row>
-                            <v-col :xl="3">
+                            <v-col :xl="4">
                                 <p class="font-weight-medium">Navn</p>
                             </v-col>
                             <v-col 
@@ -32,16 +33,17 @@
                             >
                                 <v-text-field
                                     v-model="$store.getters.userprofile.fullname"
+                                    :rules="[required]"
                                     solo
                                 ></v-text-field>
                             </v-col>
                             <v-col v-else>
-                                <p class="font-weight-regular">{{ $store.getters.userprofile.fullname }}</p>
+                                <p class="font-weight-light">{{ $store.getters.userprofile.fullname }}</p>
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-col :xl="3">
-                                <p class="font-weight-medium">Hjemmeadresse</p>
+                            <v-col :xl="4">
+                                <p class="font-weight-medium">Bostedsadresse (adresse 1)</p>
                             </v-col>
                             <v-col 
                                 v-if="editModeProfile"
@@ -51,16 +53,17 @@
                             >
                                 <v-text-field
                                     v-model="$store.getters.userprofile.address"
+                                    :rules="[required]"
                                     solo
                                 ></v-text-field>
                             </v-col>
                             <v-col v-else>
-                                <p class="font-weight-regular">{{ $store.getters.userprofile.address }}</p>
+                                <p class="font-weight-light">{{ $store.getters.userprofile.address }}</p>
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-col :xl="3">
-                                <p class="font-weight-medium">Leveringsadresse</p>
+                            <v-col :xl="4">
+                                <p class="font-weight-medium">Kontoradresse (adresse 2)</p>
                             </v-col>
                             <v-col 
                                 v-if="editModeProfile"
@@ -74,11 +77,11 @@
                                 ></v-text-field>
                             </v-col>
                             <v-col v-else>
-                                <p class="font-weight-regular">{{ $store.getters.userprofile.deliveryAddress }}</p>
+                                <p class="font-weight-light">{{ $store.getters.userprofile.deliveryAddress }}</p>
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-col :xl="3">
+                            <v-col :xl="4">
                                 <p class="font-weight-medium">Telefonnummer</p>
                             </v-col>
                             <v-col 
@@ -94,19 +97,19 @@
                                 ></v-text-field>
                             </v-col>
                             <v-col v-else>
-                                <p class="font-weight-regular">{{ $store.getters.userprofile.phone }}</p>
+                                <p class="font-weight-light">{{ $store.getters.userprofile.phone }}</p>
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-col :xl="3">
+                            <v-col :xl="4">
                                 <p class="font-weight-medium">Epost</p>
                             </v-col>
                             <v-col>
-                                <p class="font-weight-regular">{{ $store.getters.userprofile.email }}</p>
+                                <p class="font-weight-light">{{ $store.getters.userprofile.email }}</p>
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-col :xl="3">
+                            <v-col :xl="4">
                                 <p class="font-weight-medium">Allergier</p>
                             </v-col>
                             <v-col v-if="editModeProfile"
@@ -125,7 +128,7 @@
                             </v-col>
                             <v-col v-else>
                                 <p
-                                    class="font-weight-regular"
+                                    class="font-weight-light"
                                     v-for="allergy in $store.getters.userprofile.allergies"
                                     :key="allergy"
                                     id="allergylist"
@@ -176,6 +179,7 @@
                                 Avbryt
                             </v-btn>
                             <v-btn 
+                                :disabled="!isFormValid"
                                 @click="updateUserProfile" 
                                 color="success"
                                 class="ma-1"
@@ -184,6 +188,7 @@
                             </v-btn>
                         </v-col>
                     </v-card-actions>
+                    </v-form>
                 </v-card>
             </v-col>
             <v-col>
@@ -604,6 +609,9 @@ export default class CustomerProfile extends Vue {
     }
     hasValue() {
       return this.selectedSchedule == undefined || null
+    }
+    required(value: string) {
+        return value.length > 0 || "Dette feltet kan ikke stå tomt";
     }
 }
 </script>
