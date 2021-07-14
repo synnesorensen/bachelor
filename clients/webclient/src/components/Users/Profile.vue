@@ -152,7 +152,8 @@
                                     <v-card-title class="headline">Sletting av registrerte opplysninger</v-card-title>
                                     <v-card-text>
                                         Er du sikker på at du vil slette alle dine registrerte opplysninger?<br />
-                                        Dette vil også slette eventuelle utestående leveranser du har til gode!
+                                        Dette vil også slette eventuelle utestående leveranser du har til gode.
+                                        Det er derfor anbefalt å vente med å slette personopplysninger til du har mottatt alle leveranser du har betalt for. 
                                     </v-card-text>
                                     <v-card-actions>
                                         <v-btn
@@ -427,6 +428,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import { Route } from "vue-router";
 import {Action, MenuItems, Subscription, Vendor} from "../../../../../server/src/interfaces";
 import api from "../../api/api";
 
@@ -452,6 +454,7 @@ export default class CustomerProfile extends Vue {
     private selectedSchedule: MenuItems[] = [];
     private goToReg = false;
     private deleteDialog = false;
+    private spinner = false;
 
     async mounted() {
         this.selectedAllergies = this.$store.getters.userprofile.allergies;
@@ -587,17 +590,40 @@ export default class CustomerProfile extends Vue {
     }
 
     async deleteMe() {
-        // Spinner start
-        let subscription = await api.getSingleSubscription()
-        if (subscription && this.vendor) {
-            await api.deleteUserSubscription(this.vendor.vendorId);
+        try {
+            this.spinner = true;
+            let subscription = await api.getSingleSubscription();
+            if (subscription && this.vendor) {
+                await api.deleteUserSubscription(this.vendor.vendorId);
+            }
+            await api.deleteUserprofile();
+            this.deleteDialog = false;
+            this.editModeProfile = false;
+            this.spinner = false;
+            this.$router.push({name: 'info'});
+        } catch (err) {
+            alert("Noe gikk galt ved sletting: " + err);
+            this.spinner = false;
         }
-        // TODO: Advare om resterende deliveries, og si at man ikke kan slette seg selv før disse er levert. Ta kontakt med AL for sletting av leveranser og evt refusjon hvis nødvendig. 
-        await api.deleteUserprofile();
-        this.deleteDialog = false;
-        this.editModeProfile = false;
-        // Ny dialog som bekrefter slettingen, deretter redirect til info ?
-        // Spinner slutt 
+        
+    }
+
+    beforeRouteLeave(to: Route, from: Route, next: Function) {
+        if (this.editModeProfile || this.editModeSub) {
+            const answer = window.confirm('Du har ulagrede endringer på siden. Ønsker du å forlate siden uten å lagre disse endringene?');
+            if (answer) {
+                if (this.editModeProfile) {
+                    this.cancelEditProfile();
+                } else {
+                    this.cancelEditSub();
+                }
+                next();
+            } else {
+                next(false);
+            }
+        } else {
+            next();
+        }
     }
 
     // Rules
