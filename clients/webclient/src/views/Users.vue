@@ -26,9 +26,9 @@
                     align-with-title 
                     class="d-none d-sm-flex"
                 >
-                    <v-tab to="/user/kalender" @click="$refs.customerOverview.populateCalendar()">Kalender</v-tab>
-                    <v-tab to="/user/profil">Kundeprofil</v-tab>
-                    <v-tab to="/user/faktura">Faktura</v-tab>
+                    <v-tab to="/user/calendar" @click="$refs.customerOverview.populateCalendar()">Kalender</v-tab>
+                    <v-tab to="/user/profile">Kundeprofil</v-tab>
+                    <v-tab to="/user/invoice">Faktura</v-tab>
                     <v-tab to="/user/info">Informasjon</v-tab>
                 </v-tabs>
             </template>

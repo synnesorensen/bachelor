@@ -591,7 +591,6 @@ export default class CustomerProfile extends Vue {
 
     async deleteMe() {
         try {
-            this.spinner = true;
             let subscription = await api.getSingleSubscription();
             if (subscription && this.vendor) {
                 await api.deleteUserSubscription(this.vendor.vendorId);
@@ -599,13 +598,12 @@ export default class CustomerProfile extends Vue {
             await api.deleteUserprofile();
             this.deleteDialog = false;
             this.editModeProfile = false;
-            this.spinner = false;
-            this.$router.push({name: 'info'});
+            this.$store.commit("setUserprofile", null);
+            this.$store.commit("setSubscription", null);
+            this.$store.dispatch("logout");
         } catch (err) {
             alert("Noe gikk galt ved sletting: " + err);
-            this.spinner = false;
-        }
-        
+        }        
     }
 
     beforeRouteLeave(to: Route, from: Route, next: Function) {

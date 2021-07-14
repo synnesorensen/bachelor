@@ -26,10 +26,10 @@
                     align-with-title 
                     class="d-none d-sm-flex"
                 >
-                    <v-tab to="/admin/kalender">Kalender</v-tab>
-                    <v-tab to="/admin/profil">Firmaprofil</v-tab>
-                    <v-tab to="/admin/betaling">Betalinger</v-tab>
-                    <v-tab to="/admin/kunder">Kundeliste</v-tab>
+                    <v-tab to="/admin/calendar">Kalender</v-tab>
+                    <v-tab to="/admin/profile">Firmaprofil</v-tab>
+                    <v-tab to="/admin/payments">Betalinger</v-tab>
+                    <v-tab to="/admin/customers">Kundeliste</v-tab>
                 </v-tabs>
             </template>
             <v-spacer />

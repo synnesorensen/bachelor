@@ -6,7 +6,7 @@ Vue.use(VueRouter);
 
 const routes = [
     {
-        path: "/velkommen",
+        path: "/welcome",
         name: "welcome",
         component: () => import ("./views/Welcome.vue")
     },
@@ -16,17 +16,17 @@ const routes = [
         component: () => import ("./views/Users.vue"),
         children: [
             {
-              path: 'profil',
+              path: 'profile',
               name: 'userProfile',
               component: () => import ("./components/Users/Profile.vue")
             },
             {
-                path: 'kalender',
+                path: 'calendar',
                 name: 'userCalendar',
                 component: () => import ("./components/Users/UserCalendar.vue")
             },
             {
-                path: 'faktura',
+                path: 'invoice',
                 name: 'invoice',
                 component: () => import ("./components/Users/Invoice.vue")
             },
@@ -55,29 +55,29 @@ const routes = [
         component: () => import ("./views/Admin.vue"),
         children: [
             {
-              path: 'profil',
+              path: 'profile',
               name: 'adminProfile',
               component: () => import ("./components/Admin/Profile.vue")
             },
             {
-                path: 'kalender',
+                path: 'calendar',
                 name: 'adminCalendar',
                 component: () => import ("./components/Admin/AdminCalendar.vue")
             },
             {
-                path: 'betaling',
+                path: 'payments',
                 name: 'payments',
                 component: () => import ("./components/Admin/Payments.vue")
             },
             {
-                path: 'kunder',
+                path: 'customers',
                 name: 'customers',
                 component: () => import ("./components/Admin/Customers.vue")
             }
         ]
     },
     {   path: '*',
-        redirect: '/velkommen' }
+        redirect: '/welcome' }
 ];
 
 
@@ -86,8 +86,10 @@ const router = new VueRouter({
     routes
 });
 
-router.beforeEach((to, _, next) => {
-    if (!store.getters.token) {
+router.beforeEach((to, from, next) => {
+    if (to.path !== '/velkommen') {
+        next();
+    } else if (!store.getters.token) {
         next({ name: 'welcome' });
     } else {
         next();
