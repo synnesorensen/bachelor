@@ -929,6 +929,7 @@ async function cancelDelivery(delivery:Delivery): Promise<boolean> {
 
 export async function pauseSubscription(userId: string, vendorId: string, time: string): Promise<Subscription> {
     let outstandingDeliveries = await getUsersDeliveries(userId, time);
+    outstandingDeliveries = outstandingDeliveries.filter(del => !del.cancelled);
     let noOfDeliveries = outstandingDeliveries.length;
     
     for (let del of outstandingDeliveries) {

@@ -304,7 +304,7 @@
                         <v-btn @click="dialog = true" text color="orange">
                             {{ this.buttonText }}
                         </v-btn>
-                        <v-dialog v-model="dialog" persistent max-width="300">
+                        <v-dialog v-model="dialog" persistent max-width="400">
                             <v-card>
                                 <v-container>
                                     <v-card-title class="headline">
@@ -313,18 +313,18 @@
                                     <v-card-text> {{ this.dialogText }} </v-card-text>
                                     <v-row class="pa-4" align="center" justify="center">
                                         <v-btn
-                                            color="green darken-1"
-                                            text
-                                            @click="toggleSubscriptionPause()"
-                                        >
-                                            {{ $store.getters.subscription.paused? "Aktiver": "Sett på pause" }}
-                                        </v-btn>
-                                        <v-btn
-                                            color="green darken-1"
-                                            text
+                                            color="error"
                                             @click="dialog = false"
+                                            class="ma-2"
                                         >
                                             Avbryt
+                                        </v-btn>
+                                        <v-btn
+                                            color="success"
+                                            @click="toggleSubscriptionPause()"
+                                            class="ma-2"
+                                        >
+                                            {{ $store.getters.subscription.paused? "Aktiver": "Sett på pause" }}
                                         </v-btn>
                                     </v-row>
                                 </v-container>

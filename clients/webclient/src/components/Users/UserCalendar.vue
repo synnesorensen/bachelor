@@ -68,7 +68,7 @@
                         <p class="font-weight-medium">{{selectedEvent.name + " den " + toLocalPresentation(selectedDate)}}?</p>
                     </v-card-text>
                     <v-card-text v-if="!cancelable">
-                        Det er ikke mulig å bestille etter til klokken 10:00 dagen før levering.
+                        Det er ikke mulig å bestille etter klokken 10:00 dagen før levering.
                     </v-card-text>
                     <v-card-actions>
                         <v-tooltip :disabled="cancelable" bottom>
@@ -144,15 +144,15 @@
                                     Er du sikker på at du vil avbestille {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}} ?
                                 </v-card-text>
                                 <v-card-actions>
-                                    <v-btn 
-                                        color="success"
-                                        @click="cancelDelivery()"
-                                    > Avbestill levering
-                                    </v-btn>
                                     <v-btn
                                         color="error"
                                         @click="cancelDialog=false"
                                     > Avbryt
+                                    </v-btn>
+                                    <v-btn 
+                                        color="success"
+                                        @click="cancelDelivery()"
+                                    > Avbestill levering
                                     </v-btn>
                                 </v-card-actions>
                             </v-card>
