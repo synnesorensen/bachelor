@@ -63,7 +63,7 @@ export const store = new Vuex.Store({
             api.setApiBearerToken(payload.jwt);
             const username = getUserInfo(payload.jwt);
             context.commit("setUsername", username);
-            const vendor = api.getSingleVendor();
+            const vendor = await api.getSingleVendor();
             context.commit("setVendor", vendor);
 
             const userprofile = await api.getUserprofile();
@@ -80,6 +80,9 @@ export const store = new Vuex.Store({
                     router.push({name: 'userCalendar'});
                 }
                 payload.callback();
+            }
+            if (userprofile?.isVendor) {
+                context.commit("setVendor", vendor);
             }
         },
         async logout(context) {
