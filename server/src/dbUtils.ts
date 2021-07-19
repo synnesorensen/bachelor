@@ -28,7 +28,6 @@ export async function getSubscriptionFromDb(vendorId: string, userId: string): P
     return {
             vendorId,
             userId,
-            approved: subscriptionResult.Items[0].approved? subscriptionResult.Items[0].approved : false,
             paused: subscriptionResult.Items[0].paused,
             datePaused:subscriptionResult.Items[0].datePaused,
             outstandingDeliveries: subscriptionResult.Items[0].outstandingDeliveries,
@@ -38,21 +37,12 @@ export async function getSubscriptionFromDb(vendorId: string, userId: string): P
     };
 }
 
-export async function putSubscriptionInDb(subscription: Subscription, isVendor: boolean): Promise<Subscription> {
+export async function putSubscriptionInDb(subscription: Subscription): Promise<Subscription> {
     let UpdateExpression = "set EntityType = :EntityType";
     let ExpressionAttributeValues: any = {
         ":EntityType": { S: 'Subscription' }
     }; 
-
-    if (isVendor) {
-        if (subscription.approved != undefined) {
-            UpdateExpression += ", approved = :approved";
-            ExpressionAttributeValues[":approved"] = { BOOL: subscription.approved };
-        }
-    } else {
-        UpdateExpression += ", approved = if_not_exists(approved, :approved)";
-        ExpressionAttributeValues[":approved"] = { BOOL: false };
-    }    
+   
     if (subscription.paused != undefined) {
         UpdateExpression += ", paused = :paused";
         ExpressionAttributeValues[":paused"] = { BOOL: subscription.paused };
@@ -91,7 +81,6 @@ export async function putSubscriptionInDb(subscription: Subscription, isVendor: 
     return {
         vendorId: subscription.vendorId,
         userId: subscription.userId,
-        approved: dbItem.Attributes.approved?.BOOL || false,
         paused: dbItem.Attributes.paused?.BOOL || false,
         schedule: dbItem.Attributes.schedule?.SS || [],
         noOfMeals: parseInt(dbItem.Attributes.noOfMeals.N),
@@ -99,7 +88,7 @@ export async function putSubscriptionInDb(subscription: Subscription, isVendor: 
     };
 }
 
-export async function updateApproval(vendorId: string, userId: string, approved: boolean): Promise<void> {
+export async function updateApproval(userId: string, approved: boolean): Promise<void> {
     let UpdateExpression = "set approved = :approved";
     let ExpressionAttributeValues: any = {
         ":approved": { BOOL: approved }
@@ -108,7 +97,7 @@ export async function updateApproval(vendorId: string, userId: string, approved:
     let params = {
         TableName: settings.TABLENAME,
         Key: {
-            "pk": { S: "v#" + vendorId },
+            "pk": { S: "u#" + userId },
             "sk": { S: "u#" + userId }
         },
         UpdateExpression,
@@ -280,40 +269,80 @@ export async function getUserprofileFromDb(userId: string): Promise<Userprofile>
     return {
         fullname: dbResult.Items[0].fullname,
         address: dbResult.Items[0].address,
-        deliveryaddress: dbResult.Items[0].deliveryaddress,
+        deliveryAddress: dbResult.Items[0].deliveryAddress,
         phone: dbResult.Items[0].phone,
         email: dbResult.Items[0].email, 
         allergies: dbResult.Items[0].allergies,
+        approved: dbResult.Items[0].approved? dbResult.Items[0].approved : false,
         isVendor: dbResult.Items[0].isVendor
     };  
 }
 
-export async function putUserprofileInDb(userprofile: Userprofile, userId: string): Promise<Userprofile> {
+export async function putUserprofileInDb(userprofile: Userprofile, userId: string, isVendor: boolean): Promise<Userprofile> {
+    let UpdateExpression = "set EntityType = :EntityType";
+    let ExpressionAttributeValues: any = {
+        ":EntityType": { S: 'Userprofile' }
+    }; 
+
+    if (isVendor) {
+        if (userprofile.approved != undefined) {
+            UpdateExpression += ", approved = :approved";
+            ExpressionAttributeValues[":approved"] = { BOOL: userprofile.approved };
+        }
+    } else {
+        UpdateExpression += ", approved = if_not_exists(approved, :approved)";
+        ExpressionAttributeValues[":approved"] = { BOOL: false };
+    }  
+    if (userprofile.fullname != undefined) {
+        UpdateExpression += ", fullname = :fullname";
+        ExpressionAttributeValues[":fullname"] = { S: userprofile.fullname };
+    }
+    if (userprofile.address != undefined) {
+        UpdateExpression += ", address = :address";
+        ExpressionAttributeValues[":address"] = { S: userprofile.address };
+    }
+    if (userprofile.deliveryAddress != undefined) {
+        UpdateExpression += ", deliveryAddress = :deliveryAddress";
+        ExpressionAttributeValues[":deliveryAddress"] = { S: userprofile.deliveryAddress };
+    }
+    if (userprofile.phone != undefined) {
+        UpdateExpression += ", phone = :phone";
+        ExpressionAttributeValues[":phone"] = { S: userprofile.phone };
+    }
+    if (userprofile.email != undefined) {
+        UpdateExpression += ", email = :email";
+        ExpressionAttributeValues[":email"] = { S: userprofile.email };
+    }
+    if (userprofile.allergies.length > 0) {
+        UpdateExpression += ", allergies = :allergies";
+        ExpressionAttributeValues[":allergies"] = { SS: userprofile.allergies };
+    }
+    if (userprofile.isVendor != undefined) {
+        UpdateExpression += ", isVendor = :isVendor";
+        ExpressionAttributeValues[":isVendor"] = { BOOL: userprofile.isVendor };
+    }
+
     let params = {
         TableName: settings.TABLENAME,
-        Item: {
-            pk: "u#" + userId,
-            sk: "u#" + userId,
-            EntityType: "Userprofile", 
-            fullname: userprofile.fullname, 
-            address: userprofile.address, 
-            deliveryaddress: userprofile.deliveryaddress,
-            phone: userprofile.phone, 
-            email: userprofile.email, 
-            allergies: userprofile.allergies,
-            isVendor: userprofile.isVendor
-        }
+        Key: {
+            "pk": { S: "u#" + userId },
+            "sk": { S: "u#" + userId }
+        },
+        UpdateExpression,
+        ExpressionAttributeValues,
+        ReturnValues: "ALL_NEW"
     };
-
-    await documentClient.put(params).promise();
+    
+    let dbItem = await database.updateItem(params).promise();
     return {
         fullname: userprofile.fullname,
         address: userprofile.address,
-        deliveryaddress: userprofile.deliveryaddress,
-        phone: userprofile.phone,
-        email: userprofile.email,
-        allergies: userprofile.allergies,
-        isVendor: userprofile.isVendor
+        deliveryAddress: dbItem.Attributes.deliveryAddress.S,
+        phone: dbItem.Attributes.phone.S,
+        email: dbItem.Attributes.email.S,
+        allergies: dbItem.Attributes.allergies?.SS,
+        approved: dbItem.Attributes.approved?.BOOL || false,
+        isVendor: dbItem.Attributes.isVendor.BOOL
     }
 } 
 
@@ -351,7 +380,6 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
         return {
             vendorId,
             userId: item.sk,
-            approved: item.approved,
             paused:item.paused,
             schedule: item.schedule.values,
             noOfMeals: item.noOfMeals,
@@ -370,7 +398,7 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
         RequestItems: {
             [settings.TABLENAME]: {
                 Keys: keys,
-                ProjectionExpression: "sk, fullname, address, phone, email, allergies"
+                ProjectionExpression: "sk, fullname, address, phone, email, allergies, approved"
             }
         }
     };
@@ -405,7 +433,7 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
         return {
             vendorId: sub.vendorId,
             userId: sub.userId.substr(2),
-            approved: sub.approved,
+            approved: user.approved,
             paused: sub.paused,
             schedule: userSchedule,
             noOfMeals: sub.noOfMeals,
@@ -489,7 +517,6 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
         return {
             vendorId: sub.vendorId.substr(2),
             company: vendor.company,
-            approved: sub.approved,
             paused: sub.paused,
             schedule: subSchedule,
             noOfMeals: sub.noOfMeals,
@@ -524,7 +551,6 @@ export async function getOnlySubscriptionForUser(userId: string): Promise<Vendor
     let sub:Subscription = {
         vendorId: dbResult.Items[0].pk,
         userId,
-        approved: dbResult.Items[0].approved,
         paused: dbResult.Items[0].paused,
         schedule: dbResult.Items[0].schedule.values,
         noOfMeals: dbResult.Items[0].noOfMeals,
@@ -553,7 +579,6 @@ export async function getOnlySubscriptionForUser(userId: string): Promise<Vendor
     return {
         vendorId: sub.vendorId.substr(2),
         company: vendor.Items[0].company,
-        approved: sub.approved,
         paused: sub.paused,
         schedule: subSchedule,
         noOfMeals: sub.noOfMeals,
@@ -904,6 +929,7 @@ async function cancelDelivery(delivery:Delivery): Promise<boolean> {
 
 export async function pauseSubscription(userId: string, vendorId: string, time: string): Promise<Subscription> {
     let outstandingDeliveries = await getUsersDeliveries(userId, time);
+    outstandingDeliveries = outstandingDeliveries.filter(del => !del.cancelled);
     let noOfDeliveries = outstandingDeliveries.length;
     
     for (let del of outstandingDeliveries) {
@@ -931,7 +957,6 @@ export async function pauseSubscription(userId: string, vendorId: string, time: 
         return {
             vendorId: result.Attributes.pk.S.substr(2),
             userId: result.Attributes.sk.S.substr(2),
-            approved: result.Attributes.approved.BOOL,
             paused: result.Attributes.paused.BOOL,
             datePaused: result.Attributes.datePaused.S,
             outstandingDeliveries: parseInt(result.Attributes.outstandingDeliveries.N),
@@ -972,7 +997,6 @@ export async function unPauseSubscription(userId: string, vendorId: string, time
         return {
             vendorId: result.Attributes.pk.S.substr(2),
             userId: result.Attributes.sk.S.substr(2),
-            approved: result.Attributes.approved.BOOL,
             paused: result.Attributes.paused.BOOL,
             schedule: result.Attributes.schedule.SS,
             noOfMeals: parseInt(result.Attributes.noOfMeals.N),

@@ -1,17 +1,17 @@
 export interface Userprofile {
     fullname: string,
     address: string,
-    deliveryaddress: string,
+    deliveryAddress: string,
     phone: string,
     email: string, 
     allergies: string[], 
+    approved: boolean,
     isVendor: boolean
 }
 
 export interface Subscription {
     vendorId: string,
     userId: string,
-    approved: boolean,
     paused: boolean,
     datePaused?: string,
     outstandingDeliveries?: number,
@@ -20,7 +20,7 @@ export interface Subscription {
     box: string
 }
 
-// User on admin pages: Returns all subscribers that a vendor/company has. 
+// Used on admin pages: Returns all subscribers that a vendor/company has. 
 export interface UserSubscription {
     vendorId: string,
     userId: string,
@@ -41,7 +41,6 @@ export interface UserSubscription {
 export interface VendorSubscription {
     vendorId: string,
     company: string,
-    approved: boolean,
     paused: boolean,
     schedule: MenuItems[],
     noOfMeals: number,

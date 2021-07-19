@@ -7,7 +7,7 @@
             color="primary"
         >
             <v-list-item
-            v-for="(sub, i) in subscribers"
+            v-for="(sub, i) in approvedSubscribers"
             v-bind:key="i"
             >
             <v-list-item-content>
@@ -28,10 +28,11 @@ import api from '../../api/api'
 @Component
 export default class Subscribers extends Vue {
     private _selectedSub = 0;
-    private subscribers: interfaces.UserSubscription[] = [];
+    private approvedSubscribers: interfaces.UserSubscription[] = [];
     
     async created() {
-        this.subscribers = await api.getVendorSubscriptions();
+        let subscribers = await api.getVendorSubscriptions();
+        this.approvedSubscribers = subscribers.filter(sub => sub.approved);
     }
 
     get selectedSub() {
@@ -40,9 +41,8 @@ export default class Subscribers extends Vue {
     set selectedSub(value) {
         this._selectedSub = value;
         if (this._selectedSub != undefined) {
-            this.$emit("userSelected", this.subscribers[this._selectedSub]);
+            this.$emit("userSelected", this.approvedSubscribers[this._selectedSub]);
         }
-        
     }
 }
 </script>

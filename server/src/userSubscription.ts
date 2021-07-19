@@ -83,12 +83,11 @@ async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
     let subscription = await putSubscriptionInDb({
         vendorId,
         userId,
-        approved: body.approved,
         paused: body.paused,
         schedule: body.schedule, 
         noOfMeals: body.noOfMeals,
         box: body.box
-    }, false);
+    });
 
     return {
         statusCode: 200,

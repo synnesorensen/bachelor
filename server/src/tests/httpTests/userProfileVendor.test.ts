@@ -18,7 +18,7 @@ describe('Userprofile for vendor http test', () => {
         let userprofile = {
             fullname: "Ing Ping",
             address: "Hjemme",
-            deliveryaddress: "Kronstad 5",
+            deliveryAddress: "Kronstad 5",
             phone: "98765432",
             email: mail,
             allergies: ["melk"],

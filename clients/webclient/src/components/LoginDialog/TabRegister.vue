@@ -41,6 +41,12 @@
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn 
+                color="error" 
+                @click="cancel"
+            >
+            Avbryt
+            </v-btn>
+            <v-btn 
                 v-if="!showCodeVerification"
                 color="success" 
                 @click="register"
@@ -122,6 +128,10 @@ export default class TabRegister extends Vue {
             this.errorMsg2 = err.message;
             this.$emit("showSpinner", false);
         }
+    }
+
+    cancel() {
+        this.$emit("closeDialog", true);
     }
 }
 </script>

@@ -41,6 +41,12 @@
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn 
+                color="error" 
+                @click="cancel"
+            >
+            Avbryt
+            </v-btn>
+            <v-btn 
                 v-if="!showVerification"
                 color="success" 
                 @click="sendPassword"
@@ -105,6 +111,10 @@ export default class TabPassword extends Vue {
             this.errorMsg = err.message;
             this.$emit("showSpinner", false);
         }
+    }
+
+    cancel() {
+        this.$emit("closeDialog", true);
     }
 }
 </script>

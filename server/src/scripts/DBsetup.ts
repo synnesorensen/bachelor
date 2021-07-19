@@ -7,75 +7,82 @@ import { generateDeliveries } from './../addDeliveries';
 const userprofile1 = {
     fullname: "Ole Olsen",
     address: "Smauet 110 5000 Sentrum",
-    deliveryaddress: "Damsgårdsveien 50 5020 Bergen",
+    deliveryAddress: "Smauet 110 5000 Sentrum",
     phone: "12345678",
     email: dbUser1,
     allergies: ["melk"],
+    approved: true,
     isVendor: false
 }
 const userprofile2 = {
     fullname: "Olga Karidotter",
     address: "Sollien 8 5001 Lien",
-    deliveryaddress: "Månelien 12 5002 Sentrum",
+    deliveryAddress: "Sollien 8 5001 Lien",
     phone: "23456789",
     email: dbUser2,
     allergies: [],
+    approved: true,
     isVendor: false
 }
 const userprofile3 = {
     fullname: "Stig Hugo",
     address: "Lauvstien 31 5000 Sentrum",
-    deliveryaddress: "Bærstien 5 5005 Nøstet",
+    deliveryAddress: "Lauvstien 31 5000 Sentrum",
     phone: "34567890",
     email: dbUser3,
     allergies: ["løk, svovel"],
+    approved: true,
     isVendor: false
 }
 const userprofile4 = {
     fullname: "Katy Sekken",
     address: "Oppoverbakken 17 5000 Sentrum",
-    deliveryaddress: "Ripshaugen 39 5020 Bergen",
+    deliveryAddress: "Oppoverbakken 17 5000 Sentrum",
     phone: "45678901",
     email: dbUser4,
     allergies: ["gluten"],
+    approved: true,
     isVendor: false
 }
 const userprofile5 = {
     fullname: "Jan Jankovich",
     address: "Lykkegata 8 5002 Øvreåsen",
-    deliveryaddress: "Smilevegen 1 5000 Sentrum",
+    deliveryAddress: "Lykkegata 8 5002 Øvreåsen",
     phone: "56789012",
     email: dbUser5,
     allergies: [],
+    approved: true,
     isVendor: false
 }
 const userprofile6 = {
     fullname: "Penny Pøbel",
-    address: "Ukjent",
-    deliveryaddress: "Kronstadhuset 99 5500 Kronstad",
+    address: "Kroken 3 5000 Sentrum",
+    deliveryAddress: "Kroken 3 5000 Sentrum",
     phone: "67890123",
     email: dbUser6,
     allergies: ["melk"],
+    approved: true,
     isVendor: false
 }
 const userprofileVendor = {
     fullname: "Helene Haare",
     address: "Hakkebakken 2 5003 Skogen",
-    deliveryaddress: "Skogstien 22 5020 Bergen",
+    deliveryAddress: "Hakkebakken 2 5003 Skogen",
     phone: "67890123",
     email: dbVendor,
     allergies: [],
+    approved: true,
     isVendor: true
 }
 
 export async function addUsersToDb() {
-    await putUserprofileInDb(userprofile1, dbUser1);
-    await putUserprofileInDb(userprofile2, dbUser2);
-    await putUserprofileInDb(userprofile3, dbUser3);
-    await putUserprofileInDb(userprofile4, dbUser4);
-    await putUserprofileInDb(userprofile5, dbUser5);
-    await putUserprofileInDb(userprofile6, dbUser6);
-    await putUserprofileInDb(userprofileVendor, dbVendor);
+    await putUserprofileInDb(userprofile1, dbUser1, false);
+    await putUserprofileInDb(userprofile2, dbUser2, false);
+    await putUserprofileInDb(userprofile3, dbUser3, false);
+    await putUserprofileInDb(userprofile4, dbUser4, false);
+    await putUserprofileInDb(userprofile5, dbUser5, false);
+    await putUserprofileInDb(userprofile6, dbUser6, false);
+    await putUserprofileInDb(userprofileVendor, dbVendor, true);
 }
 
 const vendor = {
@@ -120,7 +127,6 @@ export async function addVendorToDb() {
 const sub1 = {
     vendorId: dbVendor,
     userId: dbUser1,
-    approved: true,
     paused: false,
     schedule: ["2", "3"], 
     noOfMeals: 1,
@@ -129,7 +135,6 @@ const sub1 = {
 const sub2 = {
     vendorId: dbVendor,
     userId: dbUser2,
-    approved: true,
     paused: false,
     schedule: ["2"], 
     noOfMeals: 1,
@@ -138,7 +143,6 @@ const sub2 = {
 const sub3 = {
     vendorId: dbVendor,
     userId: dbUser3,
-    approved: true,
     paused: false,
     schedule: ["41"], 
     noOfMeals: 1,
@@ -147,7 +151,6 @@ const sub3 = {
 const sub4 = {
     vendorId: dbVendor,
     userId: dbUser4,
-    approved: true,
     paused: false,
     schedule: ["3"], 
     noOfMeals: 1,
@@ -156,7 +159,6 @@ const sub4 = {
 const sub5 = {
     vendorId: dbVendor,
     userId: dbUser5,
-    approved: true,
     paused: false,
     schedule: ["2", "41"], 
     noOfMeals: 1,
@@ -165,7 +167,6 @@ const sub5 = {
 const sub6 = {
     vendorId: dbVendor,
     userId: dbUser6,
-    approved: true,
     paused: false,
     schedule: ["41"], 
     noOfMeals: 1,
@@ -173,16 +174,16 @@ const sub6 = {
 }
 
 export async function addSubsToDb() {
-    await putSubscriptionInDb(sub1, false);
-    await putSubscriptionInDb(sub2, false);
-    await putSubscriptionInDb(sub3, false);
-    await putSubscriptionInDb(sub4, false);
-    await putSubscriptionInDb(sub5, false);
-    await putSubscriptionInDb(sub6, false);
+    await putSubscriptionInDb(sub1);
+    await putSubscriptionInDb(sub2);
+    await putSubscriptionInDb(sub3);
+    await putSubscriptionInDb(sub4);
+    await putSubscriptionInDb(sub5);
+    await putSubscriptionInDb(sub6);
 }
 
 export async function addDeliveriesToDb() {
-    let date = new Date("2021-05-01");
+    let date = new Date("2021-08-01");
     let deliveries1 = await generateDeliveries(date, dbUser1, dbVendor, 8);
     await saveDeliveriesToDb(deliveries1);
     let deliveries2 = await generateDeliveries(date, dbUser2, dbVendor, 4);

@@ -76,16 +76,14 @@
 import Vue from 'vue';
 import api from "../../api/api";
 import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
 import { UserSubscription } from '../../../../../server/src/interfaces';
 
 @Component({
 	components: {
-	},
+	}
 })
 
-export default class AdminCustomers extends Vue {
-    @Prop() loggedInUser!: string;
+export default class Customers extends Vue {
     private users: UserSubscription[] = [];
 
     get activeUsers() {

@@ -1,19 +1,37 @@
 <template>
-    <main>
+    <v-container>
         <v-row>
-            <v-col>
-                <v-sheet height="64">
+            <v-col :xl="6">
+                <v-sheet>
                     <v-spacer />
                     <v-toolbar flat>
-                        <v-btn outlined @click="setToday"> I dag </v-btn>
-                        <v-btn fab text small @click="prev">
+                        <v-btn 
+                            outlined 
+                            class="mr-4"
+                            @click="setToday"
+                        > 
+                            I dag 
+                        </v-btn>
+                        <v-btn 
+                            fab 
+                            text 
+                            small 
+                            class="mr-4"
+                            @click="prev"
+                        >
                             <v-icon small>mdi-chevron-left</v-icon>
                         </v-btn>
-                        <v-btn fab text small @click="next">
+                        <v-btn 
+                            fab 
+                            text 
+                            small 
+                            class="mr-4"
+                            @click="next"
+                        >
                             <v-icon small>mdi-chevron-right</v-icon>
                         </v-btn>
                         <v-toolbar-title v-if="$refs.calendar">
-                            {{ $refs.calendar.title }}
+                            {{ $refs.calendar.title.charAt(0).toUpperCase() + $refs.calendar.title.slice(1) }}
                         </v-toolbar-title>
                     </v-toolbar>
                 </v-sheet>
@@ -34,20 +52,18 @@
                     </v-calendar>
                 </v-sheet>
             </v-col>
-            <v-col>
-                <Deliveries v-if="showList" :date="selectedDate" @update="deliveriesUpdated" />
+            <v-col v-if="showList">
+                <Deliveries :date="selectedDate" @update="deliveriesUpdated" />
             </v-col>
         </v-row>
-    </main>
+    </v-container>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import Deliveries from './Deliveries.vue'
-import  api from "../../api/api";
-import {Userprofile} from '../../../../../server/src/interfaces'
-import { Prop } from 'vue-property-decorator';
+import Deliveries from './Deliveries.vue';
+import api from "../../api/api";
 
 @Component({
 	components: {
@@ -55,8 +71,7 @@ import { Prop } from 'vue-property-decorator';
     },
 })
 
-export default class AdminOverview extends Vue {
-    @Prop() userprofile!: Userprofile;
+export default class AdminCalendar extends Vue {
     private today = new Date().toISOString().substr(0, 10);
 	private focus = new Date().toISOString().substr(0, 10);
 	private type = "month";
@@ -94,7 +109,7 @@ export default class AdminOverview extends Vue {
     }
 
     async populateCalendar() {
-        const vendor = await api.getVendor(this.userprofile!.email);
+        const vendor = await api.getVendor(this.$store.getters.loggedInUser);
         let schedule = vendor!.schedule;
         let events: any[] = [];
         if (this.start && this.end) {
