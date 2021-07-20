@@ -207,7 +207,7 @@ export class Api {
         await this.ensureFreshToken();
 
         try { 
-            let url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(startDate) + "&end=" + endDate;
+            let url = urlPrefix + "/v/deliveries?start=" + startDate + "&end=" + endDate;
             const deliveries = await this.apiAxios.get(url);
             return deliveries.data;
         } catch (error) {
@@ -222,8 +222,22 @@ export class Api {
         await this.ensureFreshToken();
 
         try { 
-            let url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(startDate) + "&end=" + endDate + "&summary=true";
+            let url = urlPrefix + "/v/deliveries?start=" + startDate + "&end=" + endDate + "&summary=true";
             const deliveries = await this.apiAxios.get(url);
+            return deliveries.data;
+        } catch (error) {
+            if (error.response.status == 404) {
+                return null;
+            }
+            throw (error);
+        }
+    }
+
+    async getOneUsersDeliveries(userId: string, startDate: string, endDate: string): Promise<interfaces.Delivery[] | null> {
+        await this.ensureFreshToken();
+
+        try {
+            const deliveries = await this.apiAxios.get(urlPrefix + "/v/deliveries?userId=" + encodeURIComponent(userId) + "&start=" + startDate + "&end=" + endDate);
             return deliveries.data;
         } catch (error) {
             if (error.response.status == 404) {

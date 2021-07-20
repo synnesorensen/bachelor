@@ -182,16 +182,3 @@ export async function addSubsToDb() {
     await putSubscriptionInDb(sub6);
 }
 
-export async function addDeliveriesToDb() {
-    let date = new Date("2021-08-01");
-    let deliveries1 = await generateDeliveries(date, dbUser1, dbVendor, 8);
-    await saveDeliveriesToDb(deliveries1);
-    let deliveries2 = await generateDeliveries(date, dbUser2, dbVendor, 4);
-    await saveDeliveriesToDb(deliveries2);
-    let deliveries3 = await generateDeliveries(date, dbUser3, dbVendor, 4);
-    await saveDeliveriesToDb(deliveries3);
-    let deliveries4 = await generateDeliveries(date, dbUser4, dbVendor, 4);
-    await saveDeliveriesToDb(deliveries4);
-    let deliveries5 = await generateDeliveries(date, dbUser5, dbVendor, 8);
-    await saveDeliveriesToDb(deliveries5);
-}

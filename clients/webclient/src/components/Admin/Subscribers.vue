@@ -1,6 +1,12 @@
 <template>
     <v-card>
-        <v-card-title>Kundeliste</v-card-title>
+        <v-app-bar
+            dark
+            color="#79b321"
+        >
+            <v-card-title>Kundeliste</v-card-title>
+        </v-app-bar>
+        <br />
         <v-list dense>
             <v-list-item-group
             v-model="selectedSub"

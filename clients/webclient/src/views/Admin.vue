@@ -1,5 +1,5 @@
 <template>
-	<v-container class="overflow-hidden" v-if="$store.getters.userprofile.isVendor">
+	<v-container class="overflow-hidden" v-if="$store.getters.userprofile && $store.getters.userprofile.isVendor">
 		<v-app-bar 
             app 
             dark
