@@ -31,12 +31,19 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
+import { Prop, Watch } from 'vue-property-decorator';
 
 @Component
 
 export default class CustomerPayment extends Vue {
-    private selectedDate = "";
+    @Prop() date = "";
     private menu = false;
+    private selectedDate = "";
+
+    @Watch("date") 
+    dateChanged() {
+        this.selectedDate=this.date;
+    }
 
     updateDate(date: string) {
         this.menu = false;

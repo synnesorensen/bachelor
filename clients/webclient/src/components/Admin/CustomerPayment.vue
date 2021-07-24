@@ -77,7 +77,7 @@
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn 
-                @click="showDatePickDialog"
+                @click="datePickDialog = true"
                 color="grey lighten-3"
             >
                 Leveranser
@@ -86,13 +86,26 @@
                 v-model="datePickDialog" 
                 max-width="800" 
                 max-height="800"
+                persistent
             >
                 <v-card>
-                    <v-card-title class="headline">
-                        Leveranser
-                    </v-card-title>
+                    <v-app-bar
+
+                    >
+                        <v-card-title class="headline">
+                            Leveranser
+                        </v-card-title>
+                        <v-spacer></v-spacer>
+                        <v-btn 
+                            icon
+                            @click="close"    
+                        >
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </v-app-bar>
+                    <br />
                     <v-card-text>
-                        <v-row>
+                        <v-row >
                             <v-col>
                                 <p class="font-weight-medium"> Fra dato:</p>
                                 <date-picker 
@@ -111,27 +124,42 @@
                         <v-row>
                             <p style="color:red;">{{errorMsg}}</p>
                         </v-row>
-                        <v-list dense v-if="deliveries && deliveries.length > 0">
-                            <v-list-item v-for="del in deliveries" :key="del.deliverytime">
-                                <v-list-item-content>
-                                    <v-checkbox 
+                        <v-data-table
+                            :loading="loading"
+                            v-model="selectedDeliveries"
+                            v-if="deliveries && deliveries.length > 0"
+                            :headers="headers"
+                            :items="deliveries"
+                            item-key="deliverytime"
+                            show-select
+                            class="pt-2"
+                        >
+                            <template v-slot:item="{ item }">
+                                <tr :key="item.deliverytime">
+                                    <td><v-checkbox
                                         v-model="selectedDeliveries"
-                                        :value="del.deliverytime" 
-                                        :key="del.deliverytime"
-                                        :label="toLocalPresentation(del.deliverytime)"
-                                        class="ml-3"
-                                    >
-                                    </v-checkbox>
-                                </v-list-item-content>
-                            </v-list-item>
-                        </v-list>
+                                        :value="item"
+                                        dense
+                                    ></v-checkbox></td>
+                                    <td>{{toLocalPresentation(item.deliverytime)}}</td>
+                                    <td>{{item.cancelled? "Ja" : "Nei"}}</td>
+                                </tr>
+                            </template>
+                        </v-data-table>
                     </v-card-text>
                     <v-card-actions v-if="deliveries && deliveries.length">
-                        <v-btn text color="error">Slett</v-btn>
-                        <v-btn text color="primary">Kanseller</v-btn>
-                        <v-btn text color="success">Sett aktiv</v-btn>
+                        <v-btn @click="deleteDeliveries" text color="error">Slett</v-btn>
+                        <v-btn text color="error">Kanseller</v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn @click="close" text color="primary">Lukk</v-btn>
                     </v-card-actions>
                 </v-card>
+                <v-overlay absolute opacity="0.1" v-if="loading">
+                    <v-progress-circular
+                        indeterminate
+                        size="56"
+                    ></v-progress-circular>
+                </v-overlay>
             </v-dialog>
             <v-dialog 
                 v-model="paymentDialog" 
@@ -189,6 +217,7 @@ import DatePicker from "./DatePicker.vue";
 })
 
 export default class CustomerPayment extends Vue {
+    private loading = false;
     @Prop() selectedUser!:interfaces.UserSubscription | null; 
     private paymentDialog = false;
     private datePickDialog = false;
@@ -198,9 +227,14 @@ export default class CustomerPayment extends Vue {
     private selectedDeliveries: interfaces.Delivery[] = []
     private paidDeliveries = 0;
     private unpaidDeliveries = 0;
-    private deliveries: interfaces.Delivery[] | null = null;
+    private deliveries: interfaces.Delivery[] | null = [];
     private monthOffset = 1;
     private errorMsg = "";
+    private headers=[
+        {text: "Dato", value: "deliverytime"},
+        {text: "Kansellert", value: "cancelled"}
+    ];
+    
     get selectedMonth() {
         return this.toYearMonth(this.nextMonth());
     }
@@ -230,6 +264,13 @@ export default class CustomerPayment extends Vue {
         if (this.selectedUser != null) {
             this.updateUnpaidDeliveries();
         }
+    }
+
+    @Watch("datePickDialog")
+    onShowDialog() {
+        console.log("Åpner");
+        this.startDate = "";
+        this.endDate = "";
     }
 
     async updateUnpaidDeliveries() {
@@ -269,24 +310,52 @@ export default class CustomerPayment extends Vue {
         this.paymentDialog = true;
     }
 
-    async showDatePickDialog() {
-        this.datePickDialog = true;
-    }
-
     async dateCheck() {
-        if (this.startDate && this.endDate) {
+        if (this.startDate && this.endDate && this.selectedUser) {
             if (new Date(this.endDate) < new Date(this.startDate)) {
                 this.errorMsg = "Fra dato kan ikke være etter til dato."
-            }
-            if (this.selectedUser) {
-                this.deliveries = await api.getOneUsersDeliveries(this.selectedUser.userId, this.startDate, this.endDate);
+            } else {
+                this.loading = true;
+                this.errorMsg = "";
+                try {
+                    this.deliveries = await api.getOneUsersDeliveries(this.selectedUser.userId, this.startDate, this.endDate);
+                } catch (err) {
+                    console.log(err);
+                } finally {
+                    this.loading = false;
+                }
             }
         }
     }
 
+    async deleteDeliveries() {
+        this.selectedDeliveries.forEach(async del => {
+            await api.deleteDelivery(this.$store.getters.loggedInUser, this.selectedUser!.userId, del.deliverytime);
+            this.deliveries = await api.getOneUsersDeliveries(this.selectedUser!.userId, this.startDate, this.endDate);
+        });
+    }
+
+    async toggleCancelation() {
+        this.selectedDeliveries.forEach(del => {
+            if (del.cancelled) {
+                this.errorMsg = "Leveranse den " + del.deliverytime + " er allerede kansellert."
+            } else {
+                del.cancelled = true;
+            }
+        });
+    }
+
+    close() {
+        this.startDate = "";
+        this.endDate = "";
+        this.deliveries = [];
+        this.selectedDeliveries = [];
+        this.datePickDialog = false;
+    }
+
     toLocalPresentation(lastDeliveryDate: string) {
         const delDate = new Date(lastDeliveryDate);
-        return delDate.toLocaleDateString();
+        return delDate.toLocaleDateString("no-NO", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
     }
 }
 </script>
