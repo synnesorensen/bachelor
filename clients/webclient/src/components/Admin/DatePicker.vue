@@ -42,7 +42,7 @@ export default class CustomerPayment extends Vue {
 
     @Watch("date") 
     dateChanged() {
-        this.selectedDate=this.date;
+        this.selectedDate = this.date;
     }
 
     updateDate(date: string) {

@@ -52,9 +52,9 @@
                     </v-calendar>
                 </v-sheet>
             </v-col>
-            <v-col v-if="showList">
-                <Deliveries :date="selectedDate" @update="deliveriesUpdated" />
-            </v-col>
+            <v-dialog v-model="showList">
+                <Deliveries :date="selectedDate" @update="deliveriesUpdated" @close="showList=false" />
+            </v-dialog>
         </v-row>
     </v-container>
 </template>
@@ -80,6 +80,7 @@ export default class AdminCalendar extends Vue {
     private events: any[] = [];
     private showList = false;
     private selectedDate = "";
+    private dialog = false;
 
     mounted() {
 		this.focus = "";

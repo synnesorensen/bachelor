@@ -89,9 +89,7 @@
                 persistent
             >
                 <v-card>
-                    <v-app-bar
-
-                    >
+                    <v-app-bar>
                         <v-card-title class="headline">
                             Leveranser
                         </v-card-title>
@@ -100,7 +98,9 @@
                             icon
                             @click="close"    
                         >
-                            <v-icon>mdi-close</v-icon>
+                            <v-icon>
+                                mdi-close
+                            </v-icon>
                         </v-btn>
                     </v-app-bar>
                     <br />
@@ -148,10 +148,38 @@
                         </v-data-table>
                     </v-card-text>
                     <v-card-actions v-if="deliveries && deliveries.length">
-                        <v-btn @click="deleteDeliveries" text color="error">Slett</v-btn>
-                        <v-btn text color="error">Kanseller</v-btn>
+                        <v-btn 
+                            @click="deleteDeliveries" 
+                            :disabled="selectedDeliveries.length < 1" 
+                            text 
+                            color="error"
+                        >
+                            Slett
+                        </v-btn>
+                        <v-btn 
+                            v-if="selectedDeliveries.length > 0"
+                            @click="cancelDel"
+                            text 
+                            color="orange"
+                        >
+                            Kanseller
+                        </v-btn>
+                        <v-btn 
+                            v-if="selectedDeliveries.length > 0"
+                            @click="activateDel"
+                            text 
+                            color="orange"
+                        >
+                            Aktiver
+                        </v-btn>
                         <v-spacer></v-spacer>
-                        <v-btn @click="close" text color="primary">Lukk</v-btn>
+                        <v-btn 
+                            @click="close" 
+                            text 
+                            color="primary"
+                        >
+                            Lukk
+                        </v-btn>
                     </v-card-actions>
                 </v-card>
                 <v-overlay absolute opacity="0.1" v-if="loading">
@@ -268,7 +296,6 @@ export default class CustomerPayment extends Vue {
 
     @Watch("datePickDialog")
     onShowDialog() {
-        console.log("Åpner");
         this.startDate = "";
         this.endDate = "";
     }
@@ -335,14 +362,23 @@ export default class CustomerPayment extends Vue {
         });
     }
 
-    async toggleCancelation() {
-        this.selectedDeliveries.forEach(del => {
-            if (del.cancelled) {
-                this.errorMsg = "Leveranse den " + del.deliverytime + " er allerede kansellert."
-            } else {
-                del.cancelled = true;
-            }
+    async cancelDel() {
+        const updatedDeliveries: interfaces.Delivery[] = [];
+        this.selectedDeliveries.forEach((del) => {
+            del.cancelled = true;
+            updatedDeliveries.push(del);
         });
+        console.log(updatedDeliveries)
+       await api.updateDeliveries(updatedDeliveries);
+    }
+
+    async activateDel() {
+        const updatedDeliveries: interfaces.Delivery[] = [];
+        this.selectedDeliveries.forEach((del) => {
+            del.cancelled = false;
+            updatedDeliveries.push(del);
+        });
+       await api.updateDeliveries(updatedDeliveries);
     }
 
     close() {

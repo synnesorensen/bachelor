@@ -1,6 +1,6 @@
 <template>
     <v-container fluid>
-        <v-row dense>
+        <v-row justify="center" dense>
         <v-col :xl="6" :lg="8">
             <v-card>
                 <v-img

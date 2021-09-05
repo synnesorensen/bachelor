@@ -588,6 +588,10 @@ export async function getOnlySubscriptionForUser(userId: string): Promise<Vendor
 }
 
 export async function getUsersDeliveries(userId: string, startDate: string, endDate?: string): Promise<Delivery[]> {
+    let endTime = new Date(endDate);
+    endTime.setDate(endTime.getDate() + 1);
+    let nextDay = endTime.toISOString().substr(0, 10);
+    
     let KeyConditionExpression = "#GSI2_pk = :user and ";
     if (endDate) {
         KeyConditionExpression += "#GSI2_sk BETWEEN :prefix1 and :prefix2";
@@ -605,7 +609,7 @@ export async function getUsersDeliveries(userId: string, startDate: string, endD
         ExpressionAttributeValues: {
             ":user": "u#" + userId,
             ":prefix1": startDate,
-            ":prefix2": endDate
+            ":prefix2": nextDay
         }
     };
 
@@ -739,10 +743,13 @@ export async function updateDeliveries(vendorId: string, deliveries: Delivery[])
         });
     }
     let promises = [];
+    console.log(dels)
 
     for (let del of dels) {
+        // promises.push(putDeliveryInDb(del.vendorId, del.userId, del));
         promises.push(documentClient.put(del).promise());
     }
+
     await Promise.all(promises);
 }
 
