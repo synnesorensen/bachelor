@@ -2,7 +2,7 @@
     <v-container>
         <v-card>
             <v-card-title>
-                Kunder med aktiv abonnement
+                Godkjente kunder
                 <v-spacer></v-spacer>
                 <v-text-field
                     v-model="search"
@@ -16,31 +16,10 @@
                 dense
                 :headers="headers"
                 :items="activeUsers"
-                item-key="userId"
                 :search="search"
+                @click:row="edit"
                 class="elevation-1">
-            </v-data-table>
-        </v-card>
-        <br />
-        <v-card>
-            <v-card-title>
-                Kunder med abonnement på pause
-                <v-spacer></v-spacer>
-                <v-text-field
-                    v-model="search"
-                    append-icon="mdi-magnify"
-                    label="Søk"
-                    single-line
-                    hide-details
-                ></v-text-field>
-            </v-card-title>
-            <v-data-table
-                dense
-                :headers="headers"
-                :items="pausedUsers"
-                item-key="userId"
-                :search="search"
-                class="elevation-1">
+                
             </v-data-table>
         </v-card>
         <br />
@@ -60,6 +39,7 @@
                 :headers="headersExtra"
                 :items="unapprovedUsers"
                 :search="search"
+                item-key="userId"
                 class="elevation-1"
                 >
                 <template v-slot:[`item.controls`]="props">
@@ -87,14 +67,14 @@ export default class Customers extends Vue {
     private users: UserSubscription[] = [];
 
     get activeUsers() {
-        return this.users.filter((user) => {
-            return user.approved && !user.paused;
+        const approvedUsers = this.users.filter((user) => {
+            return user.approved;
         });
-    }
-
-    get pausedUsers() {
-        return this.users.filter((user) => {
-            return user.approved && user.paused;
+        return approvedUsers.map((user) => {
+            return {
+                ...user,
+                paused: user.paused? "Aktiv" : "Pauset"
+            }
         });
     }
 
@@ -111,13 +91,15 @@ export default class Customers extends Vue {
           sortable: true,
           value: "fullname",
         },
+        { text: "Status", value: "paused", sortable: true },
         { text: "Adresse", value: "address" },
         { text: "Telefon", value: "phone" },
         { text: "Epost", value: "email" },
         { text: "Boks", value: "box" },
         { text: "Antall", value: "noOfMeals" },
         { text: "Allergier", value: "allergies" },
-        { text: "Leveringsdager", value: "days" }
+        { text: "Leveringsdager", value: "days" },
+        { text: "", value: "controls", sortable: false }
     ];
     private headersExtra = [
         {
@@ -160,6 +142,10 @@ export default class Customers extends Vue {
             alert("Noe gikk galt, prøv igjen senere.");
             console.log(err);
         }
+    }
+
+    edit(item: any) {
+        console.log(item)
     }
 }
 </script>

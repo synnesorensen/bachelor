@@ -474,7 +474,6 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
         return {
             vendorId: item.pk,
             userId,
-            approved: item.approved,
             paused: item.paused,
             schedule: item.schedule.values,
             noOfMeals: item.noOfMeals,

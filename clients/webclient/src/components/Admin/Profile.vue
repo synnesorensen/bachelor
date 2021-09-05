@@ -32,13 +32,13 @@
                                 md="6"
                             >
                                 <v-text-field
-                                    v-model="this.$store.getters.vendor.fullname"
+                                    v-model="$store.getters.vendor.fullname"
                                     :rules="[required]"
                                     solo
                                 ></v-text-field>
                             </v-col>
                             <v-col v-else>
-                                <p class="font-weight-light"> {{ this.$store.getters.vendor.fullname }} </p>
+                                <p class="font-weight-light"> {{ $store.getters.vendor.fullname }} </p>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -52,13 +52,13 @@
                                 md="6"
                             >
                                 <v-text-field
-                                    v-model="this.$store.getters.vendor.company"
+                                    v-model="$store.getters.vendor.company"
                                     :rules="[required]"
                                     solo
                                 ></v-text-field>
                             </v-col>
                             <v-col v-else>
-                                <p class="font-weight-light"> {{ this.$store.getters.vendor.company }} </p>
+                                <p class="font-weight-light"> {{ $store.getters.vendor.company }} </p>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -72,13 +72,13 @@
                                 md="6"
                             >
                                 <v-text-field
-                                    v-model="this.$store.getters.vendor.address"
+                                    v-model="$store.getters.vendor.address"
                                     :rules="[required]"
                                     solo
                                 ></v-text-field>
                             </v-col>
                             <v-col v-else>
-                                <p class="font-weight-light"> {{ this.$store.getters.vendor.address }} </p>
+                                <p class="font-weight-light"> {{ $store.getters.vendor.address }} </p>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -92,13 +92,14 @@
                                 md="6"
                             >
                                 <v-text-field
-                                    v-model="this.$store.getters.vendor.phone"
+                                    v-model="$store.getters.vendor.phone"
                                     :rules="[required, phoneNoLength, numbers]"
                                     solo
+                                    lazy
                                 ></v-text-field>
                             </v-col>
                             <v-col v-else>
-                                <p class="font-weight-light"> {{ this.$store.getters.vendor.phone }} </p>
+                                <p class="font-weight-light"> {{ $store.getters.vendor.phone }} </p>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -106,7 +107,7 @@
                                 <p class="font-weight-medium">E-post</p>
                             </v-col>
                             <v-col>
-                                <p class="font-weight-light"> {{ this.$store.getters.vendor.email }} </p>
+                                <p class="font-weight-light"> {{ $store.getters.vendor.email }} </p>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -169,7 +170,8 @@ export default class CustomerProfile extends Vue {
 
     async updateUserProfile() {
         let updated = this.$store.getters.vendor;
-        await api.putVendor(updated, this.$store.getters.loggedInUser);
+        let loggedInVendor = this.$store.getters.loggedInUser;
+        await api.putVendor(updated, loggedInVendor);
         this.editMode = false;
     }
 
