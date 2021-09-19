@@ -40,6 +40,12 @@ export class Api {
         }
     }
 
+    async getAllUserprofiles(): Promise<interfaces.Userprofile[]> {
+        await this.ensureFreshToken();
+        const users = await this.apiAxios.get(urlPrefix + "/v/allUsers");
+        return users.data;
+    }
+
     async getUserprofile(): Promise<interfaces.Userprofile | null> {
         await this.ensureFreshToken();
         try {
@@ -149,6 +155,12 @@ export class Api {
         }
     }
 
+    async postSubscriptionAsVendor(userId: string, action: interfaces.Action): Promise<interfaces.Subscription> {
+        await this.ensureFreshToken();
+        const pausedSubscription = await this.apiAxios.post(urlPrefix + "/v/subscription?userId=" + encodeURIComponent(userId), action);
+        return pausedSubscription.data;
+    }
+
     async deleteVendorSubscription(id: string) {
         await this.ensureFreshToken();
         const url = urlPrefix + "/v/subscription?userId=" + encodeURIComponent(id);
@@ -187,7 +199,7 @@ export class Api {
         await this.ensureFreshToken();
         const pausedSubscription = await this.apiAxios.post(urlPrefix + "/u/subscription?vendorId=" + encodeURIComponent(vendorId), action);
         return pausedSubscription.data;
-    } 
+    }
 
     async deleteUserSubscription(id: string) {
         await this.ensureFreshToken();
