@@ -2,7 +2,7 @@
     <v-card>
         <v-app-bar
             dark
-            color="#79b321"
+            color="success"
         >
             <v-card-title>Valgt kunde</v-card-title>
         </v-app-bar>
@@ -10,49 +10,18 @@
         <v-card-text v-if="!selectedUser">
             <v-row>
                 <v-col>
-                    <p class="font-weight-medium"> Velg en kunde </p>
+                    <p class="font-weight-medium"> Velg en kunde fra listen til venstre. </p>
                 </v-col>
             </v-row>
         </v-card-text>
         <v-card-text v-if="selectedUser">
-            <v-row dense>
-                <v-col :xl="4" :lg="5">
-                    <p class="font-weight-medium"> Navn </p>
-                </v-col>
-                <v-col>
-                    <p class="font-weight-light"> {{ selectedUser.fullname }} </p>
-                </v-col>
-            </v-row>
-            <v-row dense>
-                <v-col :xl="4" :lg="5">
-                    <p class="font-weight-medium"> Adresse </p>
-                </v-col>
-                <v-col>
-                    <p class="font-weight-light"> {{ selectedUser.address }} </p>
-                </v-col>
-            </v-row>
-            <v-row dense>
-                <v-col :xl="4" :lg="5">
-                    <p class="font-weight-medium"> Telefon </p>
-                </v-col>
-                <v-col>
-                    <p class="font-weight-light"> {{ selectedUser.phone }} </p>
-                </v-col>
-            </v-row>
-            <v-row dense>
-                <v-col :xl="4" :lg="5">
-                    <p class="font-weight-medium"> Epost </p>
-                </v-col>
-                <v-col>
-                    <p class="font-weight-light"> {{ selectedUser.email }} </p>
-                </v-col>
-            </v-row>
+            <CustomerInfo :selectedUser="selectedUser" />
             <v-row dense>
                 <v-col :xl="4" :lg="5">
                     <p class="font-weight-medium"> Siste betalte levering </p>
                 </v-col>
                 <v-col>
-                    <p class="font-weight-light"> {{toLocalPresentation(selectedUser.lastDeliveryDate)}} </p>
+                    <p class="font-weight-light"> {{localPresentation(selectedUser.lastDeliveryDate)}} </p>
                 </v-col>
             </v-row>
             <v-row dense>
@@ -141,7 +110,7 @@
                                         :value="item"
                                         dense
                                     ></v-checkbox></td>
-                                    <td>{{toLocalPresentation(item.deliverytime)}}</td>
+                                    <td>{{localPresentation(item.deliverytime)}}</td>
                                     <td>{{item.cancelled? "Ja" : "Nei"}}</td>
                                 </tr>
                             </template>
@@ -237,10 +206,13 @@ import { Prop, Watch } from 'vue-property-decorator';
 import api from '../../api/api'
 import * as interfaces from "../../../../../server/src/interfaces";
 import DatePicker from "./DatePicker.vue";
+import CustomerInfo from "./CustomerInfo.vue";
+import { toLocalPresentation } from "../../utils/utils";
 
 @Component({
 	components: {
-		DatePicker
+		DatePicker, 
+        CustomerInfo
 	},
 })
 
@@ -294,10 +266,18 @@ export default class CustomerPayment extends Vue {
         }
     }
 
+    userSelected(user: interfaces.UserSubscription) {
+        this.selectedUser = user;
+    }
+
     @Watch("datePickDialog")
     onShowDialog() {
         this.startDate = "";
         this.endDate = "";
+    }
+
+    localPresentation(time: string) {
+        return toLocalPresentation(time);
     }
 
     async updateUnpaidDeliveries() {
@@ -387,11 +367,6 @@ export default class CustomerPayment extends Vue {
         this.deliveries = [];
         this.selectedDeliveries = [];
         this.datePickDialog = false;
-    }
-
-    toLocalPresentation(lastDeliveryDate: string) {
-        const delDate = new Date(lastDeliveryDate);
-        return delDate.toLocaleDateString("no-NO", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
     }
 }
 </script>

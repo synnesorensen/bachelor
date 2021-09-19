@@ -17,8 +17,8 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
 
     let start = event.queryStringParameters["start"];
     let end = event.queryStringParameters["end"];
-    let startTime = start += "T00:00:00.000T";
-    let endTime = end += "T23:59:59.000T";
+    let startTime = start += "T00:00:00.000Z";
+    let endTime = end += "T23:59:59.000Z";
 
     if (!start) {
         return {

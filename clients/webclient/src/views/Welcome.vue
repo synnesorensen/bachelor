@@ -10,7 +10,11 @@
                     class="white--text align-end"
                     height="40%"
                 >
-                    <v-card-title class="headline">Velkommen til Lunsj på hjul</v-card-title>
+                    <v-card-title>
+                        <div class="text-h4">
+                            Velkommen til Lunsj på Hjul
+                        </div>        
+                    </v-card-title>
                 </v-img>
                 <v-card-text>Her kan kunder som allerede er registrerte logge seg inn. <br /> 
                 Nye kunder kan registrere seg ved å trykke på knappen Registrer. 

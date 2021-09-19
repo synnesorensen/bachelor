@@ -61,11 +61,11 @@
             <v-col>
                 <v-card :class="{'fixed': !$vuetify.breakpoint.xs}" v-if="selectedEvent && !selectedEvent.ordered">
                     <v-card-title class="headline">
-                        {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}}
+                        {{selectedEvent.name + " " + localPresentation(selectedDate)}}
                     </v-card-title>
                     <v-card-text v-if="cancelable">
                         Det er mulig å bestille frem til klokken 10:00 dagen før levering. Ønsker du å bestille 
-                        <p class="font-weight-medium">{{selectedEvent.name + " den " + toLocalPresentation(selectedDate)}}?</p>
+                        <p class="font-weight-medium">{{selectedEvent.name + " den " + localPresentation(selectedDate)}}?</p>
                     </v-card-text>
                     <v-card-text v-if="!cancelable">
                         Det er ikke mulig å bestille etter klokken 10:00 dagen før levering.
@@ -91,7 +91,7 @@
                             <v-card>
                                 <v-card-title class="headline">Bestilling</v-card-title>
                                 <v-card-text>
-                                    Er du sikker på at du vil bestille {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}} ?
+                                    Er du sikker på at du vil bestille {{selectedEvent.name + " " + localPresentation(selectedDate)}} ?
                                 </v-card-text>
                                 <v-card-actions>
                                     <v-btn 
@@ -111,7 +111,7 @@
                 </v-card>
                 <v-card :class="{'fixed': !$vuetify.breakpoint.xs}" v-else-if="selectedEvent && !selectedEvent.delivery.cancelled">
                     <v-card-title class="headline">
-                        {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}}
+                        {{selectedEvent.name + " " + localPresentation(selectedDate)}}
                     </v-card-title>
                     <v-card-text>
                         Det er mulig å avbestille en måltid frem til klokken 10:00 dagen før levering. 
@@ -141,7 +141,7 @@
                             <v-card>
                                 <v-card-title class="headline">Avbestilling</v-card-title>
                                 <v-card-text>
-                                    Er du sikker på at du vil avbestille {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}} ?
+                                    Er du sikker på at du vil avbestille {{selectedEvent.name + " " + localPresentation(selectedDate)}} ?
                                 </v-card-text>
                                 <v-card-actions>
                                     <v-btn
@@ -161,7 +161,7 @@
                 </v-card>
                 <v-card :class="{'fixed': !$vuetify.breakpoint.xs}" v-else-if="selectedEvent">
                     <v-card-title class="headline">
-                        {{selectedEvent.name + " " + toLocalPresentation(selectedDate)}}
+                        {{selectedEvent.name + " " + localPresentation(selectedDate)}}
                     </v-card-title>
                     <v-card-text>
                         Denne leveransen er kansellert. Dersom du har kansellert en leveranse og angrer, kan du sende en mail til 
@@ -178,6 +178,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import api from "../../api/api";
 import { Delivery, Vendor, VendorSubscription } from "../../../../../server/src/interfaces";
+import { toLocalPresentation } from "@/utils/utils";
 
 @Component({})
 export default class UserCalendar extends Vue {
@@ -300,9 +301,8 @@ export default class UserCalendar extends Vue {
         this.populateCalendar();
     }
 
-    toLocalPresentation(lastDeliveryDate: string) {
-        const delDate = new Date(lastDeliveryDate);
-        return delDate.toLocaleDateString();
+    localPresentation(time: string) {
+        return toLocalPresentation(time);
     }
 }
 </script>

@@ -80,7 +80,6 @@ export default class AdminCalendar extends Vue {
     private events: any[] = [];
     private showList = false;
     private selectedDate = "";
-    private dialog = false;
 
     mounted() {
 		this.focus = "";

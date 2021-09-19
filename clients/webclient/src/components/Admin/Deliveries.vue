@@ -2,7 +2,7 @@
     <div>
         <v-card>
             <v-app-bar>
-                <v-card-title>Leveringer for {{toLocalPresentation(date)}}</v-card-title>
+                <v-card-title>Leveringer for {{localPresentation(date)}}</v-card-title>
                 <v-spacer></v-spacer>
                 <v-btn 
                     icon
@@ -66,6 +66,7 @@ import api from "../../api/api";
 import {DeliveryDetail} from "../../../../../server/src/interfaces"
 import { Prop, Watch } from 'vue-property-decorator';
 import Sortable from 'sortablejs';
+import { toLocalPresentation } from "../../utils/utils";
 
 @Component({
 	components: {},
@@ -148,9 +149,8 @@ export default class Deliveries extends Vue {
         this.$emit("close");
     }
 
-    toLocalPresentation(lastDeliveryDate: string) {
-        const delDate = new Date(lastDeliveryDate);
-        return delDate.toLocaleDateString();
+    localPresentation(time: string) {
+        return toLocalPresentation(time);
     }
 }
 </script>

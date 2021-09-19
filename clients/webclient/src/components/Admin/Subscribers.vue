@@ -2,7 +2,7 @@
     <v-card>
         <v-app-bar
             dark
-            color="#79b321"
+            color="success"
         >
             <v-card-title>Kundeliste</v-card-title>
         </v-app-bar>
