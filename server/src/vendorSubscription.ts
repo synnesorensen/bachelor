@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { deleteSubscriptionInDb, getSubscriptionFromDb, getUserprofileFromDb, putSubscriptionInDb } from './dbUtils'
+import { deleteSubscriptionInDb, getSubscriptionFromDb, getUserprofileFromDb, putSubscriptionInDb, pauseSubscription, unPauseSubscription } from './dbUtils'
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -11,6 +11,9 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     }
     if (event.httpMethod == "PUT") {
         return putUserSubscription(event);
+    }
+    if (event.httpMethod == "POST") {
+        return postUserSubscription(event);
     }
     if (event.httpMethod == "DELETE") {
         return deleteUserSubscription(event);
@@ -98,6 +101,65 @@ async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
         return {
             statusCode: 500,
             body: JSON.stringify(err)
+        };
+    }
+}
+
+async function postUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let vendorId = getUserInfoFromEvent(event);
+    let body = JSON.parse(event.body);
+
+    if (!event.queryStringParameters) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter" }'
+        };
+    }
+
+    let userId = event.queryStringParameters["userId"];
+
+    console.log("UserId: ", userId)
+    console.log("VendorId: ", vendorId)
+
+
+    if (!userId) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter userId" }'
+        };
+    }
+
+    let time = body.time;
+    if (!time) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing attribute time" }'
+        };
+    }
+
+    let action = body.action;
+    if (!action) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing attribute action" }'
+        };
+    }
+    if (action == "pause") {
+        const sub = await pauseSubscription(userId, vendorId, time);
+        return {
+            statusCode: 200,
+            body: JSON.stringify(sub)
+        };
+    } else if (action == "unpause") {
+        const sub = await unPauseSubscription(userId, vendorId, time);
+        return {
+            statusCode: 200,
+            body: JSON.stringify(sub)
+        };
+    } else {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Action not supported" }'
         };
     }
 }
