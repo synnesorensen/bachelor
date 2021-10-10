@@ -39,6 +39,7 @@ export interface UserSubscription {
 
 // Used on user pages. Returns all subscriptions for different vendors/companies. 
 export interface VendorSubscription {
+    userId: string,
     vendorId: string,
     company: string,
     paused: boolean,

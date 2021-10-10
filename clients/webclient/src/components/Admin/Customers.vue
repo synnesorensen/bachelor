@@ -14,10 +14,10 @@
             </v-card-title>
             <v-data-table
                 dense
-                :headers="headers"
+                :headers="usersubHeaders"
                 :items="activeUsers"
                 :search="search"
-                @click:row="handleClickedUser"
+                @click:row="handleClickedUserSub"
                 class="row-pointer">
             </v-data-table>
         </v-card>
@@ -50,6 +50,26 @@
             </v-card>
         </v-dialog>
         <br />
+        <v-card>
+            <v-card-title>
+                Kunder uten abonnement
+                <v-spacer></v-spacer>
+                <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Søk"
+                    single-line
+                    hide-details
+                ></v-text-field>
+            </v-card-title>
+            <v-data-table
+                dense
+                :headers="usersWOSubsHeaders"
+                :items="usersWOSubs"
+                :search="search">
+            </v-data-table>
+        </v-card>
+        <br />
         <v-card v-if="unapprovedUsers.length > 0">
             <v-card-title>
                 Kunder til godkjenning
@@ -63,7 +83,7 @@
                 ></v-text-field>
             </v-card-title>
             <v-data-table
-                :headers="headersExtra"
+                :headers="unapprovedHeaders"
                 :items="unapprovedUsers"
                 :search="search"
                 item-key="userId"
@@ -97,7 +117,7 @@ export default class Customers extends Vue {
     private usersubs: UserSubscription[] = [];
     private users: Userprofile[] = [];
     private editCustomer = false;
-    private selectedUser: UserSubscription | null = null;
+    private selectedUserSub: UserSubscription | null = null;
     
     async created() {
         let usersubs = await api.getVendorSubscriptions();
@@ -107,6 +127,7 @@ export default class Customers extends Vue {
                 days: this.deliveryDays(user)
             }
         });
+        this.users = await api.getAllUserprofiles();
     }
 
     @Watch("usersubs")
@@ -139,8 +160,17 @@ export default class Customers extends Vue {
         });
     }
 
+    get usersWOSubs() {
+        return this.users.map((user) => {
+            return {
+                ...user,
+                allergies: user.allergies.join(", ")
+            }
+        });
+    }
+
     private search = "";
-    private headers = [
+    private usersubHeaders = [
         {
           text: "Navn",
           align: 'start',
@@ -157,7 +187,7 @@ export default class Customers extends Vue {
         { text: "Leveringsdager", value: "days" },
         { text: "", value: "controls", sortable: false }
     ];
-    private headersExtra = [
+    private unapprovedHeaders = [
         {
           text: "Navn",
           align: 'start',
@@ -172,6 +202,18 @@ export default class Customers extends Vue {
         { text: "Allergier", value: "allergies" },
         { text: "Leveringsdager", value: "days" },
         { text: "", value: "controls", sortable: false }
+    ];
+    private usersWOSubsHeaders = [
+        {
+          text: "Navn",
+          align: 'start',
+          sortable: true,
+          value: "fullname",
+        },
+        { text: "Adresse", value: "address" },
+        { text: "Telefon", value: "phone" },
+        { text: "Epost", value: "email" },
+        { text: "Allergier", value: "allergies" }
     ];
 
     deliveryDays(item: UserSubscription) {
@@ -191,20 +233,20 @@ export default class Customers extends Vue {
         }
     }
 
-    handleClickedUser(user: UserSubscription) {
-        this.selectedUser = user;
+    handleClickedUserSub(user: UserSubscription) {
+        this.selectedUserSub = user;
         this.editCustomer = true;
     }
 
     get buttonText() {
-        if (this.selectedUser?.paused) {
+        if (this.selectedUserSub?.paused) {
             return "Aktiver abonnement";
         }
         return "Pause abonnement";
     }
 
     async toggleSubscriptionPause() {
-        if (this.selectedUser) {
+        if (this.selectedUserSub) {
             let time = new Date(Date.now());
             if (time.getHours() < 10) {
                 time.setDate(time.getDate() + 1);
@@ -213,9 +255,9 @@ export default class Customers extends Vue {
             }
             let action: Action = {
                 time: time.toISOString().substr(0, 10),
-                action: this.selectedUser.paused ? "unpause" : "pause",
+                action: this.selectedUserSub.paused ? "unpause" : "pause",
             };
-            await api.postSubscriptionAsVendor(this.selectedUser.userId, action);
+            await api.postSubscriptionAsVendor(this.selectedUserSub.userId, action);
             this.editCustomer = false;
             this.usersubs = await api.getVendorSubscriptions();
         }

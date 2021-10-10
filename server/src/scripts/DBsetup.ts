@@ -1,8 +1,7 @@
 require('dotenv').config();
 import 'source-map-support/register';
-import { putSubscriptionInDb, putUserprofileInDb, putVendorInDb, saveDeliveriesToDb } from '../dbUtils';
-import {dbUser1, dbUser2, dbUser3, dbUser4, dbUser5, dbUser6, dbVendor} from '../../../common/settings'
-import { generateDeliveries } from './../addDeliveries';
+import { putSubscriptionInDb, putUserprofileInDb, putVendorInDb } from '../dbUtils';
+import {dbUser1, dbUser2, dbUser3, dbUser4, dbUser5, dbUser6, dbUser7, dbVendor} from '../../../common/settings'
 
 const userprofile1 = {
     fullname: "Ole Olsen",
@@ -10,7 +9,7 @@ const userprofile1 = {
     deliveryAddress: "Smauet 110 5000 Sentrum",
     phone: "12345678",
     email: dbUser1,
-    allergies: ["melk"],
+    allergies: ["Melk"],
     approved: true,
     isVendor: false
 }
@@ -30,7 +29,7 @@ const userprofile3 = {
     deliveryAddress: "Lauvstien 31 5000 Sentrum",
     phone: "34567890",
     email: dbUser3,
-    allergies: ["løk, svovel"],
+    allergies: ["Løk", "Svovel"],
     approved: true,
     isVendor: false
 }
@@ -40,7 +39,7 @@ const userprofile4 = {
     deliveryAddress: "Oppoverbakken 17 5000 Sentrum",
     phone: "45678901",
     email: dbUser4,
-    allergies: ["gluten"],
+    allergies: ["Gluten"],
     approved: true,
     isVendor: false
 }
@@ -60,10 +59,22 @@ const userprofile6 = {
     deliveryAddress: "Kroken 3 5000 Sentrum",
     phone: "67890123",
     email: dbUser6,
-    allergies: ["melk"],
+    allergies: ["Melk"],
     approved: true,
     isVendor: false
 }
+
+const userprofile7 = {
+    fullname: "Kristin Lavransdatter",
+    address: "Sel 14 2670 Gudbrandsdalen",
+    deliveryAddress: "Sel 14 2670 Gudbrandsdalen",
+    phone: "22113344",
+    email: dbUser7,
+    allergies: ["Gluten", "Egg"],
+    approved: false,
+    isVendor: false
+}
+
 const userprofileVendor = {
     fullname: "Helene Haare",
     address: "Hakkebakken 2 5003 Skogen",
@@ -82,6 +93,7 @@ export async function addUsersToDb() {
     await putUserprofileInDb(userprofile4, dbUser4, false);
     await putUserprofileInDb(userprofile5, dbUser5, false);
     await putUserprofileInDb(userprofile6, dbUser6, false);
+    await putUserprofileInDb(userprofile7, dbUser7, false);
     await putUserprofileInDb(userprofileVendor, dbVendor, true);
 }
 

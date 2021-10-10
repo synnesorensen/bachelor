@@ -8,6 +8,44 @@ import { generateDeliveries } from './addDeliveries';
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
 
+export async function getAllUsersFromDb() {
+    let params = {
+        TableName: settings.TABLENAME,
+        IndexName: "GSI1",
+        KeyConditionExpression: "#GSI1_pk = :user and begins_with(#GSI1_sk, :prefix)",
+        FilterExpression: "#isVendor = :false",
+        ExpressionAttributeNames: {
+            "#GSI1_pk": "GSI1_pk",
+            "#GSI1_sk": "GSI1_sk",
+            "#isVendor": "isVendor"
+        },
+        ExpressionAttributeValues: {
+            ":user": "user",
+            ":prefix": "u#" ,
+            ":false": false
+        }
+    };
+    let result = await documentClient.query(params).promise();
+
+    if (result.Items.length == 0) {
+        return [];
+    }
+    let users:Userprofile[] = await Promise.all(result.Items.map(async (user) => {
+        return {
+            userId: user.pk.substr(2),
+            fullname: user.fullname,
+            address: user.address,
+            deliveryAddress: user.deliveryAddress,
+            phone: user.phone,
+            email: user.email, 
+            allergies: user.allergies, 
+            approved: user.approved,
+            isVendor: user.isVendor
+        }
+    }));
+    return users;
+}
+
 export async function getSubscriptionFromDb(vendorId: string, userId: string): Promise<Subscription | null> {
     let subscriptionParams = {
         TableName: settings.TABLENAME,
@@ -321,6 +359,11 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
         UpdateExpression += ", isVendor = :isVendor";
         ExpressionAttributeValues[":isVendor"] = { BOOL: userprofile.isVendor };
     }
+    UpdateExpression += ", GSI1_pk = :user";
+    ExpressionAttributeValues[":user"] = { S: "user" };
+
+    UpdateExpression += ", GSI1_sk = :userId";
+    ExpressionAttributeValues[":userId"] = { S: "u#" + userId};
 
     let params = {
         TableName: settings.TABLENAME,
@@ -514,6 +557,7 @@ export async function getSubscriptionsForUser(userId: string): Promise<VendorSub
         });
         
         return {
+            userId:sub.userId ,
             vendorId: sub.vendorId.substr(2),
             company: vendor.company,
             paused: sub.paused,
@@ -576,6 +620,7 @@ export async function getOnlySubscriptionForUser(userId: string): Promise<Vendor
         });
     
     return {
+        userId: sub.userId,
         vendorId: sub.vendorId.substr(2),
         company: vendor.Items[0].company,
         paused: sub.paused,
@@ -587,10 +632,6 @@ export async function getOnlySubscriptionForUser(userId: string): Promise<Vendor
 }
 
 export async function getUsersDeliveries(userId: string, startDate: string, endDate?: string): Promise<Delivery[]> {
-    let endTime = new Date(endDate);
-    endTime.setDate(endTime.getDate() + 1);
-    let nextDay = endTime.toISOString().substr(0, 10);
-    
     let KeyConditionExpression = "#GSI2_pk = :user and ";
     if (endDate) {
         KeyConditionExpression += "#GSI2_sk BETWEEN :prefix1 and :prefix2";
@@ -608,7 +649,7 @@ export async function getUsersDeliveries(userId: string, startDate: string, endD
         ExpressionAttributeValues: {
             ":user": "u#" + userId,
             ":prefix1": startDate,
-            ":prefix2": nextDay
+            ":prefix2": endDate
         }
     };
 
@@ -742,7 +783,6 @@ export async function updateDeliveries(vendorId: string, deliveries: Delivery[])
         });
     }
     let promises = [];
-    console.log(dels)
 
     for (let del of dels) {
         // promises.push(putDeliveryInDb(del.vendorId, del.userId, del));
@@ -943,33 +983,35 @@ export async function pauseSubscription(userId: string, vendorId: string, time: 
     }
 
     let UpdateExpression = "set paused = :paused, datePaused = :datePaused, outstandingDeliveries = :outstandingDeliveries";
-        let ExpressionAttributeValues: any = {
-        ":paused": { BOOL: true },
-        ":datePaused": { S: time },
-        ":outstandingDeliveries": { N: noOfDeliveries.toString() }
-        }; 
-        const params = {
-            TableName: settings.TABLENAME,
-            Key: {
-                "pk": { S: "v#" + vendorId },
-                "sk": { S: "u#" + userId }
-            },
-            UpdateExpression,
-            ExpressionAttributeValues,
-            ReturnValues: "ALL_NEW"
-        };
-        let result = await database.updateItem(params).promise();
+    let ExpressionAttributeValues: any = {
+    ":paused": { BOOL: true },
+    ":datePaused": { S: time },
+    ":outstandingDeliveries": { N: noOfDeliveries.toString() }
+    }; 
 
-        return {
-            vendorId: result.Attributes.pk.S.substr(2),
-            userId: result.Attributes.sk.S.substr(2),
-            paused: result.Attributes.paused.BOOL,
-            datePaused: result.Attributes.datePaused.S,
-            outstandingDeliveries: parseInt(result.Attributes.outstandingDeliveries.N),
-            schedule: result.Attributes.schedule.SS,
-            noOfMeals: parseInt(result.Attributes.noOfMeals.N),
-            box: result.Attributes.box.S
-        }
+    const params = {
+        TableName: settings.TABLENAME,
+        Key: {
+            "pk": { S: "v#" + vendorId },
+            "sk": { S: "u#" + userId }
+        },
+        UpdateExpression,
+        ExpressionAttributeValues,
+        ReturnValues: "ALL_NEW"
+    };
+    
+    let result = await database.updateItem(params).promise();
+
+    return {
+        vendorId: result.Attributes.pk.S.substr(2),
+        userId: result.Attributes.sk.S.substr(2),
+        paused: result.Attributes.paused.BOOL,
+        datePaused: result.Attributes.datePaused.S,
+        outstandingDeliveries: parseInt(result.Attributes.outstandingDeliveries.N),
+        schedule: result.Attributes.schedule.SS,
+        noOfMeals: parseInt(result.Attributes.noOfMeals.N),
+        box: result.Attributes.box.S
+    }
 }
 
 export async function unPauseSubscription(userId: string, vendorId: string, time: string): Promise<Subscription> {
