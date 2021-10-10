@@ -1,8 +1,7 @@
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import { urlPrefix } from '../../../../common/settings'
 import * as interfaces from '../../../../server/src/interfaces'
 import getAuth from '../components/LoginDialog/auth'
-
 
 export class Api {
     private apiAxios = axios.create();
@@ -40,6 +39,16 @@ export class Api {
         }
     }
 
+    getAxiosErrorStatus(error: any) {
+        if (axios.isAxiosError(error)) {
+            if (error.response) {
+                return error.response.status;
+            }
+        } else {
+            throw (error);
+        }
+    }
+
     async getAllUserprofiles(): Promise<interfaces.Userprofile[]> {
         await this.ensureFreshToken();
         const users = await this.apiAxios.get(urlPrefix + "/v/allUsers");
@@ -52,7 +61,7 @@ export class Api {
             const userprofile = await this.apiAxios.get(urlPrefix + "/userprofile");
             return userprofile.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
@@ -77,7 +86,7 @@ export class Api {
             const vendor = await this.apiAxios.get(url);
             return vendor.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
@@ -134,7 +143,7 @@ export class Api {
             const vendorSubscription = await this.apiAxios.get(url);
             return vendorSubscription.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
@@ -148,7 +157,7 @@ export class Api {
             const addedSubscription = await this.apiAxios.put(url, subscription);
             return addedSubscription.data;
         } catch (error) {
-            if (error.response.status == 403) {
+            if (this.getAxiosErrorStatus(error) === 403) {
                 return null;
             }
             throw (error);
@@ -174,7 +183,7 @@ export class Api {
             const userSubscription = await this.apiAxios.get(url);
             return userSubscription.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
@@ -188,7 +197,7 @@ export class Api {
             const addedSubscription = await this.apiAxios.put(url, subscription);
             return addedSubscription.data;
         } catch (error) {
-            if (error.response.status == 403) {
+            if (this.getAxiosErrorStatus(error) === 403) {
                 return null;
             }
             throw (error);
@@ -223,7 +232,7 @@ export class Api {
             const deliveries = await this.apiAxios.get(url);
             return deliveries.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
@@ -238,7 +247,7 @@ export class Api {
             const deliveries = await this.apiAxios.get(url);
             return deliveries.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
@@ -252,7 +261,7 @@ export class Api {
             const deliveries = await this.apiAxios.get(urlPrefix + "/v/deliveries?userId=" + encodeURIComponent(userId) + "&start=" + startDate + "&end=" + endDate);
             return deliveries.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
@@ -279,7 +288,7 @@ export class Api {
             const deliveries = await this.apiAxios.get(urlPrefix + "/u/deliveries?start=" + startDate + "&end=" + endDate);
             return deliveries.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
@@ -293,7 +302,7 @@ export class Api {
             const delivery = await this.apiAxios.get(url);
             return delivery.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
