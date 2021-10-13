@@ -1,5 +1,5 @@
 <template>
-	<v-container class="overflow-hidden" v-if="$store.getters.userprofile.isVendor">
+	<v-container class="overflow-hidden" v-if="$store.getters.userprofile && $store.getters.userprofile.isVendor">
 		<v-app-bar 
             app 
             dark
@@ -14,15 +14,14 @@
                 >
                 </v-img>
             </template>
-			<v-toolbar-title 
-                class="headline"
-            >
-                Lunsj på  hjul
+			<v-toolbar-title>
+                <div class="text-h4">
+                    Lunsj på Hjul
+                </div>
             </v-toolbar-title>
             <v-spacer></v-spacer>
             <template v-slot:extension>
                 <v-tabs 
-                    v-model="tab" 
                     align-with-title 
                     class="d-none d-sm-flex"
                 >
@@ -34,6 +33,7 @@
             </template>
             <v-spacer />
             <v-btn 
+                class="d-none d-sm-flex"
                 color="grey" 
                 @click="logout">
                 Logg ut
@@ -46,19 +46,22 @@
         >
             <v-list nav dense>
                 <v-list-item-group>
-                    <v-list-item>
-                        <v-list-item-title @click="tab=0; drawer= false">Kalender</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                        <v-list-item-title @click="tab=1; drawer= false">Profil</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                        <v-list-item-title @click="tab=2; drawer= false">Betalinger</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                        <v-list-item-title @click="tab=3; drawer= false">Kundeliste</v-list-item-title>
+                    <v-list-item
+                        v-for="tab in tabs"
+                        :key="tab.title"
+                        router :to="tab.route"
+                    >
+                        <v-list-item-title>{{ tab.title }}</v-list-item-title>
                     </v-list-item>
                 </v-list-item-group>
+                <br />
+                <v-btn 
+                    small
+                    text
+                    color="grey" 
+                    @click="logout">
+                    Logg ut
+                </v-btn>
             </v-list>
         </v-navigation-drawer>
 		<v-main>
@@ -87,8 +90,23 @@ import Customers from '../components/Admin/Customers.vue'
 	},
 })
 export default class AppBar extends Vue {
-	private tab = 0;
     private drawer = false;
+    private tabs = [{
+        title: "Kalender",
+        route: "/admin/calendar"
+    },
+    {
+        title: "Profil",
+        route: "/admin/profile"
+    },
+    {
+        title: "Betalinger",
+        route: "/admin/payments"
+    },
+    {
+        title: "Kundeliste",
+        route: "/admin/customers"
+    }];
 
     logout() {
         this.$store.dispatch("logout");

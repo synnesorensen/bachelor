@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { getAllDeliveriesFromAllSubscribers, getUserprofileFromDb, saveDeliveriesToDb, updateDeliveries } from './dbUtils'
+import { deleteDeliveryInDb, getAllDeliveriesFromAllSubscribers, getUserprofileFromDb, getUsersDeliveries, saveDeliveriesToDb, updateDeliveries } from './dbUtils'
 import { getUserInfoFromEvent } from './auth/getUserFromJwt'
 import { generateDeliveries } from './addDeliveries';
 import { Delivery, Summary } from './interfaces';
@@ -25,6 +25,9 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     if (event.httpMethod == "POST") {
         return postVendorDeliveries(event);
     }
+    if (event.httpMethod == "DELETE") {
+        return deleteVendorDeliveries(event);
+    }
     return {
         statusCode: 405,
         body: '{ "message" : "Method not allowed" }'
@@ -36,19 +39,14 @@ async function getVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGate
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
-            body: '{ "message" : "Missing parameter time" }'
+            body: '{ "message" : "Missing parameters" }'
         };
     }
     let start = event.queryStringParameters["start"];
     let end = event.queryStringParameters["end"];
     let summary = event.queryStringParameters["summary"];
+    let userId = event.queryStringParameters["userId"];
 
-    if (!vendorId) {
-        return {
-            statusCode: 400,
-            body: '{ "message" : "Missing parameter vendorId" }'
-        };
-    }
     if (!start) {
         return {
             statusCode: 400,
@@ -61,19 +59,27 @@ async function getVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGate
             body: '{ "message" : "Missing parameter end time" }'
         };
     }
-    let deliveries = await getAllDeliveriesFromAllSubscribers(vendorId, start, end); 
 
-    if (summary && summary == "true") {
+    if (userId) {
+        let deliveries = await getUsersDeliveries(userId, start, end);
         return {
             statusCode: 200,
-            body: JSON.stringify(generateSummary(deliveries))
+            body: JSON.stringify(deliveries)
+        };
+
+    } else {
+        let deliveries = await getAllDeliveriesFromAllSubscribers(vendorId, start, end); 
+        if (summary && summary == "true") {
+            return {
+                statusCode: 200,
+                body: JSON.stringify(generateSummary(deliveries))
+            }
         }
+        return {
+            statusCode: 200,
+            body: JSON.stringify(deliveries)
+        };
     }
-    
-    return {
-        statusCode: 200,
-        body: JSON.stringify(deliveries)
-    };
 }
 function generateSummary(deliveries: Delivery[]):Summary[] {
     let hash = new Map<string, Summary>();
@@ -164,13 +170,44 @@ async function postVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGat
         };
     }
 
-        let deliveries = await generateDeliveries(startDate, userId, vendorId, noOfDeliveries);
-        await saveDeliveriesToDb(deliveries);
+    let deliveries = await generateDeliveries(startDate, userId, vendorId, noOfDeliveries);
+    await saveDeliveriesToDb(deliveries);
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify(deliveries)
-        };
-
+    return {
+        statusCode: 200,
+        body: JSON.stringify(deliveries)
+    };
 }
+
+async function deleteVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    let vendorId = getUserInfoFromEvent(event);
+    if (!event.queryStringParameters) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameters" }'
+        };
+    }
+    let time = event.queryStringParameters["time"];
+    let userId = event.queryStringParameters["userId"];
+
+    if (!time) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter time" }'
+        };
+    }
+    if (!userId) {
+        return {
+            statusCode: 400,
+            body: '{ "message" : "Missing parameter userId" }'
+        };
+    }
+
+    await deleteDeliveryInDb(vendorId, userId, time);
+    return {
+        statusCode: 200,
+        body: '{ "message" : "Deletion succeeded" }'
+    }
+}
+
 export const mainHandler = middy(handler).use(cors());

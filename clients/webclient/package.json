@@ -9,6 +9,7 @@
   "dependencies": {
     "@aws-amplify/auth": "^3.4.29",
     "aws-amplify": "^3.3.26",
+    "jspdf": "^2.3.1",
     "tslib": "^1.14.1",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
@@ -21,7 +22,7 @@
     "@types/node": "^14.14.41",
     "@types/sortablejs": "^1.10.6",
     "@vue/cli-plugin-typescript": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
+    "@vue/cli-service": "^3.12.1",
     "sass": "^1.32.0",
     "sass-loader": "^10.0.0",
     "sortablejs": "^1.13.0",

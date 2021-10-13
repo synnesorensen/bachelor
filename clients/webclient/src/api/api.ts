@@ -1,8 +1,7 @@
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import { urlPrefix } from '../../../../common/settings'
 import * as interfaces from '../../../../server/src/interfaces'
 import getAuth from '../components/LoginDialog/auth'
-
 
 export class Api {
     private apiAxios = axios.create();
@@ -40,13 +39,29 @@ export class Api {
         }
     }
 
+    getAxiosErrorStatus(error: any) {
+        if (axios.isAxiosError(error)) {
+            if (error.response) {
+                return error.response.status;
+            }
+        } else {
+            throw (error);
+        }
+    }
+
+    async getAllUserprofiles(): Promise<interfaces.Userprofile[]> {
+        await this.ensureFreshToken();
+        const users = await this.apiAxios.get(urlPrefix + "/v/allUsers");
+        return users.data;
+    }
+
     async getUserprofile(): Promise<interfaces.Userprofile | null> {
         await this.ensureFreshToken();
         try {
             const userprofile = await this.apiAxios.get(urlPrefix + "/userprofile");
             return userprofile.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
@@ -71,7 +86,7 @@ export class Api {
             const vendor = await this.apiAxios.get(url);
             return vendor.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
@@ -128,7 +143,7 @@ export class Api {
             const vendorSubscription = await this.apiAxios.get(url);
             return vendorSubscription.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
@@ -142,11 +157,17 @@ export class Api {
             const addedSubscription = await this.apiAxios.put(url, subscription);
             return addedSubscription.data;
         } catch (error) {
-            if (error.response.status == 403) {
+            if (this.getAxiosErrorStatus(error) === 403) {
                 return null;
             }
             throw (error);
         }
+    }
+
+    async postSubscriptionAsVendor(userId: string, action: interfaces.Action): Promise<interfaces.Subscription> {
+        await this.ensureFreshToken();
+        const pausedSubscription = await this.apiAxios.post(urlPrefix + "/v/subscription?userId=" + encodeURIComponent(userId), action);
+        return pausedSubscription.data;
     }
 
     async deleteVendorSubscription(id: string) {
@@ -162,7 +183,7 @@ export class Api {
             const userSubscription = await this.apiAxios.get(url);
             return userSubscription.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
@@ -176,7 +197,7 @@ export class Api {
             const addedSubscription = await this.apiAxios.put(url, subscription);
             return addedSubscription.data;
         } catch (error) {
-            if (error.response.status == 403) {
+            if (this.getAxiosErrorStatus(error) === 403) {
                 return null;
             }
             throw (error);
@@ -187,7 +208,7 @@ export class Api {
         await this.ensureFreshToken();
         const pausedSubscription = await this.apiAxios.post(urlPrefix + "/u/subscription?vendorId=" + encodeURIComponent(vendorId), action);
         return pausedSubscription.data;
-    } 
+    }
 
     async deleteUserSubscription(id: string) {
         await this.ensureFreshToken();
@@ -207,11 +228,11 @@ export class Api {
         await this.ensureFreshToken();
 
         try { 
-            let url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(startDate) + "&end=" + endDate;
+            let url = urlPrefix + "/v/deliveries?start=" + startDate + "&end=" + endDate;
             const deliveries = await this.apiAxios.get(url);
             return deliveries.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
@@ -222,11 +243,25 @@ export class Api {
         await this.ensureFreshToken();
 
         try { 
-            let url = urlPrefix + "/v/deliveries?start=" + encodeURIComponent(startDate) + "&end=" + endDate + "&summary=true";
+            let url = urlPrefix + "/v/deliveries?start=" + startDate + "&end=" + endDate + "&summary=true";
             const deliveries = await this.apiAxios.get(url);
             return deliveries.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
+                return null;
+            }
+            throw (error);
+        }
+    }
+
+    async getOneUsersDeliveries(userId: string, startDate: string, endDate: string): Promise<interfaces.Delivery[] | null> {
+        await this.ensureFreshToken();
+
+        try {
+            const deliveries = await this.apiAxios.get(urlPrefix + "/v/deliveries?userId=" + encodeURIComponent(userId) + "&start=" + startDate + "&end=" + endDate);
+            return deliveries.data;
+        } catch (error) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
@@ -253,7 +288,7 @@ export class Api {
             const deliveries = await this.apiAxios.get(urlPrefix + "/u/deliveries?start=" + startDate + "&end=" + endDate);
             return deliveries.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);
@@ -267,7 +302,7 @@ export class Api {
             const delivery = await this.apiAxios.get(url);
             return delivery.data;
         } catch (error) {
-            if (error.response.status == 404) {
+            if (this.getAxiosErrorStatus(error) === 404) {
                 return null;
             }
             throw (error);

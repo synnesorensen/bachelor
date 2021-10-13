@@ -5,7 +5,7 @@
             dark
             src="..\..\assets\smorblomst_crop1.jpg"
         >
-            <v-app-bar-nav-icon @click="drawer = true" class="d-flex d-sm-none"></v-app-bar-nav-icon>
+            <v-app-bar-nav-icon @click="drawer = true" class="d-flex d-sm-none" ></v-app-bar-nav-icon>
             <template v-slot:img="{ props }">
                 <v-img
                     v-bind="props"
@@ -14,15 +14,14 @@
                 >
                 </v-img>
             </template>
-			<v-toolbar-title 
-                class="headline"
-            >
-                Lunsj på  hjul
+			<v-toolbar-title>
+                <div class="text-h4">
+                    Lunsj på Hjul
+                </div>
             </v-toolbar-title>
             <v-spacer></v-spacer>
             <template v-slot:extension>
                 <v-tabs 
-                    v-model="tab" 
                     align-with-title 
                     class="d-none d-sm-flex"
                 >
@@ -34,6 +33,7 @@
             </template>
             <v-spacer />
             <v-btn 
+                class="d-none d-sm-flex"
                 color="grey" 
                 @click="logout">
                 Logg ut
@@ -46,19 +46,22 @@
         >
             <v-list nav dense>
                 <v-list-item-group>
-                    <v-list-item>
-                        <v-list-item-title @click="tab=0; drawer= false">Kalender</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                        <v-list-item-title @click="tab=1; drawer= false">Profil</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                        <v-list-item-title @click="tab=2; drawer= false">Faktura</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                        <v-list-item-title @click="tab=3; drawer= false">Informasjon</v-list-item-title>
+                    <v-list-item
+                        v-for="tab in tabs"
+                        :key="tab.title"
+                        router :to="tab.route"
+                    >
+                        <v-list-item-title>{{ tab.title }}</v-list-item-title>
                     </v-list-item>
                 </v-list-item-group>
+                <br />
+                <v-btn 
+                    small
+                    text
+                    color="grey" 
+                    @click="logout">
+                    Logg ut
+                </v-btn>
             </v-list>
         </v-navigation-drawer>
 		<v-main>
@@ -84,8 +87,23 @@ import Information from '../components/Users/Information.vue';
 	},
 })
 export default class AppBar extends Vue {
-	private tab = 0;
     private drawer = false;
+    private tabs = [{
+        title: "Kalender",
+        route: "/user/calendar"
+    },
+    {
+        title: "Profil",
+        route: "/user/profile"
+    },
+    {
+        title: "Faktura",
+        route: "/user/invoice"
+    },
+    {
+        title: "Informasjon",
+        route: "/user/info"
+    }];
 
     logout() {
         this.$store.dispatch("logout");

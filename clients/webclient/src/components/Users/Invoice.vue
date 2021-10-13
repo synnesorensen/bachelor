@@ -5,7 +5,7 @@
                 <p class="font-weight-medium"> Siste levering i denne perioden: </p>
             </v-col>
             <v-col v-if="$store.getters.subscription">
-                <p class="font-weight-regular"> {{ toLocalPresentation(lastPaid)}} </p>
+                <p class="font-weight-regular"> {{ localPresentation(lastPaid)}} </p>
             </v-col>
             <v-col v-else>
                 <p class="font-weight-regular"> Det er ikke registrert betaling for leveranser i denne perioden. </p>
@@ -16,7 +16,7 @@
                 <p class="font-weight-medium"> Neste faktura må betales innen: </p>
             </v-col>
             <v-col v-if="$store.getters.subscription">
-                <p class="font-weight-regular"> {{toLocalPresentation(nextInvoice)}} </p>
+                <p class="font-weight-regular"> {{localPresentation(nextInvoice)}} </p>
             </v-col>
             <v-col v-else>
                 <p class="font-weight-regular"> Du vil få tilsendt faktura for neste periode så snart abonnementet ditt er blitt godkjent. </p>
@@ -26,6 +26,7 @@
 </template>
 
 <script lang="ts">
+import { toLocalPresentation } from "../../utils/utils";
 import Vue from 'vue';
 import Component from 'vue-class-component';
 
@@ -52,9 +53,8 @@ export default class CustomerInvoice extends Vue {
         return "";
     }
 
-    toLocalPresentation(lastDeliveryDate: string) {
-        const delDate = new Date(lastDeliveryDate);
-        return delDate.toLocaleDateString();
+    localPresentation(time: string) {
+        return toLocalPresentation(time);
     }
 }
 </script>

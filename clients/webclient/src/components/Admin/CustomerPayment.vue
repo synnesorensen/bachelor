@@ -1,106 +1,196 @@
 <template>
     <v-card>
-        <v-card-title>Valgt kunde</v-card-title>
+        <v-app-bar
+            dark
+            color="success"
+        >
+            <v-card-title>Valgt kunde</v-card-title>
+        </v-app-bar>
         <br />
         <v-card-text v-if="!selectedUser">
             <v-row>
                 <v-col>
-                    <p> Velg en kunde </p>
+                    <p class="font-weight-medium"> Velg en kunde fra listen til venstre. </p>
                 </v-col>
             </v-row>
         </v-card-text>
         <v-card-text v-if="selectedUser">
-            <v-row>
-                <v-col :cols="5">
-                    <p class="font-weight-medium"> Navn </p>
-                </v-col>
-                <v-col>
-                    <p class="font-weight-light"> {{ selectedUser.fullname }} </p>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col :cols="5">
-                    <p class="font-weight-medium"> Adresse </p>
-                </v-col>
-                <v-col>
-                    <p class="font-weight-light"> {{ selectedUser.address }} </p>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col :cols="5">
-                    <p class="font-weight-medium"> Telefon </p>
-                </v-col>
-                <v-col>
-                    <p class="font-weight-light"> {{ selectedUser.phone }} </p>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col :cols="5">
-                    <p class="font-weight-medium"> Epost </p>
-                </v-col>
-                <v-col>
-                    <p class="font-weight-light"> {{ selectedUser.email }} </p>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col :cols="5">
+            <CustomerInfo :selectedUser="selectedUser" />
+            <v-row dense>
+                <v-col :xl="4" :lg="5">
                     <p class="font-weight-medium"> Siste betalte levering </p>
                 </v-col>
                 <v-col>
-                    <p class="font-weight-light"> {{toLocalPresentation(selectedUser.lastDeliveryDate)}} </p>
+                    <p class="font-weight-light"> {{localPresentation(selectedUser.lastDeliveryDate)}} </p>
                 </v-col>
             </v-row>
-            <v-row>
-                <v-col :cols="5">
-                    <v-row>
-                        <v-col>
-                            <p class="font-weight-medium"> Ubetalte måltid i {{selectedMonth}} </p>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
-                            <v-btn class="ma-1" @click="prev()">Forrige</v-btn>
-                            <v-btn class="ma-1" @click="next()">Neste</v-btn>
-                        </v-col>
-                    </v-row>
+            <v-row dense>
+                <v-col :xl="4" :lg="5" :sm="8" :xs="10">
+                    <p class="font-weight-medium"> Ubetalte måltid i {{selectedMonth}} </p>
                 </v-col>
                 <v-col>
                     <p class="font-weight-light"> {{unpaidDeliveries}} </p>
                 </v-col>
             </v-row>
+            <v-row dense>
+                <v-btn class="ma-1" small @click="prev()">Forrige</v-btn>
+                <v-btn class="ma-1" small @click="next()">Neste</v-btn>
+            </v-row>
         </v-card-text>
         <v-card-actions v-if="selectedUser">
-            <v-btn  @click="showPaymentDialog" color="primary">Registrer betaling</v-btn>
-            <v-dialog v-model="dialog" max-width="400" max-height="800">
+            <v-btn  
+                @click="showPaymentDialog" 
+                color="success"
+            >
+                Registrer betaling
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn 
+                @click="datePickDialog = true"
+                color="grey lighten-3"
+            >
+                Leveranser
+            </v-btn>
+            <v-dialog 
+                v-model="datePickDialog" 
+                max-width="800" 
+                max-height="800"
+                persistent
+            >
+                <v-card>
+                    <v-app-bar>
+                        <v-card-title class="headline">
+                            Leveranser
+                        </v-card-title>
+                        <v-spacer></v-spacer>
+                        <v-btn 
+                            icon
+                            @click="close"    
+                        >
+                            <v-icon>
+                                mdi-close
+                            </v-icon>
+                        </v-btn>
+                    </v-app-bar>
+                    <br />
+                    <v-card-text>
+                        <v-row >
+                            <v-col>
+                                <p class="font-weight-medium"> Fra dato:</p>
+                                <date-picker 
+                                    :date.sync="startDate" 
+                                    @blur="dateCheck"
+                                />
+                            </v-col>
+                            <v-col>
+                                <p class="font-weight-medium">Til dato:</p>
+                                <date-picker 
+                                    :date.sync="endDate"
+                                    @blur="dateCheck" 
+                                />
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <p style="color:red;">{{errorMsg}}</p>
+                        </v-row>
+                        <v-data-table
+                            :loading="loading"
+                            v-model="selectedDeliveries"
+                            v-if="deliveries && deliveries.length > 0"
+                            :headers="headers"
+                            :items="deliveries"
+                            item-key="deliverytime"
+                            show-select
+                            class="pt-2"
+                        >
+                            <template v-slot:item="{ item }">
+                                <tr :key="item.deliverytime">
+                                    <td><v-checkbox
+                                        v-model="selectedDeliveries"
+                                        :value="item"
+                                        dense
+                                    ></v-checkbox></td>
+                                    <td>{{localPresentation(item.deliverytime)}}</td>
+                                    <td>{{item.cancelled? "Ja" : "Nei"}}</td>
+                                </tr>
+                            </template>
+                        </v-data-table>
+                    </v-card-text>
+                    <v-card-actions v-if="deliveries && deliveries.length">
+                        <v-btn 
+                            @click="deleteDeliveries" 
+                            :disabled="selectedDeliveries.length < 1" 
+                            text 
+                            color="error"
+                        >
+                            Slett
+                        </v-btn>
+                        <v-btn 
+                            v-if="selectedDeliveries.length > 0"
+                            @click="cancelDel"
+                            text 
+                            color="orange"
+                        >
+                            Kanseller
+                        </v-btn>
+                        <v-btn 
+                            v-if="selectedDeliveries.length > 0"
+                            @click="activateDel"
+                            text 
+                            color="orange"
+                        >
+                            Aktiver
+                        </v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn 
+                            @click="close" 
+                            text 
+                            color="primary"
+                        >
+                            Lukk
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+                <v-overlay absolute opacity="0.1" v-if="loading">
+                    <v-progress-circular
+                        indeterminate
+                        size="56"
+                    ></v-progress-circular>
+                </v-overlay>
+            </v-dialog>
+            <v-dialog 
+                v-model="paymentDialog" 
+                max-width="400" 
+                max-height="800"
+            >
                 <v-card>
                     <v-card-title class="headline">
                         Registrer betaling
                     </v-card-title>
                     <v-card-text>
                         <p class="font-weight-medium">Navn</p>
-                        <p class="font-weight-light">{{selectedUser.fullname}}</p> 
+                        <p class="font-weight-regular">{{selectedUser.fullname}}</p> 
                         <v-text-field v-model="paidDeliveries" label="Betalte leveringer"></v-text-field>
                         <p class="font-weight-medium">Sett første leveringsdato: </p>
                         <v-date-picker
-                            v-model="picker"
+                            v-model="paymentPicker"
                             no-title
-
                             >
                         </v-date-picker>
                     </v-card-text>
                     <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn
-                        color="green darken-1"
+                        color="red darken-1"
                         text
-                        @click="registerPayment()">
-                        Registrer
+                        @click="paymentDialog = false">
+                        Avbryt
                     </v-btn>
                     <v-btn
                         color="green darken-1"
                         text
-                        @click="dialog = false">
-                        Avbryt
+                        @click="registerPayment()">
+                        Registrer
                     </v-btn>
                     </v-card-actions>
                 </v-card>
@@ -115,16 +205,36 @@ import Component from 'vue-class-component';
 import { Prop, Watch } from 'vue-property-decorator';
 import api from '../../api/api'
 import * as interfaces from "../../../../../server/src/interfaces";
+import DatePicker from "./DatePicker.vue";
+import CustomerInfo from "./CustomerInfo.vue";
+import { toLocalPresentation } from "../../utils/utils";
 
-@Component
+@Component({
+	components: {
+		DatePicker, 
+        CustomerInfo
+	},
+})
 
 export default class CustomerPayment extends Vue {
+    private loading = false;
     @Prop() selectedUser!:interfaces.UserSubscription | null; 
-    private dialog = false;
-    private picker = new Date().toISOString().substr(0, 10);
+    private paymentDialog = false;
+    private datePickDialog = false;
+    private paymentPicker = new Date().toISOString().substr(0, 10);
+    private startDate = "";
+    private endDate = "";
+    private selectedDeliveries: interfaces.Delivery[] = []
     private paidDeliveries = 0;
     private unpaidDeliveries = 0;
+    private deliveries: interfaces.Delivery[] | null = [];
     private monthOffset = 1;
+    private errorMsg = "";
+    private headers=[
+        {text: "Dato", value: "deliverytime"},
+        {text: "Kansellert", value: "cancelled"}
+    ];
+    
     get selectedMonth() {
         return this.toYearMonth(this.nextMonth());
     }
@@ -156,6 +266,20 @@ export default class CustomerPayment extends Vue {
         }
     }
 
+    userSelected(user: interfaces.UserSubscription) {
+        this.selectedUser = user;
+    }
+
+    @Watch("datePickDialog")
+    onShowDialog() {
+        this.startDate = "";
+        this.endDate = "";
+    }
+
+    localPresentation(time: string) {
+        return toLocalPresentation(time);
+    }
+
     async updateUnpaidDeliveries() {
         if (this.selectedUser?.lastDeliveryDate) {
             let date = this.selectedUser.lastDeliveryDate;
@@ -179,23 +303,70 @@ export default class CustomerPayment extends Vue {
     }
     
     async registerPayment() {
-        let time = new Date(this.picker).toISOString();
+        let time = new Date(this.paymentPicker).toISOString();
         if (this.selectedUser?.userId) {
             let newDels = await api.postNewDeliveries(time, this.paidDeliveries, this.selectedUser.userId);
             this.selectedUser.lastDeliveryDate = newDels[newDels.length-1].deliverytime;
             this.unpaidDeliveries = this.unpaidDeliveries - this.paidDeliveries;
-            this.dialog = false;
+            this.paymentDialog = false;
         }
     }
 
     showPaymentDialog() {
-        this.picker = this.selectedMonth + "-01";
-        this.dialog = true;
+        this.paymentPicker = this.selectedMonth + "-01";
+        this.paymentDialog = true;
     }
 
-    toLocalPresentation(lastDeliveryDate: string) {
-        const delDate = new Date(lastDeliveryDate);
-        return delDate.toLocaleDateString();
+    async dateCheck() {
+        if (this.startDate && this.endDate && this.selectedUser) {
+            if (new Date(this.endDate) < new Date(this.startDate)) {
+                this.errorMsg = "Fra dato kan ikke være etter til dato."
+            } else {
+                this.loading = true;
+                this.errorMsg = "";
+                try {
+                    this.deliveries = await api.getOneUsersDeliveries(this.selectedUser.userId, this.startDate, this.endDate);
+                } catch (err) {
+                    console.log(err);
+                } finally {
+                    this.loading = false;
+                }
+            }
+        }
+    }
+
+    async deleteDeliveries() {
+        this.selectedDeliveries.forEach(async del => {
+            await api.deleteDelivery(this.$store.getters.loggedInUser, this.selectedUser!.userId, del.deliverytime);
+            this.deliveries = await api.getOneUsersDeliveries(this.selectedUser!.userId, this.startDate, this.endDate);
+        });
+    }
+
+    async cancelDel() {
+        const updatedDeliveries: interfaces.Delivery[] = [];
+        this.selectedDeliveries.forEach((del) => {
+            del.cancelled = true;
+            updatedDeliveries.push(del);
+        });
+        console.log(updatedDeliveries)
+       await api.updateDeliveries(updatedDeliveries);
+    }
+
+    async activateDel() {
+        const updatedDeliveries: interfaces.Delivery[] = [];
+        this.selectedDeliveries.forEach((del) => {
+            del.cancelled = false;
+            updatedDeliveries.push(del);
+        });
+       await api.updateDeliveries(updatedDeliveries);
+    }
+
+    close() {
+        this.startDate = "";
+        this.endDate = "";
+        this.deliveries = [];
+        this.selectedDeliveries = [];
+        this.datePickDialog = false;
     }
 }
 </script>
