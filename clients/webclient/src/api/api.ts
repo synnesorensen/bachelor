@@ -1,7 +1,7 @@
-import axios, {AxiosError} from 'axios';
-import { urlPrefix } from '../../../../common/settings'
-import * as interfaces from '../../../../server/src/interfaces'
-import getAuth from '../components/LoginDialog/auth'
+import axios, { AxiosError } from 'axios';
+import { urlPrefix } from '../../../../common/settings';
+import * as interfaces from '../../../../server/src/interfaces';
+import getAuth from '../components/LoginDialog/auth';
 
 export class Api {
     private apiAxios = axios.create();
@@ -104,12 +104,6 @@ export class Api {
         await this.ensureFreshToken();
         const url = urlPrefix + "/vendor?vendorId=" + encodeURIComponent(vendorId);
         await this.apiAxios.delete(url);
-    }
-
-    async getAllVendors(): Promise<interfaces.Vendor[] | null> {
-        await this.ensureFreshToken();
-        const vendors = await this.apiAxios.get(urlPrefix + "/vendors");
-        return vendors.data;
     }
 
     async getSingleVendor(): Promise<interfaces.Vendor> {
@@ -227,7 +221,7 @@ export class Api {
     async getAllVendorsDeliveries(startDate: string, endDate: string): Promise<interfaces.Delivery[] | null> {
         await this.ensureFreshToken();
 
-        try { 
+        try {
             let url = urlPrefix + "/v/deliveries?start=" + startDate + "&end=" + endDate;
             const deliveries = await this.apiAxios.get(url);
             return deliveries.data;
@@ -242,7 +236,7 @@ export class Api {
     async getAllVendorsDeliveriesSummary(startDate: string, endDate: string): Promise<interfaces.Summary[] | null> {
         await this.ensureFreshToken();
 
-        try { 
+        try {
             let url = urlPrefix + "/v/deliveries?start=" + startDate + "&end=" + endDate + "&summary=true";
             const deliveries = await this.apiAxios.get(url);
             return deliveries.data;
@@ -268,7 +262,7 @@ export class Api {
         }
     }
 
-    async updateDeliveries(deliveries:interfaces.Delivery[]): Promise<interfaces.Delivery[]> {
+    async updateDeliveries(deliveries: interfaces.Delivery[]): Promise<interfaces.Delivery[]> {
         await this.ensureFreshToken();
         let changedDeliveries = await this.apiAxios.put(urlPrefix + "/v/deliveries", deliveries);
         return changedDeliveries.data;
@@ -333,7 +327,7 @@ export class Api {
         const response = await this.apiAxios.get(url);
         return parseInt(response.data.no);
     }
-    
+
     async getDeliveryDetails(start: string, end: string): Promise<interfaces.DeliveryDetail[]> {
         await this.ensureFreshToken();
         const response = await this.apiAxios.get(urlPrefix + "/v/deliveryDetails?start=" + start + "&end=" + end);

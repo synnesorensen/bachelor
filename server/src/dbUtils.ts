@@ -254,40 +254,6 @@ export async function deleteVendorInDb(vendorId: string): Promise<void> {
     await database.deleteItem(params).promise();
 }
 
-export async function getAllVendors(): Promise<Vendor[]> {
-    let params = {
-        TableName: settings.TABLENAME,
-        IndexName: "GSI1",
-        KeyConditionExpression: "#GSI1_pk = :vendor and begins_with(#GSI1_sk, :prefix)",
-        ExpressionAttributeNames: {
-            "#GSI1_pk": "GSI1_pk",
-            "#GSI1_sk": "GSI1_sk"
-        },
-        ExpressionAttributeValues: {
-            ":vendor": "vendor",
-            ":prefix": "v#"
-        }
-    };
-
-    let dbResult = await documentClient.query(params).promise();
-    if (dbResult.Items.length == 0) {
-        return [];
-    }
-    
-    let vendors:Vendor[] = await Promise.all(dbResult.Items.map(async (vendor) => {
-        return {
-            vendorId: vendor.pk.substr(2),
-            company: vendor.company,
-            fullname: vendor.fullname,
-            address: vendor.address,
-            phone: vendor.phone,
-            email: vendor.email,
-            schedule: vendor.schedule
-        }
-    }));
-    return vendors;
-}
-
 export async function getUserprofileFromDb(userId: string): Promise<Userprofile> {
     let params = {
         TableName: settings.TABLENAME,

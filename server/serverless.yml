@@ -75,14 +75,6 @@ functions:
           path: /vendor
           method: any
           cors: true
-  vendors:
-    handler: src/vendors.mainHandler
-    events:
-      - http:
-          authorizer: authorizer
-          path: /vendors
-          method: get
-          cors: true
   singleVendor:
     handler: src/singleVendor.mainHandler
     events:
