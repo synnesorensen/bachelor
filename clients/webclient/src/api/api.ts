@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { urlPrefix } from '../../../../common/settings';
 import * as interfaces from '../../../../server/src/interfaces';
 import getAuth from '../components/LoginDialog/auth';
@@ -79,20 +79,6 @@ export class Api {
         await this.apiAxios.delete(urlPrefix + "/userprofile");
     }
 
-    async getVendor(vendorId: string): Promise<interfaces.Vendor | null> {
-        await this.ensureFreshToken();
-        const url = urlPrefix + "/vendor?vendorId=" + encodeURIComponent(vendorId);
-        try {
-            const vendor = await this.apiAxios.get(url);
-            return vendor.data;
-        } catch (error) {
-            if (this.getAxiosErrorStatus(error) === 404) {
-                return null;
-            }
-            throw (error);
-        }
-    }
-
     async putVendor(vendor: interfaces.Vendor, vendorId: string): Promise<interfaces.Vendor> {
         await this.ensureFreshToken();
         const url = urlPrefix + "/vendor?vendorId=" + encodeURIComponent(vendorId);
@@ -106,7 +92,7 @@ export class Api {
         await this.apiAxios.delete(url);
     }
 
-    async getSingleVendor(): Promise<interfaces.Vendor> {
+    async getVendor(): Promise<interfaces.Vendor> {
         await this.ensureFreshToken();
         const vendors = await this.apiAxios.get(urlPrefix + "/singleVendor");
         return vendors.data;

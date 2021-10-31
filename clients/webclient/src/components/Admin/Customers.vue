@@ -36,7 +36,7 @@
                     </v-btn>
                 </v-app-bar><br />
                 <v-card-text>
-                    <CustomerInfo :selectedUser="selectedUser" />
+                    <CustomerInfo :selectedUser="selectedUserSub" />
                 </v-card-text>
                 <v-card-actions>
                     <v-btn 
@@ -166,6 +166,7 @@ export default class Customers extends Vue {
                 ...user,
                 allergies: user.allergies.join(", ")
             }
+            console.log("ALLERGI", user.allergies)
         });
     }
 

@@ -13,10 +13,10 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
             body: '{ "message" : "Missing parameters" }'
         };
     }
-    let vendorId = event.queryStringParameters["vendorId"];
+
     let startDateString = event.queryStringParameters["startDate"];
     let startDate = new Date(startDateString);
-    let vendor = await getVendorFromDb(vendorId);
+    let vendor = await getVendorFromDb();
     let weekTimes = scheduleToWeekTimes(vendor.schedule);
     let noOfDeliveries = noOfDeliveriesInMonth(startDate, weekTimes);
     let deliveries = await generateDeliveriesForVendor(startDate, vendor, noOfDeliveries);

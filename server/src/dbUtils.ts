@@ -155,34 +155,7 @@ export async function deleteSubscriptionInDb(vendorId: string, userId: string): 
     await database.deleteItem(params).promise();
 }
 
-export async function getVendorFromDb(vendorId: string): Promise<Vendor> {
-    let params = {
-        TableName: settings.TABLENAME,
-        KeyConditionExpression: "#pk = :vendorId and #sk = :vendorId",
-        ExpressionAttributeNames: {
-            "#pk": "pk",
-            "#sk": "sk"
-        },
-        ExpressionAttributeValues: {
-            ":vendorId": "v#" + vendorId
-        }
-    };
-    let dbResult = await documentClient.query(params).promise();
-    if (dbResult.Items.length == 0) {
-        return undefined;
-    }
-    return {
-        vendorId,
-        company: dbResult.Items[0].company,
-        fullname: dbResult.Items[0].fullname,
-        address: dbResult.Items[0].address,
-        phone: dbResult.Items[0].phone,
-        email: dbResult.Items[0].email,
-        schedule: dbResult.Items[0].schedule
-    };
-}
-
-export async function getSingleVendorFromDb(): Promise<Vendor | null> {
+export async function getVendorFromDb(): Promise<Vendor | null> {
     let params = {
         TableName: settings.TABLENAME,
         IndexName: "GSI1",
@@ -241,17 +214,6 @@ export async function putVendorInDb(vendor: Vendor, vendorId: string): Promise<V
         email: vendor.email,
         schedule: vendor.schedule
     };
-}
-
-export async function deleteVendorInDb(vendorId: string): Promise<void> {
-    let params = {
-        TableName: settings.TABLENAME,
-        Key: {
-            'pk': { S: 'v#' + vendorId },
-            'sk': { S: 'v#' + vendorId }
-        }
-    };
-    await database.deleteItem(params).promise();
 }
 
 export async function getUserprofileFromDb(userId: string): Promise<Userprofile> {
@@ -451,8 +413,8 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
             address: user.address,
             phone: user.phone,
             email: user.email,
-            allergies: user.allergies,
-            lastDeliveryDate: (await findLatestDelivery(sub.vendorId, sub.userId.substr(2)))?.deliverytime
+            allergies: user.allergies ? user.allergies : [],
+            lastDeliveryDate: (await findLatestDelivery(sub.vendorId, sub.userId.substr(2)))?.deliverytime,
         }
     }));
     return result;

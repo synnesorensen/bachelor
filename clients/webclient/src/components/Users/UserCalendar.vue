@@ -220,7 +220,7 @@ export default class UserCalendar extends Vue {
     async populateCalendar() {
         this.showSpinner = true;
         const usersSub:VendorSubscription = this.$store.getters.subscription;
-        const vendor:Vendor = await api.getSingleVendor();
+        const vendor:Vendor = await api.getVendor();
         const vendorSchedule = vendor.schedule;
         const vendorDeliveries = await api.scheduleToDates(vendor.vendorId, this.start.date);
 

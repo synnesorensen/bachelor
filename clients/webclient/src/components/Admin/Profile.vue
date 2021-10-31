@@ -176,7 +176,7 @@ export default class CustomerProfile extends Vue {
     }
 
     async cancelEditProfile() {
-        let unchangedUserprofile = await api.getVendor(this.$store.getters.loggedInUser);
+        let unchangedUserprofile = await api.getVendor();
         if (unchangedUserprofile) {
             this.$store.getters.userprofile.fullname = unchangedUserprofile.fullname;
             this.$store.getters.userprofile.company = unchangedUserprofile.company;

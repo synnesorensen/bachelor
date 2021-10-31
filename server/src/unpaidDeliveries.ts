@@ -37,7 +37,7 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
         afterDate = yearMonth + "-01"
     }
     
-    let vendor = await getVendorFromDb(vendorId);
+    let vendor = await getVendorFromDb();
     if (!vendor) {
         return {
             statusCode: 500,

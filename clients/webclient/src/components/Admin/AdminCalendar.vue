@@ -109,7 +109,7 @@ export default class AdminCalendar extends Vue {
     }
 
     async populateCalendar() {
-        const vendor = await api.getVendor(this.$store.getters.loggedInUser);
+        const vendor = await api.getVendor();
         let schedule = vendor!.schedule;
         let events: any[] = [];
         if (this.start && this.end) {

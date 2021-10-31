@@ -63,7 +63,7 @@ export const store = new Vuex.Store({
             api.setApiBearerToken(payload.jwt);
             const username = getUserInfo(payload.jwt);
             context.commit("setUsername", username);
-            const vendor = await api.getSingleVendor();
+            const vendor = await api.getVendor();
             context.commit("setVendor", vendor);
 
             const userprofile = await api.getUserprofile();

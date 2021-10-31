@@ -463,7 +463,7 @@ export default class CustomerProfile extends Vue {
             this.selectedBox = this.$store.getters.subscription.box;
             this.selectedSchedule = this.$store.getters.subscription.schedule;
         }
-        this.vendor = await api.getSingleVendor();
+        this.vendor = await api.getVendor();
         this.vendorSchedule = this.vendor.schedule;
     }
 
