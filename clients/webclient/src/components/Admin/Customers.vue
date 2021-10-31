@@ -166,7 +166,6 @@ export default class Customers extends Vue {
                 ...user,
                 allergies: user.allergies.join(", ")
             }
-            console.log("ALLERGI", user.allergies)
         });
     }
 

@@ -79,23 +79,17 @@ export class Api {
         await this.apiAxios.delete(urlPrefix + "/userprofile");
     }
 
+    async getVendor(): Promise<interfaces.Vendor> {
+        await this.ensureFreshToken();
+        const vendors = await this.apiAxios.get(urlPrefix + "/vendor");
+        return vendors.data;
+    }
+    
     async putVendor(vendor: interfaces.Vendor, vendorId: string): Promise<interfaces.Vendor> {
         await this.ensureFreshToken();
         const url = urlPrefix + "/vendor?vendorId=" + encodeURIComponent(vendorId);
         const addedVendor = await this.apiAxios.put(url, vendor);
         return addedVendor.data;
-    }
-
-    async deleteVendor(vendorId: string) {
-        await this.ensureFreshToken();
-        const url = urlPrefix + "/vendor?vendorId=" + encodeURIComponent(vendorId);
-        await this.apiAxios.delete(url);
-    }
-
-    async getVendor(): Promise<interfaces.Vendor> {
-        await this.ensureFreshToken();
-        const vendors = await this.apiAxios.get(urlPrefix + "/singleVendor");
-        return vendors.data;
     }
 
     async getSingleSubscription(): Promise<interfaces.VendorSubscription> {
