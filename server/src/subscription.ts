@@ -12,14 +12,21 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     const userId = getUserInfoFromEvent(event);
     const vendor = await getVendorFromDb();
     const subscriptionFromDb = await getSubscriptionFromDb(vendor.vendorId, userId);
-
+    if (!subscriptionFromDb) {
+        return {
+            statusCode: 404,
+            body: '{ msg: "User does not have a subscription"}'
+        };
+    }
     let subSchedule: MenuItems[] = [];
-    subscriptionFromDb.schedule.forEach((item) => {
-        subSchedule.push(vendor.schedule.find(({id}) => id === item));
-    });
+    if (subscriptionFromDb) {
+        subscriptionFromDb.schedule.forEach((item) => {
+            subSchedule.push(vendor.schedule.find(({id}) => id === item));
+        });
+    }
 
     let sub: SubscriptionDto = {
-        userId: subscriptionFromDb.userId,
+        userId: userId,
         vendorId: vendor.vendorId.substr(2),
         paused: subscriptionFromDb.paused,
         schedule: subSchedule,

@@ -93,10 +93,18 @@ export class Api {
         return addedVendor.data;
     }
 
-    async getSubscription(): Promise<dto.SubscriptionDto> {
+    async getSubscription(): Promise<dto.SubscriptionDto | null> {
         await this.ensureFreshToken();
-        const result = await this.apiAxios.get(urlPrefix + "/subscription");
-        return result.data;
+        try {
+            const result = await this.apiAxios.get(urlPrefix + "/subscription");
+            return result.data;
+        } catch (error) {
+            if (this.getAxiosErrorStatus(error) === 404) {
+                return null;
+            }
+            throw (error);
+        }
+        
     }
 
     async getVendorSubscriptions(): Promise<interfaces.UserSubscription[]> {
