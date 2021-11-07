@@ -57,7 +57,7 @@ describe('Vendor http test', () => {
         expect(getResult.schedule[0].id).to.equal("2");
         expect(getResult.schedule[1].id).to.equal("3");
 
-        const getSingleResult = await vendor.getSingleVendor();
+        const getSingleResult = await vendor.getVendor();
         expect(getSingleResult.company).to.equal("Delikatessen");
         expect(getSingleResult.vendorId).to.equal(vendormail);
         

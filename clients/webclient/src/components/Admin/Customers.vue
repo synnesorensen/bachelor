@@ -128,11 +128,7 @@ export default class Customers extends Vue {
             }
         });
         this.users = await api.getAllUserprofiles();
-    }
-
-    @Watch("usersubs")
-    async onChange() {
-        this.activeUsers;
+        console.log("created", this.usersubs)
     }
 
     get activeUsers() {
@@ -141,6 +137,7 @@ export default class Customers extends Vue {
         });
         return approvedUsers.map((user) => {
             return {
+                oldUser: user,
                 ...user,
                 allergies: user.allergies.join(", "),
                 pausedString: user.paused? "Pauset" : "Aktiv"
@@ -149,11 +146,13 @@ export default class Customers extends Vue {
     }
 
     get unapprovedUsers() {
+        console.log("GET unapprovedUsers")
         const unapprovedUsers = this.usersubs.filter((user) => {
             return !user.approved;
         });
         return unapprovedUsers.map((user) => {
             return {
+                oldUser: user,
                 ...user,
                 allergies: user.allergies.join(", ")
             }
@@ -223,10 +222,11 @@ export default class Customers extends Vue {
         return days.join(", ")
     }
     
-    async approve(item: UserSubscription) {
+    async approve(item: any) {
+        console.log("APproving:",item)
         try {
             await api.updateApproval(item.userId, true);
-            item.approved = true;
+            item.oldUser.approved = true;                   // TODO: Endre denne når interface er refaktorert.
         } catch (err) {
             alert("Noe gikk galt, prøv igjen senere.");
             console.log(err);

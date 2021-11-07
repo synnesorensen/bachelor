@@ -9,9 +9,6 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     if (event.httpMethod == "GET") {
         return getUserSubscription(event);
     }
-    if (event.httpMethod == "PUT") {
-        return putUserSubscription(event);
-    }
     if (event.httpMethod == "POST") {
         return postUserSubscription(event);
     }
@@ -53,46 +50,6 @@ async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
                 body: '{ "message" : "No subscription for vendorId: ' + vendorId + '"}'
             };
         }
-        return {
-            statusCode: 200,
-            body: JSON.stringify(subscription)
-        };
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        };
-    }
-}
-
-async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    let vendorId = getUserInfoFromEvent(event);
-    let vendor = await getUserprofileFromDb(vendorId);
-    if (!vendor.isVendor) {
-        return {
-            statusCode: 403,
-            body: JSON.stringify({ message: "User " + vendorId + " is not a vendor" })
-        };
-    }
-    if (!event.queryStringParameters) {
-        return {
-            statusCode: 400,
-            body: '{ "message" : "Missing parameter userId" }'
-        };
-    }
-    let userId = event.queryStringParameters["userId"];
-
-    if (!userId) {
-        return {
-            statusCode: 400,
-            body: '{ "message" : "Missing parameter userId" }'
-        };
-    }
-    let body = JSON.parse(event.body);
-
-    try {
-        let subscription = await putSubscriptionInDb({ ...body, vendorId });
-
         return {
             statusCode: 200,
             body: JSON.stringify(subscription)

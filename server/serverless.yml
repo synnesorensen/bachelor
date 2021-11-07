@@ -107,14 +107,6 @@ functions:
           path: /v/subscriptions
           method: get
           cors: true
-  userSubscriptions:
-    handler: src/userSubscriptions.mainHandler
-    events: 
-      - http:
-          authorizer: authorizer
-          path: /u/subscriptions
-          method: get
-          cors: true
   userDeliveries:
     handler: src/userDeliveries.mainHandler
     events: 

@@ -1,6 +1,6 @@
 require('dotenv').config();
 import 'source-map-support/register';
-import { putVendorInDb, getVendorFromDb, deleteVendorInDb, getSingleVendorFromDb } from '../../dbUtils';
+import { putVendorInDb, getVendorFromDb, deleteVendorInDb } from '../../dbUtils';
 import { expect } from 'chai';
 import 'mocha';
 
@@ -37,7 +37,7 @@ describe('Vendor profile test', () => {
         expect(putResult.schedule[0].id).to.equal("1");
         expect(putResult.schedule[1].id).to.equal("2");
 
-        const getResult = await getVendorFromDb("testVendorId11");
+        const getResult = await getVendorFromDb();
         expect(getResult.company).to.equal("Delikatessen");
         expect(getResult.fullname).to.equal("Bakermester Harepus");
         expect(getResult.address).to.equal("Hakkebakkeskogen");
@@ -45,7 +45,7 @@ describe('Vendor profile test', () => {
         expect(getResult.schedule[0].id).to.equal("1");
         expect(getResult.schedule[1].id).to.equal("2");
 
-        const getSingleResult = await getSingleVendorFromDb();
+        const getSingleResult = await getVendorFromDb();
         expect(getSingleResult.company).to.equal("Delikatessen");
         expect(getSingleResult.fullname).to.equal("Bakermester Harepus");
         expect(getSingleResult.address).to.equal("Hakkebakkeskogen");
@@ -54,7 +54,7 @@ describe('Vendor profile test', () => {
         expect(getSingleResult.schedule[1].id).to.equal("2");
 
         await deleteVendorInDb("testVendorId11");
-        const newResult = await getVendorFromDb("testVendorId11");
+        const newResult = await getVendorFromDb();
         expect(newResult).to.equal(undefined);
     });
 });

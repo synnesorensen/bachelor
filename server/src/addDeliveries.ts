@@ -1,16 +1,12 @@
 import 'source-map-support/register'
 import { Delivery, MenuItems, Vendor, WeekTime } from './interfaces';
 import { getDeliveryDates } from './timeHandling'
-import { getSubscriptionsForUser } from './dbUtils'
+import { getOnlySubscriptionForUser } from './dbUtils'
 
 export async function generateDeliveries(EarliestStartDate: Date, userId: string, vendor: string, noOfDeliveries: number): Promise<Delivery[]> {
-    let subscriptions = await getSubscriptionsForUser(userId);
-    if (!subscriptions) {
-        throw "User " + userId + " does not exist"
-    }
-    let subscription =  subscriptions.find( ({vendorId}) => vendorId == vendor);
+    let subscription = await getOnlySubscriptionForUser(userId);
     if (!subscription) {
-        throw "User " + userId + " has no subscription for vendor " + vendor;
+        throw "User " + userId + " does not exist"
     }
 
     let weekTimes:WeekTime[] = scheduleToWeekTimes(subscription.schedule)

@@ -84,7 +84,7 @@ export class Api {
         const vendors = await this.apiAxios.get(urlPrefix + "/vendor");
         return vendors.data;
     }
-    
+
     async putVendor(vendor: interfaces.Vendor, vendorId: string): Promise<interfaces.Vendor> {
         await this.ensureFreshToken();
         const url = urlPrefix + "/vendor?vendorId=" + encodeURIComponent(vendorId);
@@ -104,12 +104,6 @@ export class Api {
         return result.data;
     }
 
-    async getUserSubscriptions(): Promise<interfaces.VendorSubscription[]> {
-        await this.ensureFreshToken();
-        const result = await this.apiAxios.get(urlPrefix + "/u/subscriptions");
-        return result.data;
-    }
-
     async getVendorSubscription(id: string): Promise<interfaces.Subscription | null> {
         await this.ensureFreshToken();
         try {
@@ -118,20 +112,6 @@ export class Api {
             return vendorSubscription.data;
         } catch (error) {
             if (this.getAxiosErrorStatus(error) === 404) {
-                return null;
-            }
-            throw (error);
-        }
-    }
-
-    async putVendorSubscription(subscription: interfaces.Subscription): Promise<interfaces.Subscription | null> {
-        await this.ensureFreshToken();
-        try {
-            const url = urlPrefix + "/v/subscription?userId=" + encodeURIComponent(subscription.userId);
-            const addedSubscription = await this.apiAxios.put(url, subscription);
-            return addedSubscription.data;
-        } catch (error) {
-            if (this.getAxiosErrorStatus(error) === 403) {
                 return null;
             }
             throw (error);
@@ -328,5 +308,3 @@ export class Api {
 }
 let api = new Api();
 export default api;
-
-
