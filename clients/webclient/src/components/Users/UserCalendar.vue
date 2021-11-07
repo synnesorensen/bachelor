@@ -177,7 +177,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import api from "../../api/api";
-import { Delivery, Vendor, VendorSubscription } from "../../../../../server/src/interfaces";
+import { Delivery, Vendor, VendorSubscription } from "../../../../../common/interfaces";
 import { toLocalPresentation } from "@/utils/utils";
 
 @Component({})

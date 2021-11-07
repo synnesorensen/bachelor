@@ -1,4 +1,4 @@
-import { DateWithMenuId, WeekTime } from './interfaces'
+import { DateWithMenuId, WeekTime } from '../../common/interfaces';
 
 export function getDeliveryDates(startDate: Date, weekTimes: WeekTime[], no:number):DateWithMenuId[] {
     let nextDelivery = nextDeliveryDate(startDate, weekTimes);

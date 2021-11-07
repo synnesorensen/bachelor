@@ -75,12 +75,12 @@ functions:
           path: /vendor
           method: any
           cors: true
-  singleSubscription:
-    handler: src/singleSubscription.mainHandler
+  subscription:
+    handler: src/subscription.mainHandler
     events:
       - http:
           authorizer: authorizer
-          path: /singleSubscription
+          path: /subscription
           method: get
           cors: true
   userSubscription:

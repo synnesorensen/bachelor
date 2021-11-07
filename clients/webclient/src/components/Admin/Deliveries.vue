@@ -63,7 +63,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import api from "../../api/api";
-import {DeliveryDetail} from "../../../../../server/src/interfaces"
+import {DeliveryDetail} from "../../../../../common/interfaces"
 import { Prop, Watch } from 'vue-property-decorator';
 import Sortable from 'sortablejs';
 import { toLocalPresentation } from "../../utils/utils";

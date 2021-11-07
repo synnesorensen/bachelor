@@ -1,7 +1,7 @@
 import 'source-map-support/register'
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, VendorSubscription, MenuItems, DeliveryDetail } from './interfaces';
+import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, DeliveryDetail } from '../../common/interfaces';
 import * as settings from '../../common/settings';
 import { generateDeliveries } from './addDeliveries';
 
@@ -418,67 +418,6 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
         }
     }));
     return result;
-}
-
-export async function getOnlySubscriptionForUser(userId: string): Promise<VendorSubscription> {
-    let params = {
-        TableName: settings.TABLENAME,
-        IndexName: "GSI1",
-        Limit: 1,
-        KeyConditionExpression: "#GSI1_pk = :user and begins_with(#GSI1_sk, :prefix)",
-        ExpressionAttributeNames: {
-            "#GSI1_pk": "GSI1_pk",
-            "#GSI1_sk": "GSI1_sk"
-        },
-        ExpressionAttributeValues: {
-            ":user": "u#" + userId,
-            ":prefix": "v#"
-        }
-    };
-
-    let dbResult = await documentClient.query(params).promise();
-
-    if (dbResult.Items.length == 0) {
-        return undefined;
-    }
-    let sub:Subscription = {
-        vendorId: dbResult.Items[0].pk,
-        userId,
-        paused: dbResult.Items[0].paused,
-        schedule: dbResult.Items[0].schedule.values,
-        noOfMeals: dbResult.Items[0].noOfMeals,
-        box: dbResult.Items[0].box
-    };
-     
-    let params2 = {
-        TableName: settings.TABLENAME,
-        Limit: 1,
-        KeyConditionExpression: "#pk = :pk and #sk = :pk",
-        ExpressionAttributeNames: {
-            "#pk": "pk",
-            "#sk": "sk"
-        },
-        ExpressionAttributeValues: {
-            ":pk": dbResult.Items[0].pk
-        }
-    };
-    
-    let vendor = await documentClient.query(params2).promise();
-    let subSchedule: MenuItems[]= [];
-        sub.schedule.forEach((item) => {
-            subSchedule.push(vendor.Items[0].schedule.find(({id}) => id === item));
-        });
-    
-    return {
-        userId: sub.userId,
-        vendorId: sub.vendorId.substr(2),
-        company: vendor.Items[0].company,
-        paused: sub.paused,
-        schedule: subSchedule,
-        noOfMeals: sub.noOfMeals,
-        box: sub.box,
-        lastDeliveryDate: (await findLatestDelivery(sub.vendorId.substr(2), userId))?.deliverytime
-    };
 }
 
 export async function getUsersDeliveries(userId: string, startDate: string, endDate?: string): Promise<Delivery[]> {

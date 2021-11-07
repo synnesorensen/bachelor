@@ -429,7 +429,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Route } from "vue-router";
-import {Action, MenuItems, Subscription, Vendor} from "../../../../../server/src/interfaces";
+import {Action, MenuItems, Subscription, Vendor} from "../../../../../common/interfaces";
 import api from "../../api/api";
 
 @Component({
@@ -551,13 +551,13 @@ export default class CustomerProfile extends Vue {
             box: this.selectedBox,
         };
         await api.putUserSubscription(sub);
-        let updated = await api.getSingleSubscription();
+        let updated = await api.getSubscription();
         this.$store.commit("setSubscription", updated);
         this.editModeSub = false;
     }
 
     async cancelEditSub() {
-        let unchangedSub = await api.getSingleSubscription();
+        let unchangedSub = await api.getSubscription();
         if (unchangedSub) {
             this.$store.getters.subscription.selectedNoOfMeals = unchangedSub.noOfMeals;
             this.$store.getters.subscription.selectedDeliveryDays = unchangedSub.schedule;
@@ -579,7 +579,7 @@ export default class CustomerProfile extends Vue {
             box: this.selectedBox,
         };
         await api.putUserSubscription(sub);
-        let updated = await api.getSingleSubscription();
+        let updated = await api.getSubscription();
         this.$store.commit("setSubscription", updated);
         this.goToReg = false;
     }
@@ -591,7 +591,7 @@ export default class CustomerProfile extends Vue {
 
     async deleteMe() {
         try {
-            let subscription = await api.getSingleSubscription();
+            let subscription = await api.getSubscription();
             if (subscription && this.vendor) {
                 await api.deleteUserSubscription(this.vendor.vendorId);
             }

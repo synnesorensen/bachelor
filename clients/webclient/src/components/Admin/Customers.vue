@@ -103,7 +103,7 @@
 import Vue from 'vue';
 import api from "../../api/api";
 import Component from 'vue-class-component';
-import { Action, Userprofile, UserSubscription } from '../../../../../server/src/interfaces';
+import { Action, Userprofile, UserSubscription } from '../../../../../common/interfaces';
 import CustomerInfo from './CustomerInfo.vue';
 import { Watch } from 'vue-property-decorator';
 

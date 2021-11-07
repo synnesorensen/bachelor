@@ -48,7 +48,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
-import * as interfaces from "../../../../../server/src/interfaces";
+import * as interfaces from "../../../../../common/interfaces";
 
 @Component({
 	components: {

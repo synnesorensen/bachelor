@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { urlPrefix } from '../../../../common/settings';
-import * as interfaces from '../../../../server/src/interfaces';
+import * as interfaces from '../../../../common/interfaces';
+import * as dto from '../../../../common/dto';
 import getAuth from '../components/LoginDialog/auth';
 
 export class Api {
@@ -92,9 +93,9 @@ export class Api {
         return addedVendor.data;
     }
 
-    async getSingleSubscription(): Promise<interfaces.VendorSubscription> {
+    async getSubscription(): Promise<dto.SubscriptionDto> {
         await this.ensureFreshToken();
-        const result = await this.apiAxios.get(urlPrefix + "/singleSubscription");
+        const result = await this.apiAxios.get(urlPrefix + "/subscription");
         return result.data;
     }
 

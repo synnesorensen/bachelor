@@ -157,7 +157,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import api from "../api/api";
-import {Vendor} from "../../../../server/src/interfaces";
+import {Vendor} from "../../../../common/interfaces";
 
 @Component
 export default class RegisterAccount extends Vue {

@@ -16,7 +16,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import Subscribers from './Subscribers.vue'
 import CustomerPayment from './CustomerPayment.vue'
-import * as interfaces from "../../../../../server/src/interfaces";
+import * as interfaces from "../../../../../common/interfaces";
 
 @Component({
 	components: {

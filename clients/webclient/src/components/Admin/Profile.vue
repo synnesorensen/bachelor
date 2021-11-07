@@ -152,7 +152,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import api from "../../api/api";
-import * as interfaces from "../../../../../server/src/interfaces"
+import * as interfaces from "../../../../../common/interfaces"
 
 @Component
 export default class CustomerProfile extends Vue {

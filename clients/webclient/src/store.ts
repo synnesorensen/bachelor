@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {Userprofile, Vendor, VendorSubscription} from '../../../server/src/interfaces'
+import {Userprofile, Vendor, VendorSubscription} from '../../../common/interfaces'
 import api from '../src/api/api';
 import router from './router';
 import { getUserInfo } from '../../../server/src/auth/getUserFromJwt';
@@ -71,7 +71,7 @@ export const store = new Vuex.Store({
                 router.push({name: 'register'});
             } else {
                 context.commit("setUserprofile", userprofile);
-                const subscription = await api.getSingleSubscription();
+                const subscription = await api.getSubscription();
                 context.commit("setSubscription", subscription);
             
                 if (userprofile?.isVendor) {

@@ -3,7 +3,8 @@ import 'source-map-support/register';
 import { getDeliveryFromDb, putDeliveryInDb, deleteDeliveryInDb, getUsersDeliveries, saveDeliveriesToDb, getAllDeliveriesFromAllSubscribers } from '../../dbUtils';
 import { expect } from 'chai';
 import 'mocha';
-import {Delivery} from '../../interfaces'
+import { Delivery } from '../../../../common/interfaces';
+
 
 describe('Delivery tests', () => {
     it('Put, get and delete a delivery', async () => {

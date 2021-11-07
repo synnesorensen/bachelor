@@ -2,7 +2,7 @@ require('dotenv').config();
 import 'source-map-support/register';
 import { expect } from 'chai';
 import 'mocha';
-import { WeekTime } from '../../interfaces'
+import { WeekTime } from '../../../../common/interfaces';
 import { nextDeliveryDate, toWeekTime, noOfDeliveriesInMonth, getDeliveryDates } from '../../timeHandling'
 
 describe('Date and time tests', () => {

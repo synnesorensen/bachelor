@@ -28,7 +28,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import * as interfaces from "../../../../../server/src/interfaces";
+import * as interfaces from "../../../../../common/interfaces";
 import api from '../../api/api'
 
 @Component

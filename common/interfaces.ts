@@ -37,18 +37,6 @@ export interface UserSubscription {
     lastDeliveryDate?: string
 }
 
-// Used on user pages. Returns all subscriptions for different vendors/companies. 
-export interface VendorSubscription {
-    userId: string,
-    vendorId: string,
-    company: string,
-    paused: boolean,
-    schedule: MenuItems[],
-    noOfMeals: number,
-    box: string,
-    lastDeliveryDate?: string
-}
-
 export interface Delivery {
     vendorId?: string,
     userId: string,

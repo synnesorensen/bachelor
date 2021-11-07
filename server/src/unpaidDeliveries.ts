@@ -6,7 +6,7 @@ import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 import { getSubscriptionFromDb, getVendorFromDb } from './dbUtils';
 import { noOfDeliveriesInMonth } from './timeHandling';
 import { scheduleToWeekTimes } from './addDeliveries';
-import { MenuItems } from './interfaces';
+import { MenuItems } from '../../common/interfaces';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     let vendorId = getUserInfoFromEvent(event);

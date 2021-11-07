@@ -1,20 +1,25 @@
 import 'source-map-support/register'
-import { Delivery, MenuItems, Vendor, WeekTime } from './interfaces';
+import { Delivery, MenuItems, Vendor, WeekTime } from '../../common/interfaces';
 import { getDeliveryDates } from './timeHandling'
-import { getOnlySubscriptionForUser } from './dbUtils'
+import { getSubscriptionFromDb, getVendorFromDb } from './dbUtils'
 
-export async function generateDeliveries(EarliestStartDate: Date, userId: string, vendor: string, noOfDeliveries: number): Promise<Delivery[]> {
-    let subscription = await getOnlySubscriptionForUser(userId);
-    if (!subscription) {
+export async function generateDeliveries(EarliestStartDate: Date, userId: string, vendorId: string, noOfDeliveries: number): Promise<Delivery[]> {
+    const subscriptionFromDb = await getSubscriptionFromDb(vendorId, userId);
+    if (!subscriptionFromDb) {
         throw "User " + userId + " does not exist"
     }
+    const vendor = await getVendorFromDb();
+    let subSchedule: MenuItems[] = [];
+    subscriptionFromDb.schedule.forEach((item) => {
+        subSchedule.push(vendor.schedule.find(({id}) => id === item));
+    });
 
-    let weekTimes:WeekTime[] = scheduleToWeekTimes(subscription.schedule)
+    let weekTimes:WeekTime[] = scheduleToWeekTimes(subSchedule);
 
     let deliveryDates = getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries);
     return deliveryDates.map((date) => {
         return {
-            vendorId: vendor,
+            vendorId: vendorId,
             userId,
             deliverytime: date.date.toISOString(),
             menuId: date.menuId!,

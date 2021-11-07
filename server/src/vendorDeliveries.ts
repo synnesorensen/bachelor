@@ -5,7 +5,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { deleteDeliveryInDb, getAllDeliveriesFromAllSubscribers, getUserprofileFromDb, getUsersDeliveries, saveDeliveriesToDb, updateDeliveries } from './dbUtils'
 import { getUserInfoFromEvent } from './auth/getUserFromJwt'
 import { generateDeliveries } from './addDeliveries';
-import { Delivery, Summary } from './interfaces';
+import { Delivery, Summary } from '../../common/interfaces';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     let vendorId = getUserInfoFromEvent(event);

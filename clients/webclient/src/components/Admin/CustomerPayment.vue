@@ -204,7 +204,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Watch } from 'vue-property-decorator';
 import api from '../../api/api'
-import * as interfaces from "../../../../../server/src/interfaces";
+import * as interfaces from "../../../../../common/interfaces";
 import DatePicker from "./DatePicker.vue";
 import CustomerInfo from "./CustomerInfo.vue";
 import { toLocalPresentation } from "../../utils/utils";

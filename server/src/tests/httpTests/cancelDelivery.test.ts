@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { testPass, testUser, testVend, testVendPass} from '../../../../common/settings';
 import 'mocha';
 import { afterEach, beforeEach } from 'mocha';
-import { Delivery } from 'src/interfaces';
+import { Delivery } from '../../../../common/interfaces';
 
 let userApi = null; 
 let vendorApi = null;
