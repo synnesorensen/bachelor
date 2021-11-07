@@ -1,15 +1,16 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {Userprofile, Vendor, VendorSubscription} from '../../../common/interfaces'
-import api from '../src/api/api';
 import router from './router';
 import { getUserInfo } from '../../../server/src/auth/getUserFromJwt';
 import getAuth from './components/LoginDialog/auth';
+import { SubscriptionDto } from '../../../common/dto';
+import {Userprofile, Vendor} from '../../../common/interfaces'
+import api from '../src/api/api';
 
 Vue.use(Vuex);
 interface State {
     userprofile: Userprofile | null,
-    subscription: VendorSubscription | null,
+    subscription: SubscriptionDto | null,
     username: string, 
     vendor: Vendor | null
 }
