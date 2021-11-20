@@ -17,7 +17,8 @@ export interface Subscription {
     outstandingDeliveries?: number,
     schedule: string[],
     noOfMeals: number,
-    box: string
+    box: string, 
+    lastDeliveryDate?: string
 }
 
 // Used on admin pages: Returns all subscribers that a vendor/company has. 

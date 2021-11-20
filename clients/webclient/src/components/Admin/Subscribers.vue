@@ -28,16 +28,16 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import * as interfaces from "../../../../../common/interfaces";
+import * as dto from "../../../../../common/dto";
 import api from '../../api/api'
 
 @Component
 export default class Subscribers extends Vue {
     private _selectedSub = 0;
-    private approvedSubscribers: interfaces.UserSubscription[] = [];
+    private approvedSubscribers: dto.UserDto[] = [];
     
     async created() {
-        let subscribers = await api.getVendorSubscriptions();
+        let subscribers = await api.getSubscriptions();
         this.approvedSubscribers = subscribers.filter(sub => sub.approved);
     }
 

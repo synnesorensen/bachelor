@@ -48,14 +48,14 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
-import * as interfaces from "../../../../../common/interfaces";
+import * as dto from "../../../../../common/dto";
 
 @Component({
 	components: {
 	},
 })
 export default class CustomerInfo extends Vue {
-    @Prop() selectedUser!:interfaces.UserSubscription | null; 
+    @Prop() selectedUser!:dto.UserDto | null; 
 
 }
 </script>

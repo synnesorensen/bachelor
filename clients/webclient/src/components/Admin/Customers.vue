@@ -15,7 +15,7 @@
             <v-data-table
                 dense
                 :headers="usersubHeaders"
-                :items="activeUsers"
+                :items="userSubscriptions"
                 :search="search"
                 @click:row="handleClickedUserSub"
                 class="row-pointer">
@@ -36,7 +36,7 @@
                     </v-btn>
                 </v-app-bar><br />
                 <v-card-text>
-                    <CustomerInfo :selectedUser="selectedUserSub" />
+                    <CustomerInfo :selectedUser="selected" />
                 </v-card-text>
                 <v-card-actions>
                     <v-btn 
@@ -65,7 +65,7 @@
             <v-data-table
                 dense
                 :headers="usersWOSubsHeaders"
-                :items="usersWOSubs"
+                :items="usersWOSubscriptions"
                 :search="search">
             </v-data-table>
         </v-card>
@@ -103,9 +103,9 @@
 import Vue from 'vue';
 import api from "../../api/api";
 import Component from 'vue-class-component';
-import { Action, Userprofile, UserSubscription } from '../../../../../common/interfaces';
+import { Action, UserSubscription } from '../../../../../common/interfaces';
+import { UserDto } from '../../../../../common/dto';
 import CustomerInfo from './CustomerInfo.vue';
-import { Watch } from 'vue-property-decorator';
 
 @Component({
 	components: {
@@ -114,54 +114,51 @@ import { Watch } from 'vue-property-decorator';
 })
 
 export default class Customers extends Vue {
-    private usersubs: UserSubscription[] = [];
-    private users: Userprofile[] = [];
+    private users: UserDto[] = [];
     private editCustomer = false;
-    private selectedUserSub: UserSubscription | null = null;
+    private selected: UserDto | null = null;
     
     async created() {
-        let usersubs = await api.getVendorSubscriptions();
-        this.usersubs = usersubs.map((user) => {
-            return {
-                ...user, 
-                days: this.deliveryDays(user)
-            }
-        });
-        this.users = await api.getAllUserprofiles();
-        console.log("created", this.usersubs)
+        this.users = await api.getSubscriptions();
     }
 
-    get activeUsers() {
-        const approvedUsers = this.usersubs.filter((user) => {
-            return user.approved;
+    get userSubscriptions() {
+        const users = this.users.filter((user) => {
+            return user.approved && !!user.subscription;
         });
-        return approvedUsers.map((user) => {
-            return {
-                oldUser: user,
-                ...user,
-                allergies: user.allergies.join(", "),
-                pausedString: user.paused? "Pauset" : "Aktiv"
-            }
-        });
+        if (users) {
+            return users.map((user) => {
+                if (user.subscription) {
+                    return {
+                        oldUser: user,
+                        ...user,
+                        allergies: user.allergies.join(", "),
+                        pausedString: user.subscription.paused? "Pauset" : "Aktiv"
+                    }
+                }
+            });
+        }
     }
 
-    get unapprovedUsers() {
-        console.log("GET unapprovedUsers")
-        const unapprovedUsers = this.usersubs.filter((user) => {
-            return !user.approved;
-        });
-        return unapprovedUsers.map((user) => {
+    get usersWOSubscriptions() {
+        const usersWOSubs = this.users.filter(user => {
+            return user.approved && !user.subscription
+        })
+        return usersWOSubs.map((user) => {
             return {
-                oldUser: user,
                 ...user,
                 allergies: user.allergies.join(", ")
             }
         });
     }
 
-    get usersWOSubs() {
-        return this.users.map((user) => {
+    get unapprovedUsers() {
+        const unapprovedUsers = this.users.filter((user) => {
+            return !user.approved;
+        });
+        return unapprovedUsers.map((user) => {
             return {
+                oldUser: user,
                 ...user,
                 allergies: user.allergies.join(", ")
             }
@@ -223,9 +220,8 @@ export default class Customers extends Vue {
     }
     
     async approve(item: any) {
-        console.log("APproving:",item)
         try {
-            await api.updateApproval(item.userId, true);
+            await api.updateApproval(item.email, true);
             item.oldUser.approved = true;                   // TODO: Endre denne når interface er refaktorert.
         } catch (err) {
             alert("Noe gikk galt, prøv igjen senere.");
@@ -233,20 +229,20 @@ export default class Customers extends Vue {
         }
     }
 
-    handleClickedUserSub(user: UserSubscription) {
-        this.selectedUserSub = user;
+    handleClickedUserSub(user: UserDto) {
+        this.selected = user;
         this.editCustomer = true;
     }
 
     get buttonText() {
-        if (this.selectedUserSub?.paused) {
+        if (this.selected?.subscription?.paused) {
             return "Aktiver abonnement";
         }
         return "Pause abonnement";
     }
 
     async toggleSubscriptionPause() {
-        if (this.selectedUserSub) {
+        if (this.selected && this.selected.subscription) {
             let time = new Date(Date.now());
             if (time.getHours() < 10) {
                 time.setDate(time.getDate() + 1);
@@ -255,11 +251,11 @@ export default class Customers extends Vue {
             }
             let action: Action = {
                 time: time.toISOString().substr(0, 10),
-                action: this.selectedUserSub.paused ? "unpause" : "pause",
+                action: this.selected.subscription.paused ? "unpause" : "pause",
             };
-            await api.postSubscriptionAsVendor(this.selectedUserSub.userId, action);
+            await api.postSubscriptionAsVendor(this.selected.subscription.userId, action);
             this.editCustomer = false;
-            this.usersubs = await api.getVendorSubscriptions();
+            this.users = await api.getSubscriptions();
         }
     }
 }

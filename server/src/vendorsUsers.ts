@@ -25,7 +25,6 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
             usersResult.push(user);
         }
     });
-    console.log(usersResult)
     return {
         statusCode: 200,
         body: JSON.stringify(usersResult)

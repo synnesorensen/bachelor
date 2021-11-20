@@ -91,16 +91,8 @@ functions:
           path: /u/subscription
           method: any
           cors: true
-  vendorSubscription:
-    handler: src/vendorSubscription.mainHandler
-    events:
-      - http:
-          authorizer: authorizer
-          path: /v/subscription
-          method: any
-          cors: true
-  vendorSubscriptions:
-    handler: src/vendorSubscriptions.mainHandler
+  subscriptions:
+    handler: src/subscriptions.mainHandler
     events: 
       - http:
           authorizer: authorizer

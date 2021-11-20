@@ -45,18 +45,26 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
         }
     }
     let sub = await getSubscriptionFromDb(vendorId, userId);
-    let schedule:MenuItems[] = sub.schedule.map((subId) => {
-        return vendor.schedule.find(({id}) => id == subId);
-    }); 
-    let weekTimes = scheduleToWeekTimes(schedule);
-    let result = await noOfDeliveriesInMonth(new Date(afterDate), weekTimes);
+    if (sub) {
+        let schedule:MenuItems[] = sub.schedule.map((subId) => {
+            return vendor.schedule.find(({id}) => id == subId);
+        }); 
+        let weekTimes = scheduleToWeekTimes(schedule);
+        let result = await noOfDeliveriesInMonth(new Date(afterDate), weekTimes);
+    
+        return {
+            statusCode: 200,
+            body: JSON.stringify({
+                no: result
+            })
+        };
+    }
 
     return {
-        statusCode: 200,
-        body: JSON.stringify({
-            no: result
-        })
-    };
+        statusCode: 404,
+        body: '{ "message" : "No subscription for userId: ' + userId + '"}'
+    }
+    
 }
 
 export const mainHandler = middy(handler).use(cors());

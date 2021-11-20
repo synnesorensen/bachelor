@@ -1,3 +1,15 @@
+export interface UserDto {
+    fullname: string,
+    address: string,
+    deliveryAddress: string,
+    phone: string,
+    email: string, 
+    allergies: string[], 
+    approved: boolean,
+    isVendor: boolean,
+    subscription: SubscriptionDto | null
+}
+
 export interface SubscriptionDto {
     userId: string,
     vendorId: string,
@@ -13,16 +25,4 @@ export interface MenuItemDto {
     time: string,
     menu: string,
     day: string
-}
-
-export interface User {
-    fullname: string,
-    address: string,
-    deliveryAddress: string,
-    phone: string,
-    email: string, 
-    allergies: string[], 
-    approved: boolean,
-    isVendor: boolean,
-    subscribtion: SubscriptionDto | null
 }

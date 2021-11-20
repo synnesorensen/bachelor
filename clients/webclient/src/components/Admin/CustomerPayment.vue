@@ -205,6 +205,7 @@ import Component from 'vue-class-component';
 import { Prop, Watch } from 'vue-property-decorator';
 import api from '../../api/api'
 import * as interfaces from "../../../../../common/interfaces";
+import * as dto from "../../../../../common/dto";
 import DatePicker from "./DatePicker.vue";
 import CustomerInfo from "./CustomerInfo.vue";
 import { toLocalPresentation } from "../../utils/utils";
@@ -218,7 +219,7 @@ import { toLocalPresentation } from "../../utils/utils";
 
 export default class CustomerPayment extends Vue {
     private loading = false;
-    @Prop() selectedUser!:interfaces.UserSubscription | null; 
+    @Prop() selectedUser!:dto.UserDto | null; 
     private paymentDialog = false;
     private datePickDialog = false;
     private paymentPicker = new Date().toISOString().substr(0, 10);
@@ -266,7 +267,7 @@ export default class CustomerPayment extends Vue {
         }
     }
 
-    userSelected(user: interfaces.UserSubscription) {
+    userSelected(user: dto.UserDto) {
         this.selectedUser = user;
     }
 
@@ -281,32 +282,32 @@ export default class CustomerPayment extends Vue {
     }
 
     async updateUnpaidDeliveries() {
-        if (this.selectedUser?.lastDeliveryDate) {
-            let date = this.selectedUser.lastDeliveryDate;
+        if (this.selectedUser?.subscription?.lastDeliveryDate) {
+            let date = this.selectedUser.subscription.lastDeliveryDate;
             let lastDelivery = new Date(date);
             let selectedDate = new Date(this.nextMonth());
             if (selectedDate.getTime() < lastDelivery.getTime()) {
                 if (selectedDate.getMonth() == lastDelivery.getUTCMonth()
                     && selectedDate.getFullYear() == lastDelivery.getUTCFullYear()) {
-                    this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.userId, this.selectedMonth, this.selectedUser.lastDeliveryDate);
+                    this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.subscription.userId, this.selectedMonth, this.selectedUser.subscription.lastDeliveryDate);
                 } else {
                     this.unpaidDeliveries = 0; 
                 }
             } else {
-                this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.userId, this.selectedMonth);
+                this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.subscription.userId, this.selectedMonth);
             }
             this.paidDeliveries = this.unpaidDeliveries;
-        } else if (this.selectedUser) {
-            this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.userId, this.selectedMonth);
+        } else if (this.selectedUser?.subscription) {
+            this.unpaidDeliveries = await api.getUnpaidDeliveries(this.selectedUser.subscription.userId, this.selectedMonth);
             this.paidDeliveries = this.unpaidDeliveries;
         }
     }
     
     async registerPayment() {
         let time = new Date(this.paymentPicker).toISOString();
-        if (this.selectedUser?.userId) {
-            let newDels = await api.postNewDeliveries(time, this.paidDeliveries, this.selectedUser.userId);
-            this.selectedUser.lastDeliveryDate = newDels[newDels.length-1].deliverytime;
+        if (this.selectedUser?.subscription?.userId) {
+            let newDels = await api.postNewDeliveries(time, this.paidDeliveries, this.selectedUser.subscription.userId);
+            this.selectedUser.subscription.lastDeliveryDate = newDels[newDels.length-1].deliverytime;
             this.unpaidDeliveries = this.unpaidDeliveries - this.paidDeliveries;
             this.paymentDialog = false;
         }
@@ -318,14 +319,14 @@ export default class CustomerPayment extends Vue {
     }
 
     async dateCheck() {
-        if (this.startDate && this.endDate && this.selectedUser) {
+        if (this.startDate && this.endDate && this.selectedUser?.subscription) {
             if (new Date(this.endDate) < new Date(this.startDate)) {
                 this.errorMsg = "Fra dato kan ikke være etter til dato."
             } else {
                 this.loading = true;
                 this.errorMsg = "";
                 try {
-                    this.deliveries = await api.getOneUsersDeliveries(this.selectedUser.userId, this.startDate, this.endDate);
+                    this.deliveries = await api.getOneUsersDeliveries(this.selectedUser.subscription.userId, this.startDate, this.endDate);
                 } catch (err) {
                     console.log(err);
                 } finally {
@@ -336,10 +337,12 @@ export default class CustomerPayment extends Vue {
     }
 
     async deleteDeliveries() {
-        this.selectedDeliveries.forEach(async del => {
-            await api.deleteDelivery(this.$store.getters.loggedInUser, this.selectedUser!.userId, del.deliverytime);
-            this.deliveries = await api.getOneUsersDeliveries(this.selectedUser!.userId, this.startDate, this.endDate);
-        });
+        if (this.selectedUser?.subscription) {
+            this.selectedDeliveries.forEach(async del => {
+                await api.deleteDelivery(this.$store.getters.loggedInUser, del.userId, del.deliverytime);
+                this.deliveries = await api.getOneUsersDeliveries(del.userId, this.startDate, this.endDate);
+            });
+        }
     }
 
     async cancelDel() {
@@ -348,7 +351,6 @@ export default class CustomerPayment extends Vue {
             del.cancelled = true;
             updatedDeliveries.push(del);
         });
-        console.log(updatedDeliveries)
        await api.updateDeliveries(updatedDeliveries);
     }
 

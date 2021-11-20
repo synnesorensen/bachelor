@@ -177,8 +177,8 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import api from "../../api/api";
-import { Delivery, Vendor, VendorSubscription } from "../../../../../common/interfaces";
-import { toLocalPresentation } from "@/utils/utils";
+import { Delivery, Vendor, Subscription } from "../../../../../common/interfaces";
+import { toLocalPresentation } from "../../utils/utils";
 
 @Component({})
 export default class UserCalendar extends Vue {
@@ -219,7 +219,7 @@ export default class UserCalendar extends Vue {
 
     async populateCalendar() {
         this.showSpinner = true;
-        const usersSub:VendorSubscription = this.$store.getters.subscription;
+        const usersSub:Subscription = this.$store.getters.subscription;
         const vendor:Vendor = await api.getVendor();
         const vendorSchedule = vendor.schedule;
         const vendorDeliveries = await api.scheduleToDates(vendor.vendorId, this.start.date);

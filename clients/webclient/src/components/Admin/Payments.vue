@@ -16,7 +16,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import Subscribers from './Subscribers.vue'
 import CustomerPayment from './CustomerPayment.vue'
-import * as interfaces from "../../../../../common/interfaces";
+import * as dto from "../../../../../common/dto";
 
 @Component({
 	components: {
@@ -25,9 +25,9 @@ import * as interfaces from "../../../../../common/interfaces";
 	},
 })
 export default class Payments extends Vue {
-    private selectedUser: interfaces.UserSubscription | null = null;
+    private selectedUser: dto.UserDto | null = null;
 
-    userSelected(user: interfaces.UserSubscription) {
+    userSelected(user: dto.UserDto) {
         this.selectedUser = user;
     }
 

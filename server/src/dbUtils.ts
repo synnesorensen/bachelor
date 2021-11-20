@@ -38,7 +38,7 @@ export async function getAllUsersFromDb() {
             deliveryAddress: user.deliveryAddress,
             phone: user.phone,
             email: user.email, 
-            allergies: user.allergies, 
+            allergies: user.allergies? user.allergies : [], 
             approved: user.approved,
             isVendor: user.isVendor
         }
@@ -141,6 +141,7 @@ export async function updateApproval(userId: string, approved: boolean): Promise
         UpdateExpression,
         ExpressionAttributeValues
     };
+    console.log("updating approval for ", userId)
     await database.updateItem(params).promise();
 }
 
@@ -326,6 +327,39 @@ export async function deleteUserprofileInDb(userId: string): Promise<void> {
         }
     };
     await database.deleteItem(params).promise();
+}
+
+export async function getAllSubscriptionsFromDb(vendorId: string) {
+    let subscriptionParams = {
+        TableName: settings.TABLENAME,
+        KeyConditionExpression: "#pk = :vendor and begins_with(#sk, :prefix)",
+        ExpressionAttributeNames: {
+            "#pk": "pk",
+            "#sk": "sk"
+        },
+        ExpressionAttributeValues: {
+            ":vendor": "v#" + vendorId,
+            ":prefix": "u#"
+        }
+    };
+
+    let dbResult = await documentClient.query(subscriptionParams).promise();
+    if (dbResult.Items.length == 0) {
+        return [];
+    }
+
+    let result = await Promise.all(dbResult.Items.map(async item => {
+        return {
+            vendorId,
+            userId: item.sk.substr(2),
+            paused:item.paused,
+            schedule: item.schedule.values,
+            noOfMeals: item.noOfMeals,
+            box: item.box, 
+            lastDeliveryDate: (await findLatestDelivery(vendorId, item.sk))?.deliverytime,
+        }
+    }));
+    return result;
 }
 
 export async function getSubscriptionsForVendor(vendorId: string): Promise<UserSubscription[]> {

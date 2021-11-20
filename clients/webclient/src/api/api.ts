@@ -107,24 +107,10 @@ export class Api {
         
     }
 
-    async getVendorSubscriptions(): Promise<interfaces.UserSubscription[]> {
+    async getSubscriptions(): Promise<dto.UserDto[]> {
         await this.ensureFreshToken();
         const result = await this.apiAxios.get(urlPrefix + "/v/subscriptions");
         return result.data;
-    }
-
-    async getVendorSubscription(id: string): Promise<interfaces.Subscription | null> {
-        await this.ensureFreshToken();
-        try {
-            const url = urlPrefix + "/v/subscription?userId=" + encodeURIComponent(id);
-            const vendorSubscription = await this.apiAxios.get(url);
-            return vendorSubscription.data;
-        } catch (error) {
-            if (this.getAxiosErrorStatus(error) === 404) {
-                return null;
-            }
-            throw (error);
-        }
     }
 
     async postSubscriptionAsVendor(userId: string, action: interfaces.Action): Promise<interfaces.Subscription> {
