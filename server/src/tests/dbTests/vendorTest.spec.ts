@@ -1,6 +1,6 @@
 require('dotenv').config();
 import 'source-map-support/register';
-import { putVendorInDb, getVendorFromDb, deleteVendorInDb } from '../../dbUtils';
+import { putVendorInDb, getVendorFromDb } from '../../dbUtils';
 import { expect } from 'chai';
 import 'mocha';
 
@@ -52,9 +52,5 @@ describe('Vendor profile test', () => {
         expect(getSingleResult.phone).to.equal("6688552");
         expect(getSingleResult.schedule[0].id).to.equal("1");
         expect(getSingleResult.schedule[1].id).to.equal("2");
-
-        await deleteVendorInDb("testVendorId11");
-        const newResult = await getVendorFromDb();
-        expect(newResult).to.equal(undefined);
     });
 });

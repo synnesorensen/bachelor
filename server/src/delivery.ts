@@ -129,7 +129,7 @@ async function deleteDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayPr
             body: '{ "message" : "Forbidden, only vendors can delete a delivery." }'
         }
     }
-    await deleteDeliveryInDb(vendorId, userId, time);
+    await deleteDeliveryInDb(userId, time);
 
     return {
         statusCode: 200,

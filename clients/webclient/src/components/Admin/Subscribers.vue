@@ -4,7 +4,7 @@
             dark
             color="success"
         >
-            <v-card-title>Kundeliste</v-card-title>
+            <v-card-title>Abonnenter</v-card-title>
         </v-app-bar>
         <br />
         <v-list dense>
@@ -38,7 +38,7 @@ export default class Subscribers extends Vue {
     
     async created() {
         let subscribers = await api.getSubscriptions();
-        this.approvedSubscribers = subscribers.filter(sub => sub.approved);
+        this.approvedSubscribers = subscribers.filter(sub => sub.approved && !!sub.subscription);
     }
 
     get selectedSub() {

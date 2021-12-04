@@ -50,7 +50,7 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
             return vendor.schedule.find(({id}) => id == subId);
         }); 
         let weekTimes = scheduleToWeekTimes(schedule);
-        let result = await noOfDeliveriesInMonth(new Date(afterDate), weekTimes);
+        let result = noOfDeliveriesInMonth(new Date(afterDate), weekTimes);
     
         return {
             statusCode: 200,

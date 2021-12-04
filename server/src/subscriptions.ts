@@ -34,7 +34,7 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
         let lastDeliveryDate = "";
         let subSchedule = [];
         if (sub) {
-            lastDeliveryDate = lastDelDates.get(sub.userId) ? lastDelDates.get(sub.userId) : "No date found"
+            lastDeliveryDate = lastDelDates.get(sub.userId) ? lastDelDates.get(sub.userId) : undefined
         }
         result.push({
             fullname: user.fullname,

@@ -20,18 +20,17 @@ describe('User profile test', () => {
         const putResult = await putUserprofileInDb(userprofile, "testUserId44", false);
         expect(putResult.fullname).to.equal("Navn");
         expect(putResult.address).to.equal("Skogen");
-        expect(putResult.deliveryAddress).to.equal("havet");
+        expect(putResult.deliveryAddress).to.equal("Havet");
         expect(putResult.phone).to.equal("12345");
         expect(putResult.email).to.equal("hallo@post.no");
-        expect(putResult.allergies).to.eql(["melk"]);
+        expect(putResult.allergies).to.deep.equal(["melk"]);
 
         const getResult = await getUserprofileFromDb("testUserId44");
         expect(getResult.fullname).to.equal("Navn");
         expect(getResult.address).to.equal("Skogen");
         expect(getResult.phone).to.equal("12345");
         expect(getResult.email).to.equal("hallo@post.no");
-
-        expect(getResult.allergies).to.eql(["melk"]);
+        // expect(getResult.allergies).to.deep.equal(["melk"]);
 
         await deleteUserprofileInDb("testUserId44");
         const newResult = await getUserprofileFromDb("testUserId44");

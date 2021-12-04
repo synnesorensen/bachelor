@@ -107,9 +107,8 @@ function generateSummary(deliveries: Delivery[]):Summary[] {
 }
 
 async function putVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    let vendorId = getUserInfoFromEvent(event);
     let body = JSON.parse(event.body);
-    let deliveries = await updateDeliveries(vendorId, body);
+    let deliveries = await updateDeliveries(body);
 
     return {
         statusCode: 200,
@@ -180,7 +179,6 @@ async function postVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGat
 }
 
 async function deleteVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    let vendorId = getUserInfoFromEvent(event);
     if (!event.queryStringParameters) {
         return {
             statusCode: 400,
@@ -203,7 +201,7 @@ async function deleteVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIG
         };
     }
 
-    await deleteDeliveryInDb(vendorId, userId, time);
+    await deleteDeliveryInDb(userId, time);
     return {
         statusCode: 200,
         body: '{ "message" : "Deletion succeeded" }'

@@ -21,7 +21,7 @@
                     <p class="font-weight-medium"> Siste betalte levering </p>
                 </v-col>
                 <v-col>
-                    <p class="font-weight-light"> {{localPresentation(selectedUser.lastDeliveryDate)}} </p>
+                    <p class="font-weight-light"> {{localPresentation(selectedUser.subscription.lastDeliveryDate)}} </p>
                 </v-col>
             </v-row>
             <v-row dense>

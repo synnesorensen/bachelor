@@ -23,7 +23,8 @@ export async function generateDeliveries(EarliestStartDate: Date, userId: string
             userId,
             deliverytime: date.date.toISOString(),
             menuId: date.menuId!,
-            cancelled: false
+            cancelled: false, 
+            paid: "ubetalt"
         }
     });
 }
@@ -38,7 +39,8 @@ export async function generateDeliveriesForVendor(EarliestStartDate: Date, vendo
             userId: vendor.vendorId,
             deliverytime: date.date.toISOString(),
             menuId: date.menuId!,
-            cancelled: false
+            cancelled: false,
+            paid: "betalt"
         }
     });
 }

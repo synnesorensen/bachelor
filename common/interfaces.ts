@@ -43,7 +43,8 @@ export interface Delivery {
     userId: string,
     deliverytime: string,
     menuId: string,
-    cancelled: boolean
+    cancelled: boolean, 
+    paid: string
 }
 
 export interface DeliveryDetail extends Delivery {
