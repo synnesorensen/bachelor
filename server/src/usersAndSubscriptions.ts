@@ -2,13 +2,14 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { getAllSubscriptionsFromDb, getAllUsersFromDb, getUserprofileFromDb } from './dbUtils';
+import { getAllSubscriptionsFromDb, getAllUsersFromDb, getUserprofileFromDb, getVendorFromDb } from './dbUtils';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 import { UserDto } from '../../common/dto';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     const vendorId = getUserInfoFromEvent(event);
     const vendor = await getUserprofileFromDb(vendorId);
+    const { schedule } = await getVendorFromDb();
     
     if (!vendor.isVendor) {
         return {
@@ -34,7 +35,10 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
         let lastDeliveryDate = "";
         let subSchedule = [];
         if (sub) {
-            lastDeliveryDate = lastDelDates.get(sub.userId) ? lastDelDates.get(sub.userId) : undefined
+            lastDeliveryDate = lastDelDates.get(sub.userId) ? lastDelDates.get(sub.userId) : undefined;
+            sub.schedule.forEach(item => {
+                subSchedule.push(schedule.find(({id}) => id === item))
+            });
         }
         result.push({
             fullname: user.fullname,

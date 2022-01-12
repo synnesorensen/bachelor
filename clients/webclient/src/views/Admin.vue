@@ -27,8 +27,9 @@
                 >
                     <v-tab to="/admin/calendar">Kalender</v-tab>
                     <v-tab to="/admin/profile">Firmaprofil</v-tab>
-                    <v-tab to="/admin/payments">Betalinger</v-tab>
-                    <v-tab to="/admin/customers">Kundeliste</v-tab>
+                    <v-tab to="/admin/subscriptions">Abonnenter</v-tab>
+                    <v-tab to="/admin/single-buy">Enkeltkjøp</v-tab>
+                    <v-tab to="/admin/customer-lists">Kundelister</v-tab>
                 </v-tabs>
             </template>
             <v-spacer />
@@ -78,15 +79,15 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import AdminCalendar from '../components/Admin/AdminCalendar.vue';
 import Profile from '../components/Admin/Profile.vue';
-import Payments from '../components/Admin/Payments.vue';
-import Customers from '../components/Admin/Customers.vue'
+import Payments from '../components/Admin/Subscriptions.vue';
+import CustomerLists from '../components/Admin/CustomerLists.vue'
 
 @Component({
 	components: {
         AdminCalendar,
         Profile, 
         Payments,
-        Customers
+        CustomerLists
 	},
 })
 export default class AppBar extends Vue {
@@ -100,12 +101,16 @@ export default class AppBar extends Vue {
         route: "/admin/profile"
     },
     {
-        title: "Betalinger",
-        route: "/admin/payments"
+        title: "Abonnenter",
+        route: "/admin/subscriptions"
     },
     {
-        title: "Kundeliste",
-        route: "/admin/customers"
+        title: "Enkeltkjøp",
+        route: "/admin/single-buy"
+    },
+    {
+        title: "Kundelister",
+        route: "/admin/customer-lists"
     }];
 
     logout() {

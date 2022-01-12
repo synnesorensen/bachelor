@@ -4,7 +4,7 @@ import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { deleteDeliveryInDb, getAllDeliveriesFromAllSubscribers, getUserprofileFromDb, getUsersDeliveries, saveDeliveriesToDb, updateDeliveries } from './dbUtils'
 import { getUserInfoFromEvent } from './auth/getUserFromJwt'
-import { generateDeliveries } from './addDeliveries';
+import { generateDeliveriesForSubscribers } from './addDeliveries';
 import { Delivery, Summary } from '../../common/interfaces';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -168,8 +168,7 @@ async function postVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGat
             body: '{ "message" : "Invalid format for number of deliveries" }'
         };
     }
-
-    let deliveries = await generateDeliveries(startDate, userId, vendorId, noOfDeliveries);
+    let deliveries = await generateDeliveriesForSubscribers(startDate, userId, vendorId, noOfDeliveries);
     await saveDeliveriesToDb(deliveries);
 
     return {

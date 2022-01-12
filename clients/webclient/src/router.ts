@@ -65,14 +65,19 @@ const routes = [
                 component: () => import ("./components/Admin/AdminCalendar.vue")
             },
             {
-                path: 'payments',
-                name: 'payments',
-                component: () => import ("./components/Admin/Payments.vue")
+                path: 'subscriptions',
+                name: 'subscriptions',
+                component: () => import ("./components/Admin/Subscriptions.vue")
             },
             {
-                path: 'customers',
-                name: 'customers',
-                component: () => import ("./components/Admin/Customers.vue")
+                path: 'single-buy',
+                name: 'single-buy',
+                component: () => import ("./components/Admin/SingleBuy.vue")
+            },
+            {
+                path: 'customer-lists',
+                name: 'customer-lists',
+                component: () => import ("./components/Admin/CustomerLists.vue")
             }
         ]
     },

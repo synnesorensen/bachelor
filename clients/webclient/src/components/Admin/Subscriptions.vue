@@ -5,7 +5,7 @@
                 <Subscribers @userSelected="userSelected" />
             </v-col>
             <v-col> 
-		        <CustomerPayment :selectedUser="selectedUser" />
+		        <SubscriptionPayment :selectedUser="selectedUser" />
             </v-col>
         </v-row>
 	</v-container>
@@ -15,21 +15,20 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import Subscribers from './Subscribers.vue'
-import CustomerPayment from './CustomerPayment.vue'
+import SubscriptionPayment from './SubscriptionPayment.vue'
 import * as dto from "../../../../../common/dto";
 
 @Component({
 	components: {
 		Subscribers,
-        CustomerPayment
+        SubscriptionPayment
 	},
 })
-export default class Payments extends Vue {
+export default class Subscriptions extends Vue {
     private selectedUser: dto.UserDto | null = null;
 
     userSelected(user: dto.UserDto) {
         this.selectedUser = user;
     }
-
 }
 </script>

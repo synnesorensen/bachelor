@@ -37,7 +37,7 @@ export default class Subscribers extends Vue {
     private approvedSubscribers: dto.UserDto[] = [];
     
     async created() {
-        let subscribers = await api.getSubscriptions();
+        let subscribers = await api.getUsersAndSubscriptions();
         this.approvedSubscribers = subscribers.filter(sub => sub.approved && !!sub.subscription);
     }
 

@@ -50,12 +50,6 @@ export class Api {
         }
     }
 
-    async getAllUserprofiles(): Promise<interfaces.Userprofile[]> {
-        await this.ensureFreshToken();
-        const users = await this.apiAxios.get(urlPrefix + "/v/allUsers");
-        return users.data;
-    }
-
     async getUserprofile(): Promise<interfaces.Userprofile | null> {
         await this.ensureFreshToken();
         try {
@@ -107,9 +101,9 @@ export class Api {
         
     }
 
-    async getSubscriptions(): Promise<dto.UserDto[]> {
+    async getUsersAndSubscriptions(): Promise<dto.UserDto[]> {
         await this.ensureFreshToken();
-        const result = await this.apiAxios.get(urlPrefix + "/v/subscriptions");
+        const result = await this.apiAxios.get(urlPrefix + "/v/usersAndSubscriptions");
         return result.data;
     }
 

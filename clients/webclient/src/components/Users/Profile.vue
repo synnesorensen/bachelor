@@ -465,6 +465,7 @@ export default class CustomerProfile extends Vue {
         }
         this.vendor = await api.getVendor();
         this.vendorSchedule = this.vendor.schedule;
+        console.log(this.$store.getters.subscription)
     }
 
     async toggleSubscriptionPause() {

@@ -15,7 +15,8 @@ describe('Last delivery', () => {
             deliverytime: "2021-04-20",
             menuId: "1", 
             cancelled: false,
-            paid: "betalt"
+            paid: "betalt",
+            approved: true
         };
 
         const res1 = await putDeliveryInDb("testVendorId66", "testUserId16", delivery1);
@@ -27,7 +28,8 @@ describe('Last delivery', () => {
             deliverytime: "2021-04-21",
             menuId: "1", 
             cancelled: false,
-            paid: "betalt"
+            paid: "betalt",
+            approved: true
         };
 
         const res2 = await putDeliveryInDb("testVendorId66", "testUserId16", delivery2);

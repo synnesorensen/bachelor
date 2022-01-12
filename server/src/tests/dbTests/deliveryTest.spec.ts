@@ -13,7 +13,8 @@ describe('Delivery tests', () => {
             deliverytime: "2021-04-20",
             menuId: "1",
             cancelled: false,
-            paid: "betalt"
+            paid: "betalt",
+            approved: true
         };
         let delivery2 = {
             vendorId: "testVendorId66",
@@ -21,7 +22,8 @@ describe('Delivery tests', () => {
             deliverytime: "2021-04-01",
             menuId: "1", 
             cancelled: true,
-            paid: "betalt"
+            paid: "betalt",
+            approved: true
         };
         let delivery3 = {
             vendorId: "testVendorId66",
@@ -29,7 +31,8 @@ describe('Delivery tests', () => {
             deliverytime: "2021-05-01",
             menuId: "1", 
             cancelled: false,
-            paid: "betalt"
+            paid: "betalt",
+            approved: true
         };
         let delivery4 = {
             vendorId: "testVendorId66",
@@ -37,7 +40,8 @@ describe('Delivery tests', () => {
             deliverytime: "2021-05-31",
             menuId: "1", 
             cancelled: false,
-            paid: "betalt"
+            paid: "betalt",
+            approved: true
         }
 
         const putResult = await putDeliveryInDb("testVendorId66", "testUserId16", delivery1);
@@ -85,7 +89,8 @@ describe('Delivery tests', () => {
             deliverytime: "2021-06-01", 
             menuId: "1", 
             cancelled: false,
-            paid: "betalt"
+            paid: "betalt",
+            approved: true
         },
         {
             vendorId: "testVendorId66",
@@ -93,7 +98,8 @@ describe('Delivery tests', () => {
             deliverytime: "2021-06-15",
             menuId: "1", 
             cancelled: false,
-            paid: "betalt"
+            paid: "betalt",
+            approved: true
         },
         {
             vendorId: "testVendorId66",
@@ -101,7 +107,8 @@ describe('Delivery tests', () => {
             deliverytime: "2021-06-30",
             menuId: "1", 
             cancelled: false,
-            paid: "betalt"
+            paid: "betalt",
+            approved: true
         }]
 
         await saveDeliveriesToDb(newDeliveries);

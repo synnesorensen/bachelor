@@ -288,12 +288,15 @@ export default class UserCalendar extends Vue {
     }
 
     async orderDelivery() {
+        const approved: "ubehandlet" | "godkjent" | "avslått" = "ubehandlet";
         let delivery = {
             vendorId: this.selectedEvent.delivery.vendorId,
             userId: this.$store.getters.loggedInUser,
             deliverytime: this.selectedEvent.delivery.deliverytime,
             menuId: this.selectedEvent.delivery.menuId,
-            cancelled: false
+            cancelled: false, 
+            paid: false,
+            approved
         }
         await api.putDelivery(this.$store.getters.subscription.vendorId, this.$store.getters.loggedInUser, delivery);
         this.selectedEvent.ordered = true;

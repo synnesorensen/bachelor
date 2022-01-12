@@ -217,7 +217,7 @@ import { toLocalPresentation } from "../../utils/utils";
 	},
 })
 
-export default class CustomerPayment extends Vue {
+export default class SubscriptionPayment extends Vue {
     private loading = false;
     @Prop() selectedUser!:dto.UserDto | null; 
     private paymentDialog = false;
