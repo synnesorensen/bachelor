@@ -1,13 +1,13 @@
 <template>
 	<v-container>
-        <v-row>
-            <v-col>
-                <Subscribers @userSelected="userSelected" />
-            </v-col>
-            <v-col> 
-		        <SubscriptionPayment :selectedUser="selectedUser" />
-            </v-col>
-        </v-row>
+    <v-row>
+      <v-col>
+        <Subscribers @userSelected="userSelected" />
+      </v-col>
+      <v-col> 
+		    <SubscriptionPayment :selectedUser="selectedUser" />
+      </v-col>
+    </v-row>
 	</v-container>
 </template>
 
@@ -21,14 +21,14 @@ import * as dto from "../../../../../common/dto";
 @Component({
 	components: {
 		Subscribers,
-        SubscriptionPayment
+    SubscriptionPayment
 	},
 })
 export default class Subscriptions extends Vue {
-    private selectedUser: dto.UserDto | null = null;
+  private selectedUser: dto.UserDto | null = null;
 
-    userSelected(user: dto.UserDto) {
-        this.selectedUser = user;
-    }
+  userSelected(user: dto.UserDto) {
+    this.selectedUser = user;
+  }
 }
 </script>

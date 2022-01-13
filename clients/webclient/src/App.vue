@@ -1,6 +1,6 @@
 <template>
 	<v-app>
-        <router-view></router-view>
+    <router-view></router-view>
 	</v-app>
 </template>
 
@@ -14,16 +14,16 @@ import Component from 'vue-class-component';
 })
 export default class App extends Vue {
 
-    mounted() {
-        const token = localStorage.getItem("token");
-        if(token==null || token=="undefined") {
-            this.$router.push({ name: "welcome" });
-        } else {
-            this.$store.dispatch("loggedInUser", { 
-                jwt: token,
-                callback: () => {}
-            });
-        }
+  mounted() {
+    const token = localStorage.getItem("token");
+    if(token==null || token=="undefined") {
+      this.$router.push({ name: "welcome" });
+    } else {
+      this.$store.dispatch("loggedInUser", { 
+        jwt: token,
+        callback: () => {}
+      });
     }
+  }
 }
 </script>

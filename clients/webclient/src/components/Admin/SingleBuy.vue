@@ -1,13 +1,13 @@
 <template>
 	<v-container>
-        <v-row>
-            <v-col>
-                <Customers @userSelected="userSelected" />
-            </v-col>
-            <v-col> 
-		        <SinglePayment :selectedUser="selectedUser" />
-            </v-col>
-        </v-row>
+    <v-row>
+      <v-col>
+        <Customers @userSelected="userSelected" />
+      </v-col>
+      <v-col> 
+		    <SinglePayment :selectedUser="selectedUser" />
+      </v-col>
+    </v-row>
 	</v-container>
 </template>
 
@@ -21,14 +21,14 @@ import * as dto from "../../../../../common/dto";
 @Component({
 	components: {
 		Customers,
-        SinglePayment
+    SinglePayment
 	},
 })
 export default class SingleBuy extends Vue {
-    private selectedUser: dto.UserDto | null = null;
+  private selectedUser: dto.UserDto | null = null;
 
-    userSelected(user: dto.UserDto) {
-        this.selectedUser = user;
-    }
+  userSelected(user: dto.UserDto) {
+    this.selectedUser = user;
+  }
 }
 </script>

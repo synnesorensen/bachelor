@@ -5,37 +5,37 @@ import { expect } from 'chai';
 import 'mocha';
 
 describe('Last delivery', () => {
-    it('finds the latest delivery for a user', async () => {
-        const noDelivery = await findLatestDelivery("testVendorId66", "testUserId16");
-        expect(noDelivery).equal(null);
+  it('finds the latest delivery for a user', async () => {
+    const noDelivery = await findLatestDelivery("testVendorId66", "testUserId16");
+    expect(noDelivery).equal(null);
 
-        let delivery1 = {
-            vendorId: "testVendorId66",
-            userId: "testUserId16",
-            deliverytime: "2021-04-20",
-            menuId: "1", 
-            cancelled: false,
-            paid: "betalt",
-            approved: true
-        };
+    let delivery1 = {
+      vendorId: "testVendorId66",
+      userId: "testUserId16",
+      deliverytime: "2021-04-20",
+      menuId: "1", 
+      cancelled: false,
+      paid: "betalt",
+      approved: true
+    };
 
-        const res1 = await putDeliveryInDb("testVendorId66", "testUserId16", delivery1);
-        expect(res1.deliverytime).equal("2021-04-20");
+    const res1 = await putDeliveryInDb("testVendorId66", "testUserId16", delivery1);
+    expect(res1.deliverytime).equal("2021-04-20");
 
-        let delivery2 = {
-            vendorId: "testVendorId66",
-            userId: "testUserId16",
-            deliverytime: "2021-04-21",
-            menuId: "1", 
-            cancelled: false,
-            paid: "betalt",
-            approved: true
-        };
+    let delivery2 = {
+      vendorId: "testVendorId66",
+      userId: "testUserId16",
+      deliverytime: "2021-04-21",
+      menuId: "1", 
+      cancelled: false,
+      paid: "betalt",
+      approved: true
+    };
 
-        const res2 = await putDeliveryInDb("testVendorId66", "testUserId16", delivery2);
-        expect(res2.deliverytime).equal("2021-04-21");
+    const res2 = await putDeliveryInDb("testVendorId66", "testUserId16", delivery2);
+    expect(res2.deliverytime).equal("2021-04-21");
 
-        await deleteDeliveryInDb("testUserId16","2021-04-20");
-        await deleteDeliveryInDb("testUserId16","2021-04-21");
-    });
+    await deleteDeliveryInDb("testUserId16","2021-04-20");
+    await deleteDeliveryInDb("testUserId16","2021-04-21");
+  });
 });

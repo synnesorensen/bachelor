@@ -1,6 +1,6 @@
 {
-    "search.exclude": {
-        ".build": true,
-        ".esbuild": true
-    }
+  "search.exclude": {
+    ".build": true,
+    ".esbuild": true
+  }
 }

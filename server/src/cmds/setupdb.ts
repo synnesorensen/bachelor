@@ -4,11 +4,11 @@ import {addSubsToDb, addUsersToDb, addVendorToDb} from '../scripts/DBsetup'
 console.log('Initializing DB with test data');
 
 async function runAll() {
-    await addUsersToDb();
-    await addVendorToDb();
-    await addSubsToDb(); 
+  await addUsersToDb();
+  await addVendorToDb();
+  await addSubsToDb(); 
 
-    console.log("DB operation done");
+  console.log("DB operation done");
 }
 
 runAll();

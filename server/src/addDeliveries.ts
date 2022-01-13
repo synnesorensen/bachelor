@@ -4,80 +4,80 @@ import { getDeliveryDates } from './timeHandling'
 import { getSubscriptionFromDb, getVendorFromDb } from './dbUtils'
 
 export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, userId: string, vendorId: string, noOfDeliveries: number): Promise<Delivery[]> {
-    const subscriptionFromDb = await getSubscriptionFromDb(vendorId, userId);
-    if (!subscriptionFromDb) {
-        throw "User " + userId + " does not exist"
+  const subscriptionFromDb = await getSubscriptionFromDb(vendorId, userId);
+  if (!subscriptionFromDb) {
+    throw "User " + userId + " does not exist"
+  }
+  const vendor = await getVendorFromDb();
+  let subSchedule: MenuItems[] = [];
+  subscriptionFromDb.schedule.forEach((item) => {
+    subSchedule.push(vendor.schedule.find(({id}) => id === item));
+  });
+
+  let weekTimes:WeekTime[] = scheduleToWeekTimes(subSchedule);
+
+  let deliveryDates = getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries);
+  return deliveryDates.map((date) => {
+    return {
+      vendorId: vendorId,
+      userId,
+      deliverytime: date.date.toISOString(),
+      menuId: date.menuId!,
+      cancelled: false, 
+      paid: "betalt",
+      approved: true
     }
-    const vendor = await getVendorFromDb();
-    let subSchedule: MenuItems[] = [];
-    subscriptionFromDb.schedule.forEach((item) => {
-        subSchedule.push(vendor.schedule.find(({id}) => id === item));
-    });
-
-    let weekTimes:WeekTime[] = scheduleToWeekTimes(subSchedule);
-
-    let deliveryDates = getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries);
-    return deliveryDates.map((date) => {
-        return {
-            vendorId: vendorId,
-            userId,
-            deliverytime: date.date.toISOString(),
-            menuId: date.menuId!,
-            cancelled: false, 
-            paid: "betalt",
-            approved: true
-        }
-    });
+  });
 }
 
 // Deliveries offered by vendor (yellow events in user's calendar)
 export async function generateDeliveriesForVendor(EarliestStartDate: Date, vendor: Vendor, noOfDeliveries: number): Promise<Delivery[]> {
-    let weekTimes:WeekTime[] = scheduleToWeekTimes(vendor.schedule)
+  let weekTimes:WeekTime[] = scheduleToWeekTimes(vendor.schedule)
 
-    let deliveryDates = getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries);
-    return deliveryDates.map((date) => {
-        return {
-            vendorId: vendor.vendorId,
-            userId: vendor.vendorId,
-            deliverytime: date.date.toISOString(),
-            menuId: date.menuId!,
-            cancelled: false,
-            paid: "ubetalt",
-            approved: false
-        }
-    });
+  let deliveryDates = getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries);
+  return deliveryDates.map((date) => {
+    return {
+      vendorId: vendor.vendorId,
+      userId: vendor.vendorId,
+      deliverytime: date.date.toISOString(),
+      menuId: date.menuId!,
+      cancelled: false,
+      paid: "ubetalt",
+      approved: false
+    }
+  });
 }
 
 export function scheduleToWeekTimes(menuItems: MenuItems[]):WeekTime[] {
-    return menuItems.map((item) => { 
-        const day = dayStringToInt(item.day);
-        if (day < 0) {
-            throw ("Ugyldig dag")
-        }
-        return {
-            menuId: item.id,
-            day: day,
-            time: parseInt(item.time)
-        }
-    });
+  return menuItems.map((item) => { 
+    const day = dayStringToInt(item.day);
+    if (day < 0) {
+      throw ("Ugyldig dag")
+    }
+    return {
+      menuId: item.id,
+      day: day,
+      time: parseInt(item.time)
+    }
+  });
 }
 
 function dayStringToInt(day: string) {
-    switch(day) {
-        case 'Søndag':
-            return 0;
-        case 'Mandag':
-            return 1;
-        case 'Tirsdag':
-            return 2;
-        case 'Onsdag':
-            return 3;
-        case 'Torsdag':
-            return 4;
-        case 'Fredag':
-            return 5;
-        case 'Lørdag':
-            return 6;
-    }
-    return -1;
+  switch(day) {
+    case 'Søndag':
+      return 0;
+    case 'Mandag':
+      return 1;
+    case 'Tirsdag':
+      return 2;
+    case 'Onsdag':
+      return 3;
+    case 'Torsdag':
+      return 4;
+    case 'Fredag':
+      return 5;
+    case 'Lørdag':
+      return 6;
+  }
+  return -1;
 }

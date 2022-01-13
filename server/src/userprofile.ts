@@ -6,97 +6,97 @@ import { deleteUserprofileInDb, getUserprofileFromDb, putUserprofileInDb, update
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    if (event.httpMethod == "GET") {
-        return getUserprofile(event);
-    }
-    if (event.httpMethod == "PUT") {
-        return putUserprofile(event);
-    }
-    if (event.httpMethod == "PATCH") {
-        return updateUserprofile(event);
-    }
-    if (event.httpMethod == "DELETE") {
-        return deleteUserprofile(event);
-    }
+  if (event.httpMethod == "GET") {
+    return getUserprofile(event);
+  }
+  if (event.httpMethod == "PUT") {
+    return putUserprofile(event);
+  }
+  if (event.httpMethod == "PATCH") {
+    return updateUserprofile(event);
+  }
+  if (event.httpMethod == "DELETE") {
+    return deleteUserprofile(event);
+  }
 }
 export const mainHandler = middy(handler).use(cors());
 
 async function getUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    let userId = getUserInfoFromEvent(event);
-    let userprofile = await getUserprofileFromDb(userId);
+  let userId = getUserInfoFromEvent(event);
+  let userprofile = await getUserprofileFromDb(userId);
 
-    if (!userprofile) {
-        return {
-            statusCode: 404,
-            body: '{ "message" : "No profile for this user" }'
-        }
-    }
-
+  if (!userprofile) {
     return {
-        statusCode: 200,
-        body: JSON.stringify(userprofile)
-    };
+      statusCode: 404,
+      body: '{ "message" : "No profile for this user" }'
+    }
+  }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(userprofile)
+  };
 }
 
 async function putUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    let userId = getUserInfoFromEvent(event);
-    let body = JSON.parse(event.body);
-    let userprofile = await putUserprofileInDb(body, userId, false);
+  let userId = getUserInfoFromEvent(event);
+  let body = JSON.parse(event.body);
+  let userprofile = await putUserprofileInDb(body, userId, false);
 
-    return {
-        statusCode: 200,
-        body: JSON.stringify(userprofile)
-    };
+  return {
+    statusCode: 200,
+    body: JSON.stringify(userprofile)
+  };
 }
 
 async function updateUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    let vendorId = getUserInfoFromEvent(event);
-    let vendor = await getUserprofileFromDb(vendorId);
-    
-    if (!vendor.isVendor) {
-        return {
-            statusCode: 403,
-            body: JSON.stringify({ message: "User " + vendorId + " is not a vendor" })
-        };
-    }
-    if (!event.queryStringParameters) {
-        return {
-            statusCode: 400,
-            body: '{ "message" : "Missing parameter userId" }'
-        };
-    }
-    let userId = event.queryStringParameters["userId"];
+  let vendorId = getUserInfoFromEvent(event);
+  let vendor = await getUserprofileFromDb(vendorId);
+  
+  if (!vendor.isVendor) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ message: "User " + vendorId + " is not a vendor" })
+    };
+  }
+  if (!event.queryStringParameters) {
+    return {
+      statusCode: 400,
+      body: '{ "message" : "Missing parameter userId" }'
+    };
+  }
+  let userId = event.queryStringParameters["userId"];
 
-    if (!userId) {
-        return {
-            statusCode: 400,
-            body: '{ "message" : "Missing parameter userId" }'
-        };
-    }
-    let body = JSON.parse(event.body);
-    
-    try {
-        await updateApproval(userId, body.approved)
+  if (!userId) {
+    return {
+      statusCode: 400,
+      body: '{ "message" : "Missing parameter userId" }'
+    };
+  }
+  let body = JSON.parse(event.body);
+  
+  try {
+    await updateApproval(userId, body.approved)
 
-        return {
-            statusCode: 200,
-            body: '{ "message" : "Approval updated" }'
-        };
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        };
-    }
+    return {
+      statusCode: 200,
+      body: '{ "message" : "Approval updated" }'
+    };
+  } catch (err) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify(err)
+    };
+  }
 }
 
 async function deleteUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    let userId = getUserInfoFromEvent(event);
+  let userId = getUserInfoFromEvent(event);
 
-    deleteUserprofileInDb(userId);
-    return {
-        statusCode: 200,
-        body: '{ "message" : "Deletion succeeded" }'
-    };
+  deleteUserprofileInDb(userId);
+  return {
+    statusCode: 200,
+    body: '{ "message" : "Deletion succeeded" }'
+  };
 
 }

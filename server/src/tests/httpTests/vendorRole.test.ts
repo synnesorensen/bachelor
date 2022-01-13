@@ -8,18 +8,18 @@ import { afterEach, beforeEach } from 'mocha';
 
 let vendor = null;
 describe('Vendor role http test', function () {
-    beforeEach(async function () {
-        vendor = new Api();
-        await vendor.login(testVend, testVendPass);
-    });
-    it('Checking vendor role', async () => {
+  beforeEach(async function () {
+    vendor = new Api();
+    await vendor.login(testVend, testVendPass);
+  });
+  it('Checking vendor role', async () => {
 
-        let vendorprofile = await vendor.getUserprofile();
-        expect(vendorprofile.isVendor).equal(true);
+    let vendorprofile = await vendor.getUserprofile();
+    expect(vendorprofile.isVendor).equal(true);
 
-    });
-    afterEach(async function () {
-        await vendor.logout();
-    });
+  });
+  afterEach(async function () {
+    await vendor.logout();
+  });
 
 });

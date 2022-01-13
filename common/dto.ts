@@ -1,28 +1,28 @@
 export interface UserDto {
-    fullname: string,
-    address: string,
-    deliveryAddress: string,
-    phone: string,
-    email: string, 
-    allergies: string[], 
-    approved: boolean,
-    isVendor: boolean,
-    subscription: SubscriptionDto | null
+  fullname: string,
+  address: string,
+  deliveryAddress: string,
+  phone: string,
+  email: string, 
+  allergies: string[], 
+  approved: boolean,
+  isVendor: boolean,
+  subscription: SubscriptionDto | null
 }
 
 export interface SubscriptionDto {
-    userId: string,
-    vendorId: string,
-    paused: boolean,
-    schedule: MenuItemDto[],
-    noOfMeals: number,
-    box: string,                        // TODO: make enum
-    lastDeliveryDate: string | null
+  userId: string,
+  vendorId: string,
+  paused: boolean,
+  schedule: MenuItemDto[],
+  noOfMeals: number,
+  box: string,            // TODO: make enum
+  lastDeliveryDate: string | null
 }
 
 export interface MenuItemDto {
-    id: string,
-    time: string,
-    menu: string,
-    day: string
+  id: string,
+  time: string,
+  menu: string,
+  day: string
 }

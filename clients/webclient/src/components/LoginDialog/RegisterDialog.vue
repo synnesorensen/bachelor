@@ -1,15 +1,15 @@
 <template>
-    <v-dialog v-model="showDialog" persistent max-width="500">
-        <v-card>
-            <TabRegister @showSpinner="showSpin" @loggedIn="loggedIn" @closeDialog="closeDialog" />
-        </v-card>
-        <v-overlay absolute opacity="0.1" v-if="showSpinner">
-            <v-progress-circular
-                indeterminate
-                size="64"
-            ></v-progress-circular>
-        </v-overlay>
-    </v-dialog>
+  <v-dialog v-model="showDialog" persistent max-width="500">
+    <v-card>
+      <TabRegister @showSpinner="showSpin" @loggedIn="loggedIn" @closeDialog="closeDialog" />
+    </v-card>
+    <v-overlay absolute opacity="0.1" v-if="showSpinner">
+      <v-progress-circular
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
+  </v-dialog>
 </template>
 
 <script lang="ts">
@@ -20,27 +20,27 @@ import TabRegister from './TabRegister.vue';
 
 @Component({
 	components: {
-        TabRegister
+    TabRegister
 	},
 })
 
 export default class RegisterDialog extends Vue {
-    @Prop( {
-        default: true
-    }) showDialog!: boolean;
-    private tab = 0;
-    private showSpinner = false;
+  @Prop( {
+    default: true
+  }) showDialog!: boolean;
+  private tab = 0;
+  private showSpinner = false;
 
-    loggedIn(jwtToken: string) {
-        this.$emit("loggedIn", jwtToken);
-    }
+  loggedIn(jwtToken: string) {
+    this.$emit("loggedIn", jwtToken);
+  }
 
-    showSpin(value:boolean) {
-        this.showSpinner = value;
-    }
+  showSpin(value:boolean) {
+    this.showSpinner = value;
+  }
 
-    closeDialog() {
-        this.$emit("closeDialog", true);
-    }
+  closeDialog() {
+    this.$emit("closeDialog", true);
+  }
 }
 </script> 

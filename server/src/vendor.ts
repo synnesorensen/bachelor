@@ -6,54 +6,54 @@ import { getVendorFromDb, putVendorInDb } from './dbUtils';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    if (event.httpMethod == "GET") {
-        return getVendor();
-    }
-    if (event.httpMethod == "PUT") {
-        return putvendor(event);
-    }
+  if (event.httpMethod == "GET") {
+    return getVendor();
+  }
+  if (event.httpMethod == "PUT") {
+    return putvendor(event);
+  }
 }
 export const mainHandler = middy(handler).use(cors());
 
 async function getVendor(): Promise<APIGatewayProxyResult> {
-    let vendor = await getVendorFromDb();
+  let vendor = await getVendorFromDb();
 
-    if (!vendor) {
-        return {
-            statusCode: 404,
-            body: '{ "message" : "No profile for this vendor" }'
-        }
-    }
-
+  if (!vendor) {
     return {
-        statusCode: 200,
-        body: JSON.stringify(vendor)
-    };
+      statusCode: 404,
+      body: '{ "message" : "No profile for this vendor" }'
+    }
+  }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(vendor)
+  };
 }
 
 
 async function putvendor(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    const loggedInUser = getUserInfoFromEvent(event);
-    let vendorId = event.queryStringParameters["vendorId"];
-    let body = JSON.parse(event.body);
+  const loggedInUser = getUserInfoFromEvent(event);
+  let vendorId = event.queryStringParameters["vendorId"];
+  let body = JSON.parse(event.body);
 
-    if (!event.queryStringParameters) {
-        return {
-            statusCode: 400,
-            body: '{ "message" : "Missing parameter vendorId" }'
-        };
-    }
-
-    if (vendorId != loggedInUser) {
-        return {
-            statusCode: 403,
-            body: '{ "message" : "Forbidden operation" }'
-        }
-    }
-    let vendor = await putVendorInDb(body, vendorId);
-
+  if (!event.queryStringParameters) {
     return {
-        statusCode: 200,
-        body: JSON.stringify(vendor)
+      statusCode: 400,
+      body: '{ "message" : "Missing parameter vendorId" }'
     };
+  }
+
+  if (vendorId != loggedInUser) {
+    return {
+      statusCode: 403,
+      body: '{ "message" : "Forbidden operation" }'
+    }
+  }
+  let vendor = await putVendorInDb(body, vendorId);
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(vendor)
+  };
 }

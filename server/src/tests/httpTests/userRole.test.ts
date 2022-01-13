@@ -8,18 +8,18 @@ import 'mocha';
 let user = null;
 
 describe('User role http test', function () {
-    before(async function () {
-        user = new Api();
-        await user.login(testUser, testPass);
-    });
-    it('Checking user and vendor roles', async () => {
+  before(async function () {
+    user = new Api();
+    await user.login(testUser, testPass);
+  });
+  it('Checking user and vendor roles', async () => {
 
-        let userprofile = await user.getUserprofile();
-        expect(userprofile.isVendor).equal(false);
+    let userprofile = await user.getUserprofile();
+    expect(userprofile.isVendor).equal(false);
 
-    });
-    after(async function () {
-        await user.logout();
-    });
+  });
+  after(async function () {
+    await user.logout();
+  });
 
 });

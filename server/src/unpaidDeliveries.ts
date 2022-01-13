@@ -9,62 +9,62 @@ import { scheduleToWeekTimes } from './addDeliveries';
 import { MenuItems } from '../../common/interfaces';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-    let vendorId = getUserInfoFromEvent(event);
-    
-    if (!event.queryStringParameters) {
-        return {
-            statusCode: 400,
-            body: '{ "message" : "Missing parameter userId, start time or month" }'
-        };
-    }
-    let userId = event.queryStringParameters["userId"];
-    let afterDate = event.queryStringParameters["afterDate"];
-    let yearMonth = event.queryStringParameters["yearMonth"];
-
-    if (!userId) {
-        return {
-            statusCode: 400,
-            body: '{ "message" : "Missing parameter userId" }'
-        };
-    }
-    if (!yearMonth) {
-        return {
-            statusCode: 400,
-            body: '{ "message" : "Missing parameter yearMonth" }'
-        };
-    }
-    if (!afterDate) {
-        afterDate = yearMonth + "-01"
-    }
-    
-    let vendor = await getVendorFromDb();
-    if (!vendor) {
-        return {
-            statusCode: 500,
-            body: '{ "message": "Could not find vendor in DB" }'
-        }
-    }
-    let sub = await getSubscriptionFromDb(vendorId, userId);
-    if (sub) {
-        let schedule:MenuItems[] = sub.schedule.map((subId) => {
-            return vendor.schedule.find(({id}) => id == subId);
-        }); 
-        let weekTimes = scheduleToWeekTimes(schedule);
-        let result = noOfDeliveriesInMonth(new Date(afterDate), weekTimes);
-    
-        return {
-            statusCode: 200,
-            body: JSON.stringify({
-                no: result
-            })
-        };
-    }
-
+  let vendorId = getUserInfoFromEvent(event);
+  
+  if (!event.queryStringParameters) {
     return {
-        statusCode: 404,
-        body: '{ "message" : "No subscription for userId: ' + userId + '"}'
+      statusCode: 400,
+      body: '{ "message" : "Missing parameter userId, start time or month" }'
+    };
+  }
+  let userId = event.queryStringParameters["userId"];
+  let afterDate = event.queryStringParameters["afterDate"];
+  let yearMonth = event.queryStringParameters["yearMonth"];
+
+  if (!userId) {
+    return {
+      statusCode: 400,
+      body: '{ "message" : "Missing parameter userId" }'
+    };
+  }
+  if (!yearMonth) {
+    return {
+      statusCode: 400,
+      body: '{ "message" : "Missing parameter yearMonth" }'
+    };
+  }
+  if (!afterDate) {
+    afterDate = yearMonth + "-01"
+  }
+  
+  let vendor = await getVendorFromDb();
+  if (!vendor) {
+    return {
+      statusCode: 500,
+      body: '{ "message": "Could not find vendor in DB" }'
     }
-    
+  }
+  let sub = await getSubscriptionFromDb(vendorId, userId);
+  if (sub) {
+    let schedule:MenuItems[] = sub.schedule.map((subId) => {
+      return vendor.schedule.find(({id}) => id == subId);
+    }); 
+    let weekTimes = scheduleToWeekTimes(schedule);
+    let result = noOfDeliveriesInMonth(new Date(afterDate), weekTimes);
+  
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        no: result
+      })
+    };
+  }
+
+  return {
+    statusCode: 404,
+    body: '{ "message" : "No subscription for userId: ' + userId + '"}'
+  }
+  
 }
 
 export const mainHandler = middy(handler).use(cors());
