@@ -18,7 +18,8 @@
         :items="userSubscriptions"
         :search="search"
         @click:row="handleClickedUserSub"
-        class="row-pointer">
+        class="row-pointer"
+      >
       </v-data-table>
     </v-card>
     <v-dialog width="unset" v-model="editCustomer">
@@ -26,24 +27,15 @@
         <v-app-bar>
           <v-card-title>Kundeinformasjon</v-card-title><br />
           <v-spacer></v-spacer>
-          <v-btn 
-            icon
-            @click="editCustomer = false"  
-          >
-            <v-icon>
-              mdi-close
-            </v-icon>
-          </v-btn>
-        </v-app-bar><br />
+          <v-btn icon @click="editCustomer = false">
+            <v-icon> mdi-close </v-icon>
+          </v-btn> </v-app-bar
+        ><br />
         <v-card-text>
           <CustomerInfo :selectedUser="selected" />
         </v-card-text>
         <v-card-actions>
-          <v-btn 
-            text 
-            color="orange"
-            @click="toggleSubscriptionPause()"  
-          >
+          <v-btn text color="orange" @click="toggleSubscriptionPause()">
             {{ buttonText }}
           </v-btn>
         </v-card-actions>
@@ -66,7 +58,8 @@
         dense
         :headers="usersWOSubsHeaders"
         :items="usersWOSubscriptions"
-        :search="search">
+        :search="search"
+      >
       </v-data-table>
     </v-card>
     <br />
@@ -88,9 +81,16 @@
         :search="search"
         item-key="userId"
         class="elevation-1"
-        >
+      >
         <template v-slot:[`item.controls`]="props">
-          <v-btn class="mx-2" fab dark small color="green" @click="approve(props.item)">
+          <v-btn
+            class="mx-2"
+            fab
+            dark
+            small
+            color="green"
+            @click="approve(props.item)"
+          >
             <v-icon dark>mdi-checkbox-marked-circle-outline</v-icon>
           </v-btn>
         </template>
@@ -100,24 +100,23 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue from "vue";
 import api from "../../api/api";
-import Component from 'vue-class-component';
-import { Action, UserSubscription } from '../../../../../common/interfaces';
-import { UserDto } from '../../../../../common/dto';
-import CustomerInfo from './CustomerInfo.vue';
+import Component from "vue-class-component";
+import { Action, UserSubscription } from "../../../../../common/interfaces";
+import { UserDto } from "../../../../../common/dto";
+import CustomerInfo from "./CustomerInfo.vue";
 
 @Component({
-	components: {
-    CustomerInfo
-	}
+  components: {
+    CustomerInfo,
+  },
 })
-
 export default class CustomerLists extends Vue {
   private users: UserDto[] = [];
   private editCustomer = false;
   private selected: UserDto | null = null;
-  
+
   async created() {
     this.users = await api.getUsersAndSubscriptions();
   }
@@ -132,24 +131,26 @@ export default class CustomerLists extends Vue {
           return {
             oldUser: user,
             ...user,
-            days: user.subscription.schedule.map(schedule => schedule.day).join(", "),
+            days: user.subscription.schedule
+              .map((schedule) => schedule.day)
+              .join(", "),
             allergies: user.allergies.join(", "),
-            pausedString: user.subscription.paused? "Pauset" : "Aktiv"
-          }
+            pausedString: user.subscription.paused ? "Pauset" : "Aktiv",
+          };
         }
       });
     }
   }
 
   get usersWOSubscriptions() {
-    const usersWOSubs = this.users.filter(user => {
-      return user.approved && !user.subscription
-    })
+    const usersWOSubs = this.users.filter((user) => {
+      return user.approved && !user.subscription;
+    });
     return usersWOSubs.map((user) => {
       return {
         ...user,
-        allergies: user.allergies.join(", ")
-      }
+        allergies: user.allergies.join(", "),
+      };
     });
   }
 
@@ -161,17 +162,17 @@ export default class CustomerLists extends Vue {
       return {
         oldUser: user,
         ...user,
-        allergies: user.allergies.join(", ")
-      }
+        allergies: user.allergies.join(", "),
+      };
     });
   }
 
   private search = "";
-  
+
   private usersubHeaders = [
     {
       text: "Navn",
-      align: 'start',
+      align: "start",
       sortable: true,
       value: "fullname",
     },
@@ -183,12 +184,12 @@ export default class CustomerLists extends Vue {
     { text: "Antall", value: "subscription.noOfMeals" },
     { text: "Allergier", value: "allergies" },
     { text: "Leveringsdager", value: "days" },
-    { text: "", value: "controls", sortable: false }
+    { text: "", value: "controls", sortable: false },
   ];
   private unapprovedHeaders = [
     {
       text: "Navn",
-      align: 'start',
+      align: "start",
       sortable: true,
       value: "fullname",
     },
@@ -199,32 +200,32 @@ export default class CustomerLists extends Vue {
     { text: "Antall", value: "noOfMeals" },
     { text: "Allergier", value: "allergies" },
     { text: "Leveringsdager", value: "days" },
-    { text: "", value: "controls", sortable: false }
+    { text: "", value: "controls", sortable: false },
   ];
   private usersWOSubsHeaders = [
     {
       text: "Navn",
-      align: 'start',
+      align: "start",
       sortable: true,
       value: "fullname",
     },
     { text: "Adresse", value: "address" },
     { text: "Telefon", value: "phone" },
     { text: "Epost", value: "email" },
-    { text: "Allergier", value: "allergies" }
+    { text: "Allergier", value: "allergies" },
   ];
 
   deliveryDays(item: UserSubscription) {
     const days = item.schedule.map((menuItem) => {
       return menuItem.day;
     });
-    return days.join(", ")
+    return days.join(", ");
   }
-  
+
   async approve(item: any) {
     try {
       await api.updateApproval(item.email, true);
-      item.oldUser.approved = true;           // TODO: Endre denne når interface er refaktorert.
+      item.oldUser.approved = true; // TODO: Endre denne når interface er refaktorert.
     } catch (err) {
       alert("Noe gikk galt, prøv igjen senere.");
       console.log(err);
@@ -255,7 +256,10 @@ export default class CustomerLists extends Vue {
         time: time.toISOString().substr(0, 10),
         action: this.selected.subscription.paused ? "unpause" : "pause",
       };
-      await api.postSubscriptionAsVendor(this.selected.subscription.userId, action);
+      await api.postSubscriptionAsVendor(
+        this.selected.subscription.userId,
+        action
+      );
       this.editCustomer = false;
       this.users = await api.getUsersAndSubscriptions();
     }
@@ -264,7 +268,7 @@ export default class CustomerLists extends Vue {
 </script>
 
 <style lang="css" scoped>
-  .row-pointer >>> tbody tr :hover {
-    cursor: pointer;
-  }
+.row-pointer >>> tbody tr :hover {
+  cursor: pointer;
+}
 </style>

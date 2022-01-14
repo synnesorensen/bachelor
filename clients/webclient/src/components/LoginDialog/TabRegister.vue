@@ -2,24 +2,20 @@
   <v-card>
     <v-card-title class="headline">Registrer konto</v-card-title>
     <v-card-text>
-      <v-text-field 
-        label="Fyll inn epost-adresse" 
-        required
-        v-model="username"
-      >
+      <v-text-field label="Fyll inn epost-adresse" required v-model="username">
       </v-text-field>
-      <v-text-field 
+      <v-text-field
         v-if="!showCodeVerification"
-        label="Velg et passord" 
+        label="Velg et passord"
         required
         v-model="password1"
         type="password"
         :rules="[checkPassword]"
       >
       </v-text-field>
-      <v-text-field 
+      <v-text-field
         v-if="!showCodeVerification"
-        label="Gjenta passord" 
+        label="Gjenta passord"
         required
         v-model="password2"
         type="password"
@@ -27,40 +23,30 @@
         @keyup.enter="register"
       >
       </v-text-field>
-      <p style="color:red;"> {{errorMsg1}}</p>
-      <v-text-field 
+      <p style="color: red">{{ errorMsg1 }}</p>
+      <v-text-field
         v-if="showCodeVerification"
-        label="Fyll inn kode fra epost" 
+        label="Fyll inn kode fra epost"
         required
         v-model="code"
         @keyup.enter="verifyCode"
       >
       </v-text-field>
-      <p style="color:red;"> {{errorMsg2}}</p>
+      <p style="color: red">{{ errorMsg2 }}</p>
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn 
-        color="error" 
-        @click="cancel"
-      >
-      Avbryt
-      </v-btn>
-      <v-btn 
+      <v-btn color="error" @click="cancel"> Avbryt </v-btn>
+      <v-btn
         v-if="!showCodeVerification"
-        color="success" 
+        color="success"
         @click="register"
-        :disabled = "check1()"
+        :disabled="check1()"
       >
-      Registrer
+        Registrer
       </v-btn>
-      <v-btn 
-        v-else
-        color="success" 
-        @click="verifyCode"
-        :disabled = "check2()"
-      >
-      Verifiser
+      <v-btn v-else color="success" @click="verifyCode" :disabled="check2()">
+        Verifiser
       </v-btn>
     </v-card-actions>
   </v-card>
@@ -73,7 +59,6 @@ import Component from "vue-class-component";
 import getAuth from "./auth";
 
 @Component
-
 export default class TabRegister extends Vue {
   private username = "";
   private password1 = "";
@@ -90,11 +75,11 @@ export default class TabRegister extends Vue {
     return pass1.length >= 8 || "Passord må være minst 8 bokstaver";
   }
   checkEqual(pass2: string) {
-    return pass2 === this.password1 || "Passordene er ikke like"
+    return pass2 === this.password1 || "Passordene er ikke like";
   }
 
   check1() {
-    return this.password1!=this.password2;
+    return this.password1 != this.password2;
   }
 
   check2() {
@@ -104,13 +89,13 @@ export default class TabRegister extends Vue {
   async register() {
     let params = {
       username: this.username,
-      password: this.password2
-    }
+      password: this.password2,
+    };
     try {
       this.errorMsg1 = "";
       let signUp = await this.Auth.signUp(params);
       this.showCodeVerification = true;
-    } catch (err) {
+    } catch (err: any) {
       this.errorMsg1 = err.message;
     }
   }
@@ -118,13 +103,19 @@ export default class TabRegister extends Vue {
     try {
       this.errorMsg1 = "";
       this.$emit("showSpinner", true);
-      let confirmedSignUp = await this.Auth.confirmSignUp(this.username, this.code);
+      let confirmedSignUp = await this.Auth.confirmSignUp(
+        this.username,
+        this.code
+      );
       if (confirmedSignUp === "SUCCESS") {
-        let signedInUser = await this.Auth.signIn(this.username, this.password2);
+        let signedInUser = await this.Auth.signIn(
+          this.username,
+          this.password2
+        );
         this.$emit("loggedIn", signedInUser.signInUserSession.idToken.jwtToken);
         this.$emit("showSpinner", false);
       }
-    } catch (err) {
+    } catch (err: any) {
       this.errorMsg2 = err.message;
       this.$emit("showSpinner", false);
     }

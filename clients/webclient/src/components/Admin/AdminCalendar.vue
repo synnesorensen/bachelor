@@ -5,33 +5,18 @@
         <v-sheet>
           <v-spacer />
           <v-toolbar flat>
-            <v-btn 
-              outlined 
-              class="mr-4"
-              @click="setToday"
-            > 
-              I dag 
-            </v-btn>
-            <v-btn 
-              fab 
-              text 
-              small 
-              class="mr-4"
-              @click="prev"
-            >
+            <v-btn outlined class="mr-4" @click="setToday"> I dag </v-btn>
+            <v-btn fab text small class="mr-4" @click="prev">
               <v-icon small>mdi-chevron-left</v-icon>
             </v-btn>
-            <v-btn 
-              fab 
-              text 
-              small 
-              class="mr-4"
-              @click="next"
-            >
+            <v-btn fab text small class="mr-4" @click="next">
               <v-icon small>mdi-chevron-right</v-icon>
             </v-btn>
             <v-toolbar-title v-if="$refs.calendar">
-              {{ $refs.calendar.title.charAt(0).toUpperCase() + $refs.calendar.title.slice(1) }}
+              {{
+                $refs.calendar.title.charAt(0).toUpperCase() +
+                $refs.calendar.title.slice(1)
+              }}
             </v-toolbar-title>
           </v-toolbar>
         </v-sheet>
@@ -53,58 +38,61 @@
         </v-sheet>
       </v-col>
       <v-dialog v-model="showList">
-        <Deliveries :date="selectedDate" @update="deliveriesUpdated" @close="showList=false" />
+        <Deliveries
+          :date="selectedDate"
+          @update="deliveriesUpdated"
+          @close="showList = false"
+        />
       </v-dialog>
     </v-row>
   </v-container>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import Component from 'vue-class-component';
-import Deliveries from './Deliveries.vue';
+import Vue from "vue";
+import Component from "vue-class-component";
+import Deliveries from "./Deliveries.vue";
 import api from "../../api/api";
 
 @Component({
-	components: {
-    Deliveries
+  components: {
+    Deliveries,
   },
 })
-
 export default class AdminCalendar extends Vue {
   private today = new Date().toISOString().substr(0, 10);
-	private focus = new Date().toISOString().substr(0, 10);
-	private type = "month";
-	private start: any | null = null;
-	private end: any | null = null;
+  private focus = new Date().toISOString().substr(0, 10);
+  private type = "month";
+  private start: any | null = null;
+  private end: any | null = null;
   private events: any[] = [];
   private showList = false;
   private selectedDate = "";
 
   mounted() {
-		this.focus = "";
-	}
+    this.focus = "";
+  }
 
-	viewDay(day: any) {
-		this.focus = day.date;
-		this.type = "day";
-	}
+  viewDay(day: any) {
+    this.focus = day.date;
+    this.type = "day";
+  }
 
-	setToday() {
-		this.focus = "";
-	}
+  setToday() {
+    this.focus = "";
+  }
 
-	prev() {
-		(this.$refs.calendar as any).prev();
-	}
+  prev() {
+    (this.$refs.calendar as any).prev();
+  }
 
-	next() {
-		(this.$refs.calendar as any).next();
-	}
+  next() {
+    (this.$refs.calendar as any).next();
+  }
 
-  async getEvents( {start, end}:{start:any, end:any} ) {
+  async getEvents({ start, end }: { start: any; end: any }) {
     this.start = start;
-		this.end = end;
+    this.end = end;
     this.populateCalendar();
   }
 
@@ -113,17 +101,21 @@ export default class AdminCalendar extends Vue {
     let schedule = vendor!.schedule;
     let events: any[] = [];
     if (this.start && this.end) {
-      let deliveries = await api.getAllVendorsDeliveriesSummary(this.start.date, this.end.date);
+      let deliveries = await api.getAllVendorsDeliveriesSummary(
+        this.start.date,
+        this.end.date
+      );
       if (deliveries) {
-        deliveries.forEach(del => {
-          const delStart = new Date(`${del.date.substring(0,10)}T00:00:00`);
-          const delEnd = new Date(`${del.date.substring(0,10)}T23:59:59`);
-          const menu = schedule.find(({id}) => id == del.menuId);
+        deliveries.forEach((del) => {
+          const delStart = new Date(`${del.date.substring(0, 10)}T00:00:00`);
+          const delEnd = new Date(`${del.date.substring(0, 10)}T23:59:59`);
+          const menu = schedule.find(({ id }) => id == del.menuId);
           events.push({
-            name: menu!.menu + ": " + (del.count-del.cancelled) + "/" + del.count,
+            name:
+              menu!.menu + ": " + (del.count - del.cancelled) + "/" + del.count,
             start: delStart,
-            end: delEnd, 
-            color: (del.count == del.cancelled)? "grey" : "green" 
+            end: delEnd,
+            color: del.count == del.cancelled ? "grey" : "green",
           });
         });
         this.events = events;
@@ -131,11 +123,11 @@ export default class AdminCalendar extends Vue {
     }
   }
 
-  showDeliveries(event:any) {
+  showDeliveries(event: any) {
     this.selectedDate = event.day.date;
     this.showList = true;
   }
-  
+
   deliveriesUpdated() {
     this.populateCalendar();
   }

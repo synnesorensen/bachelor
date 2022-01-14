@@ -17,30 +17,29 @@
           v-on="on"
         ></v-text-field>
       </template>
-    <v-date-picker
-      v-model="selectedDate"
-      :first-day-of-week="1"
-      locale="no"
-      @input="updateDate(selectedDate)"
-      no-title
-    ></v-date-picker>
+      <v-date-picker
+        v-model="selectedDate"
+        :first-day-of-week="1"
+        locale="no"
+        @input="updateDate(selectedDate)"
+        no-title
+      ></v-date-picker>
     </v-menu>
   </v-layout>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import Component from 'vue-class-component';
-import { Prop, Watch } from 'vue-property-decorator';
+import Vue from "vue";
+import Component from "vue-class-component";
+import { Prop, Watch } from "vue-property-decorator";
 
 @Component
-
 export default class CustomerPayment extends Vue {
   @Prop() date = "";
   private menu = false;
   private selectedDate = "";
 
-  @Watch("date") 
+  @Watch("date")
   dateChanged() {
     this.selectedDate = this.date;
   }
@@ -51,6 +50,5 @@ export default class CustomerPayment extends Vue {
     this.$emit("update:date", this.selectedDate);
     this.$emit("blur", this.selectedDate);
   }
-
 }
 </script>

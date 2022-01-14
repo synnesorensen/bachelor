@@ -13,7 +13,6 @@ export class Api {
     await auth.signIn(username, password);
     let jwtToken = (await auth.currentSession()).getIdToken().getJwtToken();
     this.setApiBearerToken(jwtToken);
-
   }
 
   async logout() {
@@ -98,7 +97,6 @@ export class Api {
       }
       throw (error);
     }
-    
   }
 
   async getUsersAndSubscriptions(): Promise<dto.UserDto[]> {
@@ -169,7 +167,6 @@ export class Api {
 
   async getAllVendorsDeliveries(startDate: string, endDate: string): Promise<interfaces.Delivery[] | null> {
     await this.ensureFreshToken();
-
     try {
       let url = urlPrefix + "/v/deliveries?start=" + startDate + "&end=" + endDate;
       const deliveries = await this.apiAxios.get(url);
@@ -199,7 +196,6 @@ export class Api {
 
   async getOneUsersDeliveries(userId: string, startDate: string, endDate: string): Promise<interfaces.Delivery[] | null> {
     await this.ensureFreshToken();
-
     try {
       const deliveries = await this.apiAxios.get(urlPrefix + "/v/deliveries?userId=" + encodeURIComponent(userId) + "&start=" + startDate + "&end=" + endDate);
       return deliveries.data;
@@ -226,7 +222,6 @@ export class Api {
 
   async getAllUsersDeliveries(startDate: string, endDate: string): Promise<interfaces.Delivery[] | null> {
     await this.ensureFreshToken();
-
     try {
       const deliveries = await this.apiAxios.get(urlPrefix + "/u/deliveries?start=" + startDate + "&end=" + endDate);
       return deliveries.data;
@@ -267,7 +262,6 @@ export class Api {
 
   async getUnpaidDeliveries(userId: string, yearMonth: string, afterDate?: string): Promise<number> {
     await this.ensureFreshToken();
-
     let url = urlPrefix + "/unpaidDeliveries?userId=" + encodeURIComponent(userId) + "&yearMonth=" + yearMonth;
     if (afterDate) {
       url += "&afterDate=" + afterDate
@@ -295,5 +289,6 @@ export class Api {
     return deliveries.data;
   }
 }
+
 let api = new Api();
 export default api;
