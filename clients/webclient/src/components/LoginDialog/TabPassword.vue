@@ -96,8 +96,10 @@ export default class TabPassword extends Vue {
       let signedInUser = await this.Auth.signIn(this.username, this.password2);
       this.$emit("loggedIn", signedInUser.signInUserSession.idToken.jwtToken);
       this.$emit("showSpinner", false);
-    } catch (err:any) {
-      this.errorMsg = err.message;
+    } catch (err) {
+      if (err instanceof Error) {
+        this.errorMsg = err.message;
+      }
       this.$emit("showSpinner", false);
     }
   }

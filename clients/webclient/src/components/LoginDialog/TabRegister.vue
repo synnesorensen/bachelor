@@ -95,8 +95,10 @@ export default class TabRegister extends Vue {
       this.errorMsg1 = "";
       let signUp = await this.Auth.signUp(params);
       this.showCodeVerification = true;
-    } catch (err: any) {
-      this.errorMsg1 = err.message;
+    } catch (err) {
+      if (err instanceof Error) {
+        this.errorMsg1 = err.message;
+      }
     }
   }
   async verifyCode() {
@@ -115,8 +117,10 @@ export default class TabRegister extends Vue {
         this.$emit("loggedIn", signedInUser.signInUserSession.idToken.jwtToken);
         this.$emit("showSpinner", false);
       }
-    } catch (err: any) {
-      this.errorMsg2 = err.message;
+    } catch (err) {
+      if (err instanceof Error) {
+        this.errorMsg2 = err.message;
+      }
       this.$emit("showSpinner", false);
     }
   }

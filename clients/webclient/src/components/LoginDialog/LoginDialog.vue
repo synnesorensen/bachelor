@@ -40,9 +40,7 @@ import TabPassword from "./TabPassword.vue";
   },
 })
 export default class LoginDialog extends Vue {
-  @Prop({
-    default: true,
-  })
+  @Prop({ default: true })
   showDialog!: boolean;
   private tab = 0;
   private showSpinner = false;
