@@ -6,6 +6,9 @@ import 'mocha';
 import { Delivery } from '../../../../common/interfaces';
 
 describe('Delivery tests', () => {
+  const paid: "paid" | "unpaid" = "unpaid";
+  const approved: "new" | "approved" | "denied" = "new";
+
   it('Put, get and delete a delivery', async () => {
     let delivery1 = {
       vendorId: "testVendorId66",
@@ -13,8 +16,8 @@ describe('Delivery tests', () => {
       deliverytime: "2021-04-20",
       menuId: "1",
       cancelled: false,
-      paid: "betalt",
-      approved: true
+      paid,
+      approved
     };
     let delivery2 = {
       vendorId: "testVendorId66",
@@ -22,8 +25,8 @@ describe('Delivery tests', () => {
       deliverytime: "2021-04-01",
       menuId: "1", 
       cancelled: true,
-      paid: "betalt",
-      approved: true
+      paid,
+      approved
     };
     let delivery3 = {
       vendorId: "testVendorId66",
@@ -31,8 +34,8 @@ describe('Delivery tests', () => {
       deliverytime: "2021-05-01",
       menuId: "1", 
       cancelled: false,
-      paid: "betalt",
-      approved: true
+      paid,
+      approved
     };
     let delivery4 = {
       vendorId: "testVendorId66",
@@ -40,8 +43,8 @@ describe('Delivery tests', () => {
       deliverytime: "2021-05-31",
       menuId: "1", 
       cancelled: false,
-      paid: "betalt",
-      approved: true
+      paid,
+      approved
     }
 
     const putResult = await putDeliveryInDb("testVendorId66", "testUserId16", delivery1);
@@ -89,8 +92,8 @@ describe('Delivery tests', () => {
       deliverytime: "2021-06-01", 
       menuId: "1", 
       cancelled: false,
-      paid: "betalt",
-      approved: true
+      paid,
+      approved
     },
     {
       vendorId: "testVendorId66",
@@ -98,8 +101,8 @@ describe('Delivery tests', () => {
       deliverytime: "2021-06-15",
       menuId: "1", 
       cancelled: false,
-      paid: "betalt",
-      approved: true
+      paid,
+      approved
     },
     {
       vendorId: "testVendorId66",
@@ -107,8 +110,8 @@ describe('Delivery tests', () => {
       deliverytime: "2021-06-30",
       menuId: "1", 
       cancelled: false,
-      paid: "betalt",
-      approved: true
+      paid,
+      approved
     }]
 
     await saveDeliveriesToDb(newDeliveries);

@@ -5,6 +5,9 @@ import { expect } from 'chai';
 import 'mocha';
 
 describe('Last delivery', () => {
+  const paid: "paid" | "unpaid" = "unpaid";
+  const approved: "new" | "approved" | "denied" = "new";
+
   it('finds the latest delivery for a user', async () => {
     const noDelivery = await findLatestDelivery("testVendorId66", "testUserId16");
     expect(noDelivery).equal(null);
@@ -15,8 +18,8 @@ describe('Last delivery', () => {
       deliverytime: "2021-04-20",
       menuId: "1", 
       cancelled: false,
-      paid: "betalt",
-      approved: true
+      paid,
+      approved
     };
 
     const res1 = await putDeliveryInDb("testVendorId66", "testUserId16", delivery1);
@@ -28,8 +31,8 @@ describe('Last delivery', () => {
       deliverytime: "2021-04-21",
       menuId: "1", 
       cancelled: false,
-      paid: "betalt",
-      approved: true
+      paid,
+      approved
     };
 
     const res2 = await putDeliveryInDb("testVendorId66", "testUserId16", delivery2);

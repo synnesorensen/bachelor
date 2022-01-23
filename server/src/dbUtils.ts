@@ -4,6 +4,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, DeliveryDetail } from '../../common/interfaces';
 import * as settings from '../../common/settings';
 import { generateDeliveriesForSubscribers } from './addDeliveries';
+import { DeliveryDto } from '../../common/dto';
 
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
@@ -480,7 +481,7 @@ export async function getUsersDeliveries(userId: string, startDate: string, endD
 
   let deliveries = dbResult.Items.map((del) => {
     return {
-      vendorId: del.pk.substr(2),
+      vendorId: del.GSI2_pk.substr(2),
       userId,
       deliverytime: del.deliverytime,
       menuId: del.menuId,
@@ -521,20 +522,20 @@ export async function getDeliveryFromDb(vendorId: string, userId: string, time: 
 }
 
 // Brukes kun av kunde, derfor settes den som ikke godkjent og ikke betalt
-export async function putDeliveryInDb(vendorId: string, userId: string, delivery: Delivery): Promise<Delivery> {
+export async function putDeliveryInDb(vendorId: string, userId: string, delivery: DeliveryDto): Promise<Delivery> {
   let UpdateExpression = "set EntityType = :EntityType";
   let ExpressionAttributeValues: any = {
     ":EntityType": { S: "Delivery" }
   }
 
-  if (delivery.userId != undefined) {
-    UpdateExpression += ", userId = :userId";
-    ExpressionAttributeValues[":userId"] = { S: delivery.userId };
+  if (vendorId != undefined) {
+    UpdateExpression += ", vendorId = :vendorId";
+    ExpressionAttributeValues[":vendorId"] = { S: vendorId };
   }
 
-  if (delivery.cancelled != undefined) {
-    UpdateExpression += ", cancelled = :cancelled";
-    ExpressionAttributeValues[":cancelled"] = { BOOL: delivery.cancelled };
+  if (userId != undefined) {
+    UpdateExpression += ", userId = :userId";
+    ExpressionAttributeValues[":userId"] = { S: userId };
   }
 
   if (delivery.menuId != undefined) {
@@ -547,20 +548,21 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
     ExpressionAttributeValues[":time"] = { S: delivery.deliverytime };
   }
 
-  UpdateExpression += ", paid = :approved";
-  ExpressionAttributeValues[":approved"] = { S: "ubehandlet" };
+  UpdateExpression += ", cancelled = :cancelled";
+  ExpressionAttributeValues[":cancelled"] = { BOOL: false };
 
-  UpdateExpression += ", approved = :paid";
-  ExpressionAttributeValues[":paid"] = { S: "ubetalt" };
+  UpdateExpression += ", approved = :approved";
+  ExpressionAttributeValues[":approved"] = { S: "new" };
+
+  UpdateExpression += ", paid = :paid";
+  UpdateExpression += ", GSI1_sk = :paid";
+  ExpressionAttributeValues[":paid"] = { S: "unpaid" };
 
   UpdateExpression += ", GSI1_pk = :user";
-  ExpressionAttributeValues[":user"] = { S: "u#" + delivery.userId };
-
-  UpdateExpression += ", GSI1_sk = :paid";
-  ExpressionAttributeValues[":paid"] = { S: delivery.paid };
+  ExpressionAttributeValues[":user"] = { S: "u#" + userId };
 
   UpdateExpression += ", GSI2_pk = :vendor";
-  ExpressionAttributeValues[":vendor"] = { S: "v#" + delivery.vendorId };
+  ExpressionAttributeValues[":vendor"] = { S: "v#" + vendorId };
 
   UpdateExpression += ", GSI2_sk = :deliverytime";
   ExpressionAttributeValues[":deliverytime"] = { S: delivery.deliverytime };
@@ -577,14 +579,16 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
   };
 
   let dbItem = await database.updateItem(params).promise();
-  const approved: "ubehandlet" | "godkjent" | "avslått" = "ubehandlet";
+  const approved: "new" | "approved" | "denied" = "new";
+  const paid: "paid" | "unpaid" = "unpaid";
+
   return {
     vendorId,
     userId,
     deliverytime: dbItem.Attributes.deliverytime.S,
     menuId: dbItem.Attributes.menuId.S,
     cancelled: dbItem.Attributes.cancelled.BOOL,
-    paid: dbItem.Attributes.paid.S === "paid",
+    paid,
     approved
   }
 }

@@ -24,8 +24,8 @@ export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, 
       deliverytime: date.date.toISOString(),
       menuId: date.menuId!,
       cancelled: false, 
-      paid: "betalt",
-      approved: true
+      paid: "paid",
+      approved: "approved"
     }
   });
 }
@@ -42,8 +42,8 @@ export async function generateDeliveriesForVendor(EarliestStartDate: Date, vendo
       deliverytime: date.date.toISOString(),
       menuId: date.menuId!,
       cancelled: false,
-      paid: "ubetalt",
-      approved: false
+      paid: "unpaid",
+      approved: "new"
     }
   });
 }

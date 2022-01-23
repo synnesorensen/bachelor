@@ -44,8 +44,8 @@ export interface Delivery {
   deliverytime: string,
   menuId: string,
   cancelled: boolean, 
-  paid: boolean, 
-  approved: "ubehandlet" | "godkjent" | "avslått"
+  paid: "paid" | "unpaid", 
+  approved: "new" | "approved" | "denied"
 }
 
 export interface DeliveryDetail extends Delivery {

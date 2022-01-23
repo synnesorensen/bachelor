@@ -247,7 +247,7 @@ export class Api {
     }
   }
 
-  async putDelivery(vendorId: string, userId: string, delivery: interfaces.Delivery): Promise<interfaces.Delivery> {
+    async putDelivery(vendorId: string, userId: string, delivery: dto.DeliveryDto): Promise<interfaces.Delivery> {
     await this.ensureFreshToken();
     const url = urlPrefix + "/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId);
     const newDelivery = await this.apiAxios.put(url, delivery);

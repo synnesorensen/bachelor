@@ -75,17 +75,15 @@
                   </v-btn>
                 </div>
               </template>
-              <span>Det er for sent å bestille denne leveringen</span>
+              <span>Det er for sent å bestille denne leveringen.</span>
             </v-tooltip>
             <v-dialog v-model="orderDialog" persistent max-width="300">
               <v-card>
                 <v-card-title class="headline">Bestilling</v-card-title>
                 <v-card-text>
-                  Er du sikker på at du vil bestille
-                  {{
-                    selectedEvent.name + " " + localPresentation(selectedDate)
-                  }}
-                  ?
+                  Ønsker du å bestille
+                  {{ selectedEvent.name + " " + localPresentation(selectedDate) }}
+                  ? En forespørsel vil bli sendt til Lunsj på Hjul.
                 </v-card-text>
                 <v-card-actions>
                   <v-btn color="success" @click="orderDelivery()">
@@ -108,9 +106,7 @@
           </v-card-title>
           <v-card-text>
             Det er mulig å avbestille en måltid frem til klokken 10:00 dagen før
-            levering. Dersom du har kansellert en leveranse og angrer, kan du
-            sende en mail til lunsj@hjul.no med informasjon om hvilken dato det
-            gjelder. Kansellerte måltid vil bli flyttet til neste måned, og
+            levering. Kansellerte måltid vil bli flyttet til neste måned, og
             faktura for neste periode vil bli justert i henhold til antall
             avbestillinger.
           </v-card-text>
@@ -162,8 +158,10 @@
           </v-card-title>
           <v-card-text>
             Denne leveransen er kansellert. Dersom du har kansellert en
-            leveranse og angrer, kan du sende en mail til lunsj@hjul.no med
-            informasjon om hvilken dato det gjelder.
+            leveranse og angrer, kan du trykke på Angre-kanppen under.
+            En forespørsel vil bli sendt til Lunsj på Hjul om å endre
+            kanselleringen. Når denne er godkjent vil leveransen være
+            grønn. Dersom den blir avslått blir leveransen grå.
           </v-card-text>
         </v-card>
       </v-col>
@@ -175,11 +173,8 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import api from "../../api/api";
-import {
-  Delivery,
-  Vendor,
-  Subscription,
-} from "../../../../../common/interfaces";
+import { Delivery, Vendor, Subscription } from "../../../../../common/interfaces";
+import { DeliveryDto } from "../../../../../common/dto";
 import { toLocalPresentation } from "../../utils/utils";
 
 @Component({})
@@ -237,41 +232,34 @@ export default class UserCalendar extends Vue {
       );
       if (deliveries) {
         deliveries.forEach((del) => {
-          const delStart = new Date(
-            `${del.deliverytime.substring(0, 10)}T00:00:00`
-          );
-          const delEnd = new Date(
-            `${del.deliverytime.substring(0, 10)}T23:59:59`
-          );
+          const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
+          const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
+
           const menu = vendorSchedule.find(({ id }) => id == del.menuId);
+          let color = "green";
+          if (new Date(del.deliverytime) < new Date(Date.now()) || del.cancelled || del.approved === "denied") {
+            color = "grey"; 
+          } else if (del.approved === "new") {
+            color = "orange";
+          }
+
           events.push({
             name: del.cancelled ? "Kansellert" : menu!.menu,
             start: delStart,
             end: delEnd,
-            color:
-              new Date(del.deliverytime) < new Date(Date.now()) || del.cancelled
-                ? "grey"
-                : "green",
+            color,
             delivery: del,
             ordered: true,
           });
         });
       }
+
       if (vendorDeliveries) {
         vendorDeliveries.forEach((del) => {
-          const delStart = new Date(
-            `${del.deliverytime.substring(0, 10)}T00:00:00`
-          );
-          const delEnd = new Date(
-            `${del.deliverytime.substring(0, 10)}T23:59:59`
-          );
+          const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
+          const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
           const menu = vendor.schedule.find(({ id }) => id == del.menuId);
-          if (
-            !deliveries?.find(
-              ({ deliverytime }) => deliverytime == del.deliverytime
-            ) &&
-            new Date(del.deliverytime) > new Date(Date.now())
-          ) {
+          if (!deliveries?.find(({ deliverytime }) => deliverytime == del.deliverytime) && new Date(del.deliverytime) > new Date(Date.now())) {
             events.push({
               name: menu!.menu,
               start: delStart,
@@ -314,22 +302,16 @@ export default class UserCalendar extends Vue {
   }
 
   async orderDelivery() {
-    const approved: "ubehandlet" | "godkjent" | "avslått" = "ubehandlet";
-    let delivery = {
-      vendorId: this.selectedEvent.delivery.vendorId,
-      userId: this.$store.getters.loggedInUser,
+    let delivery: DeliveryDto = {
       deliverytime: this.selectedEvent.delivery.deliverytime,
-      menuId: this.selectedEvent.delivery.menuId,
-      cancelled: false,
-      paid: false,
-      approved,
+      menuId: this.selectedEvent.delivery.menuId
     };
     await api.putDelivery(
       this.$store.getters.subscription.vendorId,
       this.$store.getters.loggedInUser,
       delivery
     );
-    this.selectedEvent.ordered = true;
+    this.selectedEvent.ordered = true;    // TODO: Sjekk hva slags farger og status forespørsler skal ha
     this.orderDialog = false;
     this.populateCalendar();
   }

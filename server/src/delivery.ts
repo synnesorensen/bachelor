@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { getDeliveryFromDb, deleteDeliveryInDb, putDeliveryInDb } from './dbUtils';
+import { getDeliveryFromDb, deleteDeliveryInDb, putDeliveryInDb, getVendorFromDb } from './dbUtils';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -64,11 +64,12 @@ async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
   if (!event.queryStringParameters) {
     return {
       statusCode: 400,
-      body: '{ "message" : "Missing parameter userId" }'
+      body: '{ "message" : "Missing parameters" }'
     };
   }
   let userId = event.queryStringParameters["userId"];
-  let vendorId = event.queryStringParameters["vendorId"];
+  let vendor = await getVendorFromDb();
+  const vendorId = vendor.email;
 
   if (!userId) {
     return {
@@ -80,7 +81,7 @@ async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
   if (!vendorId) {
     return {
       statusCode: 400,
-      body: '{ "message" : "Missing parameter vendorId" }'
+      body: '{ "message" : "No such vendor exists" }'
     };
   } 
 

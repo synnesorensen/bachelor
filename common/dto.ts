@@ -26,3 +26,8 @@ export interface MenuItemDto {
   menu: string,
   day: string
 }
+
+export interface DeliveryDto {
+  deliverytime: string,
+  menuId: string
+}
