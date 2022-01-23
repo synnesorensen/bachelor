@@ -147,7 +147,14 @@ functions:
           path: /scheduleDates
           method: get
           cors: true
-
+  deliveryRequests: 
+    handler: src/deliveryRequests.mainHandler
+    events: 
+      - http: 
+          authorizer: authorizer
+          path: /v/deliveryRequests
+          method: get
+          cors: true
 
 resources:
   Resources:

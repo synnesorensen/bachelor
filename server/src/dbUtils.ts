@@ -486,7 +486,7 @@ export async function getUsersDeliveries(userId: string, startDate: string, endD
       deliverytime: del.deliverytime,
       menuId: del.menuId,
       cancelled: del.cancelled,
-      type: del.type,
+      deliveryType: del.deliveryType,
       paid: del.paid,
       approved: del.approved
     }
@@ -517,7 +517,7 @@ export async function getDeliveryFromDb(vendorId: string, userId: string, time: 
     deliverytime: dbResult.Items[0].deliverytime,
     menuId: dbResult.Items[0].menuId,
     cancelled: dbResult.Items[0].cancelled,
-    type: dbResult.Items[0].type,
+    deliveryType: dbResult.Items[0].deliveryType,
     paid: dbResult.Items[0].paid,
     approved: dbResult.Items[0].approved
   };
@@ -559,9 +559,9 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
   UpdateExpression += ", paid = :paid";
   ExpressionAttributeValues[":paid"] = { S: "unpaid" };
 
-  UpdateExpression += ", type = :type";
-  UpdateExpression += ", GSI1_pk = :type";
-  ExpressionAttributeValues[":type"] = { S: "single"};
+  UpdateExpression += ", deliveryType = :deliveryType";
+  UpdateExpression += ", GSI1_pk = :deliveryType";
+  ExpressionAttributeValues[":deliveryType"] = { S: "single"};
 
   UpdateExpression += ", GSI2_pk = :vendor";
   ExpressionAttributeValues[":vendor"] = { S: "v#" + vendorId };
@@ -584,7 +584,7 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
   let dbItem = await database.updateItem(params).promise();
   const approved: "new" | "approved" | "denied" = "new";
   const paid: "paid" | "unpaid" = "unpaid";
-  const type: "sub" | "single" = "single";
+  const deliveryType: "sub" | "single" = "single";
 
   return {
     vendorId,
@@ -592,7 +592,7 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
     deliverytime: dbItem.Attributes.deliverytime.S,
     menuId: dbItem.Attributes.menuId.S,
     cancelled: dbItem.Attributes.cancelled.BOOL,
-    type,
+    deliveryType,
     paid,
     approved
   }
@@ -622,10 +622,10 @@ export async function updateDeliveries(deliveries: Delivery[]): Promise<void> {
         deliverytime: deliveries[i].deliverytime,
         menuId: deliveries[i].menuId,
         cancelled: deliveries[i].cancelled,
-        type: deliveries[i].type,
+        deliveryType: deliveries[i].deliveryType,
         paid: deliveries[i].paid,
         approved: deliveries[i].approved,
-        GSI1_pk: deliveries[i].type,
+        GSI1_pk: deliveries[i].deliveryType,
         GSI1_sk: "s#" + deliveries[i].deliverytime,
         GSI2_pk: "v#" + deliveries[i].vendorId,
         GSI2_sk: "d#" + deliveries[i].deliverytime
@@ -653,10 +653,10 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
           deliverytime: deliveries[i].deliverytime,
           menuId: deliveries[i].menuId,
           cancelled: deliveries[i].cancelled,
-          type: deliveries[i].type,
+          deliveryType: deliveries[i].deliveryType,
           paid: deliveries[i].paid,
           approved: deliveries[i].approved,
-          GSI1_pk: deliveries[i].type,
+          GSI1_pk: deliveries[i].deliveryType,
           GSI1_sk: "d#" + deliveries[i].deliverytime,
           GSI2_pk: "v#" + deliveries[i].vendorId,
           GSI2_sk: "d#" + deliveries[i].deliverytime
@@ -709,8 +709,6 @@ export async function getAllDeliveriesFromAllSubscribers(vendorId: string, start
   };
   let dbResult = await documentClient.query(params).promise();
 
-  console.log("PARAMS", params)
-
   let deliveries = dbResult.Items.map((del) => {
     return {
       vendorId,
@@ -718,7 +716,7 @@ export async function getAllDeliveriesFromAllSubscribers(vendorId: string, start
       deliverytime: del.deliverytime,
       menuId: del.menuId,
       cancelled: del.cancelled,
-      type: del.type,
+      deliveryType: del.deliveryType,
       paid: del.paid,
       approved: del.approved
     }
@@ -726,21 +724,32 @@ export async function getAllDeliveriesFromAllSubscribers(vendorId: string, start
   return deliveries;
 }
 
-export async function getDeliveryRequests(type) {
+export async function getDeliveryRequests() {
   let params = {
     TableName: settings.TABLENAME,
     IndexName: "GSI1",
-    KeyConditionExpression: "#GSI1_pk = :type",
+    KeyConditionExpression: "#GSI1_pk = :deliveryType",
     ExpressionAttributeNames: {
       "#GSI1_pk": "GSI1_pk"
     },
     ExpressionAttributeValues: {
-      ":type": type
+      ":deliveryType": "single"
     }
   }
 
   let dbResult = await documentClient.query(params).promise();
-  console.log("her", dbResult)
+  let deliveries = dbResult.Items.map((del) => {
+    return {
+      userId: del.userId,
+      deliverytime: del.deliverytime,
+      menuId: del.menuId,
+      cancelled: del.cancelled,
+      deliveryType: del.deliveryType,
+      paid: del.paid,
+      approved: del.approved
+    }
+  });
+  return deliveries;
 }
 
 export async function findLatestDelivery(vendorId: string, userId: string): Promise<Delivery | null> {
@@ -770,7 +779,7 @@ export async function findLatestDelivery(vendorId: string, userId: string): Prom
     deliverytime: dbResult.Items[0].deliverytime,
     menuId: dbResult.Items[0].menuId,
     cancelled: dbResult.Items[0].cancelled,
-    type: dbResult.Items[0].type,
+    deliveryType: dbResult.Items[0].deliveryType,
     paid: dbResult.Items[0].paid,
     approved: dbResult.Items[0].approved
   }

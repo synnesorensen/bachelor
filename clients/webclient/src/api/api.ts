@@ -233,6 +233,19 @@ export class Api {
     }
   }
 
+  async getDeliveryRequests(): Promise<interfaces.Delivery[] | null> {
+    await this.ensureFreshToken();
+    try {
+      const requests = await this.apiAxios.get(urlPrefix + "/v/deliveryRequests");
+      return requests.data;
+    } catch (error) {
+      if (this.getAxiosErrorStatus(error) === 404) {
+        return null;
+      }
+      throw (error);
+    }
+  }
+
   async getDelivery(vendorId: string, userId: string, time: string): Promise<interfaces.Delivery | null> {
     await this.ensureFreshToken();
     try {

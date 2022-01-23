@@ -44,7 +44,7 @@ export interface Delivery {
   deliverytime: string,
   menuId: string,
   cancelled: boolean,
-  type: "sub" | "single",
+  deliveryType: "sub" | "single",
   paid: "paid" | "unpaid", 
   approved: "new" | "approved" | "denied"
 }
