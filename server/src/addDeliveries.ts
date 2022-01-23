@@ -17,6 +17,7 @@ export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, 
   let weekTimes:WeekTime[] = scheduleToWeekTimes(subSchedule);
 
   let deliveryDates = getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries);
+  const type: "sub" | "single" = "sub";
   return deliveryDates.map((date) => {
     return {
       vendorId: vendorId,
@@ -24,6 +25,7 @@ export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, 
       deliverytime: date.date.toISOString(),
       menuId: date.menuId!,
       cancelled: false, 
+      type,
       paid: "paid",
       approved: "approved"
     }
@@ -35,6 +37,9 @@ export async function generateDeliveriesForVendor(EarliestStartDate: Date, vendo
   let weekTimes:WeekTime[] = scheduleToWeekTimes(vendor.schedule)
 
   let deliveryDates = getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries);
+  const type: "sub" | "single" = "single";
+
+
   return deliveryDates.map((date) => {
     return {
       vendorId: vendor.vendorId,
@@ -42,6 +47,7 @@ export async function generateDeliveriesForVendor(EarliestStartDate: Date, vendo
       deliverytime: date.date.toISOString(),
       menuId: date.menuId!,
       cancelled: false,
+      type,
       paid: "unpaid",
       approved: "new"
     }
