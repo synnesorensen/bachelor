@@ -105,7 +105,7 @@ export class Api {
     return result.data;
   }
 
-  async postSubscriptionAsVendor(userId: string, action: interfaces.Action): Promise<interfaces.Subscription> {
+  async postSubscriptionAsVendor(userId: string, action: interfaces.SubscriptionAction): Promise<interfaces.Subscription> {
     await this.ensureFreshToken();
     const pausedSubscription = await this.apiAxios.post(urlPrefix + "/v/subscription?userId=" + encodeURIComponent(userId), action);
     return pausedSubscription.data;
@@ -145,7 +145,7 @@ export class Api {
     }
   }
 
-  async postSubscription(vendorId: string, action: interfaces.Action): Promise<interfaces.Subscription> {
+  async postSubscription(vendorId: string, action: interfaces.SubscriptionAction): Promise<interfaces.Subscription> {
     await this.ensureFreshToken();
     const pausedSubscription = await this.apiAxios.post(urlPrefix + "/u/subscription?vendorId=" + encodeURIComponent(vendorId), action);
     return pausedSubscription.data;
@@ -233,7 +233,7 @@ export class Api {
     }
   }
 
-  async getDeliveryRequests(): Promise<interfaces.Delivery[] | null> {
+  async getDeliveryRequests(): Promise<dto.DeliveryRequestDto[] | null> {
     await this.ensureFreshToken();
     try {
       const requests = await this.apiAxios.get(urlPrefix + "/v/deliveryRequests");
@@ -300,6 +300,12 @@ export class Api {
     await this.ensureFreshToken();
     const deliveries = await this.apiAxios.get(urlPrefix + "/scheduleDates?vendorId=" + encodeURIComponent(vendorId) + "&startDate=" + startDate);
     return deliveries.data;
+  }
+
+  async handleDeliveryRequest(action: interfaces.DeliveryReqAction): Promise<interfaces.Delivery> {
+    await this.ensureFreshToken();
+    const delivery = await this.apiAxios.post(urlPrefix + "/v/deliveryRequests", action);
+    return delivery.data;
   }
 }
 

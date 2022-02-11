@@ -129,13 +129,13 @@ async function postUserSubscription(event: APIGatewayProxyEvent): Promise<APIGat
       body: '{ "message" : "Missing attribute action" }'
     };
   }
-  if (action == "pause") {
+  if (action === "pause") {
     const sub = await pauseSubscription(userId, vendorId, time);
     return {
       statusCode: 200,
       body: JSON.stringify(sub)
     };
-  } else if (action == "unpause") {
+  } else if (action === "unpause") {
     const sub = await unPauseSubscription(userId, vendorId, time);
     return {
       statusCode: 200,

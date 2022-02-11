@@ -103,7 +103,7 @@
 import Vue from "vue";
 import api from "../../api/api";
 import Component from "vue-class-component";
-import { Action, UserSubscription } from "../../../../../common/interfaces";
+import { SubscriptionAction, UserSubscription } from "../../../../../common/interfaces";
 import { UserDto } from "../../../../../common/dto";
 import CustomerInfo from "./CustomerInfo.vue";
 
@@ -252,7 +252,7 @@ export default class CustomerLists extends Vue {
       } else {
         time.setDate(time.getDate() + 2);
       }
-      let action: Action = {
+      let action: SubscriptionAction = {
         time: time.toISOString().substr(0, 10),
         action: this.selected.subscription.paused ? "unpause" : "pause",
       };

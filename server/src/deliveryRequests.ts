@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { getUserprofileFromDb, getDeliveryRequests } from './dbUtils'
+import { getUserprofileFromDb, getDeliveryRequests, handleDeliveryRequest, getVendorFromDb, getDeliveryFromDb } from './dbUtils'
 import { getUserInfoFromEvent } from './auth/getUserFromJwt'
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -15,8 +15,11 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     };
   }
 
-  if (event.httpMethod == "GET") {
+  if (event.httpMethod === "GET") {
     return getAllDeliveryRequests();
+  }
+  if (event.httpMethod === "POST") {
+    return postDeliveryRequest(event);
   }
   return {
     statusCode: 405,
@@ -31,6 +34,62 @@ async function getAllDeliveryRequests(): Promise<APIGatewayProxyResult> {
     statusCode: 200,
     body: JSON.stringify(requests)
   };
+}
+
+async function postDeliveryRequest(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  const body = JSON.parse(event.body);
+  const vendorId = getUserInfoFromEvent(event);
+  const {userId, deliverytime, action} = body;
+
+  if (!userId) {
+    return {
+      statusCode: 400,
+      body: '{ "message" : "Missing attribute userId" }'
+    };
+  }
+
+  if (!deliverytime) {
+    return {
+      statusCode: 400,
+      body: '{ "message" : "Missing attribute time" }'
+    };
+  }
+
+  if (!action) {
+    return {
+      statusCode: 400,
+      body: '{ "message" : "Missing attribute action" }'
+    };
+  }
+
+  let delivery = await getDeliveryFromDb(vendorId, userId, deliverytime);
+  if (!delivery) {
+    return {
+      statusCode: 400,
+      body: '{ "message" : "No delivery found" }'
+    };
+  }
+
+  if (action === "approve") {
+    const del = await handleDeliveryRequest(true, userId, deliverytime);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(del)
+    };
+  } else if (action === "deny") {
+    const del = await handleDeliveryRequest(false, userId, deliverytime);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(del)
+    };
+  } else {
+    return {
+      statusCode: 400,
+      body: '{ "message" : "Action not supported" }'
+    };
+  }
 }
 
 export const mainHandler = middy(handler).use(cors());

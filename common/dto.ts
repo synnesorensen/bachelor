@@ -1,3 +1,5 @@
+import { Delivery } from "./interfaces";
+
 export interface UserDto {
   fullname: string,
   address: string,
@@ -30,4 +32,10 @@ export interface MenuItemDto {
 export interface DeliveryDto {
   deliverytime: string,
   menuId: string
+}
+
+export interface DeliveryRequestDto extends Delivery {
+  fullname: string,
+  deliveryAddress: string,
+  allergies: string[]
 }

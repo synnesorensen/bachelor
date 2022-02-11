@@ -153,7 +153,7 @@ functions:
       - http: 
           authorizer: authorizer
           path: /v/deliveryRequests
-          method: get
+          method: any
           cors: true
 
 resources:

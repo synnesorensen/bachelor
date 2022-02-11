@@ -19,20 +19,25 @@
       <v-toolbar-title>
         <div class="text-h4">Lunsj på Hjul</div>
       </v-toolbar-title>
-      <v-spacer></v-spacer>
+      <v-spacer />
       <template v-slot:extension>
         <v-tabs align-with-title class="d-none d-sm-flex">
           <v-tab to="/admin/calendar">Kalender</v-tab>
           <v-tab to="/admin/profile">Firmaprofil</v-tab>
           <v-tab to="/admin/subscriptions">Abonnenter</v-tab>
-          <v-tab to="/admin/single-buy">Enkeltkjøp</v-tab>
+          <v-tab to="/admin/single-buy">
+            <v-badge
+              color="red"
+              :content="$store.getters.newRequests"
+            >
+              Enkeltkjøp
+            </v-badge>
+          </v-tab>
           <v-tab to="/admin/customer-lists">Kundelister</v-tab>
         </v-tabs>
       </template>
       <v-spacer />
-      <v-btn class="d-none d-sm-flex" color="grey" @click="logout">
-        Logg ut
-      </v-btn>
+      <v-icon large @click="logout">mdi-logout</v-icon>
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" absolute temporary>
       <v-list nav dense>

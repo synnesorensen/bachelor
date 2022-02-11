@@ -95,7 +95,13 @@ export interface Summary {
   cancelled: number
 }
 
-export interface Action {
+export interface SubscriptionAction {
   action: "pause" | "unpause",
   time: string
+}
+
+export interface DeliveryReqAction {
+  action:  "deny" | "approve",
+  deliverytime: string,
+  userId: string
 }

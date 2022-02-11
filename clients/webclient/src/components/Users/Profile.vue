@@ -378,7 +378,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Route } from "vue-router";
 import {
-  Action,
+  SubscriptionAction,
   MenuItems,
   Subscription,
   Vendor,
@@ -450,7 +450,7 @@ export default class CustomerProfile extends Vue {
         } else {
           time.setDate(time.getDate() + 2);
         }
-        let action: Action = {
+        let action: SubscriptionAction = {
           time: time.toISOString().substr(0, 10),
           action: sub.paused ? "pause" : "unpause",
         };

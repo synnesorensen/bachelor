@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { testPass, testUser, testVend, testVendPass} from '../../../../common/settings';
 import 'mocha';
 import { afterEach, beforeEach } from 'mocha';
-import { Action } from '../../../../common/interfaces';
+import { SubscriptionAction } from '../../../../common/interfaces';
 
 let userApi = null; 
 let vendorApi = null;
@@ -71,7 +71,7 @@ describe('Subscription vendor http test', () => {
     let addedDeliveries = await userApi.getAllUsersDeliveries("2021-06-01T00:00:00.000Z", "2021-06-23T23:59:00.000Z");
     expect(addedDeliveries.length).equal(8);
 
-    let action1: Action = {
+    let action1: SubscriptionAction = {
       action: "pause",
       time: "2021-06-09T00:00:00.000Z"
     }
@@ -81,7 +81,7 @@ describe('Subscription vendor http test', () => {
     // Expect to only return deliveries that has a date before the date of pausing subscription:
     expect(getDel1.length).equal(3);
 
-    let action2: Action = {
+    let action2: SubscriptionAction = {
       action: "unpause",
       time: "2021-06-16T00:00:00.000Z"
     }

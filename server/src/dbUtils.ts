@@ -4,7 +4,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, DeliveryDetail } from '../../common/interfaces';
 import * as settings from '../../common/settings';
 import { generateDeliveriesForSubscribers } from './addDeliveries';
-import { DeliveryDto } from '../../common/dto';
+import { DeliveryDto, DeliveryRequestDto } from '../../common/dto';
 
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
@@ -749,7 +749,23 @@ export async function getDeliveryRequests() {
       approved: del.approved
     }
   });
-  return deliveries;
+  const deliveryRequests: DeliveryRequestDto[] = [];
+  const promises = [];
+  deliveries.forEach(del => {
+    promises.push(getUserprofileFromDb(del.userId));
+  });
+  const userprofiles = await Promise.all(promises);
+  deliveries.forEach(del => {
+    const user = userprofiles.find(({email}) => email === del.userId);
+    const deliveryReq:DeliveryRequestDto = {
+      ...del,
+      fullname: user.fullname,
+      deliveryAddress: user.deliveryAddress,
+      allergies: user.allergies
+    }
+    deliveryRequests.push(deliveryReq);
+  });  
+  return deliveryRequests;
 }
 
 export async function findLatestDelivery(vendorId: string, userId: string): Promise<Delivery | null> {
@@ -935,5 +951,43 @@ export async function unPauseSubscription(userId: string, vendorId: string, time
     schedule: result.Attributes.schedule.SS,
     noOfMeals: parseInt(result.Attributes.noOfMeals.N),
     box: result.Attributes.box.S
+  }
+}
+
+export async function handleDeliveryRequest(action: boolean, userId: string, time: string) {
+  let UpdateExpression = "";
+  let ExpressionAttributeValues: any = ""
+
+  if (action) {
+    UpdateExpression += "SET approved = :approved";
+    ExpressionAttributeValues = {
+      ":approved": { S: "approved" }
+    }
+  } else {
+    UpdateExpression += "SET approved = :approved";
+    ExpressionAttributeValues = {
+      ":approved": { S: "denied" }
+    }
+  }
+  const params = {
+    TableName: settings.TABLENAME,
+    Key: {
+      "pk": { S: "u#" + userId },
+      "sk": { S: "d#" + time }
+    },
+    UpdateExpression,
+    ExpressionAttributeValues,
+    ReturnValues: "ALL_NEW"
+  };
+  let result = await database.updateItem(params).promise();
+  return {
+    vendorId: result.Attributes.vendorId,
+    userId: result.Attributes.userId,
+    deliverytime: result.Attributes.delivertime,
+    menuId: result.Attributes.menuId,
+    cancelled: result.Attributes.cancelled,
+    deliveryType: result.Attributes.deliveryType,
+    paid: result.Attributes.paid,
+    approved: result.Attributes.approved
   }
 }
