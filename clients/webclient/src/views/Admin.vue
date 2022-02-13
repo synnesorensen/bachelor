@@ -28,6 +28,7 @@
           <v-tab to="/admin/single-buy">
             <v-badge
               color="red"
+              :value="$store.getters.newRequests"
               :content="$store.getters.newRequests"
             >
               Enkeltkjøp

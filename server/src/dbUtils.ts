@@ -650,6 +650,8 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
           EntityType: "Delivery",
           pk: "u#" + deliveries[i].userId,
           sk: "d#" + deliveries[i].deliverytime,
+          userId: deliveries[i].userId,
+          vendorId: deliveries[i].vendorId,
           deliverytime: deliveries[i].deliverytime,
           menuId: deliveries[i].menuId,
           cancelled: deliveries[i].cancelled,

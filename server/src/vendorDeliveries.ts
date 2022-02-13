@@ -69,6 +69,7 @@ async function getVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGate
 
   } else {
     let deliveries = await getAllDeliveriesFromAllSubscribers(vendorId, start, end); 
+
     if (summary && summary == "true") {
       return {
         statusCode: 200,

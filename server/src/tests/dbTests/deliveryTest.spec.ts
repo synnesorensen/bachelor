@@ -8,7 +8,7 @@ import { Delivery } from '../../../../common/interfaces';
 describe('Delivery tests', () => {
   const paid: "paid" | "unpaid" = "unpaid";
   const approved: "new" | "approved" | "denied" = "new";
-  const type: "sub" | "single" = "sub";
+  const deliveryType: "sub" | "single" = "sub";
 
   it('Put, get and delete a delivery', async () => {
     let delivery1 = {
@@ -17,7 +17,7 @@ describe('Delivery tests', () => {
       deliverytime: "2021-04-20",
       menuId: "1",
       cancelled: false,
-      type,
+      deliveryType,
       paid,
       approved
     };
@@ -27,7 +27,7 @@ describe('Delivery tests', () => {
       deliverytime: "2021-04-01",
       menuId: "1", 
       cancelled: true,
-      type,
+      deliveryType,
       paid,
       approved
     };
@@ -37,7 +37,7 @@ describe('Delivery tests', () => {
       deliverytime: "2021-05-01",
       menuId: "1", 
       cancelled: false,
-      type,
+      deliveryType,
       paid,
       approved
     };
@@ -96,7 +96,7 @@ describe('Delivery tests', () => {
       deliverytime: "2021-06-01", 
       menuId: "1", 
       cancelled: false,
-      type,
+      deliveryType,
       paid,
       approved
     },
@@ -106,7 +106,7 @@ describe('Delivery tests', () => {
       deliverytime: "2021-06-15",
       menuId: "1", 
       cancelled: false,
-      type,
+      deliveryType,
       paid,
       approved
     },
@@ -116,7 +116,7 @@ describe('Delivery tests', () => {
       deliverytime: "2021-06-30",
       menuId: "1", 
       cancelled: false,
-      type,
+      deliveryType,
       paid,
       approved
     }]
