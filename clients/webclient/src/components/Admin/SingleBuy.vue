@@ -1,89 +1,138 @@
 <template>
-  <v-card>
-    <v-app-bar dark color="success">
+  <v-container>
+    <v-card>
       <v-card-title>Leveranseforespørsler</v-card-title>
-    </v-app-bar>
+      <br />
+      <v-data-table
+        v-if="newRequests.length > 0"
+        :headers="headers"
+        :items="newRequests"
+        class="row-pointer"
+        @click:row="showRequest"
+      >
+        <template v-slot:[`item.controls`]="props">
+          <v-btn
+            class="mx-1"
+            dark
+            x-small
+            color="green"
+            @click="approve(props.item)"
+          >
+            Godkjenn
+          </v-btn>
+          <v-btn
+            class="mx-1"
+            dark
+            x-small
+            color="red"
+            @click="deny(props.item)"
+          >
+            Avvis
+          </v-btn>
+        </template>
+      </v-data-table>
+      <v-card-text v-else>
+        Det er ingen nye leveranseforespørsler.
+      </v-card-text>
+    </v-card>
     <br />
-    <v-data-table
-      v-if="newRequests.length > 0"
-      :headers="newRequestsHeaders"
-      :items="newRequests"
-      class="row-pointer"
-      @click:row="showRequest"
-    >
-      <template v-slot:[`item.controls`]="props">
-        <v-btn
-          class="mx-1"
-          dark
-          x-small
-          color="green"
-          @click="approve(props.item)"
+    <v-card>
+      <v-card-title>Tidligere forespørsler</v-card-title>
+      <v-card-text>
+        <v-row>
+          <v-col>
+            <p class="font-weight-medium">Fra dato:</p>
+            <date-picker :date.sync="startDate" @blur="dateCheck" />
+          </v-col>
+          <v-col>
+            <p class="font-weight-medium">Til dato:</p>
+            <date-picker :date.sync="endDate" @blur="dateCheck" />
+          </v-col>
+        </v-row>
+        <v-row>
+          <p style="color: red">{{ errorMsg }}</p>
+        </v-row>
+        <v-data-table
+          :loading="loading"
+          v-if="requests && requests.length > 0"
+          :headers="headers"
+          :items="allRequests"
+          item-key="deliverytime"
+          class="pt-2"
         >
-          Godkjenn
-        </v-btn>
-        <v-btn
-          class="mx-1"
-          dark
-          x-small
-          color="red"
-          @click="deny(props.item)"
-        >
-          Avvis
-        </v-btn>
-      </template>
-    </v-data-table>
-    <v-data-table
-      v-if="allRequests.length > 0"
-      :headers="allRequestsHeaders"
-      :items="allRequests"
-      class="row-pointer"
-      @click:row="showRequest"
-    >
-      <template v-slot:[`item.controls`]="props">
-        <v-btn
-          class="mx-1"
-          dark
-          x-small
-          color="green"
-          @click="approve(props.item)"
-        >
-          Godkjenn
-        </v-btn>
-        <v-btn
-          class="mx-1"
-          dark
-          x-small
-          color="red"
-          @click="deny(props.item)"
-        >
-          Avvis
-        </v-btn>
-      </template>
-    </v-data-table>
-    <v-card-text
-      v-else
-    >Det er ingen nye leveranseforespørsler.
-    </v-card-text>
-  </v-card>
+          <template v-slot:[`item.controls`]="props">
+            <v-btn
+              class="mx-1"
+              dark
+              x-small
+              color="green"
+              @click="approve(props.item)"
+            >
+              Godkjenn
+            </v-btn>
+            <v-btn
+              class="mx-1"
+              dark
+              x-small
+              color="red"
+              @click="deny(props.item)"
+            >
+              Avvis
+            </v-btn>
+          </template>
+        </v-data-table>
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import { Prop, Watch } from "vue-property-decorator";
 import { DeliveryRequestDto } from "../../../../../common/dto";
 import api from "../../api/api";
+import DatePicker from "./DatePicker.vue";
 import { toLocalPresentation } from "../../utils/utils";
 
 @Component({
-  components: {},
+  components: {
+    DatePicker,
+  },
 })
 
 export default class SingleBuy extends Vue {
   private _selectedRequest: DeliveryRequestDto | null = null;
+  private requests: DeliveryRequestDto[] | null = [];
+  private startDate = "";
+  private endDate = "";
+  private errorMsg = "";
+  private loading = false;
+
+
+  async dateCheck() {
+    if (this.startDate && this.endDate) {
+      if (new Date(this.endDate) < new Date(this.startDate)) {
+        this.errorMsg = "Fra dato kan ikke være etter til dato.";
+      } else {
+        this.loading = true;
+        this.errorMsg = "";
+        try {
+          this.requests = await api.getSelectedDeliveryRequests(this.startDate, this.endDate);
+        } catch (err) {
+          console.log(err);
+        } finally {
+          this.loading = false;
+        }
+      }
+    }
+  }
 
   get allRequests() {
-    const reqs:DeliveryRequestDto[] = this.$store.getters.deliveryRequests;
-    return reqs.map((req) => { 
+    let touched = this.requests!.filter(req => {
+      return req.approved !== "new"
+    });
+    return touched.map((req) => { 
       let status = "";
       if (req.approved === "approved") {
         status = "Godkjent";
@@ -119,20 +168,7 @@ export default class SingleBuy extends Vue {
     });
   }
 
-  private newRequestsHeaders = [
-    {
-      text: "Dato",
-      align: "start",
-      sortable: true,
-      value: "localTime"
-    },
-    {text: "Status", value: "status"},
-    {text: "Navn", value: "fullname"},
-    {text: "Adresse", value: "deliveryAddress"},
-    {text: "", value: "controls", sortable: false },
-  ]
-
-    private allRequestsHeaders = [
+  private headers = [
     {
       text: "Dato",
       align: "start",

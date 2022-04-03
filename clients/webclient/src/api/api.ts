@@ -181,7 +181,6 @@ export class Api {
 
   async getAllVendorsDeliveriesSummary(startDate: string, endDate: string): Promise<interfaces.Summary[] | null> {
     await this.ensureFreshToken();
-
     try {
       let url = urlPrefix + "/v/deliveries?start=" + startDate + "&end=" + endDate + "&summary=true";
       const deliveries = await this.apiAxios.get(url);
@@ -237,6 +236,19 @@ export class Api {
     await this.ensureFreshToken();
     try {
       const requests = await this.apiAxios.get(urlPrefix + "/v/deliveryRequests");
+      return requests.data;
+    } catch (error) {
+      if (this.getAxiosErrorStatus(error) === 404) {
+        return null;
+      }
+      throw (error);
+    }
+  }
+
+  async getSelectedDeliveryRequests(startDate: string, endDate: string): Promise<dto.DeliveryRequestDto[] | null> {
+    await this.ensureFreshToken();
+    try {
+      const requests = await this.apiAxios.get(urlPrefix + "/v/deliveryRequests?start=" + startDate + "&end=" + endDate);
       return requests.data;
     } catch (error) {
       if (this.getAxiosErrorStatus(error) === 404) {

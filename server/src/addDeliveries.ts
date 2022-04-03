@@ -42,7 +42,7 @@ export async function generateDeliveriesForVendor(EarliestStartDate: Date, vendo
   return deliveryDates.map((date) => {
     return {
       vendorId: vendor.vendorId,
-      userId: vendor.vendorId,
+      userId: vendor.vendorId,            // Changes when someone orders the delivery
       deliverytime: date.date.toISOString(),
       menuId: date.menuId!,
       cancelled: false,

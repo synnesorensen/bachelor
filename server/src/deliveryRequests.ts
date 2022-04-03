@@ -2,8 +2,9 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { getUserprofileFromDb, getDeliveryRequests, handleDeliveryRequest, getDeliveryFromDb } from './dbUtils'
+import { getUserprofileFromDb, getDeliveryRequestsFromDb, getDeliveryRequestsByDate, handleDeliveryRequest, getDeliveryFromDb } from './dbUtils'
 import { getUserInfoFromEvent } from './auth/getUserFromJwt'
+import { DeliveryRequestDto } from '../../common/dto';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   let vendorId = getUserInfoFromEvent(event);
@@ -16,7 +17,7 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
   }
 
   if (event.httpMethod === "GET") {
-    return getAllDeliveryRequests();
+    return getDeliveryRequests(event);
   }
   if (event.httpMethod === "POST") {
     return postDeliveryRequest(event);
@@ -27,9 +28,21 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
   };
 }
 
-async function getAllDeliveryRequests(): Promise<APIGatewayProxyResult> {
-  const requests = await getDeliveryRequests();
+async function getDeliveryRequests(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  let requests:DeliveryRequestDto[] = []; 
 
+  if (event.queryStringParameters) {
+    const startDate = event.queryStringParameters["start"];
+    const endDate = event.queryStringParameters["end"];
+
+    requests = await getDeliveryRequestsByDate(startDate, endDate);
+    return {
+      statusCode: 200,
+      body: JSON.stringify(requests)
+    };
+  }
+
+  requests = await getDeliveryRequestsFromDb();
   return {
     statusCode: 200,
     body: JSON.stringify(requests)

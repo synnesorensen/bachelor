@@ -726,7 +726,7 @@ export async function getAllDeliveriesFromAllSubscribers(vendorId: string, start
   return deliveries;
 }
 
-export async function getDeliveryRequests() {
+export async function getDeliveryRequestsFromDb() {
   let params = {
     TableName: settings.TABLENAME,
     IndexName: "GSI1",
@@ -737,7 +737,7 @@ export async function getDeliveryRequests() {
     ExpressionAttributeValues: {
       ":deliveryType": "single"
     }
-  }
+  };
 
   let dbResult = await documentClient.query(params).promise();
   let deliveries = dbResult.Items.map((del) => {
@@ -756,6 +756,7 @@ export async function getDeliveryRequests() {
   deliveries.forEach(del => {
     promises.push(getUserprofileFromDb(del.userId));
   });
+
   const userprofiles = await Promise.all(promises);
   deliveries.forEach(del => {
     const user = userprofiles.find(({email}) => email === del.userId);
@@ -766,7 +767,58 @@ export async function getDeliveryRequests() {
       allergies: user.allergies
     }
     deliveryRequests.push(deliveryReq);
-  });  
+  });
+
+  return deliveryRequests;
+}
+
+export async function getDeliveryRequestsByDate(startDate: string, endDate: string) {
+  let params = {
+    TableName: settings.TABLENAME,
+    IndexName: "GSI1",
+    KeyConditionExpression: "#GSI1_pk = :deliveryType and #GSI1_sk BETWEEN :start and :end",
+    ExpressionAttributeNames: {
+      "#GSI1_pk": "GSI1_pk",
+      "#GSI1_sk": "GSI1_sk"
+    },
+    ExpressionAttributeValues: {
+      ":deliveryType": "single",
+      ":start": "d#" + startDate,
+      ":end": "d#" + endDate
+    }
+  };
+
+  let dbResult = await documentClient.query(params).promise();
+  let deliveries = dbResult.Items.map((del) => {
+    return {
+      userId: del.userId,
+      deliverytime: del.deliverytime,
+      menuId: del.menuId,
+      cancelled: del.cancelled,
+      deliveryType: del.deliveryType,
+      paid: del.paid,
+      approved: del.approved
+    }
+  });
+
+  const deliveryRequests: DeliveryRequestDto[] = [];
+  const promises = [];
+  deliveries.forEach(del => {
+    promises.push(getUserprofileFromDb(del.userId));
+  });
+
+  const userprofiles = await Promise.all(promises);
+  deliveries.forEach(del => {
+    const user = userprofiles.find(({email}) => email === del.userId);
+    const deliveryReq:DeliveryRequestDto = {
+      ...del,
+      fullname: user.fullname,
+      deliveryAddress: user.deliveryAddress,
+      allergies: user.allergies
+    }
+    deliveryRequests.push(deliveryReq);
+  });
+
   return deliveryRequests;
 }
 
