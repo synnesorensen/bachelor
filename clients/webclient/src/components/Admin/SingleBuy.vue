@@ -94,6 +94,7 @@ import { DeliveryRequestDto } from "../../../../../common/dto";
 import api from "../../api/api";
 import DatePicker from "./DatePicker.vue";
 import { toLocalPresentation } from "../../utils/utils";
+import { Vendor } from "../../../../../common/interfaces";
 
 @Component({
   components: {
@@ -108,6 +109,8 @@ export default class SingleBuy extends Vue {
   private endDate = "";
   private errorMsg = "";
   private loading = false;
+  private vendor: Vendor = this.$store.getters.vendor;
+  private vendorSchedule = this.vendor.schedule;
 
 
   async dateCheck() {
@@ -133,6 +136,7 @@ export default class SingleBuy extends Vue {
       return req.approved !== "new"
     });
     return touched.map((req) => { 
+      const menu = this.vendorSchedule.find(({ id }) => id == req.menuId);
       let status = "";
       if (req.approved === "approved") {
         status = "Godkjent";
@@ -144,6 +148,7 @@ export default class SingleBuy extends Vue {
       return {
         ...req,
         localTime: toLocalPresentation(req.deliverytime),
+        menu: menu!.menu,
         status,
         id: req.userId + req.deliverytime
       }
@@ -156,11 +161,13 @@ export default class SingleBuy extends Vue {
       return req.approved === "new";
     });
     return onlyNew.map((req) => { 
+      const menu = this.vendorSchedule.find(({ id }) => id == req.menuId);
       let status = "";
       if (req.approved === "new") {
         return {
           ...req,
           localTime: toLocalPresentation(req.deliverytime),
+          menu: menu!.menu,
           status: "Ubehandlet",
           id: req.userId + req.deliverytime
         };
@@ -175,6 +182,7 @@ export default class SingleBuy extends Vue {
       sortable: true,
       value: "localTime"
     },
+    {text: "Meny", value: "menu"},
     {text: "Status", value: "status"},
     {text: "Navn", value: "fullname"},
     {text: "Adresse", value: "deliveryAddress"},

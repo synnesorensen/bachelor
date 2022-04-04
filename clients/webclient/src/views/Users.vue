@@ -25,7 +25,7 @@
             >Kalender</v-tab
           >
           <v-tab to="/user/profile">Kundeprofil</v-tab>
-          <v-tab to="/user/invoice">Faktura</v-tab>
+          <v-tab to="/user/orderHistory">Ordrehistorikk</v-tab>
           <v-tab to="/user/info">Informasjon</v-tab>
         </v-tabs>
       </template>
@@ -61,14 +61,14 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import UserCalendar from "../components/Users/UserCalendar.vue";
 import Profile from "../components/Users/Profile.vue";
-import Invoice from "../components/Users/Invoice.vue";
+import OrderHistory from "../components/Users/OrderHistory.vue";
 import Information from "../components/Users/Information.vue";
 
 @Component({
   components: {
     UserCalendar,
     Profile,
-    Invoice,
+    OrderHistory,
     Information,
   },
 })
@@ -85,7 +85,7 @@ export default class AppBar extends Vue {
     },
     {
       title: "Faktura",
-      route: "/user/invoice",
+      route: "/user/orderHistory",
     },
     {
       title: "Informasjon",

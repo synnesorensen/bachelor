@@ -26,9 +26,9 @@ const routes = [
     component: () => import ("./components/Users/UserCalendar.vue")
     },
     {
-    path: 'invoice',
-    name: 'invoice',
-    component: () => import ("./components/Users/Invoice.vue")
+    path: 'orderHistory',
+    name: 'orderHistory',
+    component: () => import ("./components/Users/OrderHistory.vue")
     },
     {
     path: 'info',

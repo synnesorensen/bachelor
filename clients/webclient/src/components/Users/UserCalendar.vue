@@ -217,7 +217,7 @@ export default class UserCalendar extends Vue {
   async populateCalendar() {
     this.showSpinner = true;
     const usersSub: Subscription = this.$store.getters.subscription;
-    const vendor: Vendor = await api.getVendor();
+    const vendor: Vendor = this.$store.getters.vendor;
     const vendorSchedule = vendor.schedule;
     const vendorDeliveries = await api.scheduleToDates(
       vendor.vendorId,
@@ -237,10 +237,12 @@ export default class UserCalendar extends Vue {
 
           const menu = vendorSchedule.find(({ id }) => id == del.menuId);
           let color = "green";
-          if (new Date(del.deliverytime) < new Date(Date.now()) || del.cancelled || del.approved === "denied") {
+          if (new Date(del.deliverytime) < new Date(Date.now()) || del.cancelled) {
             color = "grey"; 
           } else if (del.approved === "new") {
             color = "orange";
+          } else if (del.approved === "denied") {
+            color = "red"
           }
 
           events.push({

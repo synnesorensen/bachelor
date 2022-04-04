@@ -1,5 +1,5 @@
 <template>
-  <v-layout row wrap>
+  <v-row row wrap>
     <v-menu
       v-model="menu"
       :close-on-content-click="false"
@@ -10,12 +10,17 @@
       min-width="290px"
     >
       <template v-slot:activator="{ on }">
-        <v-text-field
-          :value="selectedDate"
-          prepend-icon="mdi-calendar"
-          readonly
-          v-on="on"
-        ></v-text-field>
+        <v-col class="d-flex justify-space-between mb-6">
+          <v-text-field
+            :value="selectedDate"
+            prepend-icon="mdi-calendar"
+            readonly
+            rounded
+            outlined
+            v-on="on"
+            class="my-text-style"
+          ></v-text-field>
+        </v-col>
       </template>
       <v-date-picker
         v-model="selectedDate"
@@ -25,7 +30,7 @@
         no-title
       ></v-date-picker>
     </v-menu>
-  </v-layout>
+  </v-row>
 </template>
 
 <script lang="ts">
