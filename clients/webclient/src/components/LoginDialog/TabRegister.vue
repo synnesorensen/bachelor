@@ -2,7 +2,11 @@
   <v-card>
     <v-card-title class="headline">Registrer konto</v-card-title>
     <v-card-text>
-      <v-text-field label="Fyll inn epost-adresse" required v-model="username">
+      <v-text-field 
+        label="Fyll inn epost-adresse" 
+        required v-model="username"
+        autofocus  
+      >
       </v-text-field>
       <v-text-field
         v-if="!showCodeVerification"

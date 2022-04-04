@@ -3,7 +3,12 @@
     <v-card-title class="headline">Logg inn til din konto</v-card-title>
     <v-card-text>
       <p>Vennligst oppgi brukernavn og passord</p>
-      <v-text-field v-model="username" label="Brukernavn" required>
+      <v-text-field 
+        v-model="username" 
+        label="Brukernavn" 
+        required
+        autofocus
+      >
       </v-text-field>
       <v-text-field
         v-model="password"

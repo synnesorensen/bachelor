@@ -8,6 +8,7 @@
         label="Fyll inn epost-adresse"
         required
         @keyup.enter="sendPassword"
+        autofocus
       >
       </v-text-field>
       <v-text-field
