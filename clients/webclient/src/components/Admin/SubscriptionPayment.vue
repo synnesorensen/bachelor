@@ -56,7 +56,7 @@
       >
         <v-card>
           <v-app-bar>
-            <v-card-title class="headline"> Leveranser </v-card-title>
+            <v-card-title class="headline"> Leveranser for {{selectedUser.fullname}} </v-card-title>
             <v-spacer></v-spacer>
             <v-btn icon @click="close">
               <v-icon> mdi-close </v-icon>
@@ -82,7 +82,7 @@
               v-model="selectedDeliveries"
               v-if="deliveries && deliveries.length > 0"
               :headers="headers"
-              :items="deliveries"
+              :items="deliveriesWithMenu"
               item-key="deliverytime"
               show-select
               class="pt-2"
@@ -97,6 +97,7 @@
                     ></v-checkbox>
                   </td>
                   <td>{{ localPresentation(item.deliverytime) }}</td>
+                  <td>{{ item.menu }}</td>
                   <td>{{ item.cancelled ? "Ja" : "Nei" }}</td>
                 </tr>
               </template>
@@ -181,6 +182,8 @@ import { toLocalPresentation } from "../../utils/utils";
   },
 })
 export default class SubscriptionPayment extends Vue {
+  private vendor: interfaces.Vendor = this.$store.getters.vendor;
+  private vendorSchedule = this.vendor.schedule;
   private loading = false;
   @Prop() selectedUser!: dto.UserDto | null;
   private paymentDialog = false;
@@ -196,6 +199,7 @@ export default class SubscriptionPayment extends Vue {
   private errorMsg = "";
   private headers = [
     { text: "Dato", value: "deliverytime" },
+    { text: "Meny", value: "menu" },
     { text: "Kansellert", value: "cancelled" },
   ];
 
@@ -335,6 +339,16 @@ export default class SubscriptionPayment extends Vue {
         );
       });
     }
+  }
+
+  get deliveriesWithMenu() {
+    return this.deliveries!.map(del => {
+      const menu = this.vendorSchedule.find(({ id }) => id === del.menuId);
+      return {
+        ...del,
+        menu: menu!.menu
+      };
+    });
   }
 
   async cancelDel() {
