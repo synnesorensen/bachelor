@@ -99,12 +99,20 @@ functions:
           path: /u/deliveries
           method: get
           cors: true
-  delivery:
-    handler: src/delivery.mainHandler
+  userDelivery:
+    handler: src/userDelivery.mainHandler
     events:
       - http:
           authorizer: authorizer
-          path: /delivery
+          path: /u/delivery
+          method: any
+          cors: true
+  vendorDelivery:
+    handler: src/vendorDelivery.mainHandler
+    events:
+      - http:
+          authorizer: authorizer
+          path: /v/delivery
           method: any
           cors: true
   vendorDeliveries:

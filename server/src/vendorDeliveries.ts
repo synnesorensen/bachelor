@@ -62,9 +62,10 @@ async function getVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGate
 
   if (userId) {
     let deliveries = await getUsersDeliveries(userId, start, end);
+    const onlySubscriptionDeliveries = deliveries.filter(del => del.deliveryType === "sub");
     return {
       statusCode: 200,
-      body: JSON.stringify(deliveries)
+      body: JSON.stringify(onlySubscriptionDeliveries)
     };
 
   } else {

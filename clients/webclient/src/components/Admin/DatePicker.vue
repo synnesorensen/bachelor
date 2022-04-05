@@ -2,7 +2,6 @@
   <v-row row wrap>
     <v-menu
       v-model="menu"
-      :close-on-content-click="false"
       :nudge-right="40"
       transition="scale-transition"
       offset-y
@@ -18,7 +17,6 @@
             rounded
             outlined
             v-on="on"
-            class="my-text-style"
           ></v-text-field>
         </v-col>
       </template>

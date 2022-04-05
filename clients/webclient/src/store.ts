@@ -13,7 +13,7 @@ interface State {
   subscription: SubscriptionDto | null,
   username: string, 
   vendor: Vendor | null,
-  deliveryRequests: DeliveryRequestDto[]
+  newDeliveryRequests: DeliveryRequestDto[]
 }
 
 let state: State = {
@@ -21,7 +21,7 @@ let state: State = {
   subscription: null,
   username: "",
   vendor: null,
-  deliveryRequests: []
+  newDeliveryRequests: []
 }
 
 export const store = new Vuex.Store({
@@ -39,8 +39,8 @@ export const store = new Vuex.Store({
     setVendor(state, vendor) {
       state.vendor = vendor;
     },
-    setDeliveryRequests(state, deliveryRequests) {
-      state.deliveryRequests = deliveryRequests;
+    setNewDeliveryRequests(state, newDeliveryRequests) {
+      state.newDeliveryRequests = newDeliveryRequests;
     }
   }, 
   getters: {
@@ -59,19 +59,14 @@ export const store = new Vuex.Store({
     vendor(state) {
       return state.vendor;
     },
-    deliveryRequests(state) {
-      return state.deliveryRequests;
-    },
-    newRequests(state) {
-      return (state.deliveryRequests.reduce((prev, curr) => {
-        return prev + (curr.approved === "new" ? 1 : 0)
-      }, 0))
+    newDeliveryRequests(state) {
+      return state.newDeliveryRequests;
     }
   }, 
   actions: {
-    async refreshDeliveryRequests(context) {
-      const requests = await api.getDeliveryRequests();
-      context.commit("setDeliveryRequests", requests);
+    async refreshNewDeliveryRequests(context) {
+      const requests = await api.getNewDeliveryRequests();
+      context.commit("setNewDeliveryRequests", requests);
     },
     async loggedInUser(context, payload) {
       if(!payload.jwt) {
@@ -93,7 +88,7 @@ export const store = new Vuex.Store({
       context.commit("setSubscription", subscription);
       
       if (userprofile?.isVendor) {
-        context.dispatch("refreshDeliveryRequests");
+        context.dispatch("refreshNewDeliveryRequests");
         router.push({name: 'adminCalendar'});
       } else {
         router.push({name: 'userCalendar'});

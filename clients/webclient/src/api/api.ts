@@ -232,7 +232,7 @@ export class Api {
     }
   }
 
-  async getDeliveryRequests(): Promise<dto.DeliveryRequestDto[] | null> {
+  async getNewDeliveryRequests(): Promise<dto.DeliveryRequestDto[] | null> {
     await this.ensureFreshToken();
     try {
       const requests = await this.apiAxios.get(urlPrefix + "/v/deliveryRequests");
@@ -261,7 +261,7 @@ export class Api {
   async getDelivery(vendorId: string, userId: string, time: string): Promise<interfaces.Delivery | null> {
     await this.ensureFreshToken();
     try {
-      const url = urlPrefix + "/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId) + "&time=" + time;
+      const url = urlPrefix + "/u/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId) + "&time=" + time;
       const delivery = await this.apiAxios.get(url);
       return delivery.data;
     } catch (error) {
@@ -272,16 +272,24 @@ export class Api {
     }
   }
 
-    async putDelivery(vendorId: string, userId: string, delivery: dto.DeliveryDto): Promise<interfaces.Delivery> {
+  async putDelivery(vendorId: string, userId: string, delivery: dto.DeliveryDto): Promise<interfaces.Delivery> {
     await this.ensureFreshToken();
-    const url = urlPrefix + "/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId);
+    const url = urlPrefix + "/u/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId);
     const newDelivery = await this.apiAxios.put(url, delivery);
     return newDelivery.data;
   }
 
+  async payDelivery(userId: string, time: string, status: string): Promise<interfaces.Delivery> {
+    await this.ensureFreshToken();
+    const url = urlPrefix + "/v/delivery?&userId=" + encodeURIComponent(userId) + "&time=" + time + "&status=" + status;
+    console.log(url)
+    const updatedDelivery = await this.apiAxios.put(url);
+    return updatedDelivery.data;
+  }
+
   async deleteDelivery(vendorId: string, userId: string, time: string) {
     await this.ensureFreshToken();
-    const url = urlPrefix + "/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId) + "&time=" + time;
+    const url = urlPrefix + "/u/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId) + "&time=" + time;
     await this.apiAxios.delete(url);
   }
 

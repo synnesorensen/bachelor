@@ -36,6 +36,7 @@ async function getDeliveryRequests(event: APIGatewayProxyEvent): Promise<APIGate
     const endDate = event.queryStringParameters["end"];
 
     requests = await getDeliveryRequestsByDate(startDate, endDate);
+    
     return {
       statusCode: 200,
       body: JSON.stringify(requests)
@@ -43,9 +44,10 @@ async function getDeliveryRequests(event: APIGatewayProxyEvent): Promise<APIGate
   }
 
   requests = await getDeliveryRequestsFromDb();
+  const newRequests = requests.filter(req => req.approved === "new");   // TODO: Legge til GSI med approved sånn at DB kan hente ut alle nye
   return {
     statusCode: 200,
-    body: JSON.stringify(requests)
+    body: JSON.stringify(newRequests)
   };
 }
 

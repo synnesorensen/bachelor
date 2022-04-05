@@ -65,8 +65,8 @@ export default class OrderHistory extends Vue {
   private loading = false;
   private deliveries: Delivery[] | null = [];
   private showRejectedRequests = false;
-    private vendor: Vendor = this.$store.getters.vendor;
-    private vendorSchedule = this.vendor.schedule;
+  private vendor: Vendor = this.$store.getters.vendor;
+  private vendorSchedule = this.vendor.schedule;
 
   private headers = [
     {
@@ -106,7 +106,7 @@ export default class OrderHistory extends Vue {
         return del.approved !== "denied";
       }
       return true;
-    })
+    });
     return deliveries!.map((del) => { 
       const menu = this.vendorSchedule.find(({ id }) => id == del.menuId);
       let status = "";

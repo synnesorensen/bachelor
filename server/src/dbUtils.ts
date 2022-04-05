@@ -625,8 +625,10 @@ export async function updateDeliveries(deliveries: Delivery[]): Promise<void> {
         deliveryType: deliveries[i].deliveryType,
         paid: deliveries[i].paid,
         approved: deliveries[i].approved,
+        userId: deliveries[i].userId,
+        vendorId: deliveries[i].vendorId,
         GSI1_pk: deliveries[i].deliveryType,
-        GSI1_sk: "s#" + deliveries[i].deliverytime,
+        GSI1_sk: "d#" + deliveries[i].deliverytime,
         GSI2_pk: "v#" + deliveries[i].vendorId,
         GSI2_sk: "d#" + deliveries[i].deliverytime
       }

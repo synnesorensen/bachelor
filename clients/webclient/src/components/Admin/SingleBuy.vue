@@ -5,29 +5,44 @@
       <br />
       <v-data-table
         v-if="newRequests.length > 0"
-        :headers="headers"
+        :headers="computedHeaders"
         :items="newRequests"
-        class="row-pointer"
-        @click:row="showRequest"
+        class="no-hover"
       >
         <template v-slot:[`item.controls`]="props">
           <v-btn
-            class="mx-1"
-            dark
-            x-small
+            icon
             color="green"
             @click="approve(props.item)"
           >
-            Godkjenn
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  {{mdiCheckCircleOutline}}
+                </v-icon>
+              </template>
+              <span>Godkjenn</span>
+            </v-tooltip>
           </v-btn>
           <v-btn
-            class="mx-1"
-            dark
-            x-small
+            icon
             color="red"
             @click="deny(props.item)"
           >
-            Avvis
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  {{mdiCloseCircleOutline}}
+                </v-icon>
+              </template>
+              <span>Avslå</span>
+            </v-tooltip>
           </v-btn>
         </template>
       </v-data-table>
@@ -39,7 +54,7 @@
     <v-card>
       <v-card-title>Tidligere forespørsler</v-card-title>
       <v-card-text>
-        <v-row>
+        <v-row dense>
           <v-col>
             <p class="font-weight-medium">Fra dato:</p>
             <date-picker :date.sync="startDate" @blur="dateCheck" />
@@ -51,33 +66,71 @@
         </v-row>
         <v-row>
           <p style="color: red">{{ errorMsg }}</p>
-        </v-row>
+        </v-row>            
+        <!-- <v-card-actions>
+          <v-row>
+            <v-col>
+              <v-switch
+                v-if="startDate && endDate"
+                v-model="showOnlyApproved"
+                color="yellow"
+                :label="!showOnlyApproved ? `Vis alle forespørsler` : `Vis kun godkjente forespørsler`"
+              ></v-switch>
+            </v-col>
+            <v-col>
+              <v-switch
+                v-if="startDate && endDate"
+                v-model="showOnlyUnpaid"
+                color="yellow"
+                :label="!showOnlyUnpaid ? `Vis alle leveranser` : `Vis kun ubetalte leveranser`"
+              ></v-switch>
+            </v-col>
+          </v-row>
+        </v-card-actions> -->
         <v-data-table
           :loading="loading"
           v-if="requests && requests.length > 0"
           :headers="headers"
           :items="allRequests"
           item-key="deliverytime"
-          class="pt-2"
+          class="no-hover"
         >
           <template v-slot:[`item.controls`]="props">
             <v-btn
-              class="mx-1"
-              dark
-              x-small
-              color="green"
-              @click="approve(props.item)"
+              icon
+              color="primary"
             >
-              Godkjenn
-            </v-btn>
-            <v-btn
-              class="mx-1"
-              dark
-              x-small
-              color="red"
-              @click="deny(props.item)"
-            >
-              Avvis
+              <v-menu
+                :nudge-right="40"
+                transition="scale-transition"
+                offset-y
+                max-width="240px"
+                min-width="240px"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-icon v-on="on">{{mdiDotsHorizontal}}</v-icon>
+                </template>
+                <v-card>
+                  <v-list dense>
+                    <v-list-item>
+                      <v-btn 
+                        text 
+                        @click="toggleApproval(props.item)"
+                      >
+                        {{props.item.approved === "approved" ? `Avslå` : `Godkjenn`}}
+                      </v-btn>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-btn 
+                        text 
+                        @click="changePaymentStatus(props.item)"
+                      >
+                        {{props.item.paid === "paid" ? `Sett som ikke betalt` : `Sett som betalt`}}
+                      </v-btn>
+                    </v-list-item>
+                  </v-list>
+                </v-card>
+              </v-menu>
             </v-btn>
           </template>
         </v-data-table>
@@ -89,12 +142,12 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop, Watch } from "vue-property-decorator";
 import { DeliveryRequestDto } from "../../../../../common/dto";
 import api from "../../api/api";
 import DatePicker from "./DatePicker.vue";
 import { toLocalPresentation } from "../../utils/utils";
 import { Vendor } from "../../../../../common/interfaces";
+import { mdiDotsHorizontal, mdiCheckCircleOutline, mdiCloseCircleOutline  } from "@mdi/js";
 
 @Component({
   components: {
@@ -103,7 +156,6 @@ import { Vendor } from "../../../../../common/interfaces";
 })
 
 export default class SingleBuy extends Vue {
-  private _selectedRequest: DeliveryRequestDto | null = null;
   private requests: DeliveryRequestDto[] | null = [];
   private startDate = "";
   private endDate = "";
@@ -111,7 +163,11 @@ export default class SingleBuy extends Vue {
   private loading = false;
   private vendor: Vendor = this.$store.getters.vendor;
   private vendorSchedule = this.vendor.schedule;
-
+  private mdiDotsHorizontal = mdiDotsHorizontal;
+  private mdiCheckCircleOutline = mdiCheckCircleOutline;
+  private mdiCloseCircleOutline = mdiCloseCircleOutline;
+  // private showOnlyUnpaid = false;
+  // private showOnlyApproved = false;
 
   async dateCheck() {
     if (this.startDate && this.endDate) {
@@ -132,12 +188,13 @@ export default class SingleBuy extends Vue {
   }
 
   get allRequests() {
-    let touched = this.requests!.filter(req => {
+    const touched = this.requests!.filter(req => {
       return req.approved !== "new"
     });
     return touched.map((req) => { 
       const menu = this.vendorSchedule.find(({ id }) => id == req.menuId);
       let status = "";
+      let payment = "";
       if (req.approved === "approved") {
         status = "Godkjent";
       } else if (req.approved === "denied") {
@@ -145,24 +202,26 @@ export default class SingleBuy extends Vue {
       } else {
         status = "Ubehandlet";
       }
+      if (req.paid === "paid") {
+        payment = "Betalt";
+      } else {
+        payment = "Ikke betalt";
+      }
       return {
         ...req,
         localTime: toLocalPresentation(req.deliverytime),
         menu: menu!.menu,
         status,
+        payment,
         id: req.userId + req.deliverytime
       }
     });
   }
 
   get newRequests() {
-    const newReqs:DeliveryRequestDto[] = this.$store.getters.deliveryRequests;
-    const onlyNew = newReqs.filter((req) => {
-      return req.approved === "new";
-    });
-    return onlyNew.map((req) => { 
+    const newReqs:DeliveryRequestDto[] = this.$store.getters.newDeliveryRequests;
+    return newReqs.map((req) => { 
       const menu = this.vendorSchedule.find(({ id }) => id == req.menuId);
-      let status = "";
       if (req.approved === "new") {
         return {
           ...req,
@@ -182,25 +241,17 @@ export default class SingleBuy extends Vue {
       sortable: true,
       value: "localTime"
     },
-    {text: "Meny", value: "menu"},
-    {text: "Status", value: "status"},
     {text: "Navn", value: "fullname"},
     {text: "Adresse", value: "deliveryAddress"},
+    {text: "Meny", value: "menu"},
+    {text: "Betalt", value: "payment"},
+    {text: "Status", value: "status"},
     {text: "", value: "controls", sortable: false },
   ]
 
-  get selectedRequest() {
-    return this._selectedRequest;
-  }
-
-  set selectedRequest(value) {
-    this._selectedRequest = value;
-  }
-
-  showRequest(req: DeliveryRequestDto) {
-    this._selectedRequest = req;
-    console.log(req);
-  }
+  get computedHeaders () {
+      return this.headers.filter(header => header.text !== "Betalt")  
+   }
 
   async approve(item:any) {
     const action: "deny" | "approve" = "approve";
@@ -210,7 +261,8 @@ export default class SingleBuy extends Vue {
       userId: item.userId
     }
     await api.handleDeliveryRequest(payload);
-    this.$store.dispatch("refreshDeliveryRequests");
+    this.$store.dispatch("refreshNewDeliveryRequests");
+    this.requests = await api.getSelectedDeliveryRequests(this.startDate, this.endDate);
   }
 
   async deny(item:any) {
@@ -221,14 +273,41 @@ export default class SingleBuy extends Vue {
       userId: item.userId
     }
     await api.handleDeliveryRequest(payload);
-    this.$store.dispatch("refreshDeliveryRequests");
+    this.$store.dispatch("refreshNewDeliveryRequests");
+    this.requests = await api.getSelectedDeliveryRequests(this.startDate, this.endDate);
+  }
+
+  async toggleApproval(item:any) {
+    if (item.approved === "approved") {
+      const action: "deny" | "approve" = "deny";
+      const payload = {
+        deliverytime: item.deliverytime,
+        action,
+        userId: item.userId
+      }
+      await api.handleDeliveryRequest(payload);
+    } else if (item.approved === "denied") {
+      const action: "deny" | "approve" = "approve";
+      const payload = {
+        deliverytime: item.deliverytime,
+        action,
+        userId: item.userId
+      }
+    await api.handleDeliveryRequest(payload);
+    }
+    this.requests = await api.getSelectedDeliveryRequests(this.startDate, this.endDate);
+  }
+
+  async changePaymentStatus(item:any) {
+    await api.payDelivery(item.userId, item.deliverytime, item.paid);
+    this.requests = await api.getSelectedDeliveryRequests(this.startDate, this.endDate);
   }
 
 }
 </script>
 
 <style lang="css" scoped>
-.row-pointer >>> tbody tr :hover {
-  cursor: pointer;
+.no-hover >>> tbody tr:hover {
+  background-color: transparent !important;
 }
 </style>
