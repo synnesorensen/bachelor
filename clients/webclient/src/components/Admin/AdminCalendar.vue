@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row>
+    <v-row justify="center">
       <v-col :xl="6">
         <v-sheet>
           <v-spacer />
@@ -37,7 +37,10 @@
           </v-calendar>
         </v-sheet>
       </v-col>
-      <v-dialog v-model="showList">
+      <v-dialog 
+        fullscreen
+        v-model="showList"
+      >
         <Deliveries
           :date="selectedDate"
           @update="deliveriesUpdated"

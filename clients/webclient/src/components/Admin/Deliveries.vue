@@ -1,58 +1,62 @@
 <template>
-  <div>
-    <v-card>
-      <v-app-bar>
-        <v-card-title
-          >Leveringer for {{ localPresentation(date) }}</v-card-title
-        >
-        <v-spacer></v-spacer>
-        <v-btn icon @click="close">
-          <v-icon> mdi-close </v-icon>
-        </v-btn>
-      </v-app-bar>
-      <v-data-table
-        :loading="loading"
-        dense
-        :headers="headers"
-        :items="deliveryDetails"
-        class="elevation-1"
+  <v-card>
+    <v-app-bar>
+      <v-card-title
+        >Leveringer for {{ localPresentation(date) }}</v-card-title
       >
-        <template v-slot:item="{ item }">
-          <tr :key="item.userId">
-            <td class="handle">
-              <v-btn icon><v-icon small>mdi-cursor-move</v-icon></v-btn>
-            </td>
-            <td>{{ item.fullname }}</td>
-            <td>{{ item.address }}</td>
-            <td>{{ item.phone }}</td>
-            <td>{{ item.box }}</td>
-            <td>{{ item.noOfMeals }}</td>
-            <td>{{ item.allergies.toString() }}</td>
-            <td>{{ item.cancelled ? "Ja" : "Nei" }}</td>
-          </tr>
-        </template>
-      </v-data-table>
-      <v-card-actions class="justify-center">
-        <v-btn color="error" @click="cancelDialog = true">Kanseller alle</v-btn>
-        <v-dialog v-model="cancelDialog" persistent max-width="300">
-          <v-card>
-            <v-card-title class="headline">Kansellering</v-card-title>
-            <v-card-text>
-              Er du sikker på at du vil kansellere alle leveranser denne dagen?
-            </v-card-text>
-            <v-card-actions>
-              <v-btn color="success" @click="cancelDeliveries">
-                Kanseller
-              </v-btn>
-              <v-btn color="error" @click="cancelDialog = false">
-                Avbryt
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-card-actions>
-    </v-card>
-  </div>
+      <v-spacer></v-spacer>
+      <v-btn icon @click="close">
+        <v-icon> mdi-close </v-icon>
+      </v-btn>
+    </v-app-bar>
+    <v-content>
+      <v-row justify="center">
+        <v-data-table
+          :loading="loading"
+          dense
+          :headers="headers"
+          :items="deliveryDetails"
+          class="elevation-1"
+        >
+          <template v-slot:item="{ item }">
+            <tr :key="item.userId">
+              <td class="handle">
+                <v-btn icon><v-icon small>mdi-cursor-move</v-icon></v-btn>
+              </td>
+              <td>{{ item.fullname }}</td>
+              <td>{{ item.address }}</td>
+              <td>{{ item.phone }}</td>
+              <td>{{ item.box }}</td>
+              <td>{{ item.noOfMeals }}</td>
+              <td>{{ item.allergies.toString() }}</td>
+              <td>{{ item.cancelled ? "Ja" : "Nei" }}</td>
+            </tr>
+          </template>
+        </v-data-table>
+      </v-row>
+      <v-row justify="center">
+        <v-card-actions class="justify-center">
+          <v-btn color="error" @click="cancelDialog = true">Kanseller alle</v-btn>
+          <v-dialog v-model="cancelDialog" persistent max-width="300">
+            <v-card>
+              <v-card-title class="headline">Kansellering</v-card-title>
+              <v-card-text>
+                Er du sikker på at du vil kansellere alle leveranser denne dagen?
+              </v-card-text>
+              <v-card-actions>
+                <v-btn color="success" @click="cancelDeliveries">
+                  Kanseller
+                </v-btn>
+                <v-btn color="error" @click="cancelDialog = false">
+                  Avbryt
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-card-actions>
+      </v-row>
+    </v-content>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -161,7 +165,4 @@ export default class Deliveries extends Vue {
   cursor: -webkit-grabbing !important;
 }
 
-.fixed {
-  position: fixed;
-}
 </style>

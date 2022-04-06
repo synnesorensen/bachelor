@@ -26,7 +26,7 @@
         </v-col>
       </v-row>
       <v-row dense>
-        <v-col :xl="4" :lg="5" :sm="8" :xs="10">
+        <v-col :xl="4" :lg="5">
           <p class="font-weight-medium">
             Ubetalte måltid i {{ selectedMonth }}
           </p>
