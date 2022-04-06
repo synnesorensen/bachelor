@@ -282,7 +282,6 @@ export class Api {
   async payDelivery(userId: string, time: string, status: string): Promise<interfaces.Delivery> {
     await this.ensureFreshToken();
     const url = urlPrefix + "/v/delivery?&userId=" + encodeURIComponent(userId) + "&time=" + time + "&status=" + status;
-    console.log(url)
     const updatedDelivery = await this.apiAxios.put(url);
     return updatedDelivery.data;
   }

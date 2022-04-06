@@ -1,7 +1,7 @@
 <template>
-  <main>
+  <v-container>
     <v-row>
-      <v-col>
+      <v-col cols="8">
         <v-sheet>
           <v-spacer></v-spacer>
           <v-toolbar flat>
@@ -99,12 +99,23 @@
         </v-card>
         <v-card
           :class="{ fixed: !$vuetify.breakpoint.xs }"
-          v-else-if="selectedEvent && !selectedEvent.delivery.cancelled"
+          v-else-if="selectedEvent && selectedEvent.delivery.approved === 'denied'"
         >
           <v-card-title class="headline">
             {{ selectedEvent.name + " " + localPresentation(selectedDate) }}
           </v-card-title>
           <v-card-text>
+            Forespørsel om levering denne dagen ble avslått. 
+          </v-card-text>
+        </v-card>
+        <v-card
+          :class="{ fixed: !$vuetify.breakpoint.xs }"
+          v-else-if="selectedEvent && !selectedEvent.delivery.cancelled"
+        >
+          <v-card-title class="headline">
+            {{ selectedEvent.name + " " + localPresentation(selectedDate) }}
+          </v-card-title>
+          <v-card-text style="width: 500px;">
             Det er mulig å avbestille en måltid frem til klokken 10:00 dagen før
             levering. Kansellerte måltid vil bli flyttet til neste måned, og
             faktura for neste periode vil bli justert i henhold til antall
@@ -158,15 +169,14 @@
           </v-card-title>
           <v-card-text>
             Denne leveransen er kansellert. Dersom du har kansellert en
-            leveranse og angrer, kan du trykke på Angre-kanppen under.
+            leveranse og angrer, kan du trykke på Angre-knappen under.
             En forespørsel vil bli sendt til Lunsj på Hjul om å endre
-            kanselleringen. Når denne er godkjent vil leveransen være
-            grønn. Dersom den blir avslått blir leveransen grå.
+            kanselleringen og du får svar på forespørselen på e-post. 
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
-  </main>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -299,6 +309,7 @@ export default class UserCalendar extends Vue {
     } else {
       this.populateCalendar();
       this.selectedEvent.delivery.cancelled = true;
+      console.log(this.selectedEvent.delivery)
     }
     this.cancelDialog = false;
   }
