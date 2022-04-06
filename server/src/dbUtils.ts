@@ -884,6 +884,7 @@ export async function cancelDeliveries(userId: string, deliveries: Delivery[]): 
   if (deliveries.length < 1) {
     return 0;
   }
+
   const promises: Promise<boolean>[] = [];
   for (let delivery of deliveries) {
     if (delivery.userId == userId || delivery.vendorId == userId) {
@@ -899,11 +900,13 @@ export async function cancelDeliveries(userId: string, deliveries: Delivery[]): 
       count++;
     }
   });
+
   return count;
 }
 
 async function cancelDelivery(delivery: Delivery): Promise<boolean> {
   const dbDel = await getDeliveryFromDb(delivery.vendorId, delivery.userId, delivery.deliverytime);
+
   if (!dbDel || dbDel.cancelled) {
     return false;
   }
@@ -914,12 +917,13 @@ async function cancelDelivery(delivery: Delivery): Promise<boolean> {
   const params = {
     TableName: settings.TABLENAME,
     Key: {
-      "pk": { S: "u#" + delivery.vendorId },
+      "pk": { S: "u#" + delivery.userId },
       "sk": { S: "d#" + delivery.deliverytime }
     },
     UpdateExpression,
     ExpressionAttributeValues
   };
+
   await database.updateItem(params).promise();
 
   // Moving cancelled delivery to the end of period:
