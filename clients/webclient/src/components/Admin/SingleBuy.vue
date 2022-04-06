@@ -67,27 +67,22 @@
         <v-row>
           <p style="color: red">{{ errorMsg }}</p>
         </v-row>            
-        <!-- <v-card-actions>
-          <v-row>
-            <v-col>
-              <v-switch
-                v-if="startDate && endDate"
-                v-model="showOnlyApproved"
-                color="yellow"
-                :label="!showOnlyApproved ? `Vis alle forespørsler` : `Vis kun godkjente forespørsler`"
-              ></v-switch>
-            </v-col>
-            <v-col>
-              <v-switch
-                v-if="startDate && endDate"
-                v-model="showOnlyUnpaid"
-                color="yellow"
-                :label="!showOnlyUnpaid ? `Vis alle leveranser` : `Vis kun ubetalte leveranser`"
-              ></v-switch>
-            </v-col>
-          </v-row>
-        </v-card-actions> -->
+        <v-row v-if="requests && requests.length > 0">
+          <v-col></v-col>
+          <v-col>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Søk"
+              single-line
+              hide-details
+            ></v-text-field>
+          </v-col>
+        </v-row>
+        <br />
         <v-data-table
+          multi-sort
+          :search="search"
           :loading="loading"
           v-if="requests && requests.length > 0"
           :headers="headers"
@@ -166,8 +161,7 @@ export default class SingleBuy extends Vue {
   private mdiDotsHorizontal = mdiDotsHorizontal;
   private mdiCheckCircleOutline = mdiCheckCircleOutline;
   private mdiCloseCircleOutline = mdiCloseCircleOutline;
-  // private showOnlyUnpaid = false;
-  // private showOnlyApproved = false;
+  private search = "";
 
   async dateCheck() {
     if (this.startDate && this.endDate) {
