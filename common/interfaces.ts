@@ -5,8 +5,9 @@ export interface Userprofile {
   phone: string,
   email: string, 
   allergies: string[], 
-  approved: boolean,
-  isVendor: boolean
+  approved: "new" | "approved" | "denied",
+  isVendor: boolean, 
+  note?: string
 }
 
 export interface Subscription {

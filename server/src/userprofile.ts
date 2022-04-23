@@ -73,10 +73,11 @@ async function updateUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewa
       body: '{ "message" : "Missing parameter userId" }'
     };
   }
-  let body = JSON.parse(event.body);
+
+  const { approved, note } = JSON.parse(event.body);
   
   try {
-    await updateApproval(userId, body.approved)
+    await updateApproval(userId, approved, note);
 
     return {
       statusCode: 200,
@@ -91,7 +92,7 @@ async function updateUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewa
 }
 
 async function deleteUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-  let userId = getUserInfoFromEvent(event);
+  const userId = getUserInfoFromEvent(event);
 
   deleteUserprofileInDb(userId);
   return {

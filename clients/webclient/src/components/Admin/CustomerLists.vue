@@ -1,5 +1,72 @@
 <template>
   <v-container>
+    <v-dialog v-model="dialog" width="500">
+      <v-card v-if="selected">
+        <v-app-bar>
+          <v-card-title>Kundeinformasjon</v-card-title><br />
+          <v-spacer></v-spacer>
+          <v-btn icon @click="dialog = false">
+            <v-icon> mdi-close </v-icon>
+          </v-btn> 
+        </v-app-bar>
+        <br />
+        <v-card-text>
+          <CustomerInfo :selectedUser="selected" />
+          <br />
+          <v-textarea
+            outlined
+            label="Legg til notat"
+            v-model="selected.note"
+          ></v-textarea>
+          <v-row class="justify-center">
+            <v-btn 
+              v-if="selected && selected.subscription"
+              text 
+              color="orange" 
+              @click="toggleSubscriptionPause()"
+            >
+            {{ buttonText }}
+          </v-btn>
+          </v-row>
+        </v-card-text>
+        <v-card-actions class="justify-center">
+          <v-btn
+            text
+            color="green"
+            @click="approve(selected)"
+          >Godkjenn</v-btn>
+          <v-btn
+            text
+            color="red"
+            @click="decline(selected)"
+          >Avvis</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-card v-if="unapprovedUsers.length > 0">
+      <v-card-title>
+        Kunder til godkjenning
+        <v-spacer></v-spacer>
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Søk"
+          single-line
+          hide-details
+        ></v-text-field>
+      </v-card-title>
+      <v-data-table
+        dense
+        :headers="unapprovedHeaders"
+        :items="unapprovedUsers"
+        :search="search"
+        @click:row="handleClickedUser"
+        item-key="userId"
+        class="row-pointer"
+      >
+      </v-data-table>
+    </v-card>
+    <br />
     <v-card>
       <v-card-title>
         Kunder med abonnement
@@ -17,30 +84,11 @@
         :headers="usersubHeaders"
         :items="userSubscriptions"
         :search="search"
-        @click:row="handleClickedUserSub"
+        @click:row="handleClickedUser"
         class="row-pointer"
       >
       </v-data-table>
     </v-card>
-    <v-dialog width="unset" v-model="editCustomer">
-      <v-card elevation="4" width="400">
-        <v-app-bar>
-          <v-card-title>Kundeinformasjon</v-card-title><br />
-          <v-spacer></v-spacer>
-          <v-btn icon @click="editCustomer = false">
-            <v-icon> mdi-close </v-icon>
-          </v-btn> </v-app-bar
-        ><br />
-        <v-card-text>
-          <CustomerInfo :selectedUser="selected" />
-        </v-card-text>
-        <v-card-actions>
-          <v-btn text color="orange" @click="toggleSubscriptionPause()">
-            {{ buttonText }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
     <br />
     <v-card>
       <v-card-title>
@@ -59,41 +107,9 @@
         :headers="usersWOSubsHeaders"
         :items="usersWOSubscriptions"
         :search="search"
+        @click:row="handleClickedUser"
+        class="row-pointer"
       >
-      </v-data-table>
-    </v-card>
-    <br />
-    <v-card v-if="unapprovedUsers.length > 0">
-      <v-card-title>
-        Kunder til godkjenning
-        <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Søk"
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-card-title>
-      <v-data-table
-        :headers="unapprovedHeaders"
-        :items="unapprovedUsers"
-        :search="search"
-        item-key="userId"
-        class="elevation-1"
-      >
-        <template v-slot:[`item.controls`]="props">
-          <v-btn
-            class="mx-2"
-            fab
-            dark
-            small
-            color="green"
-            @click="approve(props.item)"
-          >
-            <v-icon dark>mdi-checkbox-marked-circle-outline</v-icon>
-          </v-btn>
-        </template>
       </v-data-table>
     </v-card>
   </v-container>
@@ -106,6 +122,7 @@ import Component from "vue-class-component";
 import { SubscriptionAction, UserSubscription } from "../../../../../common/interfaces";
 import { UserDto } from "../../../../../common/dto";
 import CustomerInfo from "./CustomerInfo.vue";
+import { mdiCheckCircleOutline, mdiCloseCircleOutline  } from "@mdi/js";
 
 @Component({
   components: {
@@ -116,21 +133,24 @@ export default class CustomerLists extends Vue {
   private users: UserDto[] = [];
   private editCustomer = false;
   private selected: UserDto | null = null;
+  private mdiCheckCircleOutline = mdiCheckCircleOutline;
+  private mdiCloseCircleOutline = mdiCloseCircleOutline;
+  private dialog = false;
 
   async created() {
     this.users = await api.getUsersAndSubscriptions();
   }
 
   get userSubscriptions() {
-    const users = this.users.filter((user) => {
-      return user.approved && !!user.subscription;
+    const users = this.users.filter( user => {
+      return (user.approved === "approved") && !!user.subscription;
     });
     if (users) {
       return users.map((user) => {
         if (user.subscription) {
           return {
-            oldUser: user,
             ...user,
+            oldUser: user,
             days: user.subscription.schedule
               .map((schedule) => schedule.day)
               .join(", "),
@@ -144,11 +164,12 @@ export default class CustomerLists extends Vue {
 
   get usersWOSubscriptions() {
     const usersWOSubs = this.users.filter((user) => {
-      return user.approved && !user.subscription;
+      return (user.approved === "approved") && !user.subscription;
     });
     return usersWOSubs.map((user) => {
       return {
         ...user,
+        oldUser: user,
         allergies: user.allergies.join(", "),
       };
     });
@@ -156,12 +177,12 @@ export default class CustomerLists extends Vue {
 
   get unapprovedUsers() {
     const unapprovedUsers = this.users.filter((user) => {
-      return !user.approved;
+      return (user.approved === "new");
     });
     return unapprovedUsers.map((user) => {
       return {
-        oldUser: user,
         ...user,
+        oldUser: user,
         allergies: user.allergies.join(", "),
       };
     });
@@ -178,9 +199,6 @@ export default class CustomerLists extends Vue {
     },
     { text: "Status", value: "pausedString", sortable: true },
     { text: "Adresse", value: "address" },
-    { text: "Telefon", value: "phone" },
-    { text: "Epost", value: "email" },
-    { text: "Boks", value: "subscription.box" },
     { text: "Antall", value: "subscription.noOfMeals" },
     { text: "Allergier", value: "allergies" },
     { text: "Leveringsdager", value: "days" },
@@ -194,10 +212,6 @@ export default class CustomerLists extends Vue {
       value: "fullname",
     },
     { text: "Adresse", value: "address" },
-    { text: "Telefon", value: "phone" },
-    { text: "Epost", value: "email" },
-    { text: "Boks", value: "box" },
-    { text: "Antall", value: "noOfMeals" },
     { text: "Allergier", value: "allergies" },
     { text: "Leveringsdager", value: "days" },
     { text: "", value: "controls", sortable: false },
@@ -210,8 +224,6 @@ export default class CustomerLists extends Vue {
       value: "fullname",
     },
     { text: "Adresse", value: "address" },
-    { text: "Telefon", value: "phone" },
-    { text: "Epost", value: "email" },
     { text: "Allergier", value: "allergies" },
   ];
 
@@ -224,17 +236,32 @@ export default class CustomerLists extends Vue {
 
   async approve(item: any) {
     try {
-      await api.updateApproval(item.email, true);
-      item.oldUser.approved = true; // TODO: Endre denne når interface er refaktorert.
+      await api.updateApproval(item.email, true,  this.selected!.note);
+      item.oldUser.approved = "approved";
+      item.oldUser.note =  this.selected!.note;
+      this.dialog = false;
     } catch (err) {
       alert("Noe gikk galt, prøv igjen senere.");
       console.log(err);
     }
   }
 
-  handleClickedUserSub(user: UserDto) {
+  async decline(item: any) {
+    console.log("sletter ", item.oldUser)
+    try {
+      await api.updateApproval(item.email, false, this.selected!.note);
+      item.oldUser.approved = "denied";
+      item.oldUser.note = this.selected!.note;
+      this.dialog = false;
+    } catch (err) {
+      alert("Noe gikk galt, prøv igjen senere.");
+      console.log(err);
+    }
+  }
+
+  handleClickedUser(user: UserDto) {
     this.selected = user;
-    this.editCustomer = true;
+    this.dialog = true;
   }
 
   get buttonText() {

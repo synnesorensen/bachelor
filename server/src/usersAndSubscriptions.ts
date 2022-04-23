@@ -48,6 +48,7 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
       email: user.email, 
       allergies: user.allergies, 
       approved: user.approved,
+      note: user.note ? user.note : "",
       isVendor: user.isVendor,
       subscription: sub ? {
         userId: sub.userId,

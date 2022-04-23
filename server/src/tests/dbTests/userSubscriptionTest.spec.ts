@@ -4,6 +4,8 @@ import { deleteSubscriptionInDb, deleteUserprofileInDb, getSubscriptionsForVendo
 import { expect } from 'chai';
 import 'mocha';
 
+const approved: "new" | "approved" | "denied" = "new";
+
 describe('Test of user subscriptions', () => {
   it('Getting list of subscriptions with users info from DB', async () => {
     const vendor = {
@@ -43,7 +45,7 @@ describe('Test of user subscriptions', () => {
       phone: "123456",
       email: "gjøk@skogen.no", 
       allergies: [],
-      approved: true,
+      approved,
       isVendor: false
     };
     const sub2 = {
@@ -61,7 +63,7 @@ describe('Test of user subscriptions', () => {
       phone: "456789",
       email: "party@viken.no",
       allergies: ["melk"],
-      approved: false,
+      approved,
       isVendor: false
     };
 

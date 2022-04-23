@@ -157,10 +157,11 @@ export class Api {
     await this.apiAxios.delete(url);
   }
 
-  async updateApproval(userId: string, approved: boolean) {
+  async updateApproval(userId: string, approved: boolean, note: string) {
     await this.ensureFreshToken();
-    const body = {
-      approved
+    const body = { 
+      approved, 
+      note 
     };
     await this.apiAxios.patch(urlPrefix + "/userprofile?userId=" + encodeURIComponent(userId), body);
   }

@@ -1,7 +1,9 @@
 require('dotenv').config();
 import 'source-map-support/register';
 import { putSubscriptionInDb, putUserprofileInDb, putVendorInDb } from '../dbUtils';
-import {dbUser1, dbUser2, dbUser3, dbUser4, dbUser5, dbUser6, dbUser7, dbVendor} from '../../../common/settings'
+import {dbUser1, dbUser2, dbUser3, dbUser4, dbUser5, dbUser6, dbUser7, dbVendor} from '../../../common/settings';
+
+const approved: "new" | "approved" | "denied" = "new";
 
 const userprofile1 = {
   fullname: "Ole Olsen",
@@ -10,7 +12,7 @@ const userprofile1 = {
   phone: "12345678",
   email: dbUser1,
   allergies: ["Melk"],
-  approved: true,
+  approved,
   isVendor: false
 }
 const userprofile2 = {
@@ -20,7 +22,7 @@ const userprofile2 = {
   phone: "23456789",
   email: dbUser2,
   allergies: [],
-  approved: true,
+  approved,
   isVendor: false
 }
 const userprofile3 = {
@@ -30,7 +32,7 @@ const userprofile3 = {
   phone: "34567890",
   email: dbUser3,
   allergies: ["Løk", "Svovel"],
-  approved: true,
+  approved,
   isVendor: false
 }
 const userprofile4 = {
@@ -40,7 +42,7 @@ const userprofile4 = {
   phone: "45678901",
   email: dbUser4,
   allergies: ["Gluten"],
-  approved: true,
+  approved,
   isVendor: false
 }
 const userprofile5 = {
@@ -50,9 +52,10 @@ const userprofile5 = {
   phone: "56789012",
   email: dbUser5,
   allergies: [],
-  approved: true,
+  approved,
   isVendor: false
 }
+
 const userprofile6 = {
   fullname: "Penny Pøbel",
   address: "Kroken 3 5000 Sentrum",
@@ -60,7 +63,7 @@ const userprofile6 = {
   phone: "67890123",
   email: dbUser6,
   allergies: ["Melk"],
-  approved: true,
+  approved,
   isVendor: false
 }
 
@@ -71,7 +74,7 @@ const userprofile7 = {
   phone: "22113344",
   email: dbUser7,
   allergies: ["Gluten", "Egg"],
-  approved: false,
+  approved,
   isVendor: false
 }
 
@@ -82,7 +85,7 @@ const userprofileVendor = {
   phone: "67890123",
   email: dbVendor,
   allergies: [],
-  approved: true,
+  approved,
   isVendor: true
 }
 

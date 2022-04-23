@@ -113,7 +113,7 @@
         <v-col :xl="6" :lg="6">
           <v-text-field
             label="Eventuelle merknader"
-            v-model="add"
+            v-model="note"
             counter
             maxlength="80"
           ></v-text-field>
@@ -181,10 +181,11 @@ export default class RegisterAccount extends Vue {
     "Bløtdyr",
   ];
   private value = [];
-  private add = ""; // TODO: Knytte dette feltet til epost sendt til vendor ved registrering
+  private note = "";
 
   async sendToDb() {
-    let newUserprofile = {
+    const approved: "new" | "approved" | "denied" = "new";
+    const newUserprofile = {
       fullname: this.firstName + " " + this.lastName,
       address: this.address + " " + this.postNo + " " + this.postPlace,
       deliveryAddress:
@@ -192,9 +193,11 @@ export default class RegisterAccount extends Vue {
       phone: this.phone.toString(),
       email: this.$store.getters.loggedInUser,
       allergies: this.value,
-      approved: false,
+      approved,
       isVendor: false,
+      note: this.note
     };
+    
     await api.putUserprofile(newUserprofile);
     this.$store.commit("setUserprofile", newUserprofile);
     this.$router.push({ name: "info" });

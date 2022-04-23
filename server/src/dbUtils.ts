@@ -31,7 +31,7 @@ export async function getAllUsersFromDb() {
   if (result.Items.length == 0) {
     return [];
   }
-  let users: Userprofile[] = await Promise.all(result.Items.map(async (user) => {
+  let users: Userprofile[] = await Promise.all(result.Items.map(async user => {
     return {
       userId: user.pk.substr(2),
       fullname: user.fullname,
@@ -41,7 +41,8 @@ export async function getAllUsersFromDb() {
       email: user.email,
       allergies: user.allergies ? user.allergies : [],
       approved: user.approved,
-      isVendor: user.isVendor
+      isVendor: user.isVendor, 
+      note: user.note
     }
   }));
   return users;
@@ -127,11 +128,21 @@ export async function putSubscriptionInDb(subscription: Subscription): Promise<S
   };
 }
 
-export async function updateApproval(userId: string, approved: boolean): Promise<void> {
+export async function updateApproval(userId: string, approved: boolean, note: string): Promise<void> {
   let UpdateExpression = "set approved = :approved";
-  let ExpressionAttributeValues: any = {
-    ":approved": { BOOL: approved }
-  };
+  let ExpressionAttributeValues: any = {}
+
+  if (approved) {
+    ExpressionAttributeValues[":approved"] = { S: "approved" }
+  } else {
+    ExpressionAttributeValues[":approved"] = { S: "denied" }
+  }
+
+
+  if (note) {
+    UpdateExpression += ", note = :note";
+    ExpressionAttributeValues[":note"] = { S: note }
+  }
 
   let params = {
     TableName: settings.TABLENAME,
@@ -240,8 +251,9 @@ export async function getUserprofileFromDb(userId: string): Promise<Userprofile>
     phone: dbResult.Items[0].phone,
     email: dbResult.Items[0].email,
     allergies: dbResult.Items[0].allergies,
-    approved: dbResult.Items[0].approved ? dbResult.Items[0].approved : false,
-    isVendor: dbResult.Items[0].isVendor
+    approved: dbResult.Items[0].approved ? dbResult.Items[0].approved : "new",
+    isVendor: dbResult.Items[0].isVendor, 
+    note: dbResult.Items[0].note
   };
 }
 
@@ -254,11 +266,11 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
   if (isVendor) {
     if (userprofile.approved != undefined) {
       UpdateExpression += ", approved = :approved";
-      ExpressionAttributeValues[":approved"] = { BOOL: userprofile.approved };
+      ExpressionAttributeValues[":approved"] = { S: userprofile.approved };
     }
   } else {
     UpdateExpression += ", approved = if_not_exists(approved, :approved)";
-    ExpressionAttributeValues[":approved"] = { BOOL: false };
+    ExpressionAttributeValues[":approved"] = { S: "new" };
   }
   if (userprofile.fullname != undefined) {
     UpdateExpression += ", fullname = :fullname";
@@ -306,6 +318,8 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
   };
 
   let dbItem = await database.updateItem(params).promise();
+  const approved: "new" | "approved" | "denied" = "new";
+
   return {
     fullname: userprofile.fullname,
     address: userprofile.address,
@@ -313,8 +327,9 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
     phone: dbItem.Attributes.phone.S,
     email: dbItem.Attributes.email.S,
     allergies: dbItem.Attributes.allergies?.SS,
-    approved: dbItem.Attributes.approved?.BOOL || false,
-    isVendor: dbItem.Attributes.isVendor.BOOL
+    approved,
+    isVendor: dbItem.Attributes.isVendor.BOOL, 
+    note: dbItem.Attributes.note?.S
   }
 }
 

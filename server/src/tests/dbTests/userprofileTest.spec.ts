@@ -4,6 +4,8 @@ import { deleteUserprofileInDb, getUserprofileFromDb, putUserprofileInDb } from 
 import { expect } from 'chai';
 import 'mocha';
 
+const approved: "new" | "approved" | "denied" = "new";
+
 describe('User profile test', () => {
   it('Putting, getting and deleting a userprofile', async () => {
     let userprofile = {
@@ -13,7 +15,7 @@ describe('User profile test', () => {
       phone: "12345",
       email: "hallo@post.no",
       allergies: ["melk"],
-      approved: false,
+      approved,
       isVendor: false
     };
 

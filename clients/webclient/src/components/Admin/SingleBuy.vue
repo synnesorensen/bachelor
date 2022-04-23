@@ -238,8 +238,8 @@ export default class SingleBuy extends Vue {
     {text: "Navn", value: "fullname"},
     {text: "Adresse", value: "deliveryAddress"},
     {text: "Meny", value: "menu"},
-    {text: "Betalt", value: "payment"},
     {text: "Status", value: "status"},
+    {text: "Betalt", value: "payment"},
     {text: "", value: "controls", sortable: false },
   ]
 

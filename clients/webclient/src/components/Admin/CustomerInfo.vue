@@ -32,13 +32,53 @@
         <p class="font-weight-light">{{ selectedUser.email }}</p>
       </v-col>
     </v-row>
-    <v-row dense>
+    <v-row dense v-if="selectedUser.allergies">
       <v-col :xl="4" :lg="5">
-        <p class="font-weight-medium">Status</p>
+        <p class="font-weight-medium">Allergier</p>
       </v-col>
       <v-col>
         <p class="font-weight-light">
-          {{ selectedUser.paused ? "Pauset" : "Aktiv" }}
+          {{ selectedUser.allergies }}
+        </p>
+      </v-col>
+    </v-row>
+    <v-row dense v-if="selectedUser.subscription">
+      <v-col :xl="4" :lg="5">
+        <p class="font-weight-medium">Box</p>
+      </v-col>
+      <v-col>
+        <p class="font-weight-light">
+          {{ selectedUser.subscription.box }}
+        </p>
+      </v-col>
+    </v-row>
+    <v-row dense v-if="selectedUser.subscription">
+      <v-col :xl="4" :lg="5">
+        <p class="font-weight-medium">Antall</p>
+      </v-col>
+      <v-col>
+        <p class="font-weight-light">
+          {{ selectedUser.subscription.noOfMeals }}
+        </p>
+      </v-col>
+    </v-row>
+    <v-row dense v-if="selectedUser.subscription">
+      <v-col :xl="4" :lg="5">
+        <p class="font-weight-medium">Status abonnement</p>
+      </v-col>
+      <v-col>
+        <p class="font-weight-light">
+          {{ selectedUser.subscription.paused ? "Pauset" : "Aktiv" }}
+        </p>
+      </v-col>
+    </v-row>
+    <v-row dense >
+      <v-col :xl="4" :lg="5">
+        <p class="font-weight-medium">Status kundeforhold</p>
+      </v-col>
+      <v-col>
+        <p class="font-weight-light">
+          {{ userStatus() }}
         </p>
       </v-col>
     </v-row>
@@ -57,5 +97,17 @@ import * as dto from "../../../../../common/dto";
 })
 export default class CustomerInfo extends Vue {
   @Prop() selectedUser!: dto.UserDto | null;
+
+  userStatus() {
+    switch (this.selectedUser?.approved) {
+      case "new":
+        return "Ubehandlet";
+      case "approved":
+        return "Godkjent";
+      case "denied":
+        return "Avvist";
+    }
+  }
+
 }
 </script>

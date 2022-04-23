@@ -7,7 +7,8 @@ export interface UserDto {
   phone: string,
   email: string, 
   allergies: string[], 
-  approved: boolean,
+  note: string,
+  approved: "new" | "approved" | "denied",
   isVendor: boolean,
   subscription: SubscriptionDto | null
 }
