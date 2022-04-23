@@ -34,7 +34,15 @@
               Enkeltkjøp
             </v-badge>
           </v-tab>
-          <v-tab to="/admin/customer-lists">Kundelister</v-tab>
+          <v-tab to="/admin/customer-lists">
+            <v-badge
+              color="red"
+              :value="$store.getters.newUserRequests.length"
+              :content="$store.getters.newUserRequests.length"
+            >
+              Kundelister
+            </v-badge>  
+          </v-tab>
         </v-tabs>
       </template>
       <v-spacer />

@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 import router from './router';
 import { getUserInfo } from '../../../server/src/auth/getUserFromJwt';
 import getAuth from './components/LoginDialog/auth';
-import { DeliveryRequestDto, SubscriptionDto } from '../../../common/dto';
+import { DeliveryRequestDto, SubscriptionDto, UserDto } from '../../../common/dto';
 import {Userprofile, Vendor} from '../../../common/interfaces'
 import api from '../src/api/api';
 
@@ -13,7 +13,8 @@ interface State {
   subscription: SubscriptionDto | null,
   username: string, 
   vendor: Vendor | null,
-  newDeliveryRequests: DeliveryRequestDto[]
+  newDeliveryRequests: DeliveryRequestDto[], 
+  newUserRequests: UserDto[]
 }
 
 let state: State = {
@@ -21,7 +22,8 @@ let state: State = {
   subscription: null,
   username: "",
   vendor: null,
-  newDeliveryRequests: []
+  newDeliveryRequests: [], 
+  newUserRequests: []
 }
 
 export const store = new Vuex.Store({
@@ -41,6 +43,9 @@ export const store = new Vuex.Store({
     },
     setNewDeliveryRequests(state, newDeliveryRequests) {
       state.newDeliveryRequests = newDeliveryRequests;
+    },
+    setNewUserRequests(state, newUserRequests) {
+      state.newUserRequests = newUserRequests;
     }
   }, 
   getters: {
@@ -61,12 +66,19 @@ export const store = new Vuex.Store({
     },
     newDeliveryRequests(state) {
       return state.newDeliveryRequests;
+    },
+    newUserRequests(state) {
+      return state.newUserRequests;
     }
   }, 
   actions: {
     async refreshNewDeliveryRequests(context) {
       const requests = await api.getNewDeliveryRequests();
       context.commit("setNewDeliveryRequests", requests);
+    },
+    async refreshNewUserRequests(context) {
+      const newCustomers = await api.getNewUserRequests();
+      context.commit("setNewUserRequests", newCustomers);
     },
     async loggedInUser(context, payload) {
       if(!payload.jwt) {
@@ -89,6 +101,7 @@ export const store = new Vuex.Store({
       
       if (userprofile?.isVendor) {
         context.dispatch("refreshNewDeliveryRequests");
+        context.dispatch("refreshNewUserRequests");
         router.push({name: 'adminCalendar'});
       } else {
         router.push({name: 'userCalendar'});

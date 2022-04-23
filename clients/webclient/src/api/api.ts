@@ -105,6 +105,12 @@ export class Api {
     return result.data;
   }
 
+  async getNewUserRequests(): Promise<dto.UserDto[]> {
+    await this.ensureFreshToken();
+    const result = await this.apiAxios.get(urlPrefix + "/v/newUsers");
+    return result.data;
+  }
+
   async postSubscriptionAsVendor(userId: string, action: interfaces.SubscriptionAction): Promise<interfaces.Subscription> {
     await this.ensureFreshToken();
     const pausedSubscription = await this.apiAxios.post(urlPrefix + "/v/subscription?userId=" + encodeURIComponent(userId), action);

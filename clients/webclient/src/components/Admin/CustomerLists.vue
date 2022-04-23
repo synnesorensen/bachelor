@@ -112,6 +112,29 @@
       >
       </v-data-table>
     </v-card>
+    <br />
+    <v-card>
+      <v-card-title>
+        Avviste kunder
+        <v-spacer></v-spacer>
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Søk"
+          single-line
+          hide-details
+        ></v-text-field>
+      </v-card-title>
+      <v-data-table
+        dense
+        :headers="unapprovedHeaders"
+        :items="declinedUsers"
+        :search="search"
+        @click:row="handleClickedUser"
+        class="row-pointer"
+      >
+      </v-data-table>
+    </v-card>
   </v-container>
 </template>
 
@@ -188,6 +211,19 @@ export default class CustomerLists extends Vue {
     });
   }
 
+  get declinedUsers() {
+    const declinedUsers = this.users.filter((user) => {
+      return (user.approved === "denied");
+    });
+    return declinedUsers.map((user) => {
+      return {
+        ...user,
+        oldUser: user,
+        allergies: user.allergies.join(", "),
+      };
+    });
+  }
+
   private search = "";
 
   private usersubHeaders = [
@@ -239,6 +275,7 @@ export default class CustomerLists extends Vue {
       await api.updateApproval(item.email, true,  this.selected!.note);
       item.oldUser.approved = "approved";
       item.oldUser.note =  this.selected!.note;
+      this.$store.dispatch("refreshNewUserRequests");
       this.dialog = false;
     } catch (err) {
       alert("Noe gikk galt, prøv igjen senere.");
@@ -247,11 +284,11 @@ export default class CustomerLists extends Vue {
   }
 
   async decline(item: any) {
-    console.log("sletter ", item.oldUser)
     try {
       await api.updateApproval(item.email, false, this.selected!.note);
       item.oldUser.approved = "denied";
       item.oldUser.note = this.selected!.note;
+      this.$store.dispatch("refreshNewUserRequests");
       this.dialog = false;
     } catch (err) {
       alert("Noe gikk galt, prøv igjen senere.");

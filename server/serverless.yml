@@ -163,6 +163,14 @@ functions:
           path: /v/deliveryRequests
           method: any
           cors: true
+  newUsers: 
+    handler: src/newUsers.mainHandler
+    events: 
+      - http: 
+          authorizer: authorizer
+          path: /v/newUsers
+          method: get
+          cors: true
 
 resources:
   Resources:
