@@ -14,7 +14,16 @@
       </v-row>
     </v-card-text>
     <v-card-text v-if="selectedUser">
-      <CustomerInfo :selectedUser="selectedUser" />
+      <v-row dense>
+        <v-col :xl="4" :lg="5">
+          <p class="font-weight-medium">Navn</p>
+        </v-col>
+        <v-col>
+          <p class="font-weight-light">
+            {{ selectedUser.fullname }}
+          </p>
+        </v-col>
+      </v-row>
       <v-row dense>
         <v-col :xl="4" :lg="5">
           <p class="font-weight-medium">Siste betalte levering</p>

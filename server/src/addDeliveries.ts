@@ -3,7 +3,7 @@ import { Delivery, MenuItems, Vendor, WeekTime } from '../../common/interfaces';
 import { getDeliveryDates } from './timeHandling'
 import { getSubscriptionFromDb, getVendorFromDb } from './dbUtils'
 
-export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, userId: string, vendorId: string, noOfDeliveries: number): Promise<Delivery[]> {
+export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, userId: string, vendorId: string, noOfDeliveries: number, env:LunchEnvironment): Promise<Delivery[]> {
   const subscriptionFromDb = await getSubscriptionFromDb(vendorId, userId);
   if (!subscriptionFromDb) {
     throw "User " + userId + " does not exist"
@@ -16,7 +16,7 @@ export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, 
 
   let weekTimes:WeekTime[] = scheduleToWeekTimes(subSchedule);
 
-  let deliveryDates = getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries);
+  let deliveryDates = await getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries, env);
   const deliveryType: "sub" | "single" = "sub";
   return deliveryDates.map((date) => {
     return {
@@ -33,10 +33,10 @@ export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, 
 }
 
 // Deliveries offered by vendor (yellow events in user's calendar)
-export async function generateDeliveriesForVendor(EarliestStartDate: Date, vendor: Vendor, noOfDeliveries: number): Promise<Delivery[]> {
+export async function generateDeliveriesForVendor(EarliestStartDate: Date, vendor: Vendor, noOfDeliveries: number, env:LunchEnvironment): Promise<Delivery[]> {
   let weekTimes:WeekTime[] = scheduleToWeekTimes(vendor.schedule)
 
-  let deliveryDates = getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries);
+  let deliveryDates = await getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries, env);
   const deliveryType: "sub" | "single" = "single";
 
   return deliveryDates.map((date) => {

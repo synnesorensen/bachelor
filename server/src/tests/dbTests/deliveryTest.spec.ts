@@ -47,6 +47,7 @@ describe('Delivery tests', () => {
       deliverytime: "2021-05-31",
       menuId: "1", 
       cancelled: false,
+      deliveryType,
       paid,
       approved
     }

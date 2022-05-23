@@ -316,9 +316,13 @@ export class Api {
     return response.data;
   }
 
-  async cancelDeliveries(deliveries: interfaces.Delivery[]): Promise<boolean> {
+  async cancelDeliveries(deliveries: interfaces.Delivery[], cancelledBy: string): Promise<boolean> {
     await this.ensureFreshToken();
-    const response = await this.apiAxios.post(urlPrefix + "/cancelDeliveries", deliveries);
+    const body = {
+      deliveries,
+      cancelledBy
+    }
+    const response = await this.apiAxios.post(urlPrefix + "/cancelDeliveries", body);
     return response.status == 200;
   }
 
@@ -332,6 +336,18 @@ export class Api {
     await this.ensureFreshToken();
     const delivery = await this.apiAxios.post(urlPrefix + "/v/deliveryRequests", action);
     return delivery.data;
+  }
+
+  async setAbsence(start: string, end: string): Promise<number> {
+    await this.ensureFreshToken();
+    const absence = await this.apiAxios.post(urlPrefix + "/v/absence?start=" + start + "&end=" + end);
+    return absence.data;
+  }
+
+  async getAbsence(start: string, end: string): Promise<Date[]> {
+    await this.ensureFreshToken();
+    const absence = await this.apiAxios.get(urlPrefix + "/v/absence?start=" + start + "&end=" + end);
+    return absence.data;
   }
 }
 

@@ -12,7 +12,7 @@
             <v-btn fab text small class="mr-4" @click="next">
               <v-icon small>mdi-chevron-right</v-icon>
             </v-btn>
-            <v-toolbar-title v-if="$refs.calendar">
+            <v-toolbar-title v-if="$refs.calendar" @click="showDialog" style="cursor: pointer">
               {{
                 $refs.calendar.title.charAt(0).toUpperCase() +
                 $refs.calendar.title.slice(1)
@@ -26,11 +26,12 @@
             ref="calendar"
             v-model="focus"
             locale="no"
-            color="primary"
+            color="amber"
             weekdays="1, 2, 3, 4, 5"
             show-week
             :now="today"
             :events="events"
+            @click:date="showDialog"
             @click:event="showDeliveries"
             @change="getEvents"
           >
@@ -48,6 +49,50 @@
         />
       </v-dialog>
     </v-row>
+    <v-dialog
+      v-model="datePickDialog"
+      max-width="800"
+      max-height="800"
+      persistent
+    >
+      <v-card>
+        <v-app-bar>
+          <v-card-title class="headline"> Sett inn fravær i kalender </v-card-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="close">
+            <v-icon> mdi-close </v-icon>
+          </v-btn>
+        </v-app-bar>
+        <br />
+        <v-card-text>
+          <v-row>
+            <v-col>
+              <p class="font-weight-medium">Fra dato:</p>
+              <date-picker
+                :date.sync="startDate" 
+                @blur="dateCheck" />
+            </v-col>
+            <v-col>
+              <p class="font-weight-medium">Til dato:</p>
+              <date-picker 
+                :date.sync="endDate"
+                @blur="dateCheck" />
+            </v-col>
+          </v-row>
+          <v-row>
+            <p style="color: red">{{ errorMsg }}</p>
+          </v-row>
+          <v-row justify="center">
+            <v-btn 
+              color="primary"
+              class="mb-4"
+              v-if="setAbsenceBtn" 
+              @click="setAbsence"
+            >Sett fravær</v-btn>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -56,10 +101,13 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import Deliveries from "./Deliveries.vue";
 import api from "../../api/api";
+import DatePicker from "./DatePicker.vue";
+import { toLocalPresentation } from "../../utils/utils";
 
 @Component({
   components: {
     Deliveries,
+    DatePicker
   },
 })
 export default class AdminCalendar extends Vue {
@@ -71,6 +119,11 @@ export default class AdminCalendar extends Vue {
   private events: any[] = [];
   private showList = false;
   private selectedDate = "";
+  private datePickDialog = false;
+  private startDate = "";
+  private endDate = "";
+  private errorMsg = "";
+  private setAbsenceBtn = false;
 
   mounted() {
     this.focus = "";
@@ -101,13 +154,26 @@ export default class AdminCalendar extends Vue {
 
   async populateCalendar() {
     const vendor = await api.getVendor();
-    let schedule = vendor!.schedule;
-    let events: any[] = [];
+    const schedule = vendor!.schedule;
+    const events: any[] = [];
     if (this.start && this.end) {
-      let deliveries = await api.getAllVendorsDeliveriesSummary(
+      const deliveries = await api.getAllVendorsDeliveriesSummary(
         this.start.date,
         this.end.date
       );
+      const absenceDates = await api.getAbsence(this.start.date, this.end.date);
+      if (absenceDates) {
+        absenceDates.forEach(absence => {
+          const start = new Date(absence);
+          const end = new Date(absence);
+          events.push({
+            name: "Fri",
+            start,
+            end,
+            color: "orange",
+          });
+        })
+      }
       if (deliveries) {
         deliveries.forEach((del) => {
           const delStart = new Date(`${del.date.substring(0, 10)}T00:00:00`);
@@ -133,6 +199,44 @@ export default class AdminCalendar extends Vue {
 
   deliveriesUpdated() {
     this.populateCalendar();
+  }
+
+  showDialog() {
+    // TODO: Se om det går an å sende inn valgt dato fra kalender til date-picker
+    this.startDate = this.selectedDate;
+    this.datePickDialog = true;
+  }
+
+  async setAbsence(event: any) {
+    try {
+      await api.setAbsence(this.startDate, this.endDate);
+      this.datePickDialog = false;
+      this.startDate = "";
+      this.endDate = "";
+    }
+    catch (err) {
+      console.log(err);
+      this.startDate = "";
+      this.endDate = "";
+      this.errorMsg = "Noe gikk galt, kontakt administrator.";
+    }
+  }
+
+  async dateCheck() {
+    if (this.startDate && this.endDate) {
+      if (new Date(this.endDate) < new Date(this.startDate)) {
+        this.errorMsg = "Fra dato kan ikke være etter til dato.";
+      } else {
+        this.errorMsg = "";
+        this.setAbsenceBtn = true;
+      }
+    }
+  }
+
+  close() {
+    this.startDate = "";
+    this.endDate = "";
+    this.datePickDialog = false;
   }
 }
 </script>

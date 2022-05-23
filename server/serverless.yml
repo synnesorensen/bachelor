@@ -171,6 +171,14 @@ functions:
           path: /v/newUsers
           method: get
           cors: true
+  setAbsence: 
+    handler: src/absence.mainHandler
+    events: 
+      - http: 
+          authorizer: authorizer
+          path: /v/absence
+          method: any
+          cors: true
 
 resources:
   Resources:
@@ -198,6 +206,10 @@ resources:
             AttributeType: S
           - AttributeName: GSI2_sk
             AttributeType: S
+          - AttributeName: GSI3_pk
+            AttributeType: S
+          - AttributeName: GSI3_sk
+            AttributeType: S
         KeySchema:
           - AttributeName: pk
             KeyType: HASH
@@ -219,6 +231,14 @@ resources:
               - AttributeName: GSI2_pk
                 KeyType: HASH
               - AttributeName: GSI2_sk
+                KeyType: RANGE
+            Projection:
+              ProjectionType: "ALL"
+          - IndexName: GSI3
+            KeySchema:
+              - AttributeName: GSI3_pk
+                KeyType: HASH
+              - AttributeName: GSI3_sk
                 KeyType: RANGE
             Projection:
               ProjectionType: "ALL"

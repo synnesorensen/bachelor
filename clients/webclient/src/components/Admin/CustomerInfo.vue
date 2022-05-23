@@ -62,7 +62,7 @@
         </p>
       </v-col>
     </v-row>
-    <v-row dense v-if="selectedUser.subscription">
+    <v-row dense v-if="selectedUser.subscription && isUserApproved()">
       <v-col :xl="4" :lg="5">
         <p class="font-weight-medium">Status abonnement</p>
       </v-col>
@@ -97,6 +97,10 @@ import * as dto from "../../../../../common/dto";
 })
 export default class CustomerInfo extends Vue {
   @Prop() selectedUser!: dto.UserDto | null;
+
+  isUserApproved() {
+    return (this.selectedUser?.approved !== "denied");
+  }
 
   userStatus() {
     switch (this.selectedUser?.approved) {

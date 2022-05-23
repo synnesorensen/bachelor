@@ -1,54 +1,60 @@
 import { DateWithMenuId, WeekTime } from '../../common/interfaces';
+import { saveAbsenceToDb } from './dbUtils';
 
-export function getDeliveryDates(startDate: Date, weekTimes: WeekTime[], no:number):DateWithMenuId[] {
-  let nextDelivery = nextDeliveryDate(startDate, weekTimes);
+export async function getDeliveryDates(startDate: Date, weekTimes: WeekTime[], no:number, env:LunchEnvironment):Promise<DateWithMenuId[]> {
+  let nextDelivery = await nextDeliveryDate(startDate, weekTimes, env);
 
   let count = 0;
   let deliveryDates: DateWithMenuId[] = [];
 
   while (count < no) {
     deliveryDates.push(nextDelivery);
-    nextDelivery = nextDeliveryDate(nextDelivery.date, weekTimes);
+    nextDelivery = await nextDeliveryDate(nextDelivery.date, weekTimes, env);
     count++;
   }
   return deliveryDates;
 }
 
-export function noOfDeliveriesInMonth(startDate: Date, weekTimes: WeekTime[]):number {
-  let nextDelivery = nextDeliveryDate(startDate, weekTimes);
+export async function noOfDeliveriesInMonth(startDate: Date, weekTimes: WeekTime[], env:LunchEnvironment):Promise<number> {
+  let nextDelivery = await nextDeliveryDate(startDate, weekTimes, env);
   let count = 0;
 
   while (nextDelivery.date.getUTCMonth() == startDate.getUTCMonth()) {
-    nextDelivery = nextDeliveryDate(nextDelivery.date, weekTimes);
+    nextDelivery = await nextDeliveryDate(nextDelivery.date, weekTimes, env);
     count++;
   }
   return count;
 }
 
-export function nextDeliveryDate(date: Date, weekTimes: WeekTime[]): DateWithMenuId | null {
-  if (weekTimes.length == 0) {
-    return null;
-  }
+function getDeliveryBeforeMidnight(date: Date, weekTimes: WeekTime[]) {
   let weekTime = toWeekTime(date);
   let i = 0;
+
   while (i < weekTimes.length && lessThanOrEqual(weekTimes[i], weekTime)) {
     i++;
   }
-  const millisPerDay = 1000 * 3600 * 24;
-  let delta = 0;
-  let menuId = "";
+  if (i < weekTimes.length && weekTimes[i].day === date.getDay()) {
+    return weekTimes[i];
+  } 
+  return null;
+}
 
-  if (i == weekTimes.length) {
-    delta = ((7 + weekTimes[0].day - weekTime.day) * millisPerDay) + (weekTimes[0].time - weekTime.time);
-    menuId = weekTimes[0].menuId;
-  } else {
-    delta = ((weekTimes[i].day - weekTime.day) * millisPerDay) + (weekTimes[i].time - weekTime.time);
-    menuId = weekTimes[i].menuId;
+export async function nextDeliveryDate(date: Date, weekTimes: WeekTime[], env: LunchEnvironment): Promise<DateWithMenuId> {
+  if (weekTimes.length == 0) {
+    return null;
+  }
+
+  let result = await findNextWorkDay(date, env);
+  let delivery = getDeliveryBeforeMidnight(result, weekTimes);
+
+  while (delivery === null) {
+    result = await findNextWorkDay(result, env);
+    delivery = getDeliveryBeforeMidnight(result, weekTimes);
   }
 
   return { 
-    date: new Date(date.getTime() + delta),
-    menuId
+    date: result,
+    menuId: delivery.menuId
   }
 }
 
@@ -66,4 +72,33 @@ export function toWeekTime(date: Date): WeekTime {
   }
 }
 
+export async function isVendorAbsent(date: Date, env: LunchEnvironment) {
+  let absentDates = await env.getVendorAbsence(date, date);
+  return (absentDates.length > 0);
+}
 
+export async function findNextWorkDay(date: Date, env: LunchEnvironment): Promise<Date> {
+  let currentDate = new Date(date);
+
+  currentDate.setDate(date.getDate() + 1);
+
+  while (await isVendorAbsent(currentDate, env)) {
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  return currentDate;
+}
+
+
+export async function generateVendorsAbsentDates(start: string, end: string) {
+  const absentDates:string[] = [];
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  let currentDate = startDate;
+
+  while (startDate <= endDate) {
+    absentDates.push(new Date(currentDate).toISOString());
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  
+  await saveAbsenceToDb(absentDates);
+}

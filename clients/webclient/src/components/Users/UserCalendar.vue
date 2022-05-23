@@ -304,12 +304,11 @@ export default class UserCalendar extends Vue {
   async cancelDelivery() {
     const deliveries: Delivery[] = [];
     deliveries.push(this.selectedEvent.delivery);
-    if (!(await api.cancelDeliveries(deliveries))) {
+    if (!(await api.cancelDeliveries(deliveries, "user"))) {
       alert("Something went wrong");
     } else {
       this.populateCalendar();
       this.selectedEvent.delivery.cancelled = true;
-      console.log(this.selectedEvent.delivery)
     }
     this.cancelDialog = false;
   }
@@ -317,7 +316,8 @@ export default class UserCalendar extends Vue {
   async orderDelivery() {
     let delivery: DeliveryDto = {
       deliverytime: this.selectedEvent.delivery.deliverytime,
-      menuId: this.selectedEvent.delivery.menuId
+      menuId: this.selectedEvent.delivery.menuId, 
+      deliveryType: "single"
     };
     await api.putDelivery(
       this.$store.getters.subscription.vendorId,

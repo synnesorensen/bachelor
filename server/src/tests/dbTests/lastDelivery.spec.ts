@@ -12,12 +12,15 @@ describe('Last delivery', () => {
     const noDelivery = await findLatestDelivery("testVendorId66", "testUserId16");
     expect(noDelivery).equal(null);
 
+    const deliveryType: "sub" | "single" = "sub"
+
     let delivery1 = {
       vendorId: "testVendorId66",
       userId: "testUserId16",
       deliverytime: "2021-04-20",
       menuId: "1", 
       cancelled: false,
+      deliveryType,
       paid,
       approved
     };
@@ -30,6 +33,7 @@ describe('Last delivery', () => {
       userId: "testUserId16",
       deliverytime: "2021-04-21",
       menuId: "1", 
+      deliveryType,
       cancelled: false,
       paid,
       approved

@@ -7,6 +7,7 @@ import { getSubscriptionFromDb, getVendorFromDb } from './dbUtils';
 import { noOfDeliveriesInMonth } from './timeHandling';
 import { scheduleToWeekTimes } from './addDeliveries';
 import { MenuItems } from '../../common/interfaces';
+import { dbenv } from './DbEnvironment';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   let vendorId = getUserInfoFromEvent(event);
@@ -50,7 +51,7 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
       return vendor.schedule.find(({id}) => id == subId);
     }); 
     let weekTimes = scheduleToWeekTimes(schedule);
-    let result = noOfDeliveriesInMonth(new Date(afterDate), weekTimes);
+    let result = await noOfDeliveriesInMonth(new Date(afterDate), weekTimes, dbenv);
   
     return {
       statusCode: 200,

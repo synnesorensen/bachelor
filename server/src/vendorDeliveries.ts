@@ -6,6 +6,7 @@ import { deleteDeliveryInDb, getAllDeliveriesFromAllSubscribers, getUserprofileF
 import { getUserInfoFromEvent } from './auth/getUserFromJwt'
 import { generateDeliveriesForSubscribers } from './addDeliveries';
 import { Delivery, Summary } from '../../common/interfaces';
+import { dbenv } from './DbEnvironment';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   let vendorId = getUserInfoFromEvent(event);
@@ -170,7 +171,7 @@ async function postVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGat
       body: '{ "message" : "Invalid format for number of deliveries" }'
     };
   }
-  let deliveries = await generateDeliveriesForSubscribers(startDate, userId, vendorId, noOfDeliveries);
+  let deliveries = await generateDeliveriesForSubscribers(startDate, userId, vendorId, noOfDeliveries, dbenv);
   await saveDeliveriesToDb(deliveries);
 
   return {

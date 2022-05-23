@@ -10,7 +10,7 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
   const vendorId = getUserInfoFromEvent(event);
   const vendor = await getUserprofileFromDb(vendorId);
   const { schedule } = await getVendorFromDb();
-  
+
   if (!vendor.isVendor) {
     return {
       statusCode: 403,
@@ -18,7 +18,7 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     };
   }
   
-  const users = await getAllUsersFromDb();
+  const users = await getAllUsersFromDb(); 
   const subscriptions = await getAllSubscriptionsFromDb(vendorId);
 
   let result: UserDto[] = [];

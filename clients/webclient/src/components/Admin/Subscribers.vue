@@ -30,7 +30,7 @@ export default class Subscribers extends Vue {
   async created() {
     let subscribers = await api.getUsersAndSubscriptions();
     this.approvedSubscribers = subscribers.filter(
-      (sub) => sub.approved && !!sub.subscription
+      sub => (sub.approved === "approved") && !!sub.subscription
     );
   }
 

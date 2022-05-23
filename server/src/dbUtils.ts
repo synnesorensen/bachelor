@@ -5,6 +5,7 @@ import { Subscription, UserSubscription, Userprofile, Delivery, Vendor, Delivery
 import * as settings from '../../common/settings';
 import { generateDeliveriesForSubscribers } from './addDeliveries';
 import { DeliveryDto, DeliveryRequestDto } from '../../common/dto';
+import { dbenv } from './DbEnvironment';
 
 const database = new DynamoDB({ region: settings.REGION });
 const documentClient = new DocumentClient({ region: settings.REGION });
@@ -376,6 +377,7 @@ export async function getAllSubscriptionsFromDb(vendorId: string) {
       lastDeliveryDate: latestDelivery ? latestDelivery.deliverytime : null
     }
   }));
+  
   return result;
 }
 
@@ -580,9 +582,13 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
 
   UpdateExpression += ", GSI2_pk = :vendor";
   ExpressionAttributeValues[":vendor"] = { S: "v#" + vendorId };
+
+  UpdateExpression += ", GSI3_pk = :deliverytype";
+  ExpressionAttributeValues[":deliverytype"] = { S: "u#" + userId + delivery.deliveryType };
   
   UpdateExpression += ", GSI1_sk = :deliverytime";
   UpdateExpression += ", GSI2_sk = :deliverytime";
+  UpdateExpression += ", GSI3_sk = :deliverytime";
   ExpressionAttributeValues[":deliverytime"] = { S: "d#" + delivery.deliverytime };
 
   let params = {
@@ -645,7 +651,9 @@ export async function updateDeliveries(deliveries: Delivery[]): Promise<void> {
         GSI1_pk: deliveries[i].deliveryType,
         GSI1_sk: "d#" + deliveries[i].deliverytime,
         GSI2_pk: "v#" + deliveries[i].vendorId,
-        GSI2_sk: "d#" + deliveries[i].deliverytime
+        GSI2_sk: "d#" + deliveries[i].deliverytime, 
+        GSI3_pk: "u#" + deliveries[i].userId + deliveries[i].deliveryType,
+        GSI3_sk: "d#" + deliveries[i].deliverytime, 
       }
     });
   }
@@ -656,6 +664,10 @@ export async function updateDeliveries(deliveries: Delivery[]): Promise<void> {
   }
 
   await Promise.all(promises);
+
+  // Remove previously moved delivery from end of period: 
+  const latestDel = await findLatestDelivery(deliveries[0].vendorId, deliveries[0].userId);
+  deleteDeliveryInDb(latestDel.userId, latestDel.deliverytime);
 }
 
 export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> {
@@ -678,7 +690,9 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
           GSI1_pk: deliveries[i].deliveryType,
           GSI1_sk: "d#" + deliveries[i].deliverytime,
           GSI2_pk: "v#" + deliveries[i].vendorId,
-          GSI2_sk: "d#" + deliveries[i].deliverytime
+          GSI2_sk: "d#" + deliveries[i].deliverytime, 
+          GSI3_pk: "u#" + deliveries[i].userId + deliveries[i].deliveryType,
+          GSI3_sk: "d#" + deliveries[i].deliverytime, 
         }
       }
     });
@@ -840,20 +854,23 @@ export async function getDeliveryRequestsByDate(startDate: string, endDate: stri
 }
 
 export async function findLatestDelivery(vendorId: string, userId: string): Promise<Delivery | null> {
+  // Only for subscription deliveries
   let params = {
     TableName: settings.TABLENAME,
+    IndexName: "GSI3",
     Limit: 1,
     ScanIndexForward: false,
-    KeyConditionExpression: "#pk = :user and begins_with(#sk, :prefix)",
+    KeyConditionExpression: "#GSI3_pk = :user and begins_with(#GSI3_sk, :prefix)",
     ExpressionAttributeNames: {
-      "#pk": "pk",
-      "#sk": "sk"
+      "#GSI3_pk": "GSI3_pk",
+      "#GSI3_sk": "GSI3_sk"
     },
     ExpressionAttributeValues: {
-      ":user": "u#" + userId,
+      ":user": "u#" + userId + "sub",
       ":prefix": "d#"
     }
   };
+
 
   let dbResult = await documentClient.query(params).promise();
   if (dbResult.Count < 1) {
@@ -895,7 +912,8 @@ export async function getDeliveryDetails(vendorId: string, startDate: string, en
   });
   return deliveryDetails;
 }
-export async function cancelDeliveries(userId: string, deliveries: Delivery[]): Promise<number> {
+
+export async function cancelDeliveries(userId: string, deliveries: Delivery[], cancelledBy: string): Promise<number> {
   if (deliveries.length < 1) {
     return 0;
   }
@@ -903,9 +921,8 @@ export async function cancelDeliveries(userId: string, deliveries: Delivery[]): 
   const promises: Promise<boolean>[] = [];
   for (let delivery of deliveries) {
     if (delivery.userId == userId || delivery.vendorId == userId) {
-      promises.push(cancelDelivery(delivery));
-    } else {
-    }
+      promises.push(cancelDelivery(delivery, cancelledBy));
+    } 
   }
   let results = await Promise.all(promises);
   // Counting how many deliveries that were cancelled:
@@ -919,15 +936,16 @@ export async function cancelDeliveries(userId: string, deliveries: Delivery[]): 
   return count;
 }
 
-async function cancelDelivery(delivery: Delivery): Promise<boolean> {
+async function cancelDelivery(delivery: Delivery, cancelledBy: string): Promise<boolean> {
   const dbDel = await getDeliveryFromDb(delivery.vendorId, delivery.userId, delivery.deliverytime);
 
   if (!dbDel || dbDel.cancelled) {
     return false;
   }
-  let UpdateExpression = "set cancelled = :cancelled";
+  let UpdateExpression = "set cancelled = :cancelled, cancelledBy = :cancelledBy";
   let ExpressionAttributeValues: any = {
-    ":cancelled": { BOOL: true }
+    ":cancelled": { BOOL: true }, 
+    ":cancelledBy": { S: cancelledBy }
   };
   const params = {
     TableName: settings.TABLENAME,
@@ -944,7 +962,7 @@ async function cancelDelivery(delivery: Delivery): Promise<boolean> {
   // Moving cancelled delivery to the end of period:
   const latestDel = await findLatestDelivery(delivery.vendorId, delivery.userId);
   const date = new Date(latestDel.deliverytime);
-  let movedDels = await generateDeliveriesForSubscribers(date, delivery.userId, delivery.vendorId, 1);
+  const movedDels = await generateDeliveriesForSubscribers(date, delivery.userId, delivery.vendorId, 1, dbenv);
   await saveDeliveriesToDb(movedDels);
 
   return true;
@@ -1001,7 +1019,7 @@ export async function unPauseSubscription(userId: string, vendorId: string, time
   }
   let outstandingDeliveries = sub.outstandingDeliveries;
   let date = new Date(time);
-  let deliveries = await generateDeliveriesForSubscribers(date, userId, vendorId, outstandingDeliveries);
+  let deliveries = await generateDeliveriesForSubscribers(date, userId, vendorId, outstandingDeliveries, dbenv);
   await saveDeliveriesToDb(deliveries);
 
   let UpdateExpression = "SET paused = :paused REMOVE datePaused, outstandingDeliveries";
@@ -1065,4 +1083,66 @@ export async function handleDeliveryRequest(action: boolean, userId: string, tim
     paid: result.Attributes.paid,
     approved: result.Attributes.approved
   }
+}
+
+export async function saveAbsenceToDb(dates: string[]): Promise<void> {
+  let absenceDates = [];
+  for (let i = 0; i < dates.length; i++) {
+    absenceDates.push({
+      PutRequest: {
+        Item: {
+          EntityType: "Absence",
+          pk: "absence",
+          sk: "a#" + dates[i]
+        }
+      }
+    });
+
+    if (absenceDates.length === 25) {
+      let params = {
+        RequestItems: {
+          [settings.TABLENAME]: absenceDates
+        }
+      };
+      await documentClient.batchWrite(params).promise();
+      absenceDates = [];
+    }
+  }
+
+  if (absenceDates.length > 0) {
+    let params = {
+      RequestItems: {
+        [settings.TABLENAME]: absenceDates
+      }
+    };
+    await documentClient.batchWrite(params).promise();
+    // TODO: Sjekke for Unprocessed items på result
+  }
+}
+
+export async function getVendorAbsence(start: string, end?: string): Promise<Date[]> {
+  let KeyConditionExpression = "#pk = :absence and ";
+  if (end) {
+    KeyConditionExpression += "#sk BETWEEN :start and :end";
+  } else {
+    KeyConditionExpression += "#sk >= :start";
+  }
+
+  const params = {
+    TableName: settings.TABLENAME,
+    KeyConditionExpression,
+    ExpressionAttributeNames: {
+      "#pk": "pk",
+      "#sk": "sk"
+    },
+    ExpressionAttributeValues: {
+      ":absence": "absence",
+      ":start": "a#" + start,
+      ":end": "a#" + end
+    }
+  };
+
+  const dbResult = await documentClient.query(params).promise();
+
+  return dbResult.Items.map(res => new Date(res.sk.substr(2)));
 }

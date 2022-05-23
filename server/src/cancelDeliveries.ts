@@ -7,9 +7,9 @@ import { getUserInfoFromEvent } from './auth/getUserFromJwt'
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   let userId = getUserInfoFromEvent(event);
-  let body = JSON.parse(event.body);
+  let { deliveries, cancelledBy } = JSON.parse(event.body);
 
-  await cancelDeliveries(userId, body);
+  await cancelDeliveries(userId, deliveries, cancelledBy);
 
   return {
     statusCode: 200,

@@ -9,7 +9,7 @@
         <v-icon> mdi-close </v-icon>
       </v-btn>
     </v-app-bar>
-    <v-content>
+    <v-main>
       <v-row justify="center">
         <v-data-table
           :loading="loading"
@@ -55,7 +55,7 @@
           </v-dialog>
         </v-card-actions>
       </v-row>
-    </v-content>
+    </v-main>
   </v-card>
 </template>
 
@@ -138,7 +138,7 @@ export default class Deliveries extends Vue {
   }
 
   async cancelDeliveries() {
-    if (!(await api.cancelDeliveries(this.deliveryDetails))) {
+    if (!(await api.cancelDeliveries(this.deliveryDetails, "vendor"))) {
       alert("Something went wrong");
     } else {
       this.$emit("update");
