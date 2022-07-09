@@ -229,17 +229,19 @@ export default class UserCalendar extends Vue {
     const usersSub: Subscription = this.$store.getters.subscription;
     const vendor: Vendor = this.$store.getters.vendor;
     const vendorSchedule = vendor.schedule;
-    const vendorDeliveries = await api.scheduleToDates(
-      vendor.vendorId,
-      this.start.date
-    );
+    const events: any[] = [];
 
-    let events: any[] = [];
     if (this.start && this.end) {
-      let deliveries = await api.getAllUsersDeliveries(
-        this.start.date,
-        this.end.date
-      );
+      const data = await Promise.all([
+        api.scheduleToDates(vendor.vendorId, this.start.date), 
+        api.getAllUsersDeliveries(this.start.date, this.end.date), 
+        api.getAbsence(this.start.date, this.end.date)
+      ]);
+
+      const vendorDeliveries = data[0];
+      const deliveries = data[1];
+      const absenceDates = data[2];
+
       if (deliveries) {
         deliveries.forEach((del) => {
           const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
@@ -282,6 +284,18 @@ export default class UserCalendar extends Vue {
             });
           }
         });
+      }
+      if (absenceDates) {
+        absenceDates.forEach(absence => {
+          const start = new Date(absence);
+          const end = new Date(absence);
+          events.push({
+            name: "Ingen leveranser",
+            start,
+            end,
+            color: "blue",
+          });
+        })
       }
       this.events = events;
     }

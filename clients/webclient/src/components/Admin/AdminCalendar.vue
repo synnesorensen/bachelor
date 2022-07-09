@@ -157,11 +157,13 @@ export default class AdminCalendar extends Vue {
     const schedule = vendor!.schedule;
     const events: any[] = [];
     if (this.start && this.end) {
-      const deliveries = await api.getAllVendorsDeliveriesSummary(
-        this.start.date,
-        this.end.date
-      );
-      const absenceDates = await api.getAbsence(this.start.date, this.end.date);
+      const data = await Promise.all([
+        api.getAllVendorsDeliveriesSummary(this.start.date, this.end.date), 
+        api.getAbsence(this.start.date, this.end.date)
+      ])
+      const deliveries = data[0];
+      const absenceDates = data[1];
+
       if (absenceDates) {
         absenceDates.forEach(absence => {
           const start = new Date(absence);

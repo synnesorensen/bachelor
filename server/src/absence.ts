@@ -7,15 +7,6 @@ import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 import { generateVendorsAbsentDates } from './timeHandling';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-  const vendorId = getUserInfoFromEvent(event);
-  const vendor = await getUserprofileFromDb(vendorId);
-
-  if (!vendor.isVendor) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify( {message: "User " + vendorId + " is not a vendor"})
-    };
-  }
   if (event.httpMethod === "GET") {
     return getAbsence(event);
   }
@@ -61,6 +52,16 @@ async function getAbsence(event: APIGatewayProxyEvent): Promise<APIGatewayProxyR
 }
 
 async function postAbsence(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  const vendorId = getUserInfoFromEvent(event);
+  const vendor = await getUserprofileFromDb(vendorId);
+
+  if (!vendor.isVendor) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify( {message: "User " + vendorId + " is not a vendor"})
+    };
+  }
+
   if (!event.queryStringParameters) {
     return {
       statusCode: 400,
