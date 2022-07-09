@@ -17,7 +17,7 @@
         </v-img>
       </template>
       <v-toolbar-title>
-        <div class="text-h4">Lunsj på Hjul</div>
+        <div class="text-h4 white--text">Lunsj på Hjul</div>
       </v-toolbar-title>
       <v-spacer />
       <template v-slot:extension>

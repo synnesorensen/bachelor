@@ -14,7 +14,7 @@
         </v-img>
       </template>
       <v-toolbar-title>
-        <div class="text-h4">Lunsj på Hjul</div>
+        <div class="text-h4 white--text">Lunsj på Hjul</div>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <template v-slot:extension>
@@ -30,7 +30,7 @@
         </v-tabs>
       </template>
       <v-spacer />
-      <v-btn class="d-none d-sm-flex" color="grey" @click="logout">
+      <v-btn class="d-none d-sm-flex" color="amber" @click="logout">
         Logg ut
       </v-btn>
     </v-app-bar>
@@ -47,7 +47,7 @@
           </v-list-item>
         </v-list-item-group>
         <br />
-        <v-btn small text color="grey" @click="logout"> Logg ut </v-btn>
+        <v-btn small text color="red" @click="logout"> Logg ut </v-btn>
       </v-list>
     </v-navigation-drawer>
     <v-main>

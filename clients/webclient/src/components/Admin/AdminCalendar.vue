@@ -102,7 +102,6 @@ import Component from "vue-class-component";
 import Deliveries from "./Deliveries.vue";
 import api from "../../api/api";
 import DatePicker from "./DatePicker.vue";
-import { toLocalPresentation } from "../../utils/utils";
 
 @Component({
   components: {
