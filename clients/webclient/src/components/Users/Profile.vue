@@ -164,7 +164,7 @@
         </v-card>
       </v-col>
       <v-col>
-        <v-card>
+        <v-card v-if="$store.getters.userprofile.approved !== 'denied'">
           <v-app-bar dark color="#79b321">
             <v-card-title> Abonnement </v-card-title>
             <v-spacer></v-spacer>
@@ -172,7 +172,7 @@
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </v-app-bar>
-          <v-card-text v-if="$store.getters.subscription">
+          <v-card-text v-if="$store.getters.subscription && this.$store.getters.userprofile.approved !== 'new'">
             <br />
             <v-row>
               <v-col>
@@ -268,6 +268,14 @@
                   Du vil få tilsendt faktura for neste periode så snart abonnementet
                   ditt er blitt godkjent.
                 </p>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-text>
+            <br />
+            <v-row>
+              <v-col>
+                <p class="font-weight-medium">Venter på godkjenning av adresse</p>
               </v-col>
             </v-row>
           </v-card-text>

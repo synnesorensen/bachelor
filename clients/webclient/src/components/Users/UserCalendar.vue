@@ -95,6 +95,19 @@
                 </v-card-actions>
               </v-card>
             </v-dialog>
+            <v-dialog v-model="errorDialog" persistent max-width="300">
+              <v-card>
+                <v-card-title class="headline">Feilmelding</v-card-title>
+                <v-card-text>
+                  Noe gikk galt. Prøv igjen senere, eller kontakt Lunsj på Hjul.
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn color="error" @click="errorDialog = false">
+                    Lukk
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
           </v-card-actions>
         </v-card>
         <v-card
@@ -162,7 +175,7 @@
         </v-card>
         <v-card
           :class="{ fixed: !$vuetify.breakpoint.xs }"
-          v-else-if="selectedEvent"
+          v-else-if="selectedEvent && selectedEvent.delivery.cancelled"
         >
           <v-card-title class="headline">
             {{ selectedEvent.name + " " + localPresentation(selectedDate) }}
@@ -172,6 +185,17 @@
             leveranse og angrer, kan du trykke på Angre-knappen under.
             En forespørsel vil bli sendt til Lunsj på Hjul om å endre
             kanselleringen og du får svar på forespørselen på e-post. 
+          </v-card-text>
+        </v-card>
+        <v-card
+          :class="{ fixed: !$vuetify.breakpoint.xs }"
+          v-else-if="selectedEvent"
+        >
+          <v-card-title class="headline">
+            {{ selectedEvent.name + " " + localPresentation(selectedDate) }}
+          </v-card-title>
+          <v-card-text>
+            Lunsj på Hjul tilbyr ingen levering på denne dato. 
           </v-card-text>
         </v-card>
       </v-col>
@@ -200,6 +224,7 @@ export default class UserCalendar extends Vue {
   private showSpinner = false;
   private cancelDialog = false;
   private orderDialog = false;
+  private errorDialog = false;
 
   mounted() {
     this.focus = "";
@@ -221,7 +246,9 @@ export default class UserCalendar extends Vue {
   async getEvents({ start, end }: { start: any; end: any }) {
     this.start = start;
     this.end = end;
-    this.populateCalendar();
+      this.populateCalendar();
+    if (this.$store.getters.userprofile.approved !== "denied" && this.$store.getters.userprofile.approved !== "new") {
+    }
   }
 
   async populateCalendar() {
@@ -303,6 +330,7 @@ export default class UserCalendar extends Vue {
   }
 
   showEvent(event: any) {
+    console.log(event)
     this.selectedEvent = event.event;
     this.selectedDate = event.day.date;
   }
@@ -319,7 +347,7 @@ export default class UserCalendar extends Vue {
     const deliveries: Delivery[] = [];
     deliveries.push(this.selectedEvent.delivery);
     if (!(await api.cancelDeliveries(deliveries, "user"))) {
-      alert("Something went wrong");
+      alert("Noe gikk gale, prøv igjen senere.");
     } else {
       this.populateCalendar();
       this.selectedEvent.delivery.cancelled = true;
@@ -333,14 +361,19 @@ export default class UserCalendar extends Vue {
       menuId: this.selectedEvent.delivery.menuId, 
       deliveryType: "single"
     };
-    await api.putDelivery(
-      this.$store.getters.subscription.vendorId,
-      this.$store.getters.loggedInUser,
-      delivery
-    );
-    this.selectedEvent.ordered = true;    // TODO: Sjekk hva slags farger og status forespørsler skal ha
-    this.orderDialog = false;
-    this.populateCalendar();
+    try {
+      await api.putDelivery(
+        this.$store.getters.subscription.vendorId,
+        this.$store.getters.loggedInUser,
+        delivery
+      );
+      this.selectedEvent.ordered = true;    // TODO: Sjekk hva slags farger og status forespørsler skal ha
+      this.orderDialog = false;
+      this.populateCalendar();
+    } catch (err) {
+      this.orderDialog = false;
+      this.errorDialog = true;
+    }
   }
 
   localPresentation(time: string) {

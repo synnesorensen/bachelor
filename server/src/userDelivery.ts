@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { getDeliveryFromDb, deleteDeliveryInDb, putDeliveryInDb, getVendorFromDb } from './dbUtils';
+import { getDeliveryFromDb, deleteDeliveryInDb, putDeliveryInDb, getVendorFromDb, getUserprofileFromDb } from './dbUtils';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -86,12 +86,21 @@ async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
   } 
 
   let body = JSON.parse(event.body);
-  let delivery = await putDeliveryInDb(vendorId, userId, body);
+  const user = await getUserprofileFromDb(userId);
+  if (user.approved === "approved") {
+    let delivery = await putDeliveryInDb(vendorId, userId, body);
+    return {
+      statusCode: 200,
+      body: JSON.stringify(delivery)
+    };
+  } else {
+    return {
+      statusCode: 403,
+      body: '{ "message" : "Not allowed" }'
+    };
+  }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(delivery)
-  };
+
 }
 
 async function deleteDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
