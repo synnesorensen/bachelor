@@ -1,7 +1,7 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row>
-      <v-col cols="8">
+      <v-col :xl="8" :lg="8" md="12" sm="12" xs="12">
         <v-sheet>
           <v-spacer></v-spacer>
           <v-toolbar flat>
@@ -41,163 +41,11 @@
         </v-sheet>
       </v-col>
       <v-col>
-        <v-card
-          :class="{ fixed: !$vuetify.breakpoint.xs }"
-          v-if="selectedEvent && !selectedEvent.ordered"
-        >
-          <v-card-title class="headline">
-            {{ selectedEvent.name + " " + localPresentation(selectedDate) }}
-          </v-card-title>
-          <v-card-text v-if="cancelable">
-            Det er mulig å bestille frem til klokken 10:00 dagen før levering.
-            Ønsker du å bestille
-            <p class="font-weight-medium">
-              {{
-                selectedEvent.name + " den " + localPresentation(selectedDate)
-              }}?
-            </p>
-          </v-card-text>
-          <v-card-text v-if="!cancelable">
-            Det er ikke mulig å bestille etter klokken 10:00 dagen før levering.
-          </v-card-text>
-          <v-card-actions>
-            <v-tooltip :disabled="cancelable" bottom>
-              <template v-slot:activator="{ on }">
-                <div v-on="on">
-                  <v-btn
-                    :disabled="!cancelable"
-                    color="primary"
-                    small
-                    v-on="on"
-                    @click="orderDialog = true"
-                  >
-                    Bestill
-                  </v-btn>
-                </div>
-              </template>
-              <span>Det er for sent å bestille denne leveringen.</span>
-            </v-tooltip>
-            <v-dialog v-model="orderDialog" persistent max-width="300">
-              <v-card>
-                <v-card-title class="headline">Bestilling</v-card-title>
-                <v-card-text>
-                  Ønsker du å bestille
-                  {{ selectedEvent.name + " " + localPresentation(selectedDate) }}
-                  ? En forespørsel vil bli sendt til Lunsj på Hjul.
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn color="success" @click="orderDelivery()">
-                    Bestill levering
-                  </v-btn>
-                  <v-btn color="error" @click="orderDialog = false">
-                    Avbryt
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-            <v-dialog v-model="errorDialog" persistent max-width="300">
-              <v-card>
-                <v-card-title class="headline">Feilmelding</v-card-title>
-                <v-card-text>
-                  Noe gikk galt. Prøv igjen senere, eller kontakt Lunsj på Hjul.
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn color="error" @click="errorDialog = false">
-                    Lukk
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </v-card-actions>
-        </v-card>
-        <v-card
-          :class="{ fixed: !$vuetify.breakpoint.xs }"
-          v-else-if="selectedEvent && selectedEvent.delivery.approved === 'denied'"
-        >
-          <v-card-title class="headline">
-            {{ selectedEvent.name + " " + localPresentation(selectedDate) }}
-          </v-card-title>
-          <v-card-text>
-            Forespørsel om levering denne dagen ble avslått. 
-          </v-card-text>
-        </v-card>
-        <v-card
-          :class="{ fixed: !$vuetify.breakpoint.xs }"
-          v-else-if="selectedEvent && !selectedEvent.delivery.cancelled"
-        >
-          <v-card-title class="headline">
-            {{ selectedEvent.name + " " + localPresentation(selectedDate) }}
-          </v-card-title>
-          <v-card-text style="width: 500px;">
-            Det er mulig å avbestille en måltid frem til klokken 10:00 dagen før
-            levering. Kansellerte måltid vil bli flyttet til neste måned, og
-            faktura for neste periode vil bli justert i henhold til antall
-            avbestillinger.
-          </v-card-text>
-          <v-card-actions>
-            <v-tooltip :disabled="cancelable" bottom>
-              <template v-slot:activator="{ on }">
-                <div v-on="on">
-                  <v-btn
-                    :disabled="!cancelable"
-                    color="primary"
-                    small
-                    v-on="on"
-                    @click="cancelDialog = true"
-                  >
-                    Kanseller
-                  </v-btn>
-                </div>
-              </template>
-              <span>Det er for sent å avbestille denne leveringen</span>
-            </v-tooltip>
-            <v-dialog v-model="cancelDialog" persistent max-width="300">
-              <v-card>
-                <v-card-title class="headline">Avbestilling</v-card-title>
-                <v-card-text>
-                  Er du sikker på at du vil avbestille
-                  {{
-                    selectedEvent.name + " " + localPresentation(selectedDate)
-                  }}
-                  ?
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn color="error" @click="cancelDialog = false">
-                    Avbryt
-                  </v-btn>
-                  <v-btn color="success" @click="cancelDelivery()">
-                    Avbestill levering
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </v-card-actions>
-        </v-card>
-        <v-card
-          :class="{ fixed: !$vuetify.breakpoint.xs }"
-          v-else-if="selectedEvent && selectedEvent.delivery.cancelled"
-        >
-          <v-card-title class="headline">
-            {{ selectedEvent.name + " " + localPresentation(selectedDate) }}
-          </v-card-title>
-          <v-card-text>
-            Denne leveransen er kansellert. Dersom du har kansellert en
-            leveranse og angrer, kan du trykke på Angre-knappen under.
-            En forespørsel vil bli sendt til Lunsj på Hjul om å endre
-            kanselleringen og du får svar på forespørselen på e-post. 
-          </v-card-text>
-        </v-card>
-        <v-card
-          :class="{ fixed: !$vuetify.breakpoint.xs }"
-          v-else-if="selectedEvent"
-        >
-          <v-card-title class="headline">
-            {{ selectedEvent.name + " " + localPresentation(selectedDate) }}
-          </v-card-title>
-          <v-card-text>
-            Lunsj på Hjul tilbyr ingen levering på denne dato. 
-          </v-card-text>
-        </v-card>
+        <CalendarCards 
+          :event.sync="selectedEvent" 
+          :date.sync="selectedDate"
+          @update="populateCalendar"
+        />
       </v-col>
     </v-row>
   </v-container>
@@ -207,11 +55,14 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import api from "../../api/api";
-import { Delivery, Vendor, Subscription } from "../../../../../common/interfaces";
-import { DeliveryDto } from "../../../../../common/dto";
-import { toLocalPresentation } from "../../utils/utils";
+import { Vendor, Subscription } from "../../../../../common/interfaces";
+import CalendarCards from "./CalendarCards.vue";
 
-@Component({})
+@Component({
+  components: {
+    CalendarCards
+  }
+})
 export default class UserCalendar extends Vue {
   private today = new Date().toISOString().substr(0, 10);
   private focus = new Date().toISOString().substr(0, 10);
@@ -222,9 +73,6 @@ export default class UserCalendar extends Vue {
   private selectedEvent: any = null;
   private selectedDate = "";
   private showSpinner = false;
-  private cancelDialog = false;
-  private orderDialog = false;
-  private errorDialog = false;
 
   mounted() {
     this.focus = "";
@@ -246,8 +94,8 @@ export default class UserCalendar extends Vue {
   async getEvents({ start, end }: { start: any; end: any }) {
     this.start = start;
     this.end = end;
-      this.populateCalendar();
     if (this.$store.getters.userprofile.approved !== "denied" && this.$store.getters.userprofile.approved !== "new") {
+      this.populateCalendar();
     }
   }
 
@@ -291,6 +139,7 @@ export default class UserCalendar extends Vue {
             color,
             delivery: del,
             ordered: true,
+            type: "delivery"
           });
         });
       }
@@ -308,6 +157,7 @@ export default class UserCalendar extends Vue {
               color: "amber",
               delivery: del,
               ordered: false,
+              type: "delivery"
             });
           }
         });
@@ -321,6 +171,7 @@ export default class UserCalendar extends Vue {
             start,
             end,
             color: "blue",
+            type: "absence"
           });
         })
       }
@@ -330,55 +181,11 @@ export default class UserCalendar extends Vue {
   }
 
   showEvent(event: any) {
-    console.log(event)
+    console.log(this.selectedEvent)
     this.selectedEvent = event.event;
     this.selectedDate = event.day.date;
   }
 
-  get cancelable() {
-    const dayBefore = new Date(this.selectedDate).setDate(
-      new Date(this.selectedDate).getDate() - 1
-    );
-    const dayBeforeAt10 = new Date(dayBefore).setHours(10);
-    return Date.now() < dayBeforeAt10;
-  }
-
-  async cancelDelivery() {
-    const deliveries: Delivery[] = [];
-    deliveries.push(this.selectedEvent.delivery);
-    if (!(await api.cancelDeliveries(deliveries, "user"))) {
-      alert("Noe gikk gale, prøv igjen senere.");
-    } else {
-      this.populateCalendar();
-      this.selectedEvent.delivery.cancelled = true;
-    }
-    this.cancelDialog = false;
-  }
-
-  async orderDelivery() {
-    let delivery: DeliveryDto = {
-      deliverytime: this.selectedEvent.delivery.deliverytime,
-      menuId: this.selectedEvent.delivery.menuId, 
-      deliveryType: "single"
-    };
-    try {
-      await api.putDelivery(
-        this.$store.getters.subscription.vendorId,
-        this.$store.getters.loggedInUser,
-        delivery
-      );
-      this.selectedEvent.ordered = true;    // TODO: Sjekk hva slags farger og status forespørsler skal ha
-      this.orderDialog = false;
-      this.populateCalendar();
-    } catch (err) {
-      this.orderDialog = false;
-      this.errorDialog = true;
-    }
-  }
-
-  localPresentation(time: string) {
-    return toLocalPresentation(time);
-  }
 }
 </script>
 

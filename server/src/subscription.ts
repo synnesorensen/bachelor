@@ -27,7 +27,7 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
 
   let sub: SubscriptionDto = {
     userId: userId,
-    vendorId: vendor.vendorId.substr(2),
+    vendorId: vendor.vendorId,
     paused: subscriptionFromDb.paused,
     schedule: subSchedule,
     noOfMeals: subscriptionFromDb.noOfMeals,
