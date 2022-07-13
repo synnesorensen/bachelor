@@ -47,7 +47,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import DatePicker from "../Admin/DatePicker.vue";
+import DatePicker from "../DatePicker.vue";
 import { toLocalPresentation } from "../../utils/utils";
 import { Delivery, Vendor } from "../../../../../common/interfaces";
 import api from "../../api/api";

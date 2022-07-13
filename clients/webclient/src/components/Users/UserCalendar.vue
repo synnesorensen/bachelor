@@ -110,12 +110,14 @@ export default class UserCalendar extends Vue {
       const data = await Promise.all([
         api.scheduleToDates(vendor.vendorId, this.start.date), 
         api.getAllUsersDeliveries(this.start.date, this.end.date), 
-        api.getAbsence(this.start.date, this.end.date)
+        api.getAbsence(this.start.date, this.end.date),
+        api.getAway(this.start.date, this.end.date)
       ]);
 
       const vendorDeliveries = data[0];
       const deliveries = data[1];
       const absenceDates = data[2];
+      const awayDates = data[3];
 
       if (deliveries) {
         deliveries.forEach((del) => {
@@ -175,13 +177,25 @@ export default class UserCalendar extends Vue {
           });
         })
       }
+      if (awayDates) {
+        awayDates.forEach(away => {
+          const start = new Date(away);
+          const end = new Date(away);
+          events.push({
+            name: "Fravær kunde",
+            start,
+            end,
+            color: "purple",
+            type: "away"
+          });
+        })
+      }
       this.events = events;
     }
     this.showSpinner = false;
   }
 
   showEvent(event: any) {
-    console.log(this.selectedEvent)
     this.selectedEvent = event.event;
     this.selectedDate = event.day.date;
   }

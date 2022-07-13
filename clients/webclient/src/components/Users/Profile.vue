@@ -172,7 +172,12 @@
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </v-app-bar>
-          <v-card-text v-if="$store.getters.subscription && this.$store.getters.userprofile.approved !== 'new'">
+          <v-card-text
+            v-if="
+              $store.getters.subscription &&
+              this.$store.getters.userprofile.approved !== 'new'
+            "
+          >
             <br />
             <v-row>
               <v-col>
@@ -245,37 +250,47 @@
             </v-row>
             <v-row>
               <v-col>
-                <p class="font-weight-medium">Siste levering i denne perioden:</p>
+                <p class="font-weight-medium">
+                  Siste levering i denne perioden:
+                </p>
               </v-col>
               <v-col v-if="$store.getters.subscription">
                 <p class="font-weight-regular">{{ lastDelivery }}</p>
               </v-col>
               <v-col v-else>
                 <p class="font-weight-regular">
-                  Det er ikke registrert betaling for leveranser i denne perioden.
+                  Det er ikke registrert betaling for leveranser i denne
+                  perioden.
                 </p>
               </v-col>
             </v-row>
             <v-row>
               <v-col>
-                <p class="font-weight-medium">Neste faktura må betales innen:</p>
+                <p class="font-weight-medium">
+                  Neste faktura må betales innen:
+                </p>
               </v-col>
               <v-col v-if="$store.getters.subscription">
                 <p class="font-weight-regular">{{ nextInvoice }}</p>
               </v-col>
               <v-col v-else>
                 <p class="font-weight-regular">
-                  Du vil få tilsendt faktura for neste periode så snart abonnementet
-                  ditt er blitt godkjent.
+                  Du vil få tilsendt faktura for neste periode så snart
+                  abonnementet ditt er blitt godkjent.
                 </p>
               </v-col>
             </v-row>
           </v-card-text>
-          <v-card-text>
+          <v-card-text v-if="
+              $store.getters.subscription &&
+              this.$store.getters.userprofile.approved === 'new'
+            ">
             <br />
             <v-row>
               <v-col>
-                <p class="font-weight-medium">Venter på godkjenning av adresse</p>
+                <p class="font-weight-medium">
+                  Venter på godkjenning av adresse
+                </p>
               </v-col>
             </v-row>
           </v-card-text>
@@ -284,10 +299,17 @@
             <v-btn @click="cancelEditSub" color="error"> Avbryt </v-btn>
             <v-btn @click="updateSubscription" color="success"> Lagre </v-btn>
           </v-card-actions>
-          <v-card-actions v-if="$store.getters.subscription">
-            <v-btn @click="dialog = true" text color="orange">
-              {{ this.buttonText }}
-            </v-btn>
+          <v-card-actions v-if="$store.getters.subscription &&
+              this.$store.getters.userprofile.approved === 'approved'">
+            <v-col>
+              <v-btn @click="dialog = true" text color="orange">
+                {{ this.buttonText }}
+              </v-btn>
+            </v-col>
+            <v-spacer />
+            <v-col>
+              <v-btn @click="awayDialog = true" text color="orange">Legg til fravær</v-btn>
+            </v-col>
             <v-dialog v-model="dialog" persistent max-width="400">
               <v-card>
                 <v-container>
@@ -312,6 +334,35 @@
                     </v-btn>
                   </v-row>
                 </v-container>
+              </v-card>
+            </v-dialog>
+            <v-dialog v-model="awayDialog" max-width="600" max-height="800">
+              <v-card>
+                <v-card-title class="headline"> Registrer fravær </v-card-title>
+                <v-card-text>
+                  <v-row>
+                    <v-col>
+                      <p class="font-weight-medium">Fra dato:</p>
+                      <date-picker :date.sync="startDate" @blur="dateCheck" />
+                    </v-col>
+                    <v-col>
+                      <p class="font-weight-medium">Til dato:</p>
+                      <date-picker :date.sync="endDate" @blur="dateCheck" />
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <p style="color: red">{{ errorMsg }}</p>
+                  </v-row>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="red darken-1" text @click="awayDialog = false">
+                    Avbryt
+                  </v-btn>
+                  <v-btn color="green darken-1" text @click="registerAbsence()">
+                    Registrer fravær
+                  </v-btn>
+                </v-card-actions>
               </v-card>
             </v-dialog>
           </v-card-actions>
@@ -419,13 +470,16 @@ import {
   Subscription,
   Vendor,
 } from "../../../../../common/interfaces";
+import DatePicker from "../DatePicker.vue";
 import api from "../../api/api";
 
 @Component({
-  components: {},
+  components: {
+    DatePicker,
+  },
 })
 export default class CustomerProfile extends Vue {
-    get lastDelivery() {
+  get lastDelivery() {
     if (this.$store.getters.subscription?.paused == true) {
       return "Abonnementet ditt er satt på pause. Du vil ikke få leveranser før abonnementet startes igjen.";
     }
@@ -493,6 +547,11 @@ export default class CustomerProfile extends Vue {
   private goToReg = false;
   private deleteDialog = false;
   private spinner = false;
+  private startDate = "";
+  private endDate = "";
+  private loading = false;
+  private errorMsg = "";
+  private awayDialog = false;
 
   async mounted() {
     this.selectedAllergies = this.$store.getters.userprofile.allergies;
@@ -647,6 +706,26 @@ export default class CustomerProfile extends Vue {
       this.$store.dispatch("logout");
     } catch (err) {
       alert("Noe gikk galt ved sletting: " + err);
+    }
+  }
+
+  dateCheck() {
+    if (this.startDate && this.endDate) {
+      if (new Date(this.endDate) < new Date(this.startDate)) {
+        this.errorMsg = "Fra dato kan ikke være etter til dato.";
+      } else {
+        this.errorMsg = "";
+      }
+    }
+  }
+
+  async registerAbsence() {
+    try {
+      await api.setAway(this.startDate, this.endDate);
+      this.awayDialog = false;
+    } catch (err) {
+      console.log(err);
+      this.errorMsg = "Noe gikk gale. Prøv igjen senere."
     }
   }
 

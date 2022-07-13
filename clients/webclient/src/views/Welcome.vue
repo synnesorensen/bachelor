@@ -9,7 +9,7 @@
                 src="..\..\assets\BA.jpg"
                 required
                 gradient="to bottom right, rgba(10,10,10,0.3),rgba(0,0,0,0)"
-              >
+                height="700"              >
                 <v-col>
                   <v-row
                     style="
@@ -34,11 +34,11 @@
         </v-row>
         <v-row class="my-4">
           <v-col cols="4">
-            <v-card height="350">
+            <v-card height="450">
               <v-img
                 src="..\..\assets\Kort1.jpg"
                 class="white--text align-end"
-                height="280px"
+                height="380px"
                 @click="showLogInBox = true"
                 style="cursor: pointer"
               ></v-img>
@@ -48,11 +48,11 @@
             </v-card>
           </v-col>
           <v-col cols="4">
-            <v-card height="350">
+            <v-card height="450">
               <v-img
                 src="..\..\assets\Kort2.jpg"
                 class="white--text align-end"
-                height="280px"
+                height="380px"
                 @click="showRegisterBox = true"
                 style="cursor: pointer"
               ></v-img>
@@ -64,13 +64,13 @@
             </v-card>
           </v-col>
           <v-col cols="4">
-            <v-card height="350">
+            <v-card height="450">
               <v-img
                 src="..\..\assets\tilbake.jpeg"
                 class="white--text align-end"
-                height="280px"
+                height="380px"
               ></v-img>
-              <v-card-title>Tilbake til websider</v-card-title>
+              <v-card-title>Tilbake til stenematglede.com</v-card-title>
             </v-card>
           </v-col>
         </v-row>

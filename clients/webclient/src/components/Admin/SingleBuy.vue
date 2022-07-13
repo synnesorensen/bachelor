@@ -139,7 +139,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { DeliveryRequestDto } from "../../../../../common/dto";
 import api from "../../api/api";
-import DatePicker from "./DatePicker.vue";
+import DatePicker from "../DatePicker.vue";
 import { toLocalPresentation } from "../../utils/utils";
 import { Vendor } from "../../../../../common/interfaces";
 import { mdiDotsHorizontal, mdiCheckCircleOutline, mdiCloseCircleOutline  } from "@mdi/js";

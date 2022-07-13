@@ -2,27 +2,24 @@ import 'source-map-support/register';
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { getUserprofileFromDb, getVendorAbsence } from './dbUtils';
-import { getUserInfoFromEvent } from './auth/getUserFromJwt';
-import { generateVendorsAbsentDates } from './timeHandling';
+import { getUserAbsence, setUserAway} from './dbUtils';
+import { generateUsersAbsentDates } from './timeHandling';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   if (event.httpMethod === "GET") {
-    return getAbsence(event);
+    return getAway(event);
   }
   if (event.httpMethod === "POST") {
-    return postAbsence(event);
+    return postAway(event);
   }
-  if (event.httpMethod === "DELETE") {
-    // TODO: Legg til å kunne slette
-  }
+
   return {
     statusCode: 405,
     body: '{ "message" : "Method not allowed" }'
   };
 }
 
-async function getAbsence(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+async function getAway(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   if (!event.queryStringParameters) {
     return {
       statusCode: 400,
@@ -45,25 +42,15 @@ async function getAbsence(event: APIGatewayProxyEvent): Promise<APIGatewayProxyR
     };
   }
 
-  const absence = await getVendorAbsence(start, end);
+  const absence = await getUserAbsence(start, end);
 
   return {
     statusCode: 200,
     body: JSON.stringify(absence)
   }
-
 }
 
-async function postAbsence(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-  const vendorId = getUserInfoFromEvent(event);
-  const vendor = await getUserprofileFromDb(vendorId);
-
-  if (!vendor.isVendor) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify( {message: "User " + vendorId + " is not a vendor"})
-    };
-  }
+async function postAway(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
 
   if (!event.queryStringParameters) {
     return {
@@ -87,7 +74,7 @@ async function postAbsence(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
     };
   }
 
-  generateVendorsAbsentDates(start, end);
+  generateUsersAbsentDates(start, end); 
 
   return {
     statusCode: 200,

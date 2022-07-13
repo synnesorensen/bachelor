@@ -179,6 +179,14 @@ functions:
           path: /v/absence
           method: any
           cors: true
+  setUserAbsence: 
+    handler: src/userAway.mainHandler
+    events: 
+      - http: 
+          authorizer: authorizer
+          path: /u/away
+          method: any
+          cors: true
 
 resources:
   Resources:

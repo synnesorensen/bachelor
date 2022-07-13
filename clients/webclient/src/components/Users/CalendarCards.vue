@@ -15,6 +15,17 @@
         </v-card>
         <v-card
           :class="{ fixed: !$vuetify.breakpoint.xs }"
+          v-else-if="selectedEvent && selectedEvent.type === 'away'"
+        >
+          <v-card-title class="headline">
+            {{ selectedEvent.name + " " + localPresentation(selectedDate) }}
+          </v-card-title>
+          <v-card-text>
+            Du har valgt å ikke få levering på denne dagen. 
+          </v-card-text>
+        </v-card>
+        <v-card
+          :class="{ fixed: !$vuetify.breakpoint.xs }"
           v-else-if="selectedEvent && selectedEvent.type === 'delivery' && selectedEvent.ordered && selectedEvent.delivery.approved === 'new'"
         >
           <v-card-title class="headline">

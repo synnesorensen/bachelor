@@ -1,5 +1,5 @@
 import { DateWithMenuId, WeekTime } from '../../common/interfaces';
-import { saveAbsenceToDb } from './dbUtils';
+import { saveAbsenceToDb, setUserAway } from './dbUtils';
 
 export async function getDeliveryDates(startDate: Date, weekTimes: WeekTime[], no:number, env:LunchEnvironment):Promise<DateWithMenuId[]> {
   let nextDelivery = await nextDeliveryDate(startDate, weekTimes, env);
@@ -77,17 +77,21 @@ export async function isVendorAbsent(date: Date, env: LunchEnvironment) {
   return (absentDates.length > 0);
 }
 
+export async function isUserAbsent(date: Date, env: LunchEnvironment) {
+  let absentDates = await env.getUserAbsence(date, date);
+  return (absentDates.length > 0);
+}
+
 export async function findNextWorkDay(date: Date, env: LunchEnvironment): Promise<Date> {
   let currentDate = new Date(date);
 
   currentDate.setDate(date.getDate() + 1);
 
-  while (await isVendorAbsent(currentDate, env)) {
+  while (await isVendorAbsent(currentDate, env) || await isUserAbsent(currentDate, env)) {
     currentDate.setDate(currentDate.getDate() + 1);
   }
   return currentDate;
 }
-
 
 export async function generateVendorsAbsentDates(start: string, end: string) {
   const absentDates:string[] = [];
@@ -101,4 +105,18 @@ export async function generateVendorsAbsentDates(start: string, end: string) {
   }
   
   await saveAbsenceToDb(absentDates);
+}
+
+export async function generateUsersAbsentDates(start: string, end: string) {
+  const absentDates:string[] = [];
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  let currentDate = startDate;
+
+  while (startDate <= endDate) {
+    absentDates.push(new Date(currentDate).toISOString());
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  
+  await setUserAway(absentDates);
 }

@@ -1120,6 +1120,41 @@ export async function saveAbsenceToDb(dates: string[]): Promise<void> {
   }
 }
 
+export async function setUserAway(dates: string[]): Promise<void> {
+  let absenceDates = [];
+  for (let i = 0; i < dates.length; i++) {
+    absenceDates.push({
+      PutRequest: {
+        Item: {
+          EntityType: "UserAbsence",
+          pk: "userAbsence",
+          sk: "a#" + dates[i]
+        }
+      }
+    });
+
+    if (absenceDates.length === 25) {
+      let params = {
+        RequestItems: {
+          [settings.TABLENAME]: absenceDates
+        }
+      };
+      await documentClient.batchWrite(params).promise();
+      absenceDates = [];
+    }
+  }
+
+  if (absenceDates.length > 0) {
+    let params = {
+      RequestItems: {
+        [settings.TABLENAME]: absenceDates
+      }
+    };
+    await documentClient.batchWrite(params).promise();
+    // TODO: Sjekke for Unprocessed items på result
+  }
+}
+
 export async function getVendorAbsence(start: string, end?: string): Promise<Date[]> {
   let KeyConditionExpression = "#pk = :absence and ";
   if (end) {
@@ -1137,6 +1172,33 @@ export async function getVendorAbsence(start: string, end?: string): Promise<Dat
     },
     ExpressionAttributeValues: {
       ":absence": "absence",
+      ":start": "a#" + start,
+      ":end": "a#" + end
+    }
+  };
+
+  const dbResult = await documentClient.query(params).promise();
+
+  return dbResult.Items.map(res => new Date(res.sk.substr(2)));
+}
+
+export async function getUserAbsence(start: string, end?: string): Promise<Date[]> {
+  let KeyConditionExpression = "#pk = :userAbsence and ";
+  if (end) {
+    KeyConditionExpression += "#sk BETWEEN :start and :end";
+  } else {
+    KeyConditionExpression += "#sk >= :start";
+  }
+
+  const params = {
+    TableName: settings.TABLENAME,
+    KeyConditionExpression,
+    ExpressionAttributeNames: {
+      "#pk": "pk",
+      "#sk": "sk"
+    },
+    ExpressionAttributeValues: {
+      ":userAbsence": "userAbsence",
       ":start": "a#" + start,
       ":end": "a#" + end
     }

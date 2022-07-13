@@ -180,7 +180,7 @@ import { Prop, Watch } from "vue-property-decorator";
 import api from "../../api/api";
 import * as interfaces from "../../../../../common/interfaces";
 import * as dto from "../../../../../common/dto";
-import DatePicker from "./DatePicker.vue";
+import DatePicker from "../DatePicker.vue";
 import CustomerInfo from "./CustomerInfo.vue";
 import { toLocalPresentation } from "../../utils/utils";
 

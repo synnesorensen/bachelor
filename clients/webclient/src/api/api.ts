@@ -349,6 +349,18 @@ export class Api {
     const absence = await this.apiAxios.get(urlPrefix + "/v/absence?start=" + start + "&end=" + end);
     return absence.data;
   }
+
+  async setAway(start: string, end: string): Promise<number> {
+    await this.ensureFreshToken();
+    const away = await this.apiAxios.post(urlPrefix + "/u/away?start=" + start + "&end=" + end);
+    return away.data;
+  }
+
+  async getAway(start: string, end: string): Promise<Date[]> {
+    await this.ensureFreshToken();
+    const absence = await this.apiAxios.get(urlPrefix + "/u/away?start=" + start + "&end=" + end);
+    return absence.data;
+  }
 }
 
 let api = new Api();
