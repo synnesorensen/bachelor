@@ -121,17 +121,20 @@ export default class UserCalendar extends Vue {
 
       if (deliveries) {
         deliveries.forEach((del) => {
+          if (!(del.deliveryType === "single" && del.cancelled)) {
           const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
           const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
 
           const menu = vendorSchedule.find(({ id }) => id == del.menuId);
           let color = "green";
-          if (new Date(del.deliverytime) < new Date(Date.now()) || del.cancelled) {
+          if (new Date(del.deliverytime) < new Date(Date.now()) || (del.deliveryType === "sub" && del.cancelled)) {
             color = "grey"; 
           } else if (del.approved === "new") {
             color = "orange";
           } else if (del.approved === "denied") {
             color = "red"
+          } else if (del.deliveryType === "single" && del.approved === "approved") {
+            color = "#A3D977"
           }
 
           events.push({
@@ -143,7 +146,7 @@ export default class UserCalendar extends Vue {
             ordered: true,
             type: "delivery"
           });
-        });
+        }});
       }
 
       if (vendorDeliveries) {
@@ -151,7 +154,7 @@ export default class UserCalendar extends Vue {
           const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
           const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
           const menu = vendor.schedule.find(({ id }) => id == del.menuId);
-          if (!deliveries?.find(({ deliverytime }) => deliverytime == del.deliverytime) && new Date(del.deliverytime) > new Date(Date.now())) {
+          if (new Date(del.deliverytime) > new Date(Date.now())) {
             events.push({
               name: menu!.menu,
               start: delStart,
@@ -160,7 +163,7 @@ export default class UserCalendar extends Vue {
               delivery: del,
               ordered: false,
               type: "delivery"
-            });
+            })
           }
         });
       }
@@ -185,7 +188,7 @@ export default class UserCalendar extends Vue {
             name: "Fravær kunde",
             start,
             end,
-            color: "purple",
+            color: "blue",
             type: "away"
           });
         })
