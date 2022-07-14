@@ -306,10 +306,6 @@
                 {{ this.buttonText }}
               </v-btn>
             </v-col>
-            <v-spacer />
-            <v-col>
-              <v-btn @click="awayDialog = true" text color="orange">Legg til fravær</v-btn>
-            </v-col>
             <v-dialog v-model="dialog" persistent max-width="400">
               <v-card>
                 <v-container>
@@ -334,35 +330,6 @@
                     </v-btn>
                   </v-row>
                 </v-container>
-              </v-card>
-            </v-dialog>
-            <v-dialog v-model="awayDialog" max-width="600" max-height="800">
-              <v-card>
-                <v-card-title class="headline"> Registrer fravær </v-card-title>
-                <v-card-text>
-                  <v-row>
-                    <v-col>
-                      <p class="font-weight-medium">Fra dato:</p>
-                      <date-picker :date.sync="startDate" @blur="dateCheck" />
-                    </v-col>
-                    <v-col>
-                      <p class="font-weight-medium">Til dato:</p>
-                      <date-picker :date.sync="endDate" @blur="dateCheck" />
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <p style="color: red">{{ errorMsg }}</p>
-                  </v-row>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="red darken-1" text @click="awayDialog = false">
-                    Avbryt
-                  </v-btn>
-                  <v-btn color="green darken-1" text @click="registerAbsence()">
-                    Registrer fravær
-                  </v-btn>
-                </v-card-actions>
               </v-card>
             </v-dialog>
           </v-card-actions>
@@ -546,12 +513,6 @@ export default class CustomerProfile extends Vue {
   private selectedSchedule: MenuItems[] = [];
   private goToReg = false;
   private deleteDialog = false;
-  private spinner = false;
-  private startDate = "";
-  private endDate = "";
-  private loading = false;
-  private errorMsg = "";
-  private awayDialog = false;
 
   async mounted() {
     this.selectedAllergies = this.$store.getters.userprofile.allergies;
@@ -706,26 +667,6 @@ export default class CustomerProfile extends Vue {
       this.$store.dispatch("logout");
     } catch (err) {
       alert("Noe gikk galt ved sletting: " + err);
-    }
-  }
-
-  dateCheck() {
-    if (this.startDate && this.endDate) {
-      if (new Date(this.endDate) < new Date(this.startDate)) {
-        this.errorMsg = "Fra dato kan ikke være etter til dato.";
-      } else {
-        this.errorMsg = "";
-      }
-    }
-  }
-
-  async registerAbsence() {
-    try {
-      await api.setAway(this.startDate, this.endDate);
-      this.awayDialog = false;
-    } catch (err) {
-      console.log(err);
-      this.errorMsg = "Noe gikk gale. Prøv igjen senere."
     }
   }
 
