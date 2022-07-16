@@ -56,7 +56,7 @@
         item-key="userId"
         class="row-pointer"
       >
-        <template v-slot:[`item.controls`]="props">
+        <template v-if="localUsers.length > 0 && localUsers[0].approved === 'new'" v-slot:[`item.controls`]="props">
           <v-btn icon color="green" @click.stop="approve(props.item)">
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
@@ -129,11 +129,12 @@ export default class CustomerList extends Vue {
 
   async approve(item: any) {
     try {
-      await api.updateApproval(item.email, true, this.selected!.note);
+      await api.updateApproval(item.email, true, item.note);
       item.oldUser.approved = "approved";
-      item.oldUser.note = this.selected!.note;
+      item.oldUser.note = item.note;
       this.$store.dispatch("refreshNewUserRequests");
       this.dialog = false;
+      this.$emit("update");
     } catch (err) {
       alert("Noe gikk galt, prøv igjen senere.");
       console.log(err);
@@ -142,10 +143,11 @@ export default class CustomerList extends Vue {
 
   async decline(item: any) {
     try {
-      await api.updateApproval(item.email, false, this.selected!.note);
+      await api.updateApproval(item.email, false, item.note);
       item.oldUser.approved = "denied";
-      item.oldUser.note = this.selected!.note;
+      item.oldUser.note = item.note;
       this.$store.dispatch("refreshNewUserRequests");
+      this.$emit("update");
       this.dialog = false;
     } catch (err) {
       alert("Noe gikk galt, prøv igjen senere.");

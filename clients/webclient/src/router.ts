@@ -85,13 +85,13 @@ const routes = [
         path: 'sub-customers',
         name: 'sub-customers',
         component: CustomerLists,
-        props: { typeOfUsersToShow: "withoutSubscription" }
+        props: { typeOfUsersToShow: "withSubscription" }
       },
       {
         path: 'single-customers',
         name: 'single-customers',
         component: CustomerLists,
-        props: { typeOfUsersToShow: "withSubscription" }
+        props: { typeOfUsersToShow: "withoutSubscription" }
       },
       {
         path: 'declined-customers',

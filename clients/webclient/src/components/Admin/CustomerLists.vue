@@ -1,6 +1,11 @@
 <template>
   <v-container>
-    <CustomerList :users="users" :headers="headers" :title="title" />
+    <CustomerList 
+      :users="users" 
+      :headers="headers" 
+      :title="title" 
+      @update="updateUserData"
+    />
   </v-container>
 </template>
 
@@ -27,6 +32,7 @@ export default class CustomerLists extends Vue {
 
   async updateUserData() {
     this.allUsers = await api.getUsersAndSubscriptions();
+    this.$store.dispatch("refreshNewUserRequests");
 
     if (this.typeOfUsersToShow === "unapproved") {
       this.users = this.unapprovedUsers();
