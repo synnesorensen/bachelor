@@ -22,7 +22,8 @@ describe('Last delivery', () => {
       cancelled: false,
       deliveryType,
       paid,
-      approved
+      approved,
+      noOfMeals: 1
     };
 
     const res1 = await putDeliveryInDb("testVendorId66", "testUserId16", delivery1);
@@ -36,7 +37,8 @@ describe('Last delivery', () => {
       deliveryType,
       cancelled: false,
       paid,
-      approved
+      approved,
+      noOfMeals: 1
     };
 
     const res2 = await putDeliveryInDb("testVendorId66", "testUserId16", delivery2);

@@ -48,7 +48,8 @@ export interface Delivery {
   deliveryType: "sub" | "single",
   paid: "paid" | "unpaid", 
   approved: "new" | "approved" | "denied", 
-  cancelledBy?: string
+  cancelledBy?: string,
+  noOfMeals: number
 }
 
 export interface DeliveryDetail extends Delivery {

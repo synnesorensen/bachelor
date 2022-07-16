@@ -14,5 +14,10 @@ export class TestEnvironment implements LunchEnvironment {
   async getVendorAbsence(date1: Date, date2: Date): Promise<Date[]> {
     return this.db.getVendorAbsence(date1,date2);
   }
+
+  async getUserAbsence(date1: Date, date2: Date): Promise<Date[]> {
+    return this.db.getUserAbsence(date1, date2);
+  }
+
   
 }

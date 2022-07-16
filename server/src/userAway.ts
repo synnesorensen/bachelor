@@ -2,7 +2,7 @@ import 'source-map-support/register';
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { getUserAbsence, setUserAway} from './dbUtils';
+import { getUserAbsence } from './dbUtils';
 import { generateUsersAbsentDates } from './timeHandling';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {

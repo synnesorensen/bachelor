@@ -112,25 +112,19 @@ const vendor = {
       "id": "2",
       "day": "Tirsdag",
       "time": "36000000",
-      "menu": "Lunsj"
+      "menu": "Gratuatysdag"
     },
     {
       "id": "3",
       "day": "Onsdag",
       "time": "36000000",
-      "menu": "Lunsj"
+      "menu": "Onsdagssalaten"
     },
     {
-      "id": "41",
+      "id": "4",
       "day": "Torsdag",
       "time": "36000000",
-      "menu": "Lunsj med fisk"
-    },
-    {
-      "id": "42",
-      "day": "Torsdag",
-      "time": "50400000",
-      "menu": "Middag med fisk"
+      "menu": "Påkebåol"
     }
   ]
 };
@@ -159,7 +153,7 @@ const sub3 = {
   vendorId: dbVendor,
   userId: dbUser3,
   paused: false,
-  schedule: ["41"], 
+  schedule: ["4"], 
   noOfMeals: 1,
   box: "Engangsboks"
 }
@@ -175,7 +169,7 @@ const sub5 = {
   vendorId: dbVendor,
   userId: dbUser5,
   paused: false,
-  schedule: ["2", "41"], 
+  schedule: ["2", "4"], 
   noOfMeals: 1,
   box: "Gjenbruksboks"
 }
@@ -183,7 +177,7 @@ const sub6 = {
   vendorId: dbVendor,
   userId: dbUser6,
   paused: false,
-  schedule: ["41"], 
+  schedule: ["4"], 
   noOfMeals: 1,
   box: "Gjenbruksboks"
 }

@@ -19,7 +19,8 @@ describe('Delivery tests', () => {
       cancelled: false,
       deliveryType,
       paid,
-      approved
+      approved, 
+      noOfMeals: 1
     };
     let delivery2 = {
       vendorId: "testVendorId66",
@@ -29,7 +30,8 @@ describe('Delivery tests', () => {
       cancelled: true,
       deliveryType,
       paid,
-      approved
+      approved, 
+      noOfMeals: 1
     };
     let delivery3 = {
       vendorId: "testVendorId66",
@@ -39,7 +41,8 @@ describe('Delivery tests', () => {
       cancelled: false,
       deliveryType,
       paid,
-      approved
+      approved,
+      noOfMeals: 1
     };
     let delivery4 = {
       vendorId: "testVendorId66",
@@ -49,7 +52,8 @@ describe('Delivery tests', () => {
       cancelled: false,
       deliveryType,
       paid,
-      approved
+      approved,
+      noOfMeals: 1
     }
 
     const putResult = await putDeliveryInDb("testVendorId66", "testUserId16", delivery1);
@@ -99,7 +103,8 @@ describe('Delivery tests', () => {
       cancelled: false,
       deliveryType,
       paid,
-      approved
+      approved,
+      noOfMeals: 1
     },
     {
       vendorId: "testVendorId66",
@@ -109,7 +114,8 @@ describe('Delivery tests', () => {
       cancelled: false,
       deliveryType,
       paid,
-      approved
+      approved,
+      noOfMeals: 1
     },
     {
       vendorId: "testVendorId66",
@@ -119,7 +125,8 @@ describe('Delivery tests', () => {
       cancelled: false,
       deliveryType,
       paid,
-      approved
+      approved,
+      noOfMeals: 1
     }]
 
     await saveDeliveriesToDb(newDeliveries);

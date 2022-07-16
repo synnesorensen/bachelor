@@ -34,15 +34,33 @@
               Enkeltkjøp
             </v-badge>
           </v-tab>
-          <v-tab to="/admin/customer-lists">
-            <v-badge
-              color="red"
-              :value="$store.getters.newUserRequests.length"
-              :content="$store.getters.newUserRequests.length"
-            >
-              Kundelister
-            </v-badge>  
-          </v-tab>
+          <v-menu fixed offset-y>
+            <template v-slot:activator="{ on: menu, attrs }">
+              <v-tab v-bind="attrs" v-on="menu" id="menuTab">
+                <v-badge
+                  color="red"
+                  :value="$store.getters.newUserRequests.length"
+                  :content="$store.getters.newUserRequests.length"
+                >
+                  Kundelister
+                </v-badge>
+              </v-tab>
+            </template>
+            <v-list>
+              <v-list-item to="/admin/new-customers">
+                <v-list-item-title>Nye kunder</v-list-item-title>
+              </v-list-item>
+              <v-list-item to="/admin/sub-customers">
+                <v-list-item-title>Kunder med abo</v-list-item-title>
+              </v-list-item>
+              <v-list-item to="/admin/single-customers">
+                <v-list-item-title>Kunder uten abo</v-list-item-title>
+              </v-list-item>
+              <v-list-item to="/admin/declined-customers">
+                <v-list-item-title>Avviste kunder</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </v-tabs>
       </template>
       <v-spacer />

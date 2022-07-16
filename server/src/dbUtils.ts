@@ -505,7 +505,8 @@ export async function getUsersDeliveries(userId: string, startDate: string, endD
       cancelled: del.cancelled,
       deliveryType: del.deliveryType,
       paid: del.paid,
-      approved: del.approved
+      approved: del.approved,
+      noOfMeals: del.numberOfMeals
     }
   });
   return deliveries;
@@ -536,7 +537,8 @@ export async function getDeliveryFromDb(vendorId: string, userId: string, time: 
     cancelled: dbResult.Items[0].cancelled,
     deliveryType: dbResult.Items[0].deliveryType,
     paid: dbResult.Items[0].paid,
-    approved: dbResult.Items[0].approved
+    approved: dbResult.Items[0].approved, 
+    noOfMeals: dbResult.Items[0].numberOfMeals
   };
 }
 
@@ -565,6 +567,11 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
   if (delivery.deliverytime != undefined) {
     UpdateExpression += ", deliverytime = :time";
     ExpressionAttributeValues[":time"] = { S: delivery.deliverytime };
+  }
+
+  if (delivery.noOfMeals != undefined) {
+    UpdateExpression += ", noOfMeals = :no";
+    ExpressionAttributeValues[":no"] = { N: delivery.noOfMeals.toString() };
   }
 
   UpdateExpression += ", cancelled = :cancelled";
@@ -615,7 +622,8 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
     cancelled: dbItem.Attributes.cancelled.BOOL,
     deliveryType,
     paid,
-    approved
+    approved,
+    noOfMeals: parseInt(dbItem.Attributes.noOfMeals.N)
   }
 }
 
@@ -751,7 +759,8 @@ export async function getAllDeliveriesFromAllSubscribers(vendorId: string, start
       cancelled: del.cancelled,
       deliveryType: del.deliveryType,
       paid: del.paid,
-      approved: del.approved
+      approved: del.approved,
+      noOfMeals: del.noOfMeals
     }
   });
   return deliveries;
@@ -779,7 +788,8 @@ export async function getDeliveryRequestsFromDb() {
       cancelled: del.cancelled,
       deliveryType: del.deliveryType,
       paid: del.paid,
-      approved: del.approved
+      approved: del.approved,
+      noOfMeals: del.noOfMeals
     }
   });
   const deliveryRequests: DeliveryRequestDto[] = [];
@@ -795,7 +805,7 @@ export async function getDeliveryRequestsFromDb() {
       ...del,
       fullname: user.fullname,
       deliveryAddress: user.deliveryAddress,
-      allergies: user.allergies
+      allergies: user.allergies,
     }
     deliveryRequests.push(deliveryReq);
   });
@@ -828,7 +838,8 @@ export async function getDeliveryRequestsByDate(startDate: string, endDate: stri
       cancelled: del.cancelled,
       deliveryType: del.deliveryType,
       paid: del.paid,
-      approved: del.approved
+      approved: del.approved,
+      noOfMeals: del.noOfMeals
     }
   });
 
@@ -885,7 +896,8 @@ export async function findLatestDelivery(vendorId: string, userId: string): Prom
     cancelled: dbResult.Items[0].cancelled,
     deliveryType: dbResult.Items[0].deliveryType,
     paid: dbResult.Items[0].paid,
-    approved: dbResult.Items[0].approved
+    approved: dbResult.Items[0].approved,
+    noOfMeals: dbResult.Items[0].noOfMeals
   }
 }
 
@@ -899,7 +911,7 @@ export async function getDeliveryDetails(vendorId: string, startDate: string, en
       const deliveryDetail: DeliveryDetail = {
         ...del,
         paused: sub.paused,
-        noOfMeals: sub.noOfMeals,
+        noOfMeals: del.noOfMeals,
         box: sub.box,
         fullname: sub.fullname,
         address: sub.address,

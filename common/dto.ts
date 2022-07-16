@@ -33,7 +33,8 @@ export interface MenuItemDto {
 export interface DeliveryDto {
   deliverytime: string,
   deliveryType: "sub" | "single",
-  menuId: string
+  menuId: string,
+  noOfMeals: number
 }
 
 export interface DeliveryRequestDto extends Delivery {

@@ -27,7 +27,8 @@ export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, 
       cancelled: false, 
       deliveryType,
       paid: "paid",
-      approved: "approved"
+      approved: "approved",
+      noOfMeals: subscriptionFromDb.noOfMeals
     }
   });
 }
@@ -48,7 +49,8 @@ export async function generateDeliveriesForVendor(EarliestStartDate: Date, vendo
       cancelled: false,
       deliveryType,
       paid: "unpaid",
-      approved: "new"
+      approved: "new",
+      noOfMeals: 1
     }
   });
 }

@@ -71,16 +71,25 @@
               </template>
               <span>Det er for sent å bestille denne leveringen.</span>
             </v-tooltip>
-            <v-dialog v-model="orderDialog" persistent max-width="300">
+            <v-dialog v-model="orderDialog" persistent max-width="500">
               <v-card>
-                <v-card-title class="headline">Bestilling</v-card-title>
+                <v-card-title class="headline">{{ "Bestilling av " + selectedEvent.name}}</v-card-title>
                 <v-card-text>
-                  Ønsker du å bestille
+                  Velg antall måltid du ønsker levert 
                   {{
-                    selectedEvent.name + " " + localPresentation(selectedDate)
+                     localPresentation(selectedDate)
                   }}
-                  ? En forespørsel vil bli sendt til Lunsj på Hjul.
+                  og en forespørsel vil bli sendt til Lunsj på Hjul.
                 </v-card-text>
+                <v-row no-gutters>
+                  <v-col cols="3" class="ml-4">
+                <v-select
+                  v-model="noOfMeals"
+                  :items="items"
+                  solo
+                ></v-select>
+                  </v-col>
+                </v-row>
                 <v-card-actions>
                   <v-btn color="success" @click="orderDelivery()">
                     Bestill levering
@@ -208,10 +217,12 @@ export default class CalendarCards extends Vue {
   private cancelDialog = false;
   private orderDialog = false;
   private errorDialog = false;
+  private items = [1,2,3,4,5,6,7,8,9,10];
+  private noOfMeals = 1;
+  private errMsg = "";
 
   @Watch("event")
   eventChanged() {
-    console.log(this.$store.getters.subscription.vendorId);
     this.selectedEvent = this.event;
   }
 
@@ -219,8 +230,6 @@ export default class CalendarCards extends Vue {
   dateChanged() {
     this.selectedDate = this.date;
   }
-
-
 
   get cancelable() {
     if (this.selectedEvent.type !== "absence") {
@@ -249,6 +258,7 @@ export default class CalendarCards extends Vue {
       deliverytime: this.selectedEvent.delivery.deliverytime,
       menuId: this.selectedEvent.delivery.menuId,
       deliveryType: "single",
+      noOfMeals: this.noOfMeals
     };
     try {
       await api.putDelivery(

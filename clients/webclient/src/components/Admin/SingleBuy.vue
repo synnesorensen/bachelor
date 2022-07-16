@@ -240,7 +240,8 @@ export default class SingleBuy extends Vue {
     {text: "Meny", value: "menu"},
     {text: "Status", value: "status"},
     {text: "Betalt", value: "payment"},
-    {text: "", value: "controls", sortable: false },
+    {text: "Antall", value: "noOfMeals"},
+    {text: "", value: "controls", sortable: false }
   ]
 
   get computedHeaders () {
