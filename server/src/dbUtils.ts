@@ -475,10 +475,21 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
 
 export async function getUsersDeliveries(userId: string, startDate: string, endDate?: string): Promise<Delivery[]> {
   let KeyConditionExpression = "#pk = :user and ";
+  let ExpressionAttributeValues = {}
+
   if (endDate) {
     KeyConditionExpression += "#sk BETWEEN :prefix1 and :prefix2";
+    ExpressionAttributeValues = {
+      ":user": "d#" + userId,
+      ":prefix1": "d#" + startDate,
+      ":prefix2": "d#" + endDate
+    }
   } else {
     KeyConditionExpression += "#sk >= :prefix1";
+    ExpressionAttributeValues = {
+      ":user": "d#" + userId,
+      ":prefix1": "d#" + startDate
+    }
   }
   let params = {
     TableName: settings.TABLENAME,
@@ -487,14 +498,11 @@ export async function getUsersDeliveries(userId: string, startDate: string, endD
       "#pk": "pk",
       "#sk": "sk"
     },
-    ExpressionAttributeValues: {
-      ":user": "u#" + userId,
-      ":prefix1": "d#" + startDate,
-      ":prefix2": "d#" + endDate
-    }
+    ExpressionAttributeValues
   };
 
   let dbResult = await documentClient.query(params).promise();
+  console.log(params)
 
   let deliveries = dbResult.Items.map((del) => {
     return {
@@ -521,7 +529,7 @@ export async function getDeliveryFromDb(vendorId: string, userId: string, time: 
       "#sk": "sk"
     },
     ExpressionAttributeValues: {
-      ":user": "u#" + userId,
+      ":user": "d#" + userId,
       ":prefix": "d#" + time
     }
   };
@@ -588,10 +596,10 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
   ExpressionAttributeValues[":deliveryType"] = { S: "single"};
 
   UpdateExpression += ", GSI2_pk = :vendor";
-  ExpressionAttributeValues[":vendor"] = { S: "v#" + vendorId };
+  ExpressionAttributeValues[":vendor"] = { S: "d#" + vendorId };
 
   UpdateExpression += ", GSI3_pk = :deliverytype";
-  ExpressionAttributeValues[":deliverytype"] = { S: "u#" + userId + delivery.deliveryType };
+  ExpressionAttributeValues[":deliverytype"] = { S: "d#" + userId + delivery.deliveryType };
   
   UpdateExpression += ", GSI1_sk = :deliverytime";
   UpdateExpression += ", GSI2_sk = :deliverytime";
@@ -601,7 +609,7 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
   let params = {
     TableName: settings.TABLENAME,
     Key: {
-      "pk": { S: "u#" + userId },
+      "pk": { S: "d#" + userId },
       "sk": { S: "d#" + delivery.deliverytime }
     },
     UpdateExpression,
@@ -631,7 +639,7 @@ export async function deleteDeliveryInDb(userId: string, time: string): Promise<
   let params = {
     TableName: settings.TABLENAME,
     Key: {
-      "pk": { S: "u#" + userId },
+      "pk": { S: "d#" + userId },
       "sk": { S: "d#" + time }
     }
   };
@@ -646,7 +654,7 @@ export async function updateDeliveries(deliveries: Delivery[]): Promise<void> {
       TableName: settings.TABLENAME,
       Item: {
         EntityType: "Delivery",
-        pk: "u#" + userId,
+        pk: "d#" + userId,
         sk: "d#" + deliveries[i].deliverytime,
         deliverytime: deliveries[i].deliverytime,
         menuId: deliveries[i].menuId,
@@ -658,9 +666,9 @@ export async function updateDeliveries(deliveries: Delivery[]): Promise<void> {
         vendorId: deliveries[i].vendorId,
         GSI1_pk: deliveries[i].deliveryType,
         GSI1_sk: "d#" + deliveries[i].deliverytime,
-        GSI2_pk: "v#" + deliveries[i].vendorId,
+        GSI2_pk: "d#" + deliveries[i].vendorId,
         GSI2_sk: "d#" + deliveries[i].deliverytime, 
-        GSI3_pk: "u#" + deliveries[i].userId + deliveries[i].deliveryType,
+        GSI3_pk: "d#" + deliveries[i].userId + deliveries[i].deliveryType,
         GSI3_sk: "d#" + deliveries[i].deliverytime, 
       }
     });
@@ -685,7 +693,7 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
       PutRequest: {
         Item: {
           EntityType: "Delivery",
-          pk: "u#" + deliveries[i].userId,
+          pk: "d#" + deliveries[i].userId,
           sk: "d#" + deliveries[i].deliverytime,
           userId: deliveries[i].userId,
           vendorId: deliveries[i].vendorId,
@@ -697,9 +705,9 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
           approved: deliveries[i].approved,
           GSI1_pk: deliveries[i].deliveryType,
           GSI1_sk: "d#" + deliveries[i].deliverytime,
-          GSI2_pk: "v#" + deliveries[i].vendorId,
+          GSI2_pk: "d#" + deliveries[i].vendorId,
           GSI2_sk: "d#" + deliveries[i].deliverytime, 
-          GSI3_pk: "u#" + deliveries[i].userId + deliveries[i].deliveryType,
+          GSI3_pk: "d#" + deliveries[i].userId + deliveries[i].deliveryType,
           GSI3_sk: "d#" + deliveries[i].deliverytime, 
         }
       }
@@ -743,7 +751,7 @@ export async function getAllDeliveriesFromAllSubscribers(vendorId: string, start
       "#GSI2_sk": "GSI2_sk"
     },
     ExpressionAttributeValues: {
-      ":vendor": "v#" + vendorId,
+      ":vendor": "d#" + vendorId,
       ":start": "d#" + startTime,
       ":end": "d#" + nextDay
     }
@@ -877,7 +885,7 @@ export async function findLatestDelivery(vendorId: string, userId: string): Prom
       "#GSI3_sk": "GSI3_sk"
     },
     ExpressionAttributeValues: {
-      ":user": "u#" + userId + "sub",
+      ":user": "d#" + userId + "sub",
       ":prefix": "d#"
     }
   };
@@ -962,7 +970,7 @@ async function cancelDelivery(delivery: Delivery, cancelledBy: string): Promise<
   const params = {
     TableName: settings.TABLENAME,
     Key: {
-      "pk": { S: "u#" + delivery.userId },
+      "pk": { S: "d#" + delivery.userId },
       "sk": { S: "d#" + delivery.deliverytime }
     },
     UpdateExpression,
@@ -1077,7 +1085,7 @@ export async function handleDeliveryRequest(action: boolean, userId: string, tim
   const params = {
     TableName: settings.TABLENAME,
     Key: {
-      "pk": { S: "u#" + userId },
+      "pk": { S: "d#" + userId },
       "sk": { S: "d#" + time }
     },
     UpdateExpression,
