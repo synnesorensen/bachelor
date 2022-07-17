@@ -95,6 +95,7 @@ export default class UserCalendar extends Vue {
   async getEvents({ start, end }: { start: any; end: any }) {
     this.start = start;
     this.end = end;
+    this.populateCalendar();
   }
 
   async populateCalendar() {
