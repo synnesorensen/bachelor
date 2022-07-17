@@ -76,6 +76,7 @@ export default class UserCalendar extends Vue {
 
   mounted() {
     this.focus = "";
+    this.populateCalendar();
   }
   viewDay(day: any) {
     this.focus = day.date;
@@ -94,9 +95,7 @@ export default class UserCalendar extends Vue {
   async getEvents({ start, end }: { start: any; end: any }) {
     this.start = start;
     this.end = end;
-    if (this.$store.getters.userprofile.approved !== "denied" && this.$store.getters.userprofile.approved !== "new") {
-      this.populateCalendar();
-    }
+    this.populateCalendar();
   }
 
   async populateCalendar() {
@@ -134,7 +133,7 @@ export default class UserCalendar extends Vue {
           } else if (del.approved === "denied") {
             color = "red"
           } else if (del.deliveryType === "single" && del.approved === "approved") {
-            color = "#A3D977"
+            color = "green"
           }
 
           events.push({
@@ -149,7 +148,7 @@ export default class UserCalendar extends Vue {
         }});
       }
 
-      if (vendorDeliveries) {
+      if (vendorDeliveries && this.$store.getters.userprofile.approved === "approved") {
         vendorDeliveries.forEach((del) => {
           const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
           const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);

@@ -5,7 +5,7 @@ export interface Userprofile {
   phone: string,
   email: string, 
   allergies: string[], 
-  approved: "new" | "approved" | "denied",
+  approved: UserStatus,
   isVendor: boolean, 
   note?: string
 }
@@ -108,3 +108,5 @@ export interface DeliveryReqAction {
   deliverytime: string,
   userId: string
 }
+
+export type UserStatus = "new" | "approved" | "denied";

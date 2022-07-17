@@ -37,7 +37,7 @@
       <v-row dense>
         <v-col :xl="4" :lg="5">
           <p class="font-weight-medium">
-            Ubetalte måltid i {{ selectedMonth }}
+            Ubetalte måltid i {{ selectedMonth  }}
           </p>
         </v-col>
         <v-col>
@@ -76,7 +76,10 @@
             <v-row>
               <v-col>
                 <p class="font-weight-medium">Fra dato:</p>
-                <date-picker :date.sync="startDate" @blur="dateCheck" />
+                <date-picker 
+                  :date.sync="startDate" 
+                  @blur="dateCheck" 
+                />
               </v-col>
               <v-col>
                 <p class="font-weight-medium">Til dato:</p>
@@ -156,7 +159,10 @@
               label="Betalte leveringer"
             ></v-text-field>
             <p class="font-weight-medium">Sett første leveringsdato:</p>
-            <v-date-picker v-model="paymentPicker" no-title> </v-date-picker>
+            <v-date-picker 
+              v-model="paymentPicker"
+              no-title
+            ></v-date-picker>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -215,6 +221,7 @@ export default class SubscriptionPayment extends Vue {
   get selectedMonth() {
     return this.toYearMonth(this.nextMonth());
   }
+
   nextMonth() {
     let now = new Date();
     return new Date(now.getFullYear(), now.getMonth() + this.monthOffset, 1);
@@ -233,14 +240,13 @@ export default class SubscriptionPayment extends Vue {
     if (monthNo < 10) {
       month = "0" + monthNo;
     }
-    return getMonth(month) + " " + date.getFullYear().toString();
+    return date.getFullYear().toString() + "-" + month;
   }
 
   @Watch("selectedUser")
   async onChange() {
     if (this.selectedUser != null) {
       this.updateUnpaidDeliveries();
-      console.log(this.selectedUser)
     }
   }
 
