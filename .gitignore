@@ -7,3 +7,4 @@ server/infrastructure/.serverless
 common/settings.ts
 node_modules/@types
 server/.build
+set_env.bat
