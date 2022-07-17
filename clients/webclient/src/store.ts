@@ -84,7 +84,6 @@ export const store = new Vuex.Store({
       if (!payload.jwt) {
         return;
       }
-      //localStorage.setItem("token", payload.jwt);
       api.setApiBearerToken(payload.jwt);
       const username = getUserInfo(payload.jwt);
       context.commit("setUsername", username);
@@ -101,12 +100,17 @@ export const store = new Vuex.Store({
 
         if (payload.freshLogin) {
           if (userprofile?.isVendor) {
-            context.dispatch("refreshNewDeliveryRequests");
-            context.dispatch("refreshNewUserRequests");
             router.push({ name: "adminCalendar" });
           } else {
             router.push({ name: "userCalendar" });
           }
+        }
+        if (userprofile?.isVendor) {
+          setInterval(() => {
+            console.log("refreshningg")
+            context.dispatch("refreshNewDeliveryRequests");
+            context.dispatch("refreshNewUserRequests");
+          }, 300000)
         }
 
         payload.callback();
