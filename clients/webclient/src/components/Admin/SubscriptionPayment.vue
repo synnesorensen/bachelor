@@ -240,7 +240,6 @@ export default class SubscriptionPayment extends Vue {
   async onChange() {
     if (this.selectedUser != null) {
       this.updateUnpaidDeliveries();
-      console.log(this.selectedUser)
     }
   }
 

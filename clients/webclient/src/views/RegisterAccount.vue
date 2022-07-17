@@ -4,25 +4,35 @@
       <v-row>
         <v-col>
           <h1>Kunderegistrering</h1>
+          <p class="font-weight-light">
+            En forespørsel vil bli sendt til Lunsj på Hjul. 
+            Når denne er blitt godkjent, kan du opprette et abonnement eller kjøpe enkle lunsjleveringer.
+          </p>
+          <p class="font-weight-light">
+            NB! Hugs å sjekke søppelposten dei nærmaste dagane, svar på forespørsel kan havne der.   
+          </p>
         </v-col>
       </v-row>
       <v-row>
-        <v-col :xl="6" :lg="6">
+        <v-col :xl="8" :lg="8">
           <v-row dense class="text-center">
             <v-col>
               <v-text-field
+                :rules="[required]"
                 label="Fornavn"
+                outlined
                 v-model="firstName"
-                required
+                dense
+                class="pa-0"
               ></v-text-field>
             </v-col>
-          </v-row>
-          <v-row dense class="text-center">
             <v-col>
               <v-text-field
                 label="Etternavn"
+                outlined
                 v-model="lastName"
-                required
+                :rules="[required]"
+                dense
               ></v-text-field>
             </v-col>
           </v-row>
@@ -30,27 +40,30 @@
             <v-col>
               <v-text-field
                 label="Hjemmeadresse"
+                outlined
                 v-model="address"
-                required
+                :rules="[required]"
+                dense
               ></v-text-field>
             </v-col>
           </v-row>
           <v-row dense class="text-center">
-            <v-col>
+            <v-col cols="3">
               <v-text-field
-                :rules="[numbers, postNoLength]"
+                :rules="[numbers, postNoLength, required]"
                 label="Postnummer"
+                outlined
                 v-model="postNo"
-                required
+                dense
               ></v-text-field>
             </v-col>
-          </v-row>
-          <v-row dense class="text-center">
             <v-col>
               <v-text-field
                 label="Poststed hjemmeadresse"
+                outlined
                 v-model="postPlace"
-                required
+                :rules="[required]"
+                dense
               ></v-text-field>
             </v-col>
           </v-row>
@@ -59,45 +72,49 @@
               <v-text-field
                 label="Leveringsadresse"
                 v-model="deliveryAddress"
-                required
+                :rules="[required]"
+                outlined
+                dense
               ></v-text-field>
             </v-col>
           </v-row>
           <v-row dense class="text-center">
-            <v-col>
+            <v-col cols="3">
               <v-text-field
-                :rules="[numbers, postNoLength]"
+                :rules="[numbers, postNoLength, required]"
                 label="Postnummer"
                 v-model="delPostNo"
-                required
+                outlined
+                dense
               ></v-text-field>
             </v-col>
-          </v-row>
-          <v-row dense class="text-center">
             <v-col>
               <v-text-field
                 label="Poststed leveringsadresse"
                 v-model="delPostPlace"
-                required
+                outlined
+                :rules="[required]"
+                dense
               ></v-text-field>
             </v-col>
           </v-row>
           <v-row dense class="text-center">
             <v-col>
               <v-text-field
-                :rules="[numbers, phoneNoLength]"
+                :rules="[numbers, phoneNoLength, required]"
                 label="Telefonnummer"
                 v-model="phone"
-                required
+                outlined
+                dense
               ></v-text-field>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
-      <v-row>
-        <p class="font-weight-medium">Allergier:</p>
+      <v-row class="ma-0" dense>
+        <p class="ma-0 font-weight-medium">Allergier:</p>
       </v-row>
-      <v-row>
+      <v-row dense>
         <v-col class="d-flex" cols="12" sm="6">
           <v-select
             v-model="value"
@@ -109,10 +126,11 @@
           ></v-select>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row dense>
         <v-col :xl="6" :lg="6">
+          <p class="font-weight-medium">Eventuelle merknader, som feks ønsket startdato eller leveringsinformasjon:</p>
           <v-text-field
-            label="Eventuelle merknader"
+            label="Merknader"
             v-model="note"
             counter
             maxlength="80"
@@ -221,6 +239,9 @@ export default class RegisterAccount extends Vue {
       value.length >= 8 ||
       "Vennligst oppgi et telefonnummer bestående av 8 siffer"
     );
+  }
+  required(value: string) {
+    return (!!value || "Dette feltet må fylles ut")
   }
 }
 </script>

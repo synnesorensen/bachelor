@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="vendor">
+  <v-container>
     <v-row>
       <v-col>
         <v-card>
@@ -12,8 +12,7 @@
           </v-app-bar>
           <v-form v-model="isFormValid">
             <v-card-text>
-              <br />
-              <v-row>
+              <v-row class="mt-2">
                 <v-col :xl="4">
                   <p class="font-weight-medium">Navn</p>
                 </v-col>
@@ -32,7 +31,7 @@
               </v-row>
               <v-row>
                 <v-col :xl="4">
-                  <p class="font-weight-medium">Bostedsadresse (adresse 1)</p>
+                  <p class="font-weight-medium">Bostedsadresse</p>
                 </v-col>
                 <v-col v-if="editModeProfile" class="d-flex" cols="12" md="6">
                   <v-text-field
@@ -49,15 +48,9 @@
               </v-row>
               <v-row>
                 <v-col :xl="4">
-                  <p class="font-weight-medium">Kontoradresse (adresse 2)</p>
+                  <p class="font-weight-medium">Leveringsadresse</p>
                 </v-col>
-                <v-col v-if="editModeProfile" class="d-flex" cols="12" md="6">
-                  <v-text-field
-                    v-model="$store.getters.userprofile.deliveryAddress"
-                    solo
-                  ></v-text-field>
-                </v-col>
-                <v-col v-else>
+                <v-col>
                   <p class="font-weight-light">
                     {{ $store.getters.userprofile.deliveryAddress }}
                   </p>
@@ -115,6 +108,14 @@
                   </p>
                 </v-col>
               </v-row>
+              <v-row>
+                <v-col :xl="4">
+                  <p class="font-weight-medium">Status</p>
+                </v-col>
+                <v-col>
+                  <p class="font-weight-light">{{status}}</p>
+                </v-col>
+              </v-row>
             </v-card-text>
             <v-card-actions v-if="editModeProfile">
               <v-col>
@@ -135,17 +136,19 @@
                       har betalt for.
                     </v-card-text>
                     <v-card-actions>
-                      <v-btn color="grey" @click="deleteDialog = false">
-                        Avbryt
-                      </v-btn>
-                      <v-btn color="orange" @click="deleteMe()">
-                        Slett meg
-                      </v-btn>
+                      <v-item-group>
+                        <v-btn color="grey" @click="deleteDialog = false">
+                          Avbryt
+                        </v-btn>
+                        <v-btn color="orange" @click="deleteMe()">
+                          Slett meg
+                        </v-btn>
+                      </v-item-group>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
               </v-col>
-              <v-spacer></v-spacer>
+              <v-col cols="1"></v-col>
               <v-col>
                 <v-btn @click="cancelEditProfile" color="error" class="ma-1">
                   Avbryt
@@ -178,8 +181,7 @@
               this.$store.getters.userprofile.approved !== 'new'
             "
           >
-            <br />
-            <v-row>
+            <v-row class="mt-2">
               <v-col>
                 <p class="font-weight-medium">Antall porsjoner</p>
               </v-col>
@@ -281,11 +283,12 @@
               </v-col>
             </v-row>
           </v-card-text>
-          <v-card-text v-if="
+          <v-card-text
+            v-if="
               $store.getters.subscription &&
               this.$store.getters.userprofile.approved === 'new'
-            ">
-            <br />
+            "
+          >
             <v-row>
               <v-col>
                 <p class="font-weight-medium">
@@ -299,8 +302,12 @@
             <v-btn @click="cancelEditSub" color="error"> Avbryt </v-btn>
             <v-btn @click="updateSubscription" color="success"> Lagre </v-btn>
           </v-card-actions>
-          <v-card-actions v-if="$store.getters.subscription &&
-              this.$store.getters.userprofile.approved === 'approved'">
+          <v-card-actions
+            v-if="
+              $store.getters.subscription &&
+              this.$store.getters.userprofile.approved === 'approved'
+            "
+          >
             <v-col>
               <v-btn @click="dialog = true" text color="orange">
                 {{ this.buttonText }}
@@ -334,8 +341,7 @@
             </v-dialog>
           </v-card-actions>
           <v-card-text v-if="!$store.getters.subscription">
-            <br />
-            <p v-if="!goToReg" class="font-weight-regular">
+            <p v-if="!goToReg" class="font-weight-regular mt-2">
               Du har ikke tegnet et abonnement. Dersom du ønsker faste
               leveringer en eller flere dager i uken, kan du sette opp et
               abonnement ved å trykke på knappen.
@@ -346,80 +352,80 @@
               >Registrer et abonnement</v-btn
             >
           </v-card-actions>
-          <v-card-text v-if="goToReg">
-            <v-form v-model="isFormValid">
-              <v-row>
-                <p class="font-weight-medium">Velg antall porsjoner:</p>
-              </v-row>
-              <v-row>
-                <v-col cols="auto">
-                  <v-select
-                    v-model="selectedNoOfMeals"
-                    :items="noOfMeals"
-                    solo
-                    :rules="[(v) => !!v || 'Item is required']"
-                    required
-                    label="Antall porsjoner"
-                  ></v-select>
-                </v-col>
-              </v-row>
-              <v-row>
-                <p class="font-weight-medium">Velg type leveringsboks:</p>
-              </v-row>
-              <v-row>
-                <v-col cols="auto">
-                  <v-select
-                    v-model="selectedBox"
-                    :items="boxes"
-                    solo
-                    :rules="[(v) => !!v || 'Item is required']"
-                    required
-                    label="Type boks"
-                  ></v-select>
-                </v-col>
-              </v-row>
-              <v-row>
-                <p class="font-weight-medium">Velg leveringsdag(er):</p>
-              </v-row>
-              <v-row>
-                <v-col cols="auto">
-                  <template>
-                    <v-select
-                      label="Leveringsdager"
-                      v-model="selectedSchedule"
-                      :items="vendorSchedule"
-                      item-value="id"
-                      item-text="day"
-                      return-object
-                      solo
-                      required
-                      multiple
+          <v-form class="ml-8" v-if="goToReg" v-model="isFormValid">
+            <v-row>
+              <p class="ma-0 font-weight-medium">Velg antall porsjoner:</p>
+            </v-row>
+            <v-row>
+              <v-col class="pl-0" cols="auto">
+                <v-select
+                  v-model="selectedNoOfMeals"
+                  :items="noOfMeals"
+                  solo
+                  :rules="[(v) => !!v || 'Item is required']"
+                  required
+                  label="Antall porsjoner"
+                ></v-select>
+              </v-col>
+            </v-row>
+            <v-row>
+              <p class="ma-0 font-weight-medium">Velg type leveringsboks:</p>
+            </v-row>
+            <v-row>
+              <v-col class="pl-0" cols="auto">
+                <v-select
+                  v-model="selectedBox"
+                  :items="boxes"
+                  solo
+                  :rules="[(v) => !!v || 'Item is required']"
+                  required
+                  label="Type boks"
+                ></v-select>
+              </v-col>
+            </v-row>
+            <v-row>
+              <p class="ma-0 font-weight-medium">Velg leveringsdag(er):</p>
+            </v-row>
+            <v-row>
+              <v-col class="pl-0" cols="auto">
+                <v-list flat>
+                  <v-list-item-group multiple>
+                    <v-list-item
+                      v-for="item in items"
+                      :key="item.id"
+                      class="pl-0"
                     >
-                      <template slot="selection" slot-scope="{ item }">
-                        {{ item.day }} - {{ item.menu }}
-                      </template>
-                      <template slot="item" slot-scope="{ item }">
-                        {{ item.day }} - {{ item.menu }}
-                      </template>
-                    </v-select>
-                  </template>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-btn @click="cancelReg" color="error" class="ma-2">
-                  Avbryt
-                </v-btn>
-                <v-btn
-                  @click="makeSub"
-                  :disabled="!isFormValid || hasValue()"
-                  color="success"
-                  class="ma-2"
-                >
-                  Send inn
-                </v-btn>
-              </v-row>
-            </v-form>
-          </v-card-text>
+                      <v-list-item-action>
+                        <v-checkbox
+                          :value="item"
+                          :key="item.id"
+                          v-model="selectedSchedule"
+                          dense
+                          required
+                        ></v-checkbox>
+                      </v-list-item-action>
+                      <v-list-item-content>
+                        <v-list-item-title>{{ item.day }}: {{ item.menu }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-list>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-btn @click="cancelReg" color="error" class="ma-2">
+                Avbryt
+              </v-btn>
+              <v-btn
+                @click="makeSub"
+                :disabled="!isFormValid || hasValue()"
+                color="success"
+                class="ma-2"
+              >
+                Send inn
+              </v-btn>
+            </v-row>
+          </v-form>
         </v-card>
       </v-col>
     </v-row>
@@ -436,6 +442,7 @@ import {
   MenuItems,
   Subscription,
   Vendor,
+  UserStatus
 } from "../../../../../common/interfaces";
 import DatePicker from "../DatePicker.vue";
 import api from "../../api/api";
@@ -446,6 +453,8 @@ import api from "../../api/api";
   },
 })
 export default class CustomerProfile extends Vue {
+  private status = "";
+
   get lastDelivery() {
     if (this.$store.getters.subscription?.paused == true) {
       return "Abonnementet ditt er satt på pause. Du vil ikke få leveranser før abonnementet startes igjen.";
@@ -457,7 +466,9 @@ export default class CustomerProfile extends Vue {
 
   get lastPaid() {
     if (this.$store.getters.subscription?.lastDeliveryDate) {
-      return this.localPresentation(this.$store.getters.subscription.lastDeliveryDate);
+      return this.localPresentation(
+        this.$store.getters.subscription.lastDeliveryDate
+      );
     }
     return "";
   }
@@ -471,7 +482,9 @@ export default class CustomerProfile extends Vue {
         let dateForLastDelivery = new Date(this.lastPaid);
         dateForLastDelivery.setMonth(dateForLastDelivery.getMonth() + 1, 1);
         let nextInvoiceDate = new Date(dateForLastDelivery);
-        return this.localPresentation(nextInvoiceDate.toISOString().substr(0, 10));
+        return this.localPresentation(
+          nextInvoiceDate.toISOString().substr(0, 10)
+        );
       }
       return "Innen utgangen av denne måneden.";
     }
@@ -483,7 +496,6 @@ export default class CustomerProfile extends Vue {
   }
 
   private isFormValid = false;
-  private items: MenuItems[] | null = [];
   private dialog = false;
   private editModeProfile = false;
   private editModeSub = false;
@@ -506,23 +518,36 @@ export default class CustomerProfile extends Vue {
   private selectedAllergies: string[] = [];
   private noOfMeals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   private selectedNoOfMeals = 1;
-  private boxes = ["Engangsboks", "Gjenbruksbokser (depositum kr 218)"];
+  private boxes = ["Engangsbokser", "Gjenbruksbokser (kr 218 for to stk)"];
   private selectedBox = "";
   private vendor: Vendor | null = null;
-  private vendorSchedule: MenuItems[] = [];
   private selectedSchedule: MenuItems[] = [];
   private goToReg = false;
   private deleteDialog = false;
+  private items: any[] = [];
+
+  userStatus(): string {
+    switch (this.$store.getters.userprofile.approved) {
+      case "new":
+        return "Venter på godkjenning fra Lunsj på Hjul";
+      case "approved":
+        return "Godkjent";
+      case "denied":
+        return "Lunsj på Hjul kan dessverre ikke levere til deg";
+      default:
+        return "En feil oppstod";
+    }
+  }
 
   async mounted() {
+    this.status = this.userStatus();
     this.selectedAllergies = this.$store.getters.userprofile.allergies;
     if (this.$store.getters.subscription) {
       this.selectedNoOfMeals = this.$store.getters.subscription.noOfMeals;
       this.selectedBox = this.$store.getters.subscription.box;
       this.selectedSchedule = this.$store.getters.subscription.schedule;
     }
-    this.vendor = await api.getVendor();
-    this.vendorSchedule = this.vendor.schedule;
+    this.items = this.$store.getters.vendor.schedule;
   }
 
   async toggleSubscriptionPause() {
@@ -635,7 +660,7 @@ export default class CustomerProfile extends Vue {
       return item.id;
     });
     let sub: Subscription = {
-      vendorId: this.vendor!.vendorId,
+      vendorId: this.$store.getters.vendor.vendorId,
       userId: this.$store.getters.userprofile.email,
       paused: false,
       schedule: result,

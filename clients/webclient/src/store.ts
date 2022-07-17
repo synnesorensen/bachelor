@@ -106,8 +106,10 @@ export const store = new Vuex.Store({
           }
         }
         if (userprofile?.isVendor) {
+          context.dispatch("refreshNewDeliveryRequests");
+          context.dispatch("refreshNewUserRequests");
+          
           setInterval(() => {
-            console.log("refreshningg")
             context.dispatch("refreshNewDeliveryRequests");
             context.dispatch("refreshNewUserRequests");
           }, 300000)
