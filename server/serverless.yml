@@ -1,7 +1,7 @@
 service: myserver
 useDotenv: true
  
-frameworkVersion: '2'
+frameworkVersion: '3'
  
 plugins:
   - serverless-esbuild
