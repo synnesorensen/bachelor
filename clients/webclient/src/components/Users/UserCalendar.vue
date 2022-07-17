@@ -76,6 +76,7 @@ export default class UserCalendar extends Vue {
 
   mounted() {
     this.focus = "";
+    this.populateCalendar();
   }
   viewDay(day: any) {
     this.focus = day.date;

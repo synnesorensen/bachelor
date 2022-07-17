@@ -19,11 +19,7 @@
       <v-spacer></v-spacer>
       <template v-slot:extension>
         <v-tabs align-with-title class="d-none d-sm-flex">
-          <v-tab
-            to="/user/calendar"
-            @click="$refs.customerOverview.populateCalendar()"
-            >Kalender</v-tab
-          >
+          <v-tab to="/user/calendar">Kalender</v-tab>
           <v-tab to="/user/profile">Kundeprofil</v-tab>
           <v-tab to="/user/orderHistory">Ordrehistorikk</v-tab>
           <v-tab to="/user/info">Informasjon</v-tab>
@@ -51,7 +47,7 @@
       </v-list>
     </v-navigation-drawer>
     <v-main>
-      <router-view ref="customerOverview"></router-view>
+      <router-view></router-view>
     </v-main>
   </v-container>
 </template>
