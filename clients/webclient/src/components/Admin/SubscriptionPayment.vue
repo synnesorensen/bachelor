@@ -30,7 +30,7 @@
         </v-col>
         <v-col>
           <p class="font-weight-light">
-            {{ localPresentation(selectedUser.subscription.lastDeliveryDate) }}
+            {{ selectedUser.subscription.lastDeliveryDate ? localPresentation(selectedUser.subscription.lastDeliveryDate) : "Ingen"}}
           </p>
         </v-col>
       </v-row>
@@ -240,6 +240,7 @@ export default class SubscriptionPayment extends Vue {
   async onChange() {
     if (this.selectedUser != null) {
       this.updateUnpaidDeliveries();
+      console.log(this.selectedUser)
     }
   }
 
