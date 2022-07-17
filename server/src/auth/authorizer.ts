@@ -66,8 +66,7 @@ const authenticate = (params: APIGatewayTokenAuthorizerEvent) => {
       principalId: decoded.sub,
       //      policyDocument: getPolicyDocument('Allow', params.methodArn),
       policyDocument: getPolicyDocument('Allow', '*'),
-      // context: { scope: decoded.scope }
-      context: { scope: "unused" }
+      context: { scope: decoded.scope }
     }));
 }
 
