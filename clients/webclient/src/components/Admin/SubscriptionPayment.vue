@@ -182,7 +182,7 @@ import * as interfaces from "../../../../../common/interfaces";
 import * as dto from "../../../../../common/dto";
 import DatePicker from "../DatePicker.vue";
 import CustomerInfo from "./CustomerInfo.vue";
-import { toLocalPresentation } from "../../utils/utils";
+import { toLocalPresentation, getMonth } from "../../utils/utils";
 
 @Component({
   components: {
@@ -233,7 +233,7 @@ export default class SubscriptionPayment extends Vue {
     if (monthNo < 10) {
       month = "0" + monthNo;
     }
-    return date.getFullYear().toString() + "-" + month;
+    return getMonth(month) + " " + date.getFullYear().toString();
   }
 
   @Watch("selectedUser")
