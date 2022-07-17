@@ -4,16 +4,16 @@ import router from './router';
 import { getUserInfo } from '../../../server/src/auth/getUserFromJwt';
 import getAuth from './components/LoginDialog/auth';
 import { DeliveryRequestDto, SubscriptionDto, UserDto } from '../../../common/dto';
-import {Userprofile, Vendor} from '../../../common/interfaces'
+import { Userprofile, Vendor } from '../../../common/interfaces'
 import api from '../src/api/api';
 
 Vue.use(Vuex);
 interface State {
   userprofile: Userprofile | null,
   subscription: SubscriptionDto | null,
-  username: string, 
+  username: string,
   vendor: Vendor | null,
-  newDeliveryRequests: DeliveryRequestDto[], 
+  newDeliveryRequests: DeliveryRequestDto[],
   newUserRequests: UserDto[]
 }
 
@@ -22,14 +22,14 @@ let state: State = {
   subscription: null,
   username: "",
   vendor: null,
-  newDeliveryRequests: [], 
+  newDeliveryRequests: [],
   newUserRequests: []
 }
 
 export const store = new Vuex.Store({
   state,
   mutations: {
-    setUserprofile (state, userprofile) {
+    setUserprofile(state, userprofile) {
       state.userprofile = userprofile;
     },
     setSubscription(state, subscription) {
@@ -47,7 +47,7 @@ export const store = new Vuex.Store({
     setNewUserRequests(state, newUserRequests) {
       state.newUserRequests = newUserRequests;
     }
-  }, 
+  },
   getters: {
     loggedInUser(state) {
       return state.username;
@@ -57,10 +57,10 @@ export const store = new Vuex.Store({
     },
     subscription(state) {
       return state.subscription;
-    }, 
+    },
     token() {
       return localStorage.getItem("token");
-    }, 
+    },
     vendor(state) {
       return state.vendor;
     },
@@ -70,7 +70,7 @@ export const store = new Vuex.Store({
     newUserRequests(state) {
       return state.newUserRequests;
     }
-  }, 
+  },
   actions: {
     async refreshNewDeliveryRequests(context) {
       const requests = await api.getNewDeliveryRequests();
@@ -81,10 +81,10 @@ export const store = new Vuex.Store({
       context.commit("setNewUserRequests", newCustomers);
     },
     async loggedInUser(context, payload) {
-      if(!payload.jwt) {
+      if (!payload.jwt) {
         return;
       }
-      localStorage.setItem("token", payload.jwt);
+      //localStorage.setItem("token", payload.jwt);
       api.setApiBearerToken(payload.jwt);
       const username = getUserInfo(payload.jwt);
       context.commit("setUsername", username);
@@ -93,23 +93,26 @@ export const store = new Vuex.Store({
 
       const userprofile = await api.getUserprofile();
       if (!userprofile) {
-      router.push({name: 'register'});
+        router.push({ name: 'register' });
       } else {
-      context.commit("setUserprofile", userprofile);
-      const subscription = await api.getSubscription();
-      context.commit("setSubscription", subscription);
-      
-      if (userprofile?.isVendor) {
-        context.dispatch("refreshNewDeliveryRequests");
-        context.dispatch("refreshNewUserRequests");
-        router.push({name: 'adminCalendar'});
-      } else {
-        router.push({name: 'userCalendar'});
+        context.commit("setUserprofile", userprofile);
+        const subscription = await api.getSubscription();
+        context.commit("setSubscription", subscription);
+
+        if (payload.freshLogin) {
+          if (userprofile?.isVendor) {
+            context.dispatch("refreshNewDeliveryRequests");
+            context.dispatch("refreshNewUserRequests");
+            router.push({ name: "adminCalendar" });
+          } else {
+            router.push({ name: "userCalendar" });
+          }
+        }
+
+        payload.callback();
       }
-      payload.callback();
-      }
       if (userprofile?.isVendor) {
-      context.commit("setVendor", vendor);
+        context.commit("setVendor", vendor);
       }
     },
     async logout(context) {
@@ -120,7 +123,7 @@ export const store = new Vuex.Store({
       context.commit("setUserprofile", null);
       context.commit("setSubscription", null);
       context.commit("setUsername", "");
-      router.push({name: 'welcome'});
+      router.push({ name: "welcome" });
     }
   }
 });

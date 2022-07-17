@@ -6,8 +6,9 @@ import getAuth from '../components/LoginDialog/auth';
 
 export class Api {
   private apiAxios = axios.create();
-  private jwtLastRefreshed = 0;
+  private jwt = "";
 
+  // TODO: Dead code
   async login(username: string, password: string) {
     const auth = getAuth();
     await auth.signIn(username, password);
@@ -21,7 +22,7 @@ export class Api {
   }
 
   setApiBearerToken(token: string) {
-    this.jwtLastRefreshed = Date.now();
+    this.jwt = token;
     this.apiAxios = axios.create({
       headers: {
         common: {
@@ -32,9 +33,9 @@ export class Api {
   }
 
   async ensureFreshToken() {
-    if (this.jwtLastRefreshed < (Date.now() - (1000 * 60))) {
-      let Auth = getAuth();
-      let jwtToken = (await Auth.currentSession()).getIdToken().getJwtToken();
+    let Auth = getAuth();
+    let jwtToken = (await Auth.currentSession()).getIdToken().getJwtToken();
+    if (jwtToken !== this.jwt) {
       this.setApiBearerToken(jwtToken);
     }
   }

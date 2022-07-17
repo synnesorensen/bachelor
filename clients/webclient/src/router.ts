@@ -107,7 +107,6 @@ const routes = [
   }
 ];
 
-
 const router = new VueRouter({
   mode: 'history',
   routes
@@ -120,9 +119,7 @@ router.beforeEach((to, from, next) => {
     next({ name: 'welcome' });
   } else {
     next();
-  }
+  } 
 });
-
-
 
 export default router;

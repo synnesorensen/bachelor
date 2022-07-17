@@ -76,6 +76,7 @@ export async function authorizer(event: APIGatewayTokenAuthorizerEvent) {
     return data;
   }
   catch (err) {
+    console.error(err)
     return `Unauthorized: ${err.message}`;
   }
 }

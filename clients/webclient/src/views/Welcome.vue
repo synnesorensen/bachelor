@@ -131,6 +131,7 @@ export default class Welcome extends Vue {
   loggedIn(jwt: string) {
     const self = this;
     this.$store.dispatch("loggedInUser", {
+      freshLogin: true,
       jwt,
       callback: () => {
         self.showLogInBox = false;

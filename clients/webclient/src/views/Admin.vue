@@ -87,7 +87,7 @@
     </v-main>
   </v-container>
   <v-container v-else>
-    <h1>Forbudt!</h1>
+    <h1>Forbudt</h1>
   </v-container>
 </template>
 
