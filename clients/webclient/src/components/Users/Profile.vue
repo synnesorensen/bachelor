@@ -451,13 +451,13 @@ export default class CustomerProfile extends Vue {
       return "Abonnementet ditt er satt på pause. Du vil ikke få leveranser før abonnementet startes igjen.";
     }
     return this.lastPaid
-      ? this.localPresentation(this.lastPaid)
+      ? this.lastPaid
       : "Du har ingen leveranser denne perioden.";
   }
 
   get lastPaid() {
     if (this.$store.getters.subscription?.lastDeliveryDate) {
-      return this.$store.getters.subscription.lastDeliveryDate;
+      return this.localPresentation(this.$store.getters.subscription.lastDeliveryDate);
     }
     return "";
   }
@@ -471,7 +471,7 @@ export default class CustomerProfile extends Vue {
         let dateForLastDelivery = new Date(this.lastPaid);
         dateForLastDelivery.setMonth(dateForLastDelivery.getMonth() + 1, 1);
         let nextInvoiceDate = new Date(dateForLastDelivery);
-        return nextInvoiceDate.toISOString().substr(0, 10);
+        return this.localPresentation(nextInvoiceDate.toISOString().substr(0, 10));
       }
       return "Innen utgangen av denne måneden.";
     }
