@@ -1,6 +1,6 @@
 import 'source-map-support/register'
 import { Delivery, MenuItems, Vendor, WeekTime } from '../../common/interfaces';
-import { getDeliveryDates } from './timeHandling'
+import { getDeliveryDates, getDeliveryDatesQuick } from './timeHandling'
 import { getSubscriptionFromDb, getVendorFromDb } from './dbUtils'
 
 export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, userId: string, vendorId: string, noOfDeliveries: number, env:LunchEnvironment): Promise<Delivery[]> {
@@ -34,10 +34,10 @@ export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, 
 }
 
 // Deliveries offered by vendor (yellow events in user's calendar)
-export async function generateDeliveriesForVendor(EarliestStartDate: Date, vendor: Vendor, noOfDeliveries: number, env:LunchEnvironment): Promise<Delivery[]> {
+export async function generateDeliveriesForVendor(EarliestStartDate: Date, endDate: Date, vendor: Vendor): Promise<Delivery[]> {
   let weekTimes:WeekTime[] = scheduleToWeekTimes(vendor.schedule)
 
-  let deliveryDates = await getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries, env);
+  let deliveryDates = await getDeliveryDatesQuick(EarliestStartDate, endDate, weekTimes);
   const deliveryType: "sub" | "single" = "single";
 
   return deliveryDates.map((date) => {
