@@ -107,7 +107,7 @@ export default class UserCalendar extends Vue {
 
     if (this.start && this.end) {
       const data = await Promise.all([
-        api.scheduleToDates(vendor.vendorId, this.start.date), 
+        api.scheduleToDates(vendor.vendorId, this.start.date, this.end.date), 
         api.getAllUsersDeliveries(this.start.date, this.end.date), 
         api.getAbsence(this.start.date, this.end.date),
         api.getAway(this.start.date, this.end.date)

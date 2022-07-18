@@ -8,8 +8,7 @@ export class Api {
   private apiAxios = axios.create();
   private jwt = "";
 
-  // TODO: Dead code
-  async login(username: string, password: string) {
+    async login(username: string, password: string) {
     const auth = getAuth();
     await auth.signIn(username, password);
     let jwtToken = (await auth.currentSession()).getIdToken().getJwtToken();
@@ -327,9 +326,9 @@ export class Api {
     return response.status == 200;
   }
 
-  async scheduleToDates(vendorId: string, startDate: string): Promise<interfaces.Delivery[]> {
+  async scheduleToDates(vendorId: string, startDate: string, endDate: string): Promise<interfaces.Delivery[]> {
     await this.ensureFreshToken();
-    const deliveries = await this.apiAxios.get(urlPrefix + "/scheduleDates?vendorId=" + encodeURIComponent(vendorId) + "&startDate=" + startDate);
+    const deliveries = await this.apiAxios.get(urlPrefix + "/scheduleDates?vendorId=" + encodeURIComponent(vendorId) + "&startDate=" + startDate + "&endDate=" + endDate);
     return deliveries.data;
   }
 
