@@ -300,8 +300,8 @@ export default class SubscriptionPayment extends Vue {
   }
 
   async registerPayment() {
-    const now = new Date();
-    const time = new Date(Date.UTC(now.getFullYear(), now.getMonth() + this.monthOffset, 1)).toISOString();
+    const now = new Date(this.paymentPicker);
+    const time = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())).toISOString();
     
     if (this.selectedUser?.subscription?.userId) {
       let newDels = await api.postNewDeliveries(

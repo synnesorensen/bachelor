@@ -21,13 +21,11 @@ export async function getDeliveryDatesQuick(startDate: Date, endDate: Date, week
 
   let nextDelivery = nextDeliveryDateQuick(startDate, weekTimes, absenceDateStrings);
 
-  let count = 0;
   let deliveryDates: DateWithMenuId[] = [];
 
   while (nextDelivery.date <= endDate) {
     deliveryDates.push(nextDelivery);
     nextDelivery = nextDeliveryDateQuick(nextDelivery.date, weekTimes, absenceDateStrings);
-    count++;
   }
   return deliveryDates;
 }
@@ -140,7 +138,6 @@ export function findNextWorkDayQuick(date: Date, absentDates: string[]): Date {
   }
   return currentDate;
 }
-
 
 export async function generateVendorsAbsentDates(start: string, end: string) {
   const absentDates:string[] = [];
