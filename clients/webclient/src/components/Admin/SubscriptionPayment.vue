@@ -266,31 +266,7 @@ export default class SubscriptionPayment extends Vue {
   }
 
   async updateUnpaidDeliveries() {
-    if (this.selectedUser?.subscription?.lastDeliveryDate) {
-      let date = this.selectedUser.subscription.lastDeliveryDate;
-      let lastDelivery = new Date(date);
-      let selectedDate = new Date(this.nextMonth());
-      if (selectedDate.getTime() < lastDelivery.getTime()) {
-        if (
-          selectedDate.getMonth() == lastDelivery.getUTCMonth() &&
-          selectedDate.getFullYear() == lastDelivery.getUTCFullYear()
-        ) {
-          this.unpaidDeliveries = await api.getUnpaidDeliveries(
-            this.selectedUser.subscription.userId,
-            this.selectedMonth,
-            this.selectedUser.subscription.lastDeliveryDate
-          );
-        } else {
-          this.unpaidDeliveries = 0;
-        }
-      } else {
-        this.unpaidDeliveries = await api.getUnpaidDeliveries(
-          this.selectedUser.subscription.userId,
-          this.selectedMonth
-        );
-      }
-      this.paidDeliveries = this.unpaidDeliveries;
-    } else if (this.selectedUser?.subscription) {
+    if (this.selectedUser?.subscription) {
       this.unpaidDeliveries = await api.getUnpaidDeliveries(
         this.selectedUser.subscription.userId,
         this.selectedMonth

@@ -16,7 +16,10 @@ export async function getDeliveryDates(startDate: Date, weekTimes: WeekTime[], n
 }
 
 export async function getDeliveryDatesQuick(startDate: Date, endDate: Date, weekTimes: WeekTime[]):Promise<DateWithMenuId[]> {
+  console.log(startDate)
+  console.log(endDate)
   const absenceDates = await getVendorAbsence(startDate.toISOString(), endDate.toISOString());
+  console.log(absenceDates)
   const absenceDateStrings = absenceDates.map( (date) => date.toISOString());
 
   let nextDelivery = nextDeliveryDateQuick(startDate, weekTimes, absenceDateStrings);
@@ -24,6 +27,7 @@ export async function getDeliveryDatesQuick(startDate: Date, endDate: Date, week
   let deliveryDates: DateWithMenuId[] = [];
 
   while (nextDelivery.date <= endDate) {
+    console.log("Oioioi", nextDelivery.date)
     deliveryDates.push(nextDelivery);
     nextDelivery = nextDeliveryDateQuick(nextDelivery.date, weekTimes, absenceDateStrings);
   }
@@ -77,7 +81,6 @@ export function nextDeliveryDateQuick(date: Date, weekTimes: WeekTime[], absentD
   if (weekTimes.length == 0) {
     return null;
   }
-
   let result = findNextWorkDayQuick(date, absentDates);
   let delivery = getDeliveryBeforeMidnight(result, weekTimes);
 
@@ -91,7 +94,6 @@ export function nextDeliveryDateQuick(date: Date, weekTimes: WeekTime[], absentD
     menuId: delivery.menuId
   }
 }
-
 
 function lessThanOrEqual(wt1: WeekTime, wt2: WeekTime) {
   if (wt1.day == wt2.day) {

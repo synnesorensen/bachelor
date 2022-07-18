@@ -299,12 +299,9 @@ export class Api {
     await this.apiAxios.delete(url);
   }
 
-  async getUnpaidDeliveries(userId: string, yearMonth: string, afterDate?: string): Promise<number> {
+  async getUnpaidDeliveries(userId: string, yearMonth: string): Promise<number> {
     await this.ensureFreshToken();
     let url = urlPrefix + "/unpaidDeliveries?userId=" + encodeURIComponent(userId) + "&yearMonth=" + yearMonth;
-    if (afterDate) {
-      url += "&afterDate=" + afterDate
-    }
 
     const response = await this.apiAxios.get(url);
     return parseInt(response.data.no);
