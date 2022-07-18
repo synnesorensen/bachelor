@@ -113,7 +113,7 @@
                   <p class="font-weight-medium">Status</p>
                 </v-col>
                 <v-col>
-                  <p class="font-weight-light">{{status}}</p>
+                  <p class="font-weight-light">{{ status }}</p>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -221,25 +221,32 @@
               <v-col>
                 <p class="font-weight-medium">Leveringsdag</p>
               </v-col>
-              <template v-if="editModeSub">
-                <v-select
-                  label="Leveringsdager"
-                  v-model="selectedSchedule"
-                  :items="vendorSchedule"
-                  item-value="id"
-                  item-text="day"
-                  return-object
-                  solo
-                  multiple
-                >
-                  <template slot="selection" slot-scope="{ item }">
-                    {{ item.day }} - {{ item.menu }}
-                  </template>
-                  <template slot="item" slot-scope="{ item }">
-                    {{ item.day }} - {{ item.menu }}
-                  </template>
-                </v-select>
-              </template>
+              <v-col v-if="editModeSub" class="d-flex" cols="12" sm="6">
+                <v-list flat>
+                  <v-list-item-group multiple>
+                    <v-list-item
+                      v-for="item in items"
+                      :key="item.id"
+                      class="pl-0"
+                    >
+                      <v-list-item-action>
+                        <v-checkbox
+                          :value="item"
+                          :key="item.id"
+                          v-model="selectedSchedule"
+                          dense
+                          required
+                        ></v-checkbox>
+                      </v-list-item-action>
+                      <v-list-item-content>
+                        <v-list-item-title
+                          >{{ item.day }}: {{ item.menu }}</v-list-item-title
+                        >
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-list>
+              </v-col>
               <v-col v-else>
                 <p
                   class="font-weight-regular"
@@ -405,7 +412,9 @@
                         ></v-checkbox>
                       </v-list-item-action>
                       <v-list-item-content>
-                        <v-list-item-title>{{ item.day }}: {{ item.menu }}</v-list-item-title>
+                        <v-list-item-title
+                          >{{ item.day }}: {{ item.menu }}</v-list-item-title
+                        >
                       </v-list-item-content>
                     </v-list-item>
                   </v-list-item-group>
@@ -442,7 +451,7 @@ import {
   MenuItems,
   Subscription,
   Vendor,
-  UserStatus
+  UserStatus,
 } from "../../../../../common/interfaces";
 import DatePicker from "../DatePicker.vue";
 import api from "../../api/api";

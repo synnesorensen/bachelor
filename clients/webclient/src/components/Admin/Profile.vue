@@ -1,10 +1,10 @@
 <template>
   <v-container>
     <v-row>
-      <v-col :xl="6" :lg="10">
+      <v-col>
         <v-card>
           <v-app-bar dark color="#79b321">
-            <v-card-title> Firmaprofil </v-card-title>
+            <v-card-title> Opplysninger </v-card-title>
             <v-spacer></v-spacer>
             <v-btn icon @click="editProfile">
               <v-icon>mdi-pencil</v-icon>
@@ -14,7 +14,7 @@
             <v-card-text>
               <br />
               <v-row>
-                <v-col :xl="2" :lg="2" :md="2" :sm="2">
+                <v-col :xl="3" :lg="3" :md="3" :sm="2">
                   <p class="font-weight-medium">Navn</p>
                 </v-col>
                 <v-col v-if="editMode" class="d-flex" cols="12" md="6">
@@ -31,7 +31,7 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col :xl="2" :lg="2" :md="2" :sm="2">
+                <v-col :xl="3" :lg="3" :md="3" :sm="2">
                   <p class="font-weight-medium">Firmanavn</p>
                 </v-col>
                 <v-col v-if="editMode" class="d-flex" cols="12" md="6">
@@ -48,7 +48,7 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col :xl="2" :lg="2" :md="2" :sm="2">
+                <v-col :xl="3" :lg="3" :md="3" :sm="2">
                   <p class="font-weight-medium">Adresse</p>
                 </v-col>
                 <v-col v-if="editMode" class="d-flex" cols="12" md="6">
@@ -65,7 +65,7 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col :xl="2" :lg="2" :md="2" :sm="2">
+                <v-col :xl="3" :lg="3" :md="3" :sm="2">
                   <p class="font-weight-medium">Telefonnummer</p>
                 </v-col>
                 <v-col v-if="editMode" class="d-flex" cols="12" md="6">
@@ -83,7 +83,7 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col :xl="2" :lg="2" :md="2" :sm="2">
+                <v-col :xl="3" :lg="3" :md="3" :sm="2">
                   <p class="font-weight-medium">E-post</p>
                 </v-col>
                 <v-col>
@@ -93,7 +93,7 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col :xl="2" :lg="2" :md="2" :sm="2">
+                <v-col :xl="3" :lg="3" :md="3" :sm="2">
                   <p class="font-weight-medium">Leveringsplan</p>
                 </v-col>
                 <v-col>
@@ -133,6 +133,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import api from "../../api/api";
 import * as interfaces from "../../../../../common/interfaces";
+import { toLocalPresentation } from "@/utils/utils";
 
 @Component
 export default class CustomerProfile extends Vue {
@@ -180,6 +181,10 @@ export default class CustomerProfile extends Vue {
   }
   required(value: string) {
     return value.length > 0 || "Dette feltet kan ikke stå tomt";
+  }
+
+  localPresentation(time: string) {
+    return toLocalPresentation(time);
   }
 }
 </script>

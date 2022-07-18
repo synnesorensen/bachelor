@@ -502,7 +502,6 @@ export async function getUsersDeliveries(userId: string, startDate: string, endD
   };
 
   let dbResult = await documentClient.query(params).promise();
-  console.log(params)
 
   let deliveries = dbResult.Items.map((del) => {
     return {
@@ -1198,8 +1197,18 @@ export async function getVendorAbsence(start: string, end?: string): Promise<Dat
   };
 
   const dbResult = await documentClient.query(params).promise();
-
   return dbResult.Items.map(res => new Date(res.sk.substr(2)));
+}
+
+export async function deleteAbsenceInDb(time: string): Promise<void> {
+  let params = {
+    TableName: settings.TABLENAME,
+    Key: {
+      "pk": { S: "absence"},
+      "sk": { S: "a#" + time }
+    }
+  };
+  await database.deleteItem(params).promise();
 }
 
 export async function getUserAbsence(start: string, end?: string): Promise<Date[]> {

@@ -339,15 +339,21 @@ export class Api {
     return delivery.data;
   }
 
+  async getAbsence(start: string, end: string): Promise<Date[]> {
+    await this.ensureFreshToken();
+    const absence = await this.apiAxios.get(urlPrefix + "/v/absence?start=" + start + "&end=" + end);
+    return absence.data;
+  }
+
   async setAbsence(start: string, end: string): Promise<number> {
     await this.ensureFreshToken();
     const absence = await this.apiAxios.post(urlPrefix + "/v/absence?start=" + start + "&end=" + end);
     return absence.data;
   }
 
-  async getAbsence(start: string, end: string): Promise<Date[]> {
+  async deleteAbsence(time: string): Promise<void> {
     await this.ensureFreshToken();
-    const absence = await this.apiAxios.get(urlPrefix + "/v/absence?start=" + start + "&end=" + end);
+    const absence = await this.apiAxios.delete(urlPrefix + "/v/absence?time=" + time);
     return absence.data;
   }
 

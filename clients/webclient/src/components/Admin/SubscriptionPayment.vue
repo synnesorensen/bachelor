@@ -105,7 +105,7 @@
                     <v-checkbox
                       v-model="selectedDeliveries"
                       :value="item"
-                      dense
+                      class="align-center justify-center"
                     ></v-checkbox>
                   </td>
                   <td>{{ localPresentation(item.deliverytime) }}</td>
@@ -189,6 +189,7 @@ import * as dto from "../../../../../common/dto";
 import DatePicker from "../DatePicker.vue";
 import CustomerInfo from "./CustomerInfo.vue";
 import { toLocalPresentation, getMonth } from "../../utils/utils";
+import AdminCalendar from "./AdminCalendar.vue";
 
 @Component({
   components: {
@@ -336,7 +337,7 @@ export default class SubscriptionPayment extends Vue {
         } catch (err) {
           console.log(err);
         } finally {
-          this.loading = false;
+            this.loading = false;
         }
       }
     }

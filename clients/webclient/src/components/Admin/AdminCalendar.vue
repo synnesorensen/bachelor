@@ -12,15 +12,30 @@
             <v-btn fab text small class="mr-4" @click="next">
               <v-icon small>mdi-chevron-right</v-icon>
             </v-btn>
-            <v-toolbar-title v-if="$refs.calendar" @click="showDialog" style="cursor: pointer">
+            <v-toolbar-title v-if="$refs.calendar" style="cursor: pointer">
               {{
                 $refs.calendar.title.charAt(0).toUpperCase() +
                 $refs.calendar.title.slice(1)
               }}
             </v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-menu fixed offset-y>
+              <template v-slot:activator="{ on: menu, attrs }">
+                <v-btn v-bind="attrs" v-on="menu" id="menuTab" color="primary">
+                  Fravær
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item @click="addAbsenceDialog = true">
+                  <v-list-item-title>Legg til fravær</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="removeAbsenceDialog = true">
+                  <v-list-item-title>Fjern fravær</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </v-toolbar>
         </v-sheet>
-        <v-spacer />
         <v-sheet height="600">
           <v-calendar
             ref="calendar"
@@ -31,17 +46,13 @@
             show-week
             :now="today"
             :events="events"
-            @click:date="showDialog"
-            @click:event="showDeliveries"
+            @click:event="handleEventClick"
             @change="getEvents"
           >
           </v-calendar>
         </v-sheet>
       </v-col>
-      <v-dialog 
-        fullscreen
-        v-model="showList"
-      >
+      <v-dialog fullscreen v-model="showList">
         <Deliveries
           :date="selectedDate"
           @update="deliveriesUpdated"
@@ -49,46 +60,99 @@
         />
       </v-dialog>
     </v-row>
+
     <v-dialog
-      v-model="datePickDialog"
+      v-model="addAbsenceDialog"
       max-width="800"
       max-height="800"
       persistent
     >
       <v-card>
         <v-app-bar>
-          <v-card-title class="headline"> Sett inn fravær i kalender </v-card-title>
+          <v-card-title class="headline">
+            Sett inn fravær i kalender
+          </v-card-title>
           <v-spacer></v-spacer>
-          <v-btn icon @click="close">
+          <v-btn icon @click="addAbsenceDialog = false">
             <v-icon> mdi-close </v-icon>
           </v-btn>
         </v-app-bar>
-        <br />
-        <v-card-text>
+        <v-card-text class="mt-4">
           <v-row>
             <v-col>
               <p class="font-weight-medium">Fra dato:</p>
-              <date-picker
-                :date.sync="startDate" 
-                @blur="dateCheck" />
+              <date-picker :date.sync="startDate" @blur="dateCheck" />
             </v-col>
             <v-col>
               <p class="font-weight-medium">Til dato:</p>
-              <date-picker 
-                :date.sync="endDate"
-                @blur="dateCheck" />
+              <date-picker :date.sync="endDate" @blur="dateCheck" />
             </v-col>
           </v-row>
           <v-row>
             <p style="color: red">{{ errorMsg }}</p>
           </v-row>
-          <v-row justify="center">
-            <v-btn 
-              color="primary"
-              class="mb-4"
-              v-if="setAbsenceBtn" 
-              @click="setAbsence"
-            >Sett fravær</v-btn>
+          <v-card-action>
+            <v-row justify="center">
+              <v-col cols="auto">
+                <v-btn
+                  color="primary"
+                  @click="addAbsence"
+                  :disabled="!canAddAbsence"
+                  class="justify-center align-center"
+                  >Legg til fravær</v-btn
+                >
+              </v-col>
+            </v-row>
+          </v-card-action>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      max-width="800"
+      max-height="800"
+      persistent
+      v-model="removeAbsenceDialog"
+    >
+      <v-card>
+        <v-app-bar>
+          <v-card-title class="headline"> Fravær denne måneden</v-card-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="removeAbsenceDialog = false">
+            <v-icon> mdi-close </v-icon>
+          </v-btn>
+        </v-app-bar>
+        <v-card-text class="mt-4">
+          <v-row no-gutters>
+            <v-col class="pl-4" cols="auto">
+              <v-list flat>
+                <v-list-item-group multiple>
+                  <v-list-item v-for="day in absences" :key="day" class="pl-0">
+                    <v-list-item-action>
+                      <v-checkbox
+                        :value="day"
+                        :key="day"
+                        v-model="selectedAbsence"
+                        class="align-center justify-center"
+                      ></v-checkbox>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                      <v-list-item-title>{{
+                        localPresentation(day)
+                      }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list-item-group>
+                <v-list-item-action>
+                  <v-btn
+                    class="mt-4"
+                    color="primary"
+                    v-if="absences.length > 0"
+                    @click="deleteAbsences"
+                    >Fjern fravær</v-btn
+                  >
+                </v-list-item-action>
+              </v-list>
+            </v-col>
           </v-row>
         </v-card-text>
       </v-card>
@@ -102,11 +166,12 @@ import Component from "vue-class-component";
 import Deliveries from "./Deliveries.vue";
 import api from "../../api/api";
 import DatePicker from "../DatePicker.vue";
+import { toLocalPresentation } from "@/utils/utils";
 
 @Component({
   components: {
     Deliveries,
-    DatePicker
+    DatePicker,
   },
 })
 export default class AdminCalendar extends Vue {
@@ -117,12 +182,16 @@ export default class AdminCalendar extends Vue {
   private end: any | null = null;
   private events: any[] = [];
   private showList = false;
+  private showAbsence = false;
   private selectedDate = "";
-  private datePickDialog = false;
+  private addAbsenceDialog = false;
+  private removeAbsenceDialog = false;
+  private selectedAbsence: string[] = [];
+  private absences: Date[] = [];
+  private errorMsg = "";
   private startDate = "";
   private endDate = "";
-  private errorMsg = "";
-  private setAbsenceBtn = false;
+  private canAddAbsence = false;
 
   mounted() {
     this.focus = "";
@@ -157,14 +226,14 @@ export default class AdminCalendar extends Vue {
     const events: any[] = [];
     if (this.start && this.end) {
       const data = await Promise.all([
-        api.getAllVendorsDeliveriesSummary(this.start.date, this.end.date), 
-        api.getAbsence(this.start.date, this.end.date)
-      ])
+        api.getAllVendorsDeliveriesSummary(this.start.date, this.end.date),
+        api.getAbsence(this.start.date, this.end.date),
+      ]);
       const deliveries = data[0];
       const absenceDates = data[1];
 
       if (absenceDates) {
-        absenceDates.forEach(absence => {
+        absenceDates.forEach((absence) => {
           const start = new Date(absence);
           const end = new Date(absence);
           events.push({
@@ -172,20 +241,27 @@ export default class AdminCalendar extends Vue {
             start,
             end,
             color: "orange",
+            type: "absence",
           });
-        })
+          this.absences = absenceDates;
+        });
       }
       if (deliveries) {
         deliveries.forEach((del) => {
           const delStart = new Date(`${del.date.substring(0, 10)}T00:00:00`);
           const delEnd = new Date(`${del.date.substring(0, 10)}T23:59:59`);
-          const menu = schedule.find(({ id }) => id == del.menuId);
+          const menu = schedule.find(({ id }) => id === del.menuId);
           events.push({
             name:
               menu!.menu + ": " + (del.count - del.cancelled) + "/" + del.count,
             start: delStart,
             end: delEnd,
-            color: del.count == del.cancelled ? "grey" : "green",
+            color:
+              new Date(del.date) < new Date(Date.now()) ||
+              del.count === del.cancelled
+                ? "grey"
+                : "green",
+            type: "deliveries",
           });
         });
         this.events = events;
@@ -193,33 +269,13 @@ export default class AdminCalendar extends Vue {
     }
   }
 
-  showDeliveries(event: any) {
-    this.selectedDate = event.day.date;
-    this.showList = true;
-  }
-
-  deliveriesUpdated() {
-    this.populateCalendar();
-  }
-
-  showDialog() {
-    // TODO: Se om det går an å sende inn valgt dato fra kalender til date-picker
-    this.startDate = this.selectedDate;
-    this.datePickDialog = true;
-  }
-
-  async setAbsence(event: any) {
-    try {
-      await api.setAbsence(this.startDate, this.endDate);
-      this.datePickDialog = false;
-      this.startDate = "";
-      this.endDate = "";
-    }
-    catch (err) {
-      console.log(err);
-      this.startDate = "";
-      this.endDate = "";
-      this.errorMsg = "Noe gikk galt, kontakt administrator.";
+  handleEventClick(event: any) {
+    if (event.event.type === "deliveries") {
+      this.selectedDate = event.day.date;
+      this.showList = true;
+    } else {
+      this.selectedDate = event.day.date;
+      this.showAbsence = true;
     }
   }
 
@@ -227,17 +283,46 @@ export default class AdminCalendar extends Vue {
     if (this.startDate && this.endDate) {
       if (new Date(this.endDate) < new Date(this.startDate)) {
         this.errorMsg = "Fra dato kan ikke være etter til dato.";
+        this.canAddAbsence = false;
       } else {
         this.errorMsg = "";
-        this.setAbsenceBtn = true;
+        this.canAddAbsence = true;
       }
     }
   }
 
-  close() {
-    this.startDate = "";
-    this.endDate = "";
-    this.datePickDialog = false;
+  async setAbsence(event: any) {
+    try {
+      await api.setAbsence(this.startDate, this.endDate);
+      this.addAbsenceDialog = false;
+      this.startDate = "";
+      this.endDate = "";
+      this.populateCalendar();
+    } catch (err) {
+      console.log(err);
+      this.startDate = "";
+      this.endDate = "";
+      this.errorMsg = "Noe gikk galt, kontakt administrator.";
+    }
+  }
+
+  async deleteAbsences() {
+    if (this.selectedAbsence) {
+      this.selectedAbsence.forEach(async (ab) => {
+        await api.deleteAbsence(ab);
+        this.absences = await api.getAbsence(this.start, this.end);
+        this.populateCalendar();
+        this.removeAbsenceDialog = false;
+      });
+    }
+  }
+
+  deliveriesUpdated() {
+    this.populateCalendar();
+  }
+
+  localPresentation(time: string) {
+    return toLocalPresentation(time);
   }
 }
 </script>

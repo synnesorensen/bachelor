@@ -2,7 +2,7 @@ import 'source-map-support/register';
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { getUserprofileFromDb, getVendorAbsence } from './dbUtils';
+import { deleteAbsenceInDb, getUserprofileFromDb, getVendorAbsence } from './dbUtils';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 import { generateVendorsAbsentDates } from './timeHandling';
 
@@ -14,7 +14,7 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     return postAbsence(event);
   }
   if (event.httpMethod === "DELETE") {
-    // TODO: Legg til å kunne slette
+    return deleteAbsence(event);
   }
   return {
     statusCode: 405,
@@ -93,7 +93,29 @@ async function postAbsence(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
     statusCode: 200,
     body: '{ "message" : "Absence added" }'
   };
+}
 
+async function deleteAbsence(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  if (!event.queryStringParameters) {
+    return {
+      statusCode: 400,
+      body: '{ "message" : "Missing parameters" }'
+    };
+  }
+  let time = event.queryStringParameters["time"];
+
+  if (!time) {
+    return {
+      statusCode: 400,
+      body: '{ "message" : "Missing parameter time" }'
+    };
+  }
+  await deleteAbsenceInDb(time);
+
+  return {
+    statusCode: 200,
+    body: '{ "message" : "Deletion succeeded" }'
+  };
 }
 
 export const mainHandler = middy(handler).use(cors());
