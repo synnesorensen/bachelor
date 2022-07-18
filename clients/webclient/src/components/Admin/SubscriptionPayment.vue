@@ -311,7 +311,7 @@ export default class SubscriptionPayment extends Vue {
       );
       this.selectedUser.subscription.lastDeliveryDate =
         newDels[newDels.length - 1].deliverytime;
-      this.unpaidDeliveries = this.unpaidDeliveries - this.paidDeliveries;
+      this.updateUnpaidDeliveries();
       this.paymentDialog = false;
     }
   }
