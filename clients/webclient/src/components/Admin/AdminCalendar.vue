@@ -291,7 +291,7 @@ export default class AdminCalendar extends Vue {
     }
   }
 
-  async setAbsence(event: any) {
+  async addAbsence(event: any) {
     try {
       await api.setAbsence(this.startDate, this.endDate);
       this.addAbsenceDialog = false;
