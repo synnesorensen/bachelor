@@ -307,6 +307,12 @@ export class Api {
     return parseInt(response.data.no);
   }
 
+  async lastDelilveryDate(userId: string): Promise<string> {
+    await this.ensureFreshToken();
+    const response = await this.apiAxios.get(urlPrefix + "/lastDelivery?userId=" + encodeURIComponent(userId));
+    return response.data;
+  }
+
   async getDeliveryDetails(start: string, end: string): Promise<interfaces.DeliveryDetail[]> {
     await this.ensureFreshToken();
     const response = await this.apiAxios.get(urlPrefix + "/v/deliveryDetails?start=" + start + "&end=" + end);

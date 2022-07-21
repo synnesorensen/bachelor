@@ -189,7 +189,6 @@ import * as dto from "../../../../../common/dto";
 import DatePicker from "../DatePicker.vue";
 import CustomerInfo from "./CustomerInfo.vue";
 import { toLocalPresentation, getMonth } from "../../utils/utils";
-import AdminCalendar from "./AdminCalendar.vue";
 
 @Component({
   components: {
@@ -272,6 +271,7 @@ export default class SubscriptionPayment extends Vue {
         this.selectedMonth
       );
       this.paidDeliveries = this.unpaidDeliveries;
+      this.selectedUser.subscription.lastDeliveryDate = await api.lastDelilveryDate(this.selectedUser.email);
     }
   }
 
@@ -333,6 +333,7 @@ export default class SubscriptionPayment extends Vue {
           this.endDate
         );
       });
+      this.updateUnpaidDeliveries();
     }
   }
 

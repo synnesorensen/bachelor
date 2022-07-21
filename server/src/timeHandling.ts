@@ -16,10 +16,7 @@ export async function getDeliveryDates(startDate: Date, weekTimes: WeekTime[], n
 }
 
 export async function getDeliveryDatesQuick(startDate: Date, endDate: Date, weekTimes: WeekTime[]):Promise<DateWithMenuId[]> {
-  console.log(startDate)
-  console.log(endDate)
   const absenceDates = await getVendorAbsence(startDate.toISOString(), endDate.toISOString());
-  console.log(absenceDates)
   const absenceDateStrings = absenceDates.map( (date) => date.toISOString());
 
   let nextDelivery = nextDeliveryDateQuick(startDate, weekTimes, absenceDateStrings);
@@ -27,7 +24,6 @@ export async function getDeliveryDatesQuick(startDate: Date, endDate: Date, week
   let deliveryDates: DateWithMenuId[] = [];
 
   while (nextDelivery.date <= endDate) {
-    console.log("Oioioi", nextDelivery.date)
     deliveryDates.push(nextDelivery);
     nextDelivery = nextDeliveryDateQuick(nextDelivery.date, weekTimes, absenceDateStrings);
   }
@@ -52,7 +48,7 @@ function getDeliveryBeforeMidnight(date: Date, weekTimes: WeekTime[]) {
   while (i < weekTimes.length && lessThanOrEqual(weekTimes[i], weekTime)) {
     i++;
   }
-  if (i < weekTimes.length && weekTimes[i].day === date.getUTCDay()) {
+  if (i < weekTimes.length && weekTimes[i].day === date.getUTCDay()) {    // TODO: Sjekke om det er denne som gjør at om startdate er en leveringsdag så kommer den ikke med
     return weekTimes[i];
   } 
   return null;

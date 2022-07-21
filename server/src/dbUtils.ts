@@ -701,6 +701,7 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
           cancelled: deliveries[i].cancelled,
           deliveryType: deliveries[i].deliveryType,
           paid: deliveries[i].paid,
+          noOfMeals: deliveries[i].noOfMeals,
           approved: deliveries[i].approved,
           GSI1_pk: deliveries[i].deliveryType,
           GSI1_sk: "d#" + deliveries[i].deliverytime,
@@ -1099,6 +1100,7 @@ export async function handleDeliveryRequest(action: boolean, userId: string, tim
     menuId: result.Attributes.menuId,
     cancelled: result.Attributes.cancelled,
     deliveryType: result.Attributes.deliveryType,
+    noOfMeals: result.Attributes.noOfMeals,
     paid: result.Attributes.paid,
     approved: result.Attributes.approved
   }
