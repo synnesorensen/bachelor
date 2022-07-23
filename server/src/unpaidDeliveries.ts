@@ -4,10 +4,9 @@ import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 import { getSubscriptionFromDb, getUsersDeliveries, getVendorFromDb } from './dbUtils';
-import { getDeliveryDatesQuick, noOfDeliveriesInMonth } from './timeHandling';
+import { getDeliveryDatesQuick } from './timeHandling';
 import { scheduleToWeekTimes } from './addDeliveries';
 import { MenuItems } from '../../common/interfaces';
-import { dbenv } from './DbEnvironment';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   let vendorId = getUserInfoFromEvent(event);
@@ -56,7 +55,9 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     const candidatesPromise = getDeliveryDatesQuick(firstDay, lastDay, weekTimes);
 
     const [alreadyPaidFor, candidates] = await Promise.all([alreadyPaidForPromise, candidatesPromise]);
-    const result = candidates.length - alreadyPaidFor.length;
+    const alreadyPaidForAndSub = alreadyPaidFor.filter(del => del.deliveryType === "sub")
+        
+    const result = candidates.length - alreadyPaidForAndSub.length;
   
     return {
       statusCode: 200,

@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-col :xl="8" :lg="8" md="12" sm="12" xs="12">
+      <v-col :xl="8" :lg="6" :md="12" :sm="12" :xs="12">
         <v-sheet>
           <v-spacer></v-spacer>
           <v-toolbar flat>
@@ -15,7 +15,7 @@
             <v-toolbar-title v-if="$refs.calendar">
               {{
                 $refs.calendar.title.charAt(0).toUpperCase() +
-                $refs.calendar.title.slice(1)
+                  $refs.calendar.title.slice(1)
               }}
             </v-toolbar-title>
           </v-toolbar>
@@ -41,8 +41,8 @@
         </v-sheet>
       </v-col>
       <v-col>
-        <CalendarCards 
-          :event.sync="selectedEvent" 
+        <CalendarCards
+          :event.sync="selectedEvent"
           :date.sync="selectedDate"
           @update="populateCalendar"
         />
@@ -60,8 +60,8 @@ import CalendarCards from "./CalendarCards.vue";
 
 @Component({
   components: {
-    CalendarCards
-  }
+    CalendarCards,
+  },
 })
 export default class UserCalendar extends Vue {
   private today = new Date().toISOString().substr(0, 10);
@@ -107,53 +107,75 @@ export default class UserCalendar extends Vue {
 
     if (this.start && this.end) {
       const data = await Promise.all([
-        api.scheduleToDates(vendor.vendorId, this.start.date, this.end.date), 
-        api.getAllUsersDeliveries(this.start.date, this.end.date), 
+        api.scheduleToDates(vendor.vendorId, this.start.date, this.end.date),
+        api.getAllUsersDeliveries(this.start.date, this.end.date),
         api.getAbsence(this.start.date, this.end.date),
-        api.getAway(this.start.date, this.end.date)
+        api.getAway(this.start.date, this.end.date),
       ]);
 
       const vendorDeliveries = data[0];
       const deliveries = data[1];
       const absenceDates = data[2];
-      const awayDates = data[3];
 
       if (deliveries) {
         deliveries.forEach((del) => {
-          if (!(del.deliveryType === "single" && del.cancelled)) {
-          const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
-          const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
+          const delStart = new Date(
+            `${del.deliverytime.substring(0, 10)}T00:00:00`
+          );
+          const delEnd = new Date(
+            `${del.deliverytime.substring(0, 10)}T23:59:59`
+          );
 
           const menu = vendorSchedule.find(({ id }) => id == del.menuId);
           let color = "green";
-          if (new Date(del.deliverytime) < new Date(Date.now()) || (del.deliveryType === "sub" && del.cancelled)) {
-            color = "grey"; 
+          let type = "delivery";
+          if (
+            new Date(del.deliverytime) < new Date(Date.now()) ||
+            (del.deliveryType === "sub" && del.cancelled)
+          ) {
+            color = "grey";
+            type = "cancelled";
           } else if (del.approved === "new") {
             color = "orange";
+            type = "request";
           } else if (del.approved === "denied") {
-            color = "red"
-          } else if (del.deliveryType === "single" && del.approved === "approved") {
-            color = "green"
+            color = "red";
+            type = "denied";
+          } else if (
+            del.deliveryType === "single" &&
+            del.approved === "approved"
+          ) {
+            type= "delivery";
+            color = "green";
           }
 
           events.push({
-            name: del.cancelled ? "Kansellert" : menu!.menu,
+            name: del.cancelled
+              ? "Kansellert"
+              : menu!.menu + " (" + del.noOfMeals + ")",
             start: delStart,
             end: delEnd,
             color,
             delivery: del,
             ordered: true,
-            type: "delivery"
+            type,
           });
-        }});
+        });
       }
 
-      if (vendorDeliveries && this.$store.getters.userprofile.approved === "approved") {
+      if (
+        vendorDeliveries &&
+        this.$store.getters.userprofile.approved === "approved"
+      ) {
         vendorDeliveries.forEach((del) => {
-          const delStart = new Date(`${del.deliverytime.substring(0, 10)}T00:00:00`);
-          const delEnd = new Date(`${del.deliverytime.substring(0, 10)}T23:59:59`);
+          const delStart = new Date(
+            `${del.deliverytime.substring(0, 10)}T00:00:00`
+          );
+          const delEnd = new Date(
+            `${del.deliverytime.substring(0, 10)}T23:59:59`
+          );
           const menu = vendor.schedule.find(({ id }) => id == del.menuId);
-          if (new Date(del.deliverytime) > new Date(Date.now())) {
+          if (!deliveries?.find(({ deliverytime }) => deliverytime == del.deliverytime) && new Date(del.deliverytime) > new Date(Date.now())) {
             events.push({
               name: menu!.menu,
               start: delStart,
@@ -161,13 +183,13 @@ export default class UserCalendar extends Vue {
               color: "amber",
               delivery: del,
               ordered: false,
-              type: "delivery"
-            })
+              type: "vendor",
+            });
           }
         });
       }
       if (absenceDates) {
-        absenceDates.forEach(absence => {
+        absenceDates.forEach((absence) => {
           const start = new Date(absence);
           const end = new Date(absence);
           events.push({
@@ -175,23 +197,11 @@ export default class UserCalendar extends Vue {
             start,
             end,
             color: "blue",
-            type: "absence"
+            type: "absence",
           });
-        })
+        });
       }
-      if (awayDates) {
-        awayDates.forEach(away => {
-          const start = new Date(away);
-          const end = new Date(away);
-          events.push({
-            name: "Fravær kunde",
-            start,
-            end,
-            color: "blue",
-            type: "away"
-          });
-        })
-      }
+
       this.events = events;
     }
     this.showSpinner = false;
@@ -201,7 +211,6 @@ export default class UserCalendar extends Vue {
     this.selectedEvent = event.event;
     this.selectedDate = event.day.date;
   }
-
 }
 </script>
 

@@ -23,11 +23,16 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     };
   }
 
-  let lastDelivery = await findLatestDelivery(vendorId, userId);
+  const lastDelivery = await findLatestDelivery(vendorId, userId);
+  let result = "Ingen";
+  
+  if (lastDelivery?.deliverytime) {
+    result = lastDelivery.deliverytime;
+  }
 
   return {
     statusCode: 200,
-    body: JSON.stringify(lastDelivery.deliverytime)
+    body: JSON.stringify(result)
   };
 }
 

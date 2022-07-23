@@ -30,7 +30,7 @@
         </v-col>
         <v-col>
           <p class="font-weight-light">
-            {{ selectedUser.subscription.lastDeliveryDate ? localPresentation(selectedUser.subscription.lastDeliveryDate) : "Ingen"}}
+            {{ isNaN(selectedUser.subscription.lastDeliveryDate) ? "Ingen" : localPresentation(selectedUser.subscription.lastDeliveryDate)}}
           </p>
         </v-col>
       </v-row>

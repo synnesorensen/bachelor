@@ -513,7 +513,7 @@ export async function getUsersDeliveries(userId: string, startDate: string, endD
       deliveryType: del.deliveryType,
       paid: del.paid,
       approved: del.approved,
-      noOfMeals: del.numberOfMeals
+      noOfMeals: del.noOfMeals
     }
   });
   return deliveries;
@@ -545,7 +545,7 @@ export async function getDeliveryFromDb(vendorId: string, userId: string, time: 
     deliveryType: dbResult.Items[0].deliveryType,
     paid: dbResult.Items[0].paid,
     approved: dbResult.Items[0].approved, 
-    noOfMeals: dbResult.Items[0].numberOfMeals
+    noOfMeals: dbResult.Items[0].noOfMeals
   };
 }
 
