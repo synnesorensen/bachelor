@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row justify="center" dense>
       <v-col :xl="8" :lg="8" :md="10">
         <v-row>
@@ -9,16 +9,17 @@
                 src="..\..\assets\BA.jpg"
                 required
                 gradient="to bottom right, rgba(10,10,10,0.3),rgba(0,0,0,0)"
-                height="700"              >
+                :height="imageHeight()"
+              >
                 <v-col>
                   <v-row
                     style="
                     background-color: rgba(30,30,30,0.1)
                     border-radius: 2px"
                   >
-                    <v-col :xl="8" :lg="8" :md="10">
+                    <v-col cols="11">
                       <v-row class="ml-4">
-                        <p class="mt-8 text-h4 white--text">
+                        <p class="header">
                           Velkommen til Lunsj på Hjuls kundesider
                         </p>
                       </v-row>
@@ -32,45 +33,99 @@
             </v-card>
           </v-col>
         </v-row>
-        <v-row class="my-4">
-          <v-col cols="4">
-            <v-card height="450">
+
+        <v-row justify="center" class="d-flex d-sm-none ma-4">
+          <v-col cols="auto">
+            <v-row class="my-2">
+              <v-btn width="200px" color="white" @click="showLogInBox = true"
+                >Logg inn</v-btn
+              >
+            </v-row>
+            <v-row class="my-2">
+              <v-btn width="200px" color="white" @click="showRegisterBox = true"
+                >Registrer deg</v-btn
+              >
+            </v-row>
+            <v-row class="my-2">
+              <v-btn 
+                href="https://www.stenematglede.com/lunsjpaahjul"
+                width="200px" color="white">Stene matglede</v-btn>
+            </v-row>
+          </v-col>
+        </v-row>
+
+        <v-row class="my-4 d-none d-sm-flex">
+          <v-col cols="4" class="pa-2">
+            <v-card height="350">
               <v-img
                 src="..\..\assets\Kort1.jpg"
                 class="white--text align-end"
-                height="380px"
+                max-height="280px"
                 @click="showLogInBox = true"
                 style="cursor: pointer"
               ></v-img>
-              <v-card-title @click="showLogInBox = true" style="cursor: pointer"
-                >Logg inn</v-card-title
+              <v-card-title
+                @click="showLogInBox = true"
+                style="cursor: pointer"
+                :class="{
+                  caption: $vuetify.breakpoint.smAndDown,
+                  'subtitle-1': $vuetify.breakpoint.md,
+                  'h-6': $vuetify.breakpoint.lgAndUp,
+                }"
               >
+                Logg inn
+                <v-spacer></v-spacer>
+                <v-icon>{{ mdiChevronRight }}</v-icon>
+              </v-card-title>
             </v-card>
           </v-col>
-          <v-col cols="4">
-            <v-card height="450">
+          <v-col cols="4" class="pa-2">
+            <v-card height="350">
               <v-img
                 src="..\..\assets\Kort2.jpg"
                 class="white--text align-end"
-                height="380px"
+                max-height="280px"
                 @click="showRegisterBox = true"
                 style="cursor: pointer"
               ></v-img>
               <v-card-title
                 @click="showRegisterBox = true"
-                style="cursor: pointer"
-                >Registrer deg</v-card-title
+                style="cursor: pointer;"
+                :class="{
+                  caption: $vuetify.breakpoint.smAndDown,
+                  'subtitle-1': $vuetify.breakpoint.md,
+                  'h-6': $vuetify.breakpoint.lgAndUp,
+                }"
               >
+                Registrer deg
+                <v-spacer></v-spacer>
+                <v-icon>{{ mdiChevronRight }}</v-icon>
+              </v-card-title>
             </v-card>
           </v-col>
-          <v-col cols="4">
-            <v-card height="450">
+          <v-col cols="4" class="pa-2">
+            <v-card 
+              href="https://www.stenematglede.com/lunsjpaahjul" 
+              height="350"
+            >
               <v-img
                 src="..\..\assets\tilbake.jpeg"
                 class="white--text align-end"
-                height="380px"
+                max-height="280px"
+                style="cursor: pointer"
               ></v-img>
-              <v-card-title>Tilbake til stenematglede.com</v-card-title>
+              <v-card-title
+                style="cursor: pointer"
+                :class="{
+                  caption: $vuetify.breakpoint.smAndDown,
+                  'subtitle-1': $vuetify.breakpoint.md,
+                  'h-6': $vuetify.breakpoint.lgAndUp,
+                }"
+              >
+                Stene matglede
+                <v-spacer></v-spacer>
+                <v-icon>{{ mdiChevronRight }}</v-icon>
+              </v-card-title>
             </v-card>
           </v-col>
         </v-row>
@@ -112,7 +167,7 @@ import Component from "vue-class-component";
 import LoginDialog from "../components/LoginDialog/LoginDialog.vue";
 import RegisterDialog from "../components/LoginDialog/RegisterDialog.vue";
 import Information from "../components/Users/Information.vue";
-import { mdiChevronDown, mdiChevronUp } from "@mdi/js";
+import { mdiChevronDown, mdiChevronUp, mdiChevronRight } from "@mdi/js";
 
 @Component({
   components: {
@@ -127,6 +182,7 @@ export default class Welcome extends Vue {
   private showFaq = false;
   private mdiChevronDown = mdiChevronDown;
   private mdiChevronUp = mdiChevronUp;
+  private mdiChevronRight = mdiChevronRight;
 
   loggedIn(jwt: string) {
     const self = this;
@@ -148,11 +204,52 @@ export default class Welcome extends Vue {
   atChevronClick() {
     this.showFaq = !this.showFaq;
   }
+
+  imageHeight() {
+    switch (this.$vuetify.breakpoint.name) {
+      case "xs":
+        return "200px";
+      case "sm":
+        return "300px";
+      case "md":
+        return "400px";
+      case "lg":
+        return "400px";
+      case "xl":
+        return "500px";
+    }
+  }
 }
 </script>
 
-<style scoped>
+<style scoped lang="css">
 .icon {
   cursor: pointer;
+}
+
+.header {
+  margin-top: 8px;
+  color: white;
+}
+
+@media screen and (min-width: 600px) {
+  .header {
+    font-size: 24px;
+  }
+}
+@media screen and (min-width: 960px) {
+  .header {
+    font-size: 36px;
+  }
+}
+@media screen and (min-width: 1264px) {
+  .header {
+    font-size: 42px;
+  }
+}
+@media screen and (min-width: 1904px) {
+  .header {
+    font-size: 48px;
+  }
 }
 </style>
