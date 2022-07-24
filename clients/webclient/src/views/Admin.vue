@@ -3,7 +3,7 @@
     class="overflow-hidden"
     v-if="$store.getters.userprofile && $store.getters.userprofile.isVendor"
   >
-    <v-app-bar app dark src="..\..\assets\smorblomst_crop1.jpg">
+    <v-app-bar app dark src="../assets/smorblomst_crop1.jpg">
       <v-app-bar-nav-icon
         @click="drawer = true"
         class="d-flex d-sm-none"

@@ -6,7 +6,7 @@
           <v-col cols="12">
             <v-card>
               <v-img
-                src="..\..\assets\BA.jpg"
+                src="../assets/BA.jpg"
                 required
                 gradient="to bottom right, rgba(10,10,10,0.3),rgba(0,0,0,0)"
                 :height="imageHeight()"
@@ -58,7 +58,7 @@
           <v-col cols="4" class="pa-2">
             <v-card height="350">
               <v-img
-                src="..\..\assets\Kort1.jpg"
+                src="../assets/Kort1.jpg"
                 class="white--text align-end"
                 max-height="280px"
                 @click="showLogInBox = true"
@@ -82,7 +82,7 @@
           <v-col cols="4" class="pa-2">
             <v-card height="350">
               <v-img
-                src="..\..\assets\Kort2.jpg"
+                src="../assets/Kort2.jpg"
                 class="white--text align-end"
                 max-height="280px"
                 @click="showRegisterBox = true"
@@ -109,7 +109,7 @@
               height="350"
             >
               <v-img
-                src="..\..\assets\tilbake.jpeg"
+                src="../assets/tilbake.jpeg"
                 class="white--text align-end"
                 max-height="280px"
                 style="cursor: pointer"
