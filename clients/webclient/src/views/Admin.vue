@@ -86,9 +86,6 @@
       <router-view></router-view>
     </v-main>
   </v-container>
-  <v-container v-else>
-    <h1>Forbudt</h1>
-  </v-container>
 </template>
 
 <script lang="ts">

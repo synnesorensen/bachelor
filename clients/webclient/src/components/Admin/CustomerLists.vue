@@ -79,7 +79,7 @@ export default class CustomerLists extends Vue {
           days: user.subscription.schedule
             .map((schedule: MenuItems) => schedule.day)
             .join(", "),
-          allergies: user.allergies.join(", "),
+          allergiesInTable: user.allergies.join(", "),
           pausedString: user.subscription.paused ? "Pauset" : "Aktiv",
         };
       }
@@ -94,7 +94,7 @@ export default class CustomerLists extends Vue {
       return {
         ...user,
         oldUser: user,
-        allergies: user.allergies.join(", "),
+        allergiesInTable: user.allergies.join(", "),
       };
     });
   }
@@ -107,7 +107,7 @@ export default class CustomerLists extends Vue {
       return {
         ...user,
         oldUser: user,
-        allergies: user.allergies.join(", "),
+        allergiesInTable: user.allergies.join(", "),
         days: user.subscription?.schedule
           .map((schedule: MenuItems) => schedule.day)
           .join(", ")
@@ -123,7 +123,7 @@ export default class CustomerLists extends Vue {
       return {
         ...user,
         oldUser: user,
-        allergies: user.allergies.join(", "),
+        allergiesInTable: user.allergies.join(", "),
         days: user.subscription?.schedule
           .map((schedule: MenuItems) => schedule.day)
           .join(", ")};
@@ -140,7 +140,7 @@ export default class CustomerLists extends Vue {
     { text: "Status", value: "pausedString", sortable: true },
     { text: "Adresse", value: "address" },
     { text: "Antall", value: "subscription.noOfMeals" },
-    { text: "Allergier", value: "allergies" },
+    { text: "Allergier", value: "allergiesInTable" },
     { text: "Leveringsdager", value: "days" },
     { text: "", value: "controls", sortable: false },
   ];
@@ -152,7 +152,7 @@ export default class CustomerLists extends Vue {
       value: "fullname",
     },
     { text: "Adresse", value: "address" },
-    { text: "Allergier", value: "allergies" },
+    { text: "Allergier", value: "allergiesInTable" },
     { text: "Leveringsdager", value: "days" },
     { text: "", value: "controls", sortable: false },
   ];
@@ -164,15 +164,8 @@ export default class CustomerLists extends Vue {
       value: "fullname",
     },
     { text: "Adresse", value: "address" },
-    { text: "Allergier", value: "allergies" },
+    { text: "Allergier", value: "allergiesInTable" },
   ];
-
-  // deliveryDays(item: UserSubscription) {
-  //   const days = item.schedule.map((menuItem) => {
-  //     return menuItem.day;
-  //   });
-  //   return days.join(", ");
-  // }
 
 }
 </script>

@@ -5,33 +5,38 @@
         <v-app-bar>
           <v-card-title>Kundeinformasjon</v-card-title><br />
           <v-spacer></v-spacer>
+          <v-btn icon @click="editProfile = true">
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
           <v-btn icon @click="dialog = false">
             <v-icon> mdi-close </v-icon>
           </v-btn>
         </v-app-bar>
         <br />
-        <v-card-text>
-          <CustomerInfo :selectedUser="selected" />
-          <br />
+        <v-card-text class="pb-0">
+          <CustomerInfo :selectedUser="selected" :editProfile="editProfile" />
+          <v-row>
+            <v-btn
+              v-if="selected && selected.subscription && !editProfile"
+              text
+              color="orange"
+              @click="toggleSubscriptionPause()"
+              class="mb-2"
+            >
+              {{ buttonText }}
+            </v-btn>
+          </v-row>
           <v-textarea
             outlined
             label="Legg til notat"
             v-model="selected.note"
           ></v-textarea>
-          <v-row class="justify-center">
-            <v-btn
-              v-if="selected && selected.subscription"
-              text
-              color="orange"
-              @click="toggleSubscriptionPause()"
-            >
-              {{ buttonText }}
-            </v-btn>
-          </v-row>
         </v-card-text>
         <v-card-actions class="justify-center">
-          <v-btn text color="green" @click="approve(selected)">Godkjenn</v-btn>
-          <v-btn text color="red" @click="decline(selected)">Avvis</v-btn>
+          <v-btn v-if="!editProfile" text color="green" @click="approve(selected)">Godkjenn</v-btn>
+          <v-btn v-if="!editProfile" text color="red" @click="decline(selected)">Avvis</v-btn>
+          <v-btn v-if="editProfile" text color="primary" @click="update(selected)">Lagre</v-btn>
+          <v-btn v-if="editProfile" text color="error" @click="editProfile = false">Avbryt</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -56,7 +61,10 @@
         item-key="userId"
         class="row-pointer"
       >
-        <template v-if="localUsers.length > 0 && localUsers[0].approved === 'new'" v-slot:[`item.controls`]="props">
+        <template
+          v-if="localUsers.length > 0 && localUsers[0].approved === 'new'"
+          v-slot:[`item.controls`]="props"
+        >
           <v-btn icon color="green" @click.stop="approve(props.item)">
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
@@ -111,6 +119,7 @@ export default class CustomerList extends Vue {
   private mdiCloseCircleOutline = mdiCloseCircleOutline;
   private dialog = false;
   private search = "";
+  private editProfile = false;
 
   @Watch("users")
   usersChanged() {
@@ -125,6 +134,16 @@ export default class CustomerList extends Vue {
   @Watch("title")
   titleChanged() {
     this.localTitle = this.title;
+  }
+
+  async update(item: any) {
+    try {
+      await api.putUserprofile(item);
+      this.editProfile = false;
+    } catch (err) {
+      alert("Noe gikk galt, prøv igjen senere.");
+      console.log(err);
+    }
   }
 
   async approve(item: any) {
@@ -156,6 +175,7 @@ export default class CustomerList extends Vue {
   }
 
   handleClickedUser(user: UserDto) {
+    console.log(user)
     this.selected = user;
     this.dialog = true;
   }

@@ -39,9 +39,8 @@ async function getUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 }
 
 async function putUserprofile(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-  let userId = getUserInfoFromEvent(event);
   let body = JSON.parse(event.body);
-  let userprofile = await putUserprofileInDb(body, userId, false);
+  let userprofile = await putUserprofileInDb(body, body.email, false);
 
   return {
     statusCode: 200,

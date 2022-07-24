@@ -550,6 +550,7 @@ export default class CustomerProfile extends Vue {
 
   async mounted() {
     this.status = this.userStatus();
+    console.log(this.$store.getters.userprofile)
     this.selectedAllergies = this.$store.getters.userprofile.allergies;
     if (this.$store.getters.subscription) {
       this.selectedNoOfMeals = this.$store.getters.subscription.noOfMeals;
