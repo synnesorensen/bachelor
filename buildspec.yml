@@ -23,7 +23,6 @@ phases:
       - cd ..
       - cd server
       - npx sls deploy
-      - npx sls s3sync
   post_build:
     commands:
       - echo Build completed on `date`

@@ -36,7 +36,7 @@ custom:
     payload: '1.0'
 
   s3Sync:
-    - bucketName: testbucketforbachelor2021
+    - bucketName: ${env:BUCKETNAME}
       localDir: ../clients/webclient/dist
       deleteRemoved: true
       acl: public-read
