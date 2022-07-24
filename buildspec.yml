@@ -7,14 +7,17 @@ phases:
       - cd server
       - npm install
       - cd ..
-      - cd clients/webclient
+      - cd clients
+      - cd webclient
       - npm install
+      - cd ..
       - cd ..
   build:
     commands:
       - echo Build started on `date`
       - echo Compiling the dist folder
-      - cd clients/webclient
+      - cd clients
+      - cd webclient
       - npm run build
       - cd ..
       - cd ..
