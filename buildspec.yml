@@ -6,7 +6,8 @@ phases:
       - echo Installing source NPM dependencies...
       - cd server
       - npm install
-      - cd ../clients/webclient
+      - cd ..
+      - cd clients/webclient
       - npm install
       - cd ..
   build:
@@ -15,7 +16,9 @@ phases:
       - echo Compiling the dist folder
       - cd clients/webclient
       - npm run build
-      - cd ../../server
+      - cd ..
+      - cd ..
+      - cd server
       - npx sls deploy
       - npx sls s3sync
   post_build:
