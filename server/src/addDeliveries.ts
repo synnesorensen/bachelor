@@ -16,6 +16,7 @@ export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, 
 
   let weekTimes:WeekTime[] = scheduleToWeekTimes(subSchedule);
 
+  // TODO: Endre til quick
   let deliveryDates = await getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries, env);
   const deliveryType: "sub" | "single" = "sub";
   return deliveryDates.map((date) => {
