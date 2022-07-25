@@ -3,29 +3,59 @@
     <v-row justify="center" dense>
       <v-col :xl="8" :lg="8" :md="10">
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12" class="pa-0">
             <v-card>
               <v-img
-                src="../assets/BA.jpg"
+                src="../assets/egg.jpg"
                 required
                 gradient="to bottom right, rgba(10,10,10,0.3),rgba(0,0,0,0)"
                 :height="imageHeight()"
               >
                 <v-col>
                   <v-row
+                    height
                     style="
-                    background-color: rgba(30,30,30,0.1)
-                    border-radius: 2px"
+                      background-color: rgba(30,30,30,0.4)
+                      border-radius: 2px"
                   >
-                    <v-col cols="11">
+                    <v-col cols="12">
                       <v-row class="ml-4">
                         <p class="header">
-                          Velkommen til Lunsj på Hjuls kundesider
+                          LUNSJ PÅ HJUL KUNDEPORTAL
                         </p>
+                        <v-spacer class="d-none d-sm-flex"></v-spacer>
+                        <v-item-group class="d-none d-sm-flex ma-4">
+                          <v-btn
+                            @click="showRegisterBox = true"
+                            text
+                            color="white"
+                            >Registrer</v-btn
+                          >
+                          <v-btn @click="showLogInBox = true" color="white"
+                            >Logg inn</v-btn
+                          >
+                        </v-item-group>
                       </v-row>
                     </v-col>
-                    <v-col>
-                      <v-row class="justify-end mt-4 mr-4"> </v-row>
+                  </v-row>
+                  <v-row class="d-flex d-sm-none justify-end mt-16 pr-6">
+                    <v-col cols="3">
+                      <!-- MOBILE -->
+                      <v-item-group>
+                        <v-btn
+                          x-small
+                          @click="showRegisterBox = true"
+                          text
+                          color="white"
+                          >Registrer</v-btn
+                        >
+                        <v-btn
+                          x-small
+                          @click="showLogInBox = true"
+                          color="white"
+                          >Logg inn</v-btn
+                        >
+                      </v-item-group>
                     </v-col>
                   </v-row>
                 </v-col>
@@ -34,116 +64,84 @@
           </v-col>
         </v-row>
 
-        <v-row justify="center" class="d-flex d-sm-none ma-4">
-          <v-col cols="auto">
-            <v-row class="my-2">
-              <v-btn width="200px" color="white" @click="showLogInBox = true"
-                >Logg inn</v-btn
-              >
-            </v-row>
-            <v-row class="my-2">
-              <v-btn width="200px" color="white" @click="showRegisterBox = true"
-                >Registrer deg</v-btn
-              >
-            </v-row>
-            <v-row class="my-2">
-              <v-btn 
-                href="https://www.stenematglede.com/lunsjpaahjul"
-                width="200px" color="white">Stene matglede</v-btn>
-            </v-row>
-          </v-col>
-        </v-row>
-
         <v-row class="my-4 d-none d-sm-flex">
           <v-col cols="4" class="pa-2">
             <v-card height="350">
               <v-img
-                src="../assets/Kort1.jpg"
+                src="../assets/graut2.jpg"
                 class="white--text align-end"
                 max-height="280px"
-                @click="showLogInBox = true"
-                style="cursor: pointer"
               ></v-img>
               <v-card-title
-                @click="showLogInBox = true"
-                style="cursor: pointer"
                 :class="{
                   caption: $vuetify.breakpoint.smAndDown,
                   'subtitle-1': $vuetify.breakpoint.md,
                   'h-6': $vuetify.breakpoint.lgAndUp,
                 }"
               >
-                Logg inn
                 <v-spacer></v-spacer>
-                <v-icon>{{ mdiChevronRight }}</v-icon>
+                <p>GRAUTATYSDAG</p>
+                <v-spacer></v-spacer>
               </v-card-title>
             </v-card>
           </v-col>
           <v-col cols="4" class="pa-2">
             <v-card height="350">
               <v-img
-                src="../assets/Kort2.jpg"
+                src="../assets/salat2.jpg"
                 class="white--text align-end"
                 max-height="280px"
-                @click="showRegisterBox = true"
-                style="cursor: pointer"
               ></v-img>
               <v-card-title
-                @click="showRegisterBox = true"
-                style="cursor: pointer;"
                 :class="{
                   caption: $vuetify.breakpoint.smAndDown,
                   'subtitle-1': $vuetify.breakpoint.md,
                   'h-6': $vuetify.breakpoint.lgAndUp,
                 }"
               >
-                Registrer deg
                 <v-spacer></v-spacer>
-                <v-icon>{{ mdiChevronRight }}</v-icon>
+                <p>ONSDAGSSALATEN</p>
+                <v-spacer></v-spacer>
               </v-card-title>
             </v-card>
           </v-col>
           <v-col cols="4" class="pa-2">
-            <v-card 
-              href="https://www.stenematglede.com/lunsjpaahjul" 
-              height="350"
-            >
+            <v-card height="350">
               <v-img
-                src="../assets/tilbake.jpeg"
+                src="../assets/fisk2.jpg"
                 class="white--text align-end"
                 max-height="280px"
-                style="cursor: pointer"
               ></v-img>
               <v-card-title
-                style="cursor: pointer"
                 :class="{
                   caption: $vuetify.breakpoint.smAndDown,
                   'subtitle-1': $vuetify.breakpoint.md,
                   'h-6': $vuetify.breakpoint.lgAndUp,
                 }"
               >
-                Stene matglede
                 <v-spacer></v-spacer>
-                <v-icon>{{ mdiChevronRight }}</v-icon>
+                <p>PÅKEBÅOL TORSDAG</p>
+                <v-spacer></v-spacer>
               </v-card-title>
             </v-card>
           </v-col>
         </v-row>
-        <v-row align="center" justify="center">
+        <v-row align="center" justify="center" class="d-none d-sm-flex">
           <p class="ma-0" v-if="!showFaq">Vis informasjon</p>
           <p class="ma-0" v-else>Lukk informasjon</p>
         </v-row>
-        <v-row class="ma-0 justify-center">
-          <v-col cols="1">
-            <v-icon v-if="!showFaq" x-large @click="atChevronClick">
-              {{ mdiChevronDown }}
-            </v-icon>
-            <v-icon v-else x-large @click="atChevronClick">
-              {{ mdiChevronUp }}
-            </v-icon>
-          </v-col>
+        <v-row align="center" justify="center" class="ma-0 d-none d-sm-flex">
+          <v-icon v-if="!showFaq" x-large @click="atChevronClick">
+            {{ mdiChevronDown }}
+          </v-icon>
+          <v-icon v-else x-large @click="atChevronClick">
+            {{ mdiChevronUp }}
+          </v-icon>
         </v-row>
         <v-row v-if="showFaq">
+          <Information />
+        </v-row>
+        <v-row class="d-flex d-sm-none">
           <Information />
         </v-row>
         <LoginDialog
@@ -228,6 +226,8 @@ export default class Welcome extends Vue {
 }
 
 .header {
+  font-family: "Open Sans";
+  font-weight: 500;
   margin-top: 8px;
   color: white;
 }
