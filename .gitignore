@@ -8,3 +8,4 @@ common/settings.ts
 node_modules/@types
 server/.build
 set_env.bat
+server/.env.SS.local

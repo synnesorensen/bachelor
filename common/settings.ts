@@ -1,5 +1,5 @@
-//export const urlPrefix = "http://localhost:3000/dev";
-export const urlPrefix = "https://api.lunsjpahjul.no/dev";
+export const urlPrefix = "http://localhost:3000/dev";
+//export const urlPrefix = "https://api.lunsjpahjul.no/dev";
 
 export const TABLENAME = process.env.TABLENAME;
 export const REGION = "eu-north-1";
