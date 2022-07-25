@@ -1,9 +1,7 @@
 <template>
   <v-card>
     <v-app-bar>
-      <v-card-title
-        >Leveringer for {{ localPresentation(date) }}</v-card-title
-      >
+      <v-card-title>Leveringer for {{ localPresentation(date) }}</v-card-title>
       <v-spacer></v-spacer>
       <v-btn icon @click="close">
         <v-icon> mdi-close </v-icon>
@@ -17,31 +15,35 @@
           :headers="headers"
           :items="deliveryDetails"
           class="elevation-1"
+          mobile-breakpoint="600"
         >
           <template v-slot:item="{ item }">
             <tr :key="item.userId">
-              <td class="handle">
+              <td class="handle" >
                 <v-btn icon><v-icon small>mdi-cursor-move</v-icon></v-btn>
               </td>
-              <td>{{ item.fullname }}</td>
-              <td>{{ item.address }}</td>
-              <td>{{ item.phone }}</td>
-              <td>{{ item.box }}</td>
-              <td>{{ item.noOfMeals }}</td>
-              <td>{{ item.allergies.toString() }}</td>
-              <td>{{ item.cancelled ? "Ja" : "Nei" }}</td>
+              <td class="d-block d-sm-table-cell">{{ item.fullname }}</td>
+              <td class="d-block d-sm-table-cell">{{ item.address }}</td>
+              <td class="d-block d-sm-table-cell">{{ item.phone }}</td>
+              <td class="d-block d-sm-table-cell">{{ item.box }}</td>
+              <td class="d-block d-sm-table-cell">{{ item.noOfMeals }}</td>
+              <td class="d-block d-sm-table-cell">{{ item.allergies.toString() }}</td>
+              <td class="d-block d-sm-table-cell">{{ item.cancelled ? "Ja" : "Nei" }}</td>
             </tr>
           </template>
         </v-data-table>
       </v-row>
       <v-row justify="center">
         <v-card-actions class="justify-center">
-          <v-btn color="error" @click="cancelDialog = true">Kanseller alle</v-btn>
+          <v-btn color="error" @click="cancelDialog = true"
+            >Kanseller alle</v-btn
+          >
           <v-dialog v-model="cancelDialog" persistent max-width="300">
             <v-card>
               <v-card-title class="headline">Kansellering</v-card-title>
               <v-card-text>
-                Er du sikker på at du vil kansellere alle leveranser denne dagen?
+                Er du sikker på at du vil kansellere alle leveranser denne
+                dagen?
               </v-card-text>
               <v-card-actions>
                 <v-btn color="success" @click="cancelDeliveries">
@@ -159,7 +161,7 @@ export default class Deliveries extends Vue {
 }
 </script>
 
-<style scoped>
+<style scoped lang="css">
 .handle {
   cursor: move !important;
   cursor: -webkit-grabbing !important;
