@@ -1,5 +1,4 @@
-export const urlPrefix = "http://localhost:3000/dev";
-//export const urlPrefix = "https://api.lunsjpahjul.no/dev";
+export const urlPrefix = process.env.VUE_APP_URL_PREFIX;
 
 export const TABLENAME = process.env.TABLENAME;
 export const REGION = "eu-north-1";
