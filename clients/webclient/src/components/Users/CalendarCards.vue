@@ -79,9 +79,7 @@
             v-else-if="selectedEvent && selectedEvent.type === 'cancelled'"
           >
             Denne leveransen er kansellert. Dersom du har kansellert en
-            leveranse og angrer, kan du trykke på Angre-knappen under. En
-            forespørsel vil bli sendt til Lunsj på Hjul om å endre
-            kanselleringen og du får svar på forespørselen på e-post.
+            leveranse og angrer, må du sende en mail til Lunsj på Hjul for å rette opp i det.
           </v-card-text>
           <v-card-actions>
             <v-tooltip :disabled="cancelable" bottom>

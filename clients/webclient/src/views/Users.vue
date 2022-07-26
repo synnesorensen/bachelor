@@ -82,7 +82,7 @@ export default class AppBar extends Vue {
       route: "/user/profile",
     },
     {
-      title: "Faktura",
+      title: "Ordrehistorikk",
       route: "/user/orderHistory",
     },
     {

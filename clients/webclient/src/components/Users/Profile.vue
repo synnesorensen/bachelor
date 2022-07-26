@@ -3,11 +3,11 @@
     <v-row>
       <v-col>
         <v-card>
-          <v-app-bar dark color="#79b321">
+          <v-app-bar color="#fffd67">
             <v-card-title> Kundeprofil </v-card-title>
             <v-spacer></v-spacer>
-            <v-btn icon @click="editProfile">
-              <v-icon>mdi-pencil</v-icon>
+            <v-btn color="white" @click="editProfile">
+              <v-icon color="grey">mdi-pencil</v-icon> Endre
             </v-btn>
           </v-app-bar>
           <v-form v-model="isFormValid">
@@ -55,6 +55,7 @@
                     {{ $store.getters.userprofile.deliveryAddress }}
                   </p>
                 </v-col>
+                  <p v-if="editModeProfile" class="font-weight-medium pl-2">Dersom du vil endre leveringsadresse må du sende en mail til Lunsj på Hjul</p>
               </v-row>
               <v-row>
                 <v-col :xl="4">
@@ -168,17 +169,17 @@
       </v-col>
       <v-col>
         <v-card v-if="$store.getters.userprofile.approved !== 'denied'">
-          <v-app-bar dark color="#79b321">
+          <v-app-bar color="#fffd67">
             <v-card-title> Abonnement </v-card-title>
             <v-spacer></v-spacer>
-            <v-btn icon @click="editSub">
-              <v-icon>mdi-pencil</v-icon>
+            <v-btn color="white" @click="editSub">
+              <v-icon color="grey">mdi-pencil</v-icon> Endre
             </v-btn>
           </v-app-bar>
           <v-card-text
             v-if="
               $store.getters.subscription &&
-              this.$store.getters.userprofile.approved !== 'new'
+                this.$store.getters.userprofile.approved !== 'new'
             "
           >
             <v-row class="mt-2">
@@ -260,7 +261,7 @@
             <v-row>
               <v-col>
                 <p class="font-weight-medium">
-                  Betalt til og med: 
+                  Betalt til og med:
                 </p>
               </v-col>
               <v-col v-if="$store.getters.subscription">
@@ -293,7 +294,7 @@
           <v-card-text
             v-if="
               $store.getters.subscription &&
-              this.$store.getters.userprofile.approved === 'new'
+                this.$store.getters.userprofile.approved === 'new'
             "
           >
             <v-row>
@@ -312,7 +313,7 @@
           <v-card-actions
             v-if="
               $store.getters.subscription &&
-              this.$store.getters.userprofile.approved === 'approved'
+                this.$store.getters.userprofile.approved === 'approved'
             "
           >
             <v-col>
@@ -552,11 +553,6 @@ export default class CustomerProfile extends Vue {
   async mounted() {
     this.status = this.userStatus();
     this.selectedAllergies = this.$store.getters.userprofile.allergies;
-    if (this.$store.getters.subscription) {
-      this.selectedNoOfMeals = this.$store.getters.subscription.noOfMeals;
-      this.selectedBox = this.$store.getters.subscription.box;
-      this.selectedSchedule = this.$store.getters.subscription.schedule;
-    }
     this.items = this.$store.getters.vendor.schedule;
   }
 
@@ -577,7 +573,10 @@ export default class CustomerProfile extends Vue {
         action: this.$store.getters.subscription.paused ? "unpause" : "pause",
       };
       this.updateTxt = "Oppdaterer...";
-      const updatedSub = await api.postSubscription(this.$store.getters.vendor.vendorId, action);
+      const updatedSub = await api.postSubscription(
+        this.$store.getters.vendor.vendorId,
+        action
+      );
       this.$store.commit("setSubscription", updatedSub);
       this.updateTxt = "";
     }
@@ -612,6 +611,11 @@ export default class CustomerProfile extends Vue {
 
   editSub() {
     this.editModeSub = true;
+    if (this.$store.getters.subscription) {
+      this.selectedNoOfMeals = this.$store.getters.subscription.noOfMeals;
+      this.selectedBox = this.$store.getters.subscription.box;
+      this.selectedSchedule = this.$store.getters.subscription.schedule;
+    }
   }
 
   async updateUserProfile() {

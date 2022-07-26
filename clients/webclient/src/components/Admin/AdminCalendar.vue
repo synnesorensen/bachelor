@@ -91,7 +91,7 @@
           <v-row>
             <p style="color: red">{{ errorMsg }}</p>
           </v-row>
-          <v-card-action>
+          <v-card-actions>
             <v-row justify="center">
               <v-col cols="auto">
                 <v-btn
@@ -103,7 +103,7 @@
                 >
               </v-col>
             </v-row>
-          </v-card-action>
+          </v-card-actions>
         </v-card-text>
       </v-card>
     </v-dialog>

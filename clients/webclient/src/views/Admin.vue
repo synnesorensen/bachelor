@@ -48,7 +48,7 @@
             </template>
             <v-list>
               <v-list-item to="/admin/new-customers">
-                <v-list-item-title>Nye kunder</v-list-item-title>
+                <v-list-item-title>Til godkjenning</v-list-item-title>
               </v-list-item>
               <v-list-item to="/admin/sub-customers">
                 <v-list-item-title>Kunder med abo</v-list-item-title>
@@ -64,7 +64,9 @@
         </v-tabs>
       </template>
       <v-spacer />
-      <v-icon large @click="logout">mdi-logout</v-icon>
+      <v-btn class="d-none d-sm-flex" color="amber" @click="logout">
+        Logg ut
+      </v-btn>
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" absolute temporary>
       <v-list nav dense>
