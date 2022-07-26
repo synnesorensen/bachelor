@@ -534,6 +534,7 @@ export default class CustomerProfile extends Vue {
   private goToReg = false;
   private deleteDialog = false;
   private items: any[] = [];
+  private updateTxt = "";
 
   userStatus(): string {
     switch (this.$store.getters.userprofile.approved) {
@@ -550,7 +551,6 @@ export default class CustomerProfile extends Vue {
 
   async mounted() {
     this.status = this.userStatus();
-    console.log(this.$store.getters.userprofile)
     this.selectedAllergies = this.$store.getters.userprofile.allergies;
     if (this.$store.getters.subscription) {
       this.selectedNoOfMeals = this.$store.getters.subscription.noOfMeals;
@@ -562,31 +562,31 @@ export default class CustomerProfile extends Vue {
 
   async toggleSubscriptionPause() {
     this.dialog = false;
-    if (this.$store.getters.subscription) {
-      let sub = await api.getUserSubscription(
-        this.$store.getters.subscription.vendorId
-      );
-      if (sub) {
-        this.$store.getters.subscription.paused =
-          !this.$store.getters.subscription.paused;
-        sub.paused = this.$store.getters.subscription.paused;
-        let time = new Date(Date.now());
-        if (time.getHours() < 10) {
-          time.setDate(time.getDate() + 1);
-        } else {
-          time.setDate(time.getDate() + 2);
-        }
-        let action: SubscriptionAction = {
-          time: time.toISOString().substr(0, 10),
-          action: sub.paused ? "pause" : "unpause",
-        };
-        await api.postSubscription(sub.vendorId, action);
-        this.$store.getters.subscription.paused = sub.paused;
+    if (!this.$store.getters.subscription) {
+      alert("Du har ikke noe abonnement...");
+    } else {
+      let time = new Date(Date.now());
+      if (time.getHours() < 10) {
+        time.setDate(time.getDate() + 1);
+      } else {
+        time.setDate(time.getDate() + 2);
       }
+
+      let action: SubscriptionAction = {
+        time: time.toISOString().substr(0, 10),
+        action: this.$store.getters.subscription.paused ? "unpause" : "pause",
+      };
+      this.updateTxt = "Oppdaterer...";
+      const updatedSub = await api.postSubscription(this.$store.getters.vendor.vendorId, action);
+      this.$store.commit("setSubscription", updatedSub);
+      this.updateTxt = "";
     }
   }
 
   get buttonText() {
+    if (this.updateTxt !== "") {
+      return this.updateTxt;
+    }
     if (this.$store.getters.subscription?.paused) {
       return "Aktiver abonnement";
     }
