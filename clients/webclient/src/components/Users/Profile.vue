@@ -219,7 +219,7 @@
             </v-row>
             <v-row>
               <v-col>
-                <p class="font-weight-medium">Leveringsdag</p>
+                <p class="font-weight-medium">Valgte leveringer</p>
               </v-col>
               <v-col v-if="editModeSub" class="d-flex" cols="12" sm="6">
                 <v-list flat>
@@ -260,7 +260,7 @@
             <v-row>
               <v-col>
                 <p class="font-weight-medium">
-                  Siste levering i denne perioden:
+                  Betalt til og med: 
                 </p>
               </v-col>
               <v-col v-if="$store.getters.subscription">

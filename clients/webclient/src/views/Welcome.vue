@@ -131,10 +131,10 @@
           <p class="ma-0" v-else>Lukk informasjon</p>
         </v-row>
         <v-row align="center" justify="center" class="ma-0 d-none d-sm-flex">
-          <v-icon v-if="!showFaq" x-large @click="atChevronClick">
+          <v-icon v-if="!showFaq" x-large @click="atChevronClick" class="icon">
             {{ mdiChevronDown }}
           </v-icon>
-          <v-icon v-else x-large @click="atChevronClick">
+          <v-icon v-else x-large @click="atChevronClick" class="icon">
             {{ mdiChevronUp }}
           </v-icon>
         </v-row>

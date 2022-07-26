@@ -33,6 +33,7 @@
         label="Fyll inn kode fra epost"
         required
         v-model="code"
+        :rules="[check3]"
         @keyup.enter="verifyCode"
       >
       </v-text-field>
@@ -74,7 +75,6 @@ export default class TabRegister extends Vue {
   private Auth = getAuth();
 
   // Rules:
-
   checkPassword(pass1: string) {
     return pass1.length >= 8 || "Passord må være minst 8 bokstaver";
   }
@@ -88,6 +88,10 @@ export default class TabRegister extends Vue {
 
   check2() {
     return this.code == "";
+  }
+
+  check3() {
+    return this.code.length === 6 || "Legg inn 6-sifret kode fra epost";
   }
 
   async register() {

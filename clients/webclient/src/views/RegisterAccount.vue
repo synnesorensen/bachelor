@@ -1,15 +1,18 @@
 <template>
   <v-container>
+    <v-row justify="center">
+      <v-col cols="4">
+        <v-img src="../assets/LPH.png" required />
+      </v-col>
+    </v-row>
     <v-form v-model="isFormValid">
-      <v-row>
-        <v-col>
-          <h1>Kunderegistrering</h1>
-          <p class="font-weight-light">
-            En forespørsel vil bli sendt til Lunsj på Hjul. 
-            Når denne er blitt godkjent, kan du opprette et abonnement eller kjøpe enkle lunsjleveringer.
-          </p>
-          <p class="font-weight-light">
-            NB! Hugs å sjekke søppelposten dei nærmaste dagane, svar på forespørsel kan havne der.   
+      <v-row no-gutters>
+        <v-col cols="8">
+          <h2>Kunderegistrering</h2>
+          <p class="font-weight-light mb-0">
+            En forespørsel vil bli sendt til Lunsj på Hjul. Etter
+            godkjenning, kan du opprette et abonnement eller kjøpe enkle
+            lunsjleveringer.
           </p>
         </v-col>
       </v-row>
@@ -128,7 +131,10 @@
       </v-row>
       <v-row dense>
         <v-col :xl="6" :lg="6">
-          <p class="font-weight-medium">Eventuelle merknader, som feks ønsket startdato eller leveringsinformasjon:</p>
+          <p class="font-weight-medium mb-0">
+            Eventuelle merknader, som feks ønsket startdato eller
+            leveringsinformasjon:
+          </p>
           <v-text-field
             label="Merknader"
             v-model="note"
@@ -213,9 +219,9 @@ export default class RegisterAccount extends Vue {
       allergies: this.value,
       approved,
       isVendor: false,
-      note: this.note
+      note: this.note,
     };
-    
+
     await api.putUserprofile(newUserprofile);
     this.$store.commit("setUserprofile", newUserprofile);
     this.$router.push({ name: "info" });
@@ -235,13 +241,11 @@ export default class RegisterAccount extends Vue {
     );
   }
   phoneNoLength(value: string) {
-    return (
-      value.length >= 8 ||
-      "Vennligst oppgi et telefonnummer bestående av 8 siffer"
-    );
+    // TODO: Lage bedre nummer
+    return value.length !== 0 || "Vennligst oppgi et gyldig telefonnummer";
   }
   required(value: string) {
-    return (!!value || "Dette feltet må fylles ut")
+    return !!value || "Dette feltet må fylles ut";
   }
 }
 </script>
