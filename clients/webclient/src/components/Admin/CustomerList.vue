@@ -15,29 +15,53 @@
         <br />
         <v-card-text class="pb-0">
           <CustomerInfo :selectedUser="selected" :editProfile="editProfile" />
-          <v-row>
-            <v-btn
-              v-if="selected && selected.subscription && !editProfile"
-              text
-              color="orange"
-              @click="toggleSubscriptionPause()"
-              class="mb-2"
-            >
-              {{ buttonText }}
-            </v-btn>
-          </v-row>
           <v-textarea
             outlined
             label="Legg til notat"
             v-model="selected.note"
           ></v-textarea>
         </v-card-text>
-        <v-card-actions class="justify-center">
-          <v-btn v-if="!editProfile" text color="green" @click="approve(selected)">Godkjenn</v-btn>
-          <v-btn v-if="!editProfile" text color="red" @click="decline(selected)">Avvis</v-btn>
-          <v-btn v-if="editProfile" text color="primary" @click="update(selected)">Lagre</v-btn>
-          <v-btn v-if="editProfile" text color="error" @click="editProfile = false">Avbryt</v-btn>
-        </v-card-actions>
+        <v-row class="justify-center">
+          <v-btn
+            v-if="selected && selected.subscription && selected.approved !== 'new' && !editProfile"
+            text
+            color="orange"
+            @click="toggleSubscriptionPause()"
+          >
+            {{ buttonText }}
+          </v-btn>
+          <v-btn
+            v-if="!editProfile && selected.approved !== 'approved'"
+            text
+            color="green"
+            @click="approve(selected)"
+            >Godkjenn</v-btn
+          >
+          <v-btn v-if="!editProfile && selected.approved !=='denied'" text color="red" @click="decline(selected)"
+            >Avvis</v-btn
+          >
+        </v-row>
+        <v-row class="justify-center">
+          <v-col cols="auto">
+            <v-btn
+              v-if="!editProfile"
+              text
+              color="primary"
+              @click="dialog = false"
+              >Lukk</v-btn
+            >
+          </v-col>
+        </v-row>
+        <v-btn v-if="editProfile" text color="primary" @click="update(selected)"
+          >Lagre</v-btn
+        >
+        <v-btn
+          v-if="editProfile"
+          text
+          color="error"
+          @click="editProfile = false"
+          >Avbryt</v-btn
+        >
       </v-card>
     </v-dialog>
     <v-card :users="localUsers">
