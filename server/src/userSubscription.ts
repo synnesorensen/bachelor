@@ -2,8 +2,10 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { deleteSubscriptionInDb, getSubscriptionFromDb, pauseSubscription, putSubscriptionInDb, unPauseSubscription } from './dbUtils'
+import { deleteSubscriptionInDb, findLatestDelivery, getSubscriptionFromDb, getVendorFromDb, pauseSubscription, putSubscriptionInDb, unPauseSubscription } from './dbUtils'
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
+import { MenuItems } from '../../common/interfaces';
+import { SubscriptionDto } from '../../common/dto';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   if (event.httpMethod == "GET") {
@@ -28,6 +30,8 @@ export const mainHandler = middy(handler).use(cors());
 
 async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   let userId = getUserInfoFromEvent(event);
+  const vendor = await getVendorFromDb();
+
   if (!event.queryStringParameters) {
     return {
       statusCode: 400,
@@ -50,9 +54,26 @@ async function getUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
       body: '{ "message" : "No subscription for vendorId: ' + vendorId + '"}'
     };
   }
+  let subSchedule: MenuItems[] = [];
+  if (subscription) {
+    subscription.schedule.forEach((item) => {
+      subSchedule.push(vendor.schedule.find(({id}) => id === item));
+    });
+  }
+
+  let sub: SubscriptionDto = {
+    userId: userId,
+    vendorId: vendor.vendorId,
+    paused: subscription.paused,
+    schedule: subSchedule,
+    noOfMeals: subscription.noOfMeals,
+    box: subscription.box,
+    lastDeliveryDate: (await findLatestDelivery(subscription.vendorId.substr(2), userId))?.deliverytime
+  };
+
   return {
     statusCode: 200,
-    body: JSON.stringify(subscription)
+    body: JSON.stringify(sub)
   };
 }
 
@@ -98,6 +119,7 @@ async function putUserSubscription(event: APIGatewayProxyEvent): Promise<APIGate
 async function postUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   let userId = getUserInfoFromEvent(event);
   let body = JSON.parse(event.body);
+  const vendor = await getVendorFromDb();
 
   if (!event.queryStringParameters) {
     return {
@@ -129,24 +151,38 @@ async function postUserSubscription(event: APIGatewayProxyEvent): Promise<APIGat
       body: '{ "message" : "Missing attribute action" }'
     };
   }
+
+  let subscription = null;
+
   if (action === "pause") {
-    const sub = await pauseSubscription(userId, vendorId, time);
-    return {
-      statusCode: 200,
-      body: JSON.stringify(sub)
-    };
+    subscription = await pauseSubscription(userId, vendorId, time);
+
   } else if (action === "unpause") {
-    const sub = await unPauseSubscription(userId, vendorId, time);
-    return {
-      statusCode: 200,
-      body: JSON.stringify(sub)
-    };
-  } else {
-    return {
-      statusCode: 400,
-      body: '{ "message" : "Action not supported" }'
-    };
+    subscription = await unPauseSubscription(userId, vendorId, time);
   }
+
+  let subSchedule: MenuItems[] = [];
+  if (subscription) {
+    subscription.schedule.forEach((item) => {
+      subSchedule.push(vendor.schedule.find(({id}) => id === item));
+    });
+  }
+
+  let sub: SubscriptionDto = {
+    userId: userId,
+    vendorId: vendor.vendorId,
+    paused: subscription.paused,
+    schedule: subSchedule,
+    noOfMeals: subscription.noOfMeals,
+    box: subscription.box,
+    lastDeliveryDate: (await findLatestDelivery(subscription.vendorId.substr(2), userId))?.deliverytime
+  };
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(sub)
+  };
+
 }
 
 async function deleteUserSubscription(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
