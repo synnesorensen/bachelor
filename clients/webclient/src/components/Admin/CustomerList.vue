@@ -175,7 +175,6 @@ export default class CustomerList extends Vue {
   }
 
   handleClickedUser(user: UserDto) {
-    console.log(user)
     this.selected = user;
     this.dialog = true;
   }

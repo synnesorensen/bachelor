@@ -97,6 +97,8 @@
               :items="deliveriesWithMenu"
               item-key="deliverytime"
               show-select
+              fixed-header
+              height="300"
               class="pt-2"
             >
               <template v-slot:item="{ item }">
@@ -374,3 +376,7 @@ export default class SubscriptionPayment extends Vue {
   }
 }
 </script>
+
+<style>
+
+</style>
