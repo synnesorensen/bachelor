@@ -68,7 +68,7 @@
         Logg ut
       </v-btn>
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer" absolute temporary>
+    <v-navigation-drawer v-model="drawer" temporary fixed>
       <v-list nav dense>
         <v-list-item-group>
           <v-list-item
@@ -81,7 +81,7 @@
           </v-list-item>
         </v-list-item-group>
         <br />
-        <v-btn small text color="grey" @click="logout"> Logg ut </v-btn>
+        <v-btn small text color="red" @click="logout"> Logg ut </v-btn>
       </v-list>
     </v-navigation-drawer>
     <v-main>
@@ -111,24 +111,37 @@ export default class AppBar extends Vue {
   private tabs = [
     {
       title: "Kalender",
-      route: "/admin/calendar",
+      route: "/admin/calendar"
     },
     {
       title: "Profil",
-      route: "/admin/profile",
+      route: "/admin/profile"
     },
     {
       title: "Abonnenter",
-      route: "/admin/subscriptions",
+      route: "/admin/subscriptions"
     },
     {
       title: "Enkeltkjøp",
-      route: "/admin/single-buy",
+      route: "/admin/single-buy"
     },
     {
-      title: "Kundelister",
-      route: "/admin/customer-lists",
+      title: "Kunder til godkjenning",
+      route: "/admin/new-customers"
     },
+    {
+      title: "Kunder med abo",
+      route: "/admin/sub-customers"
+    },
+    {
+      title: "Kunder uten abo",
+      route: "/admin/single-customers"
+    },
+    {
+      title: "Avviste kunder",
+      route: "/admin/declined-customers"
+    }
+
   ];
 
   logout() {
