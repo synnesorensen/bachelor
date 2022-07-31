@@ -3,7 +3,7 @@
     <v-row>
       <v-col>
         <v-card>
-          <v-app-bar color="#fffd67">
+          <v-app-bar color="white">
             <v-card-title> Kundeprofil </v-card-title>
             <v-spacer></v-spacer>
             <v-btn color="white" @click="editProfile">
@@ -19,7 +19,7 @@
                 <v-col v-if="editModeProfile" class="d-flex" cols="12" md="6">
                   <v-text-field
                     v-model="$store.getters.userprofile.fullname"
-                    :rules="[required]"
+                    :rules="[(v) => !!v || 'Dette feltet må fylles ut']"
                     solo
                   ></v-text-field>
                 </v-col>
@@ -36,7 +36,7 @@
                 <v-col v-if="editModeProfile" class="d-flex" cols="12" md="6">
                   <v-text-field
                     v-model="$store.getters.userprofile.address"
-                    :rules="[required]"
+                    :rules="[(v) => !!v || 'Dette feltet må fylles ut']"
                     solo
                   ></v-text-field>
                 </v-col>
@@ -55,7 +55,10 @@
                     {{ $store.getters.userprofile.deliveryAddress }}
                   </p>
                 </v-col>
-                  <p v-if="editModeProfile" class="font-weight-medium pl-2">Dersom du vil endre leveringsadresse må du sende en mail til Lunsj på Hjul</p>
+                <p v-if="editModeProfile" class="font-weight-medium pl-2">
+                  Dersom du vil endre leveringsadresse må du sende en mail til
+                  Lunsj på Hjul
+                </p>
               </v-row>
               <v-row>
                 <v-col :xl="4">
@@ -169,7 +172,7 @@
       </v-col>
       <v-col>
         <v-card v-if="$store.getters.userprofile.approved !== 'denied'">
-          <v-app-bar color="#fffd67">
+          <v-app-bar color="white">
             <v-card-title> Abonnement </v-card-title>
             <v-spacer></v-spacer>
             <v-btn color="white" @click="editSub">
@@ -236,7 +239,6 @@
                           :key="item.id"
                           v-model="selectedSchedule"
                           dense
-                          required
                         ></v-checkbox>
                       </v-list-item-action>
                       <v-list-item-content>
@@ -370,8 +372,7 @@
                   v-model="selectedNoOfMeals"
                   :items="noOfMeals"
                   solo
-                  :rules="[(v) => !!v || 'Item is required']"
-                  required
+                  :rules="[(v) => !!v || 'Du må velge antall porsjoner']"
                   label="Antall porsjoner"
                 ></v-select>
               </v-col>
@@ -385,8 +386,7 @@
                   v-model="selectedBox"
                   :items="boxes"
                   solo
-                  :rules="[(v) => !!v || 'Item is required']"
-                  required
+                  :rules="[(v) => !!v || 'Dette feltet må fylles ut']"
                   label="Type boks"
                 ></v-select>
               </v-col>
@@ -409,7 +409,6 @@
                           :key="item.id"
                           v-model="selectedSchedule"
                           dense
-                          required
                         ></v-checkbox>
                       </v-list-item-action>
                       <v-list-item-content>
@@ -423,17 +422,28 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-btn @click="cancelReg" color="error" class="ma-2">
-                Avbryt
-              </v-btn>
-              <v-btn
-                @click="makeSub"
-                :disabled="!isFormValid || hasValue()"
-                color="success"
-                class="ma-2"
-              >
-                Send inn
-              </v-btn>
+              <v-tooltip bottom :disabled="hasValue()">
+                <template v-slot:activator="{ on }">
+                  <div v-on="on">
+                    <v-btn @click="cancelReg" color="error" class="ma-2">
+                      Avbryt
+                    </v-btn>
+                    <v-btn
+                      @click="makeSub"
+                      :disabled="!isFormValid || !hasValue()"
+                      color="success"
+                      class="ma-2"
+                    >
+                      Send inn
+                    </v-btn>
+                  </div>
+                </template>
+                <span
+                  v-if="!hasValue()"
+                >
+                  Du må fylle ut alle feltene
+                </span>
+              </v-tooltip>
             </v-row>
           </v-form>
         </v-card>
@@ -739,10 +749,7 @@ export default class CustomerProfile extends Vue {
     );
   }
   hasValue() {
-    return this.selectedSchedule == undefined || null;
-  }
-  required(value: string) {
-    return value.length > 0 || "Dette feltet kan ikke stå tomt";
+    return this.selectedSchedule.length > 0 && this.selectedBox !== "";
   }
 }
 </script>
