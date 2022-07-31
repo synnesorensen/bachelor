@@ -23,6 +23,7 @@
       <template v-slot:extension>
         <v-tabs align-with-title class="d-none d-sm-flex">
           <v-tab to="/admin/calendar">Kalender</v-tab>
+          <v-tab to="/admin/delivery-list">Leveringsliste</v-tab>
           <v-tab to="/admin/profile">Profil</v-tab>
           <v-tab to="/admin/subscriptions">Abonnenter</v-tab>
           <v-tab to="/admin/single-buy">

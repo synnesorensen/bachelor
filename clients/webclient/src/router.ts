@@ -66,6 +66,11 @@ const routes = [
         component: () => import("./components/Admin/AdminCalendar.vue")
       },
       {
+        path: 'delivery-list',
+        name: 'deliveryList',
+        component: () => import("./components/Admin/Deliveries.vue")
+      },
+      {
         path: 'subscriptions',
         name: 'subscriptions',
         component: () => import("./components/Admin/Subscriptions.vue")

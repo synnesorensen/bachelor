@@ -1,20 +1,23 @@
 <template>
-  <v-card>
-    <v-app-bar>
-      <v-card-title :class="{
-              'body-2': $vuetify.breakpoint.xs,
-              'h4': $vuetify.breakpoint.mdAndDown,
-              'h3': $vuetify.breakpoint.lgAndUp,
-            }">
-      Leveringer for {{ localPresentation(date) }}</v-card-title
-      >
-      <v-spacer></v-spacer>
-      <v-btn icon @click="close">
-        <v-icon> mdi-close </v-icon>
-      </v-btn>
-    </v-app-bar>
-    <v-main>
-      <v-row justify="center">
+  <v-container>
+    <v-row class="justify-center ma-6">
+      <v-btn @click="datepickDialog = true">Velg dato</v-btn>
+    </v-row>
+    <v-dialog v-model="datepickDialog" max-width="400" max-height="800">
+      <v-card>
+        <v-card-title class="headline"> Leveringsdag: </v-card-title>
+        <v-card-actions>
+          <v-date-picker v-model="deliveryDate"></v-date-picker>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-row class="justify-center ma-4">
+      <v-col>
+        <p class="headline">Leveringer {{ localPresentation(deliveryDate) }}</p>
+      </v-col>
+    </v-row>
+    <v-row class="justify-center ma-4">
+      <v-col cols="12">
         <v-data-table
           :loading="loading"
           dense
@@ -37,39 +40,31 @@
               <td class="d-block d-sm-table-cell">
                 {{ item.allergies.toString() }}
               </td>
-              <td class="d-block d-sm-table-cell">
-                {{ item.cancelled ? "Ja" : "Nei" }}
-              </td>
             </tr>
           </template>
         </v-data-table>
-      </v-row>
-      <v-row justify="center">
-        <v-card-actions class="justify-center">
-          <v-btn color="error" @click="cancelDialog = true"
-            >Kanseller alle</v-btn
-          >
-          <v-dialog v-model="cancelDialog" persistent max-width="300">
-            <v-card>
-              <v-card-title class="headline">Kansellering</v-card-title>
-              <v-card-text>
-                Er du sikker på at du vil kansellere alle leveranser denne
-                dagen?
-              </v-card-text>
-              <v-card-actions>
-                <v-btn color="success" @click="cancelDeliveries">
-                  Kanseller
-                </v-btn>
-                <v-btn color="error" @click="cancelDialog = false">
-                  Avbryt
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-card-actions>
-      </v-row>
-    </v-main>
-  </v-card>
+      </v-col>
+    </v-row>
+    <v-row class="justify-center">
+      <v-btn color="error" v-if="!isAllCancelled()" @click="cancelDialog = true">Kanseller alle</v-btn>
+      <v-dialog v-model="cancelDialog" persistent max-width="300">
+        <v-card>
+          <v-card-title class="headline">Kansellering</v-card-title>
+          <v-card-text>
+            Er du sikker på at du vil kansellere alle leveranser denne dagen?
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="success" @click="cancelDeliveries">
+              Kanseller
+            </v-btn>
+            <v-btn color="error" @click="cancelDialog = false">
+              Avbryt
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -85,17 +80,18 @@ import { toLocalPresentation } from "../../utils/utils";
   components: {},
 })
 export default class Deliveries extends Vue {
+  private deliveryDate = new Date().toISOString().substr(0, 10);
+  private datepickDialog = false;
   private loading = false;
   private cancelDialog = false;
-  @Prop() date!: string;
   private start = "";
   private end = "";
   private deliveryDetails: DeliveryDetail[] = [];
-  @Watch("date", { immediate: true })
+  @Watch("deliveryDate", { immediate: true })
   async onDateChanged() {
-    if (this.date) {
-      let startDate = new Date(this.date + "T00:00:00");
-      let endDate = new Date(this.date + "T23:59:59");
+    if (this.deliveryDate) {
+      let startDate = new Date(this.deliveryDate + "T00:00:00");
+      let endDate = new Date(this.deliveryDate + "T23:59:59");
       let UTCStartDate = startDate.toISOString();
       let UTCEndDate = endDate.toISOString();
       this.loading = true;
@@ -108,6 +104,7 @@ export default class Deliveries extends Vue {
         console.log(err);
       } finally {
         this.loading = false;
+        this.datepickDialog = false;
       }
     }
   }
@@ -128,7 +125,6 @@ export default class Deliveries extends Vue {
     { text: "Boks", value: "box" },
     { text: "Antall", value: "noOfMeals" },
     { text: "Allergier", value: "allergies" },
-    { text: "Kansellert", value: "cancelled" },
   ];
 
   mounted() {

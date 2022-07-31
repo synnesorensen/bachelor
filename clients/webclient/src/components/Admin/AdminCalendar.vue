@@ -46,19 +46,11 @@
             show-week
             :now="today"
             :events="events"
-            @click:event="handleEventClick"
             @change="getEvents"
           >
           </v-calendar>
         </v-sheet>
       </v-col>
-      <v-dialog fullscreen v-model="showList">
-        <Deliveries
-          :date="selectedDate"
-          @update="deliveriesUpdated"
-          @close="showList = false"
-        />
-      </v-dialog>
     </v-row>
 
     <v-dialog
