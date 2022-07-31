@@ -1,134 +1,169 @@
 <template>
   <v-container fluid>
     <v-row justify="center" dense>
-      <v-col :xl="8" :lg="8" :md="10">
+      <v-col :xl="9" :lg="9" :md="10" :sm="12" :xs="12">
         <v-row>
           <v-col cols="12" class="pa-0">
             <v-card>
               <v-img
-                src="../assets/egg.jpg"
+                src="../assets/gul-logo.png"
                 required
-                gradient="to bottom right, rgba(10,10,10,0.3),rgba(0,0,0,0)"
                 :height="imageHeight()"
               >
                 <v-col>
-                  <v-row
-                    height
-                    style="
-                      background-color: rgba(30,30,30,0.4)
-                      border-radius: 2px"
-                  >
+                  <v-row>
                     <v-col cols="12">
-                      <v-row class="ml-4">
-                        <p class="header">
-                          LUNSJ PÅ HJUL KUNDEPORTAL
-                        </p>
-                        <v-spacer class="d-none d-sm-flex"></v-spacer>
-                        <v-item-group class="d-none d-sm-flex ma-4">
+                      <v-row class="ml-4 d-none d-sm-flex">
+                        <v-spacer></v-spacer>
+                        <v-item-group class="ma-6">
                           <v-btn
                             @click="showRegisterBox = true"
                             text
-                            color="white"
+                            color="amber"
                             >Registrer</v-btn
                           >
-                          <v-btn @click="showLogInBox = true" color="white"
+                          <v-btn dark @click="showLogInBox = true" color="amber"
                             >Logg inn</v-btn
                           >
                         </v-item-group>
                       </v-row>
                     </v-col>
                   </v-row>
-                  <v-row class="d-flex d-sm-none justify-end mt-16 pr-6">
-                    <v-col cols="3">
-                      <!-- MOBILE -->
-                      <v-item-group>
-                        <v-btn
-                          x-small
-                          @click="showRegisterBox = true"
-                          text
-                          color="white"
-                          >Registrer</v-btn
-                        >
-                        <v-btn
-                          x-small
-                          @click="showLogInBox = true"
-                          color="white"
-                          >Logg inn</v-btn
-                        >
-                      </v-item-group>
-                    </v-col>
-                  </v-row>
                 </v-col>
               </v-img>
+              <v-row no-gutters class="d-flex d-sm-none mt-2">
+                <v-col>
+                  <p :class="{ caption: $vuetify.breakpoint.smAndDown }">
+                    GRAUTATYSDAG: Kjøleskapsgraut eller smoothiebowl-ish med skikkelig digg og fruktig toppings
+                  </p>
+                </v-col>
+              </v-row>
+              <v-row no-gutters class="d-flex d-sm-none">
+                <v-col>
+                  <p :class="{ caption: $vuetify.breakpoint.smAndDown }">
+                    ONSDAGSSALATEN: Digg og mettande salat eller hummus-ish med grønnsaker; med
+                  andre ord meir den originale Lunsj på hjul varianten
+                  </p>
+                </v-col>
+              </v-row>
+              <v-row no-gutters class="d-flex d-sm-none">
+                <v-col>
+                  <p :class="{ caption: $vuetify.breakpoint.smAndDown }">
+                    [PÅKEBÅOL] TORSDAG:  Min vri på pokébowl, anten med superfersk fisk eller heilt
+                  vegetarisk; kan nytast til lunsj eller sparast til middag
+                  </p>
+                </v-col>
+              </v-row>
+              <v-row class="d-flex d-sm-none justify-end ma-0 pr-6">
+                <v-col cols="3">
+                  <!-- MOBILE -->
+                  <v-item-group>
+                    <v-btn
+                      x-small
+                      @click="showRegisterBox = true"
+                      text
+                      color="amber"
+                      >Registrer</v-btn
+                    >
+                    <v-btn
+                      dark
+                      x-small
+                      @click="showLogInBox = true"
+                      color="amber"
+                      >Logg inn</v-btn
+                    >
+                  </v-item-group>
+                </v-col>
+              </v-row>
             </v-card>
           </v-col>
         </v-row>
 
         <v-row class="my-4 d-none d-sm-flex">
-          <v-col cols="4" class="pa-2">
-            <v-card height="350">
-              <v-img
-                src="../assets/graut2.jpg"
-                class="white--text align-end"
-                max-height="280px"
-              ></v-img>
+          <v-col cols="4" class="pa-1">
+            <v-card height="150">
               <v-card-title
                 :class="{
                   caption: $vuetify.breakpoint.smAndDown,
                   'subtitle-1': $vuetify.breakpoint.md,
                   'h-6': $vuetify.breakpoint.lgAndUp,
                 }"
+                style="padding: 0"
               >
                 <v-spacer></v-spacer>
-                <p>GRAUTATYSDAG</p>
+                <p class="my-2">GRAUTATYSDAG</p>
                 <v-spacer></v-spacer>
               </v-card-title>
+              <v-card-text
+                :class="{
+                  caption: $vuetify.breakpoint.mdAndDown,
+                  'body-2': $vuetify.breakpoint.lgAndUp,
+                }"
+              >
+                <p>
+                  Kjøleskapsgraut eller smoothiebowl-ish med skikkelig digg og fruktig toppings
+                </p>
+              </v-card-text>
             </v-card>
           </v-col>
-          <v-col cols="4" class="pa-2">
-            <v-card height="350">
-              <v-img
-                src="../assets/salat2.jpg"
-                class="white--text align-end"
-                max-height="280px"
-              ></v-img>
+          <v-col cols="4" class="pa-1">
+            <v-card height="150">
               <v-card-title
                 :class="{
                   caption: $vuetify.breakpoint.smAndDown,
                   'subtitle-1': $vuetify.breakpoint.md,
                   'h-6': $vuetify.breakpoint.lgAndUp,
                 }"
+                style="padding: 0"
               >
                 <v-spacer></v-spacer>
-                <p>ONSDAGSSALATEN</p>
+                <p class="my-2">ONSDAGSSALATEN</p>
                 <v-spacer></v-spacer>
               </v-card-title>
+              <v-card-text
+                :class="{
+                  caption: $vuetify.breakpoint.mdAndDown,
+                  'body-2': $vuetify.breakpoint.lgAndUp,
+                }"
+              >
+                <p>
+                  Digg og mettande salat eller hummus-ish med grønnsaker; med
+                  andre ord meir den originale Lunsj på hjul varianten
+                </p>
+              </v-card-text>
             </v-card>
           </v-col>
-          <v-col cols="4" class="pa-2">
-            <v-card height="350">
-              <v-img
-                src="../assets/fisk2.jpg"
-                class="white--text align-end"
-                max-height="280px"
-              ></v-img>
+          <v-col cols="4" class="pa-1">
+            <v-card height="150">
               <v-card-title
                 :class="{
                   caption: $vuetify.breakpoint.smAndDown,
                   'subtitle-1': $vuetify.breakpoint.md,
                   'h-6': $vuetify.breakpoint.lgAndUp,
                 }"
+                style="padding: 0"
               >
                 <v-spacer></v-spacer>
-                <p>PÅKEBÅOL TORSDAG</p>
+                <p class="my-2">[PÅKEBÅOL] TORSDAG</p>
                 <v-spacer></v-spacer>
               </v-card-title>
+              <v-card-text
+                :class="{
+                  caption: $vuetify.breakpoint.mdAndDown,
+                  'body-2': $vuetify.breakpoint.lgAndUp,
+                }"
+              >
+                <p>
+                  Min vri på pokébowl, anten med superfersk fisk eller heilt
+                  vegetarisk; kan nytast til lunsj eller sparast til middag
+                </p>
+              </v-card-text>
             </v-card>
           </v-col>
         </v-row>
         <v-row align="center" justify="center" class="d-none d-sm-flex">
-          <p class="ma-0" v-if="!showFaq">Vis informasjon</p>
-          <p class="ma-0" v-else>Lukk informasjon</p>
+          <p class="ma-0" v-if="!showFaq">Vis FAQ</p>
+          <p class="ma-0" v-else>Lukk FAQ</p>
         </v-row>
         <v-row align="center" justify="center" class="ma-0 d-none d-sm-flex">
           <v-icon v-if="!showFaq" x-large @click="atChevronClick" class="icon">
@@ -206,11 +241,11 @@ export default class Welcome extends Vue {
   imageHeight() {
     switch (this.$vuetify.breakpoint.name) {
       case "xs":
-        return "200px";
+        return "140px";
       case "sm":
-        return "300px";
+        return "280";
       case "md":
-        return "400px";
+        return "200px";
       case "lg":
         return "400px";
       case "xl":
