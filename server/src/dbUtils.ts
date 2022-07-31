@@ -42,7 +42,7 @@ export async function getAllUsersFromDb() {
       email: user.email,
       allergies: user.allergies ? user.allergies : [],
       approved: user.approved,
-      isVendor: user.isVendor, 
+      isVendor: user.isVendor,
       note: user.note
     }
   }));
@@ -253,7 +253,7 @@ export async function getUserprofileFromDb(userId: string): Promise<Userprofile>
     email: dbResult.Items[0].email,
     allergies: dbResult.Items[0].allergies,
     approved: dbResult.Items[0].approved ? dbResult.Items[0].approved : "new",
-    isVendor: dbResult.Items[0].isVendor, 
+    isVendor: dbResult.Items[0].isVendor,
     note: dbResult.Items[0].note
   };
 }
@@ -329,7 +329,7 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
     email: dbItem.Attributes.email.S,
     allergies: dbItem.Attributes.allergies?.SS,
     approved,
-    isVendor: dbItem.Attributes.isVendor.BOOL, 
+    isVendor: dbItem.Attributes.isVendor.BOOL,
     note: dbItem.Attributes.note?.S
   }
 }
@@ -377,7 +377,7 @@ export async function getAllSubscriptionsFromDb(vendorId: string) {
       lastDeliveryDate: latestDelivery ? latestDelivery.deliverytime : null
     }
   }));
-  
+
   return result;
 }
 
@@ -544,7 +544,7 @@ export async function getDeliveryFromDb(vendorId: string, userId: string, time: 
     cancelled: dbResult.Items[0].cancelled,
     deliveryType: dbResult.Items[0].deliveryType,
     paid: dbResult.Items[0].paid,
-    approved: dbResult.Items[0].approved, 
+    approved: dbResult.Items[0].approved,
     noOfMeals: dbResult.Items[0].noOfMeals
   };
 }
@@ -592,14 +592,14 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
 
   UpdateExpression += ", deliveryType = :deliveryType";
   UpdateExpression += ", GSI1_pk = :deliveryType";
-  ExpressionAttributeValues[":deliveryType"] = { S: "single"};
+  ExpressionAttributeValues[":deliveryType"] = { S: "single" };
 
   UpdateExpression += ", GSI2_pk = :vendor";
   ExpressionAttributeValues[":vendor"] = { S: "d#" + vendorId };
 
   UpdateExpression += ", GSI3_pk = :deliverytype";
   ExpressionAttributeValues[":deliverytype"] = { S: "d#" + userId + delivery.deliveryType };
-  
+
   UpdateExpression += ", GSI1_sk = :deliverytime";
   UpdateExpression += ", GSI2_sk = :deliverytime";
   UpdateExpression += ", GSI3_sk = :deliverytime";
@@ -666,9 +666,9 @@ export async function updateDeliveries(deliveries: Delivery[]): Promise<void> {
         GSI1_pk: deliveries[i].deliveryType,
         GSI1_sk: "d#" + deliveries[i].deliverytime,
         GSI2_pk: "d#" + deliveries[i].vendorId,
-        GSI2_sk: "d#" + deliveries[i].deliverytime, 
+        GSI2_sk: "d#" + deliveries[i].deliverytime,
         GSI3_pk: "d#" + deliveries[i].userId + deliveries[i].deliveryType,
-        GSI3_sk: "d#" + deliveries[i].deliverytime, 
+        GSI3_sk: "d#" + deliveries[i].deliverytime,
       }
     });
   }
@@ -706,9 +706,9 @@ export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> 
           GSI1_pk: deliveries[i].deliveryType,
           GSI1_sk: "d#" + deliveries[i].deliverytime,
           GSI2_pk: "d#" + deliveries[i].vendorId,
-          GSI2_sk: "d#" + deliveries[i].deliverytime, 
+          GSI2_sk: "d#" + deliveries[i].deliverytime,
           GSI3_pk: "d#" + deliveries[i].userId + deliveries[i].deliveryType,
-          GSI3_sk: "d#" + deliveries[i].deliverytime, 
+          GSI3_sk: "d#" + deliveries[i].deliverytime,
         }
       }
     });
@@ -808,8 +808,8 @@ export async function getDeliveryRequestsFromDb() {
 
   const userprofiles = await Promise.all(promises);
   deliveries.forEach(del => {
-    const user = userprofiles.find(({email}) => email === del.userId);
-    const deliveryReq:DeliveryRequestDto = {
+    const user = userprofiles.find(({ email }) => email === del.userId);
+    const deliveryReq: DeliveryRequestDto = {
       ...del,
       fullname: user.fullname,
       deliveryAddress: user.deliveryAddress,
@@ -859,8 +859,8 @@ export async function getDeliveryRequestsByDate(startDate: string, endDate: stri
 
   const userprofiles = await Promise.all(promises);
   deliveries.forEach(del => {
-    const user = userprofiles.find(({email}) => email === del.userId);
-    const deliveryReq:DeliveryRequestDto = {
+    const user = userprofiles.find(({ email }) => email === del.userId);
+    const deliveryReq: DeliveryRequestDto = {
       ...del,
       fullname: user.fullname,
       deliveryAddress: user.deliveryAddress,
@@ -910,25 +910,47 @@ export async function findLatestDelivery(vendorId: string, userId: string): Prom
 }
 
 export async function getDeliveryDetails(vendorId: string, startDate: string, endDate: string): Promise<DeliveryDetail[]> {
-  const deliveries = await getAllDeliveriesFromAllSubscribers(vendorId, startDate, endDate);
+  const allDeliveries = await getAllDeliveriesFromAllSubscribers(vendorId, startDate, endDate);
+  const deliveries = allDeliveries.filter(del => !del.cancelled);
   const userSubscriptions = await getSubscriptionsForVendor(vendorId);
   const deliveryDetails: DeliveryDetail[] = [];
-  deliveries.forEach(del => {
+  const promises = [];
+
+  deliveries.forEach(async del => {
+    const user = getUserprofileFromDb(del.userId);
+    promises.push(user);
+  })
+
+  const userprofiles = await Promise.all(promises);
+  const userMap = new Map<string, Userprofile>();
+
+  userprofiles.forEach(user => {
+    userMap.set(user.email, user);
+  })
+
+  deliveries.forEach(async del => {
     let sub = userSubscriptions!.find(({ userId }) => userId == del.userId);
-    if (sub) {
-      const deliveryDetail: DeliveryDetail = {
-        ...del,
-        paused: sub.paused,
-        noOfMeals: del.noOfMeals,
-        box: sub.box,
-        fullname: sub.fullname,
-        address: sub.address,
-        phone: sub.phone,
-        email: sub.email,
-        allergies: sub.allergies
-      }
-      deliveryDetails.push(deliveryDetail);
+    const box = sub ? sub.box : "Engangsboks";
+    const paused = sub ? sub.paused : false;
+    const fullname = sub ? sub.fullname : userMap.get(del.userId).fullname;
+    const address = sub ? sub.address : userMap.get(del.userId).address;
+    const phone = sub ? sub.phone : userMap.get(del.userId).phone;
+    const email = sub ? sub.email : userMap.get(del.userId).email;
+    const allergies = sub ? sub.allergies : userMap.get(del.userId).allergies;
+
+    const deliveryDetail: DeliveryDetail = {
+      ...del,
+      paused,
+      noOfMeals: del.noOfMeals,
+      box,
+      fullname,
+      address,
+      phone,
+      email,
+      allergies
     }
+    deliveryDetails.push(deliveryDetail);
+
   });
   return deliveryDetails;
 }
@@ -942,7 +964,7 @@ export async function cancelDeliveries(userId: string, deliveries: Delivery[], c
   for (let delivery of deliveries) {
     if (delivery.userId == userId || delivery.vendorId == userId) {
       promises.push(cancelDelivery(delivery, cancelledBy));
-    } 
+    }
   }
   let results = await Promise.all(promises);
   // Counting how many deliveries that were cancelled:
@@ -964,7 +986,7 @@ async function cancelDelivery(delivery: Delivery, cancelledBy: string): Promise<
   }
   let UpdateExpression = "set cancelled = :cancelled, cancelledBy = :cancelledBy";
   let ExpressionAttributeValues: any = {
-    ":cancelled": { BOOL: true }, 
+    ":cancelled": { BOOL: true },
     ":cancelledBy": { S: cancelledBy }
   };
   const params = {
@@ -1206,7 +1228,7 @@ export async function deleteAbsenceInDb(time: string): Promise<void> {
   let params = {
     TableName: settings.TABLENAME,
     Key: {
-      "pk": { S: "absence"},
+      "pk": { S: "absence" },
       "sk": { S: "a#" + time }
     }
   };
