@@ -65,7 +65,11 @@
       >
         <v-card>
           <v-app-bar>
-            <v-card-title class="headline"> Leveranser for {{selectedUser.fullname}} </v-card-title>
+            <v-card-title :class="{
+              'body-2': $vuetify.breakpoint.xs,
+              'h4': $vuetify.breakpoint.mdAndDown,
+              'h3': $vuetify.breakpoint.lgAndUp,
+            }"> Leveranser for {{selectedUser.fullname}} </v-card-title>
             <v-spacer></v-spacer>
             <v-btn icon @click="close">
               <v-icon> mdi-close </v-icon>
@@ -89,6 +93,7 @@
             <v-row>
               <p style="color: red">{{ errorMsg }}</p>
             </v-row>
+            <v-row class="ma-4">{{noDelMsg}}</v-row>
             <v-data-table
               :loading="loading"
               v-model="selectedDeliveries"
@@ -214,6 +219,7 @@ export default class SubscriptionPayment extends Vue {
   private deliveries: interfaces.Delivery[] | null = [];
   private monthOffset = 1;
   private errorMsg = "";
+  private noDelMsg = "";
   private headers = [
     { text: "Dato", value: "deliverytime" },
     { text: "Meny", value: "menu" },
@@ -312,6 +318,9 @@ export default class SubscriptionPayment extends Vue {
             this.startDate,
             this.endDate
           );
+          if (this.deliveries && this.deliveries.length < 1) {
+            this.noDelMsg = "Ingen leveranser i dette tidsrommet"
+          }
         } catch (err) {
           console.log(err);
         } finally {

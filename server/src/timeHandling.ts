@@ -2,6 +2,7 @@ import { DateWithMenuId, WeekTime } from '../../common/interfaces';
 import { getVendorAbsence, saveAbsenceToDb, setUserAway } from './dbUtils';
 
 export async function getDeliveryDates(startDate: Date, weekTimes: WeekTime[], no:number, env:LunchEnvironment):Promise<DateWithMenuId[]> {
+  startDate.setDate(startDate.getDate() - 1);
   let nextDelivery = await nextDeliveryDate(startDate, weekTimes, env);
 
   let count = 0;
