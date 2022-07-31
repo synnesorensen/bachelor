@@ -8,6 +8,7 @@
         :headers="computedHeaders"
         :items="newRequests"
         class="no-hover"
+        fixed-header
       >
         <template v-slot:[`item.controls`]="props">
           <v-btn
@@ -66,7 +67,10 @@
         </v-row>
         <v-row>
           <p style="color: red">{{ errorMsg }}</p>
-        </v-row>            
+        </v-row>
+        <v-row>
+          <p style="color: red">{{noDelMsg}}</p>
+        </v-row>
         <v-row v-if="requests && requests.length > 0">
           <v-col></v-col>
           <v-col>
@@ -89,6 +93,7 @@
           :items="allRequests"
           item-key="deliverytime"
           class="no-hover"
+          fixed-header
         >
           <template v-slot:[`item.controls`]="props">
             <v-btn
@@ -162,6 +167,7 @@ export default class SingleBuy extends Vue {
   private mdiCheckCircleOutline = mdiCheckCircleOutline;
   private mdiCloseCircleOutline = mdiCloseCircleOutline;
   private search = "";
+  private noDelMsg = "";
 
   async dateCheck() {
     if (this.startDate && this.endDate) {
@@ -172,6 +178,11 @@ export default class SingleBuy extends Vue {
         this.errorMsg = "";
         try {
           this.requests = await api.getSelectedDeliveryRequests(this.startDate, this.endDate);
+          if (this.requests && this.requests.length < 1) {
+            this.noDelMsg = "Ingen leveranser i dette tidsrommet"
+          } else {
+            this.noDelMsg = "";
+          }
         } catch (err) {
           console.log(err);
         } finally {

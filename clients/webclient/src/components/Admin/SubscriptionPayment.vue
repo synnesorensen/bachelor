@@ -30,14 +30,18 @@
         </v-col>
         <v-col>
           <p class="font-weight-light">
-            {{ isNaN(selectedUser.subscription.lastDeliveryDate) ? "Ingen" : localPresentation(selectedUser.subscription.lastDeliveryDate)}}
+            {{
+              isNaN(selectedUser.subscription.lastDeliveryDate)
+                ? "Ingen"
+                : localPresentation(selectedUser.subscription.lastDeliveryDate)
+            }}
           </p>
         </v-col>
       </v-row>
       <v-row dense>
         <v-col :xl="4" :lg="5">
           <p class="font-weight-medium">
-            Ubetalte måltid i {{ selectedMonth  }}
+            Ubetalte måltid i {{ selectedMonth }}
           </p>
         </v-col>
         <v-col>
@@ -65,11 +69,15 @@
       >
         <v-card>
           <v-app-bar>
-            <v-card-title :class="{
-              'body-2': $vuetify.breakpoint.xs,
-              'h4': $vuetify.breakpoint.mdAndDown,
-              'h3': $vuetify.breakpoint.lgAndUp,
-            }"> Leveranser for {{selectedUser.fullname}} </v-card-title>
+            <v-card-title
+              :class="{
+                'body-2': $vuetify.breakpoint.xs,
+                h4: $vuetify.breakpoint.mdAndDown,
+                h3: $vuetify.breakpoint.lgAndUp,
+              }"
+            >
+              Leveranser for {{ selectedUser.fullname }}
+            </v-card-title>
             <v-spacer></v-spacer>
             <v-btn icon @click="close">
               <v-icon> mdi-close </v-icon>
@@ -80,10 +88,7 @@
             <v-row>
               <v-col>
                 <p class="font-weight-medium">Fra dato:</p>
-                <date-picker 
-                  :date.sync="startDate" 
-                  @blur="dateCheck" 
-                />
+                <date-picker :date.sync="startDate" @blur="dateCheck" />
               </v-col>
               <v-col>
                 <p class="font-weight-medium">Til dato:</p>
@@ -92,8 +97,8 @@
             </v-row>
             <v-row>
               <p style="color: red">{{ errorMsg }}</p>
+              <p style="color: red">{{ noDelMsg }}</p>
             </v-row>
-            <v-row class="ma-4">{{noDelMsg}}</v-row>
             <v-data-table
               :loading="loading"
               v-model="selectedDeliveries"
@@ -166,10 +171,7 @@
               label="Betalte leveringer"
             ></v-text-field>
             <p class="font-weight-medium">Sett første leveringsdato:</p>
-            <v-date-picker 
-              v-model="paymentPicker"
-              no-title
-            ></v-date-picker>
+            <v-date-picker v-model="paymentPicker" no-title></v-date-picker>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -266,6 +268,8 @@ export default class SubscriptionPayment extends Vue {
   onShowDialog() {
     this.startDate = "";
     this.endDate = "";
+    this.noDelMsg = "";
+    this.errorMsg = "";
   }
 
   localPresentation(time: string) {
@@ -279,14 +283,18 @@ export default class SubscriptionPayment extends Vue {
         this.selectedMonth
       );
       this.paidDeliveries = this.unpaidDeliveries;
-      this.selectedUser.subscription.lastDeliveryDate = await api.lastDelilveryDate(this.selectedUser.email);
+      this.selectedUser.subscription.lastDeliveryDate = await api.lastDelilveryDate(
+        this.selectedUser.email
+      );
     }
   }
 
   async registerPayment() {
     const now = new Date(this.paymentPicker);
-    const time = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())).toISOString();
-    
+    const time = new Date(
+      Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
+    ).toISOString();
+
     if (this.selectedUser?.subscription?.userId) {
       let newDels = await api.postNewDeliveries(
         time,
@@ -319,12 +327,13 @@ export default class SubscriptionPayment extends Vue {
             this.endDate
           );
           if (this.deliveries && this.deliveries.length < 1) {
-            this.noDelMsg = "Ingen leveranser i dette tidsrommet"
+            console.log(this.deliveries)
+            this.noDelMsg = "Ingen leveranser i dette tidsrommet";
           }
         } catch (err) {
           console.log(err);
         } finally {
-            this.loading = false;
+          this.loading = false;
         }
       }
     }
@@ -349,11 +358,11 @@ export default class SubscriptionPayment extends Vue {
   }
 
   get deliveriesWithMenu() {
-    return this.deliveries!.map(del => {
+    return this.deliveries!.map((del) => {
       const menu = this.vendorSchedule.find(({ id }) => id === del.menuId);
       return {
         ...del,
-        menu: menu!.menu
+        menu: menu!.menu,
       };
     });
   }
@@ -386,6 +395,4 @@ export default class SubscriptionPayment extends Vue {
 }
 </script>
 
-<style>
-
-</style>
+<style></style>
