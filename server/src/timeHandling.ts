@@ -49,7 +49,7 @@ function getDeliveryBeforeMidnight(date: Date, weekTimes: WeekTime[]) {
   while (i < weekTimes.length && lessThanOrEqual(weekTimes[i], weekTime)) {
     i++;
   }
-  if (i < weekTimes.length && weekTimes[i].day === date.getUTCDay()) {    // TODO: Sjekke om det er denne som gjør at om startdate er en leveringsdag så kommer den ikke med
+  if (i < weekTimes.length && weekTimes[i].day === date.getUTCDay()) {
     return weekTimes[i];
   } 
   return null;
