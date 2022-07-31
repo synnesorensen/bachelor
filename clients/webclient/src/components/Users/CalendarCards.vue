@@ -282,7 +282,7 @@ export default class CalendarCards extends Vue {
       };
       try {
         await api.putDelivery(
-          this.$store.getters.subscription.vendorId,
+          this.$store.getters.vendor.vendorId,
           this.$store.getters.loggedInUser,
           del
         );
@@ -297,7 +297,7 @@ export default class CalendarCards extends Vue {
 
   async orderDelivery() {
     const deliveryInDb = await api.getDelivery(
-      this.$store.getters.subscription.vendorId,
+      this.$store.getters.vendor.vendorId,
       this.$store.getters.loggedInUser,
       this.selectedEvent.delivery.deliverytime
     );
@@ -310,7 +310,7 @@ export default class CalendarCards extends Vue {
     };
     try {
       await api.putDelivery(
-        this.$store.getters.subscription.vendorId,
+        this.$store.getters.vendor.vendorId,
         this.$store.getters.loggedInUser,
         delivery
       );
