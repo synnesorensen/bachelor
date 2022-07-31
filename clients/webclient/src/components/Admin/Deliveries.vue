@@ -1,7 +1,13 @@
 <template>
   <v-card>
     <v-app-bar>
-      <v-card-title>Leveringer for {{ localPresentation(date) }}</v-card-title>
+      <v-card-title :class="{
+              'body-2': $vuetify.breakpoint.xs,
+              'h4': $vuetify.breakpoint.mdAndDown,
+              'h3': $vuetify.breakpoint.lgAndUp,
+            }">
+      Leveringer for {{ localPresentation(date) }}</v-card-title
+      >
       <v-spacer></v-spacer>
       <v-btn icon @click="close">
         <v-icon> mdi-close </v-icon>
@@ -16,10 +22,11 @@
           :items="deliveryDetails"
           class="elevation-1"
           mobile-breakpoint="600"
+          fixed-header
         >
           <template v-slot:item="{ item }">
             <tr :key="item.userId">
-              <td class="handle" >
+              <td class="handle">
                 <v-btn icon><v-icon small>mdi-cursor-move</v-icon></v-btn>
               </td>
               <td class="d-block d-sm-table-cell">{{ item.fullname }}</td>
@@ -27,8 +34,12 @@
               <td class="d-block d-sm-table-cell">{{ item.phone }}</td>
               <td class="d-block d-sm-table-cell">{{ item.box }}</td>
               <td class="d-block d-sm-table-cell">{{ item.noOfMeals }}</td>
-              <td class="d-block d-sm-table-cell">{{ item.allergies.toString() }}</td>
-              <td class="d-block d-sm-table-cell">{{ item.cancelled ? "Ja" : "Nei" }}</td>
+              <td class="d-block d-sm-table-cell">
+                {{ item.allergies.toString() }}
+              </td>
+              <td class="d-block d-sm-table-cell">
+                {{ item.cancelled ? "Ja" : "Nei" }}
+              </td>
             </tr>
           </template>
         </v-data-table>
@@ -166,5 +177,4 @@ export default class Deliveries extends Vue {
   cursor: move !important;
   cursor: -webkit-grabbing !important;
 }
-
 </style>

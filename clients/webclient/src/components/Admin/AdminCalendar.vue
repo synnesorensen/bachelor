@@ -69,7 +69,11 @@
     >
       <v-card>
         <v-app-bar>
-          <v-card-title class="headline">
+          <v-card-title :class="{
+              'body-2': $vuetify.breakpoint.xs,
+              'h4': $vuetify.breakpoint.mdAndDown,
+              'h3': $vuetify.breakpoint.lgAndUp,
+            }">
             Sett inn fravær i kalender
           </v-card-title>
           <v-spacer></v-spacer>
@@ -115,7 +119,11 @@
     >
       <v-card>
         <v-app-bar>
-          <v-card-title class="headline"> Fravær denne måneden</v-card-title>
+          <v-card-title :class="{
+              'body-2': $vuetify.breakpoint.xs,
+              'h4': $vuetify.breakpoint.mdAndDown,
+              'h3': $vuetify.breakpoint.lgAndUp,
+            }"> Fravær denne måneden</v-card-title>
           <v-spacer></v-spacer>
           <v-btn icon @click="removeAbsenceDialog = false">
             <v-icon> mdi-close </v-icon>

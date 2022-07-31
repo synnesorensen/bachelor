@@ -34,6 +34,7 @@
                 item-key="deliverytime"
                 :footer-props="{'items-per-page-options':[15, 30, 50, -1]}"
                 class="pt-2"
+                fixed-header
               >
             >
               </v-data-table>

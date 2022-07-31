@@ -84,6 +84,7 @@
         @click:row="handleClickedUser"
         item-key="userId"
         class="row-pointer"
+        fixed-header
       >
         <template
           v-if="localUsers.length > 0 && localUsers[0].approved === 'new'"
