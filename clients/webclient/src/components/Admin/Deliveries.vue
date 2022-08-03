@@ -46,7 +46,7 @@
       </v-col>
     </v-row>
     <v-row class="justify-center">
-      <v-btn color="error" v-if="!isAllCancelled()" @click="cancelDialog = true">Kanseller alle</v-btn>
+      <v-btn color="error" :disabled="isAllCancelled()" @click="cancelDialog = true">Kanseller alle</v-btn>
       <v-dialog v-model="cancelDialog" persistent max-width="300">
         <v-card>
           <v-card-title class="headline">Kansellering</v-card-title>
@@ -89,6 +89,7 @@ export default class Deliveries extends Vue {
   private deliveryDetails: DeliveryDetail[] = [];
   @Watch("deliveryDate", { immediate: true })
   async onDateChanged() {
+    console.log(this.isAllCancelled())
     if (this.deliveryDate) {
       let startDate = new Date(this.deliveryDate + "T00:00:00");
       let endDate = new Date(this.deliveryDate + "T23:59:59");
@@ -156,6 +157,10 @@ export default class Deliveries extends Vue {
       });
       this.cancelDialog = false;
     }
+  }
+
+  isAllCancelled() {
+    return this.deliveryDetails.every(del => del.cancelled)
   }
 
   close() {
