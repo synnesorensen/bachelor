@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-row justify="center" dense>
+    <v-row justify="center" dense class="mt-8">
       <v-col :xl="9" :lg="9" :md="10" :sm="12" :xs="12">
         <v-row>
           <v-col cols="12" class="pa-0">
@@ -249,7 +249,7 @@ export default class Welcome extends Vue {
       case "lg":
         return "400px";
       case "xl":
-        return "500px";
+        return "550px";
     }
   }
 }
