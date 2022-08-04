@@ -117,11 +117,12 @@ export class Api {
     return pausedSubscription.data;
   }
 
-  async deleteVendorSubscription(id: string) {
-    await this.ensureFreshToken();
-    const url = urlPrefix + "/v/subscription?userId=" + encodeURIComponent(id);
-    await this.apiAxios.delete(url);
-  }
+
+  // async deleteVendorSubscription(id: string) {
+  //   await this.ensureFreshToken();
+  //   const url = urlPrefix + "/v/subscription?userId=" + encodeURIComponent(id);
+  //   await this.apiAxios.delete(url);
+  // }
 
   async getUserSubscription(id: string): Promise<interfaces.Subscription | null> {
     await this.ensureFreshToken();

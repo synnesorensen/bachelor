@@ -253,7 +253,7 @@ export default class AdminCalendar extends Vue {
           const menu = schedule.find(({ id }) => id === del.menuId);
           events.push({
             name:
-              menu!.menu + ": " + (del.count - del.cancelled) + "/" + del.count,
+              (del.count - del.cancelled) + "/" + del.count,
             start: delStart,
             end: delEnd,
             color:

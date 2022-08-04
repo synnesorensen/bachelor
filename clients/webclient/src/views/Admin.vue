@@ -3,7 +3,7 @@
     class="overflow-hidden"
     v-if="$store.getters.userprofile && $store.getters.userprofile.isVendor"
   >
-    <v-app-bar app dark src="../assets/smorblomst_crop1.jpg">
+    <v-app-bar app src="../assets/navbar2.png">
       <v-app-bar-nav-icon
         @click="drawer = true"
         class="d-flex d-sm-none"
@@ -11,18 +11,13 @@
       <template v-slot:img="{ props }">
         <v-img
           v-bind="props"
-          gradient="to top right, rgba(80,115,80,1), rgba(25,32,25,0)"
           required
         >
         </v-img>
       </template>
-      <v-toolbar-title>
-        <div class="text-h4 white--text">Lunsj på Hjul</div>
-      </v-toolbar-title>
-      <v-spacer />
       <template v-slot:extension>
         <v-tabs align-with-title class="d-none d-sm-flex">
-          <v-tab to="/admin/calendar">Kalender</v-tab>
+          <v-tab class="ml-4" to="/admin/calendar">Kalender</v-tab>
           <v-tab to="/admin/delivery-list">Leveringsliste</v-tab>
           <v-tab to="/admin/profile">Profil</v-tab>
           <v-tab to="/admin/subscriptions">Abonnenter</v-tab>
@@ -43,7 +38,7 @@
                   :value="$store.getters.newUserRequests.length"
                   :content="$store.getters.newUserRequests.length"
                 >
-                  Kundelister
+                  Kunder
                 </v-badge>
               </v-tab>
             </template>
@@ -117,6 +112,10 @@ export default class AppBar extends Vue {
     {
       title: "Profil",
       route: "/admin/profile"
+    },
+    {
+      title: "Leveringsliste",
+      route: "/admin/delivery-list"
     },
     {
       title: "Abonnenter",

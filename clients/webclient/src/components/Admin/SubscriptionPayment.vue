@@ -168,10 +168,10 @@
             <p class="font-weight-regular">{{ selectedUser.fullname }}</p>
             <v-text-field
               v-model="paidDeliveries"
-              label="Betalte leveringer"
+              label="Antall leveringer som skal betales"
             ></v-text-field>
             <p class="font-weight-medium">Sett første leveringsdato:</p>
-            <v-date-picker v-model="paymentPicker" no-title></v-date-picker>
+            <v-date-picker :first-day-of-week="1" v-model="paymentPicker" no-title></v-date-picker>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>

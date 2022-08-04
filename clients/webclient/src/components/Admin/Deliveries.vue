@@ -7,7 +7,7 @@
       <v-card>
         <v-card-title class="headline"> Leveringsdag: </v-card-title>
         <v-card-actions>
-          <v-date-picker v-model="deliveryDate"></v-date-picker>
+          <v-date-picker no-title :first-day-of-week="1" v-model="deliveryDate"></v-date-picker>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -89,7 +89,6 @@ export default class Deliveries extends Vue {
   private deliveryDetails: DeliveryDetail[] = [];
   @Watch("deliveryDate", { immediate: true })
   async onDateChanged() {
-    console.log(this.isAllCancelled())
     if (this.deliveryDate) {
       let startDate = new Date(this.deliveryDate + "T00:00:00");
       let endDate = new Date(this.deliveryDate + "T23:59:59");
@@ -101,6 +100,14 @@ export default class Deliveries extends Vue {
           UTCStartDate,
           UTCEndDate
         );
+
+        this.deliveryDetails = this.deliveryDetails.map(del => {
+          return {
+            ...del,
+            box: del.box === "Engangsboks" ? "E" : "G"
+          }
+        })
+
       } catch (err) {
         console.log(err);
       } finally {

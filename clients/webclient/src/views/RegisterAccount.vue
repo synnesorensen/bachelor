@@ -132,8 +132,7 @@
       <v-row dense>
         <v-col :xl="6" :lg="6">
           <p class="font-weight-medium mb-0">
-            Eventuelle merknader, som feks ønsket startdato eller
-            leveringsinformasjon:
+            Fyll ut ønsket startdato, og andre eventuelle merknader
           </p>
           <v-text-field
             label="Merknader"
@@ -208,6 +207,7 @@ export default class RegisterAccount extends Vue {
   private note = "";
 
   async sendToDb() {
+    console.log(this.note)
     const approved: "new" | "approved" | "denied" = "new";
     const newUserprofile = {
       fullname: this.firstName + " " + this.lastName,

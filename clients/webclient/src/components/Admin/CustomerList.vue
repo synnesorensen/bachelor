@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-dialog v-model="dialog" width="500">
+    <v-dialog v-model="dialog" max-width="800" max-height="800">
       <v-card v-if="selected">
         <v-app-bar>
           <v-card-title>Kundeinformasjon</v-card-title><br />
@@ -16,14 +16,20 @@
         <v-card-text class="pb-0">
           <CustomerInfo :selectedUser="selected" :editProfile="editProfile" />
           <v-textarea
+            v-if="editProfile"
             outlined
             label="Legg til notat"
             v-model="selected.note"
           ></v-textarea>
         </v-card-text>
-        <v-row class="justify-center">
+        <v-row class="justify-center pa-2">
           <v-btn
-            v-if="selected && selected.subscription && selected.approved !== 'new' && !editProfile"
+            v-if="
+              selected &&
+                selected.subscription &&
+                selected.approved !== 'new' &&
+                !editProfile
+            "
             text
             color="orange"
             @click="toggleSubscriptionPause()"
@@ -37,20 +43,13 @@
             @click="approve(selected)"
             >Godkjenn</v-btn
           >
-          <v-btn v-if="!editProfile && selected.approved !=='denied'" text color="red" @click="decline(selected)"
+          <v-btn
+            v-if="!editProfile && selected.approved !== 'denied'"
+            text
+            color="red"
+            @click="decline(selected)"
             >Avvis</v-btn
           >
-        </v-row>
-        <v-row class="justify-center">
-          <v-col cols="auto">
-            <v-btn
-              v-if="!editProfile"
-              text
-              color="primary"
-              @click="dialog = false"
-              >Lukk</v-btn
-            >
-          </v-col>
         </v-row>
         <v-btn v-if="editProfile" text color="primary" @click="update(selected)"
           >Lagre</v-btn
@@ -227,8 +226,7 @@ export default class CustomerList extends Vue {
         this.selected.subscription.userId,
         action
       );
-      this.editCustomer = false; // Hva gjør denne?
-      this.localUsers = await api.getUsersAndSubscriptions();
+      this.$emit("update");
     }
   }
 }

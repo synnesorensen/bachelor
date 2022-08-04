@@ -42,7 +42,7 @@
           </v-col>
           <v-col v-if="editMode" class="d-flex" cols="12" md="6">
             <v-text-field
-              v-model="selectedUser.address"
+              v-model="selectedUser.deliveryAddress"
               :rules="[required]"
               solo
             ></v-text-field>
@@ -104,6 +104,37 @@
             </p>
           </v-col>
         </v-row>
+
+        <v-row v-if="selectedUser.subscription" dense>
+          <v-col :xl="4">
+            <p class="font-weight-medium">Boks</p>
+          </v-col>
+          <v-col v-if="editMode" class="d-flex" cols="12" md="6">
+            <v-select
+              v-model="selectedBox"
+              :items="boxes"
+              solo
+              chips
+              label="Velg boks"
+              multiple
+            ></v-select>
+          </v-col>
+          <v-col v-else>
+            <p class="font-weight-light">
+              {{ selectedUser.subscription.box === "Engangsboks" ? "Engangs" : "Gjenbruk" }}
+            </p>
+          </v-col>
+        </v-row>
+        <v-row dense>
+          <v-col :xl="4">
+            <p class="font-weight-medium">Notat</p>
+          </v-col>
+          <v-col>
+            <p class="font-weight-light">
+              {{ selectedUser.note }}
+            </p>
+          </v-col>
+        </v-row>
         <v-row dense>
           <v-col :xl="4">
             <p class="font-weight-medium">Status kundeforhold</p>
@@ -150,6 +181,8 @@ export default class CustomerInfo extends Vue {
   private editMode = false;
   private isFormValid = false;
   private selectedAllergies: string[] = [];
+  private selectedBox = "";
+  private boxes = ["Gjenbruks", "Engangs"]
 
   @Watch("editProfile")
   editProfileChanged() {

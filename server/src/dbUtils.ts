@@ -66,6 +66,9 @@ export async function getSubscriptionFromDb(vendorId: string, userId: string): P
   if (subscriptionResult.Items.length == 0) {
     return null;
   }
+
+  console.log(subscriptionResult)
+
   return {
     vendorId,
     userId,
@@ -296,6 +299,10 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
   if (userprofile.allergies.length > 0) {
     UpdateExpression += ", allergies = :allergies";
     ExpressionAttributeValues[":allergies"] = { SS: userprofile.allergies };
+  }
+  if (userprofile.note.length > 0) {
+    UpdateExpression += ", note = :note";
+    ExpressionAttributeValues[":note"] = { S: userprofile.note };
   }
   if (userprofile.isVendor != undefined) {
     UpdateExpression += ", isVendor = :isVendor";

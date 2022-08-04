@@ -80,6 +80,7 @@ export default class CustomerLists extends Vue {
             .map((schedule: MenuItems) => schedule.day)
             .join(", "),
           allergiesInTable: user.allergies.join(", "),
+          boxInTable: user.subscription.box === "Engangsboks" ? "Engangs" : "Gjenbruk",
           pausedString: user.subscription.paused ? "Pauset" : "Aktiv",
         };
       }
@@ -138,9 +139,10 @@ export default class CustomerLists extends Vue {
       value: "fullname",
     },
     { text: "Status", value: "pausedString", sortable: true },
-    { text: "Adresse", value: "address" },
+    { text: "Adresse", value: "deliveryAddress" },
     { text: "Antall", value: "subscription.noOfMeals" },
     { text: "Allergier", value: "allergiesInTable" },
+    { text: "Boks", value: "boxInTable"},
     { text: "Leveringsdager", value: "days" },
     { text: "", value: "controls", sortable: false },
   ];
@@ -151,7 +153,7 @@ export default class CustomerLists extends Vue {
       sortable: true,
       value: "fullname",
     },
-    { text: "Adresse", value: "address" },
+    { text: "Adresse", value: "deliveryAddress" },
     { text: "Allergier", value: "allergiesInTable" },
     { text: "Leveringsdager", value: "days" },
     { text: "", value: "controls", sortable: false },
@@ -163,7 +165,7 @@ export default class CustomerLists extends Vue {
       sortable: true,
       value: "fullname",
     },
-    { text: "Adresse", value: "address" },
+    { text: "Adresse", value: "deliveryAddress" },
     { text: "Allergier", value: "allergiesInTable" },
   ];
 
