@@ -104,7 +104,7 @@ export default class Deliveries extends Vue {
         this.deliveryDetails = this.deliveryDetails.map(del => {
           return {
             ...del,
-            box: del.box === "Engangsboks" ? "E" : "G"
+            box: del.box.startsWith("E") ? "E" : "G"
           }
         })
 
@@ -128,7 +128,7 @@ export default class Deliveries extends Vue {
       sortable: true,
       value: "fullname",
     },
-    { text: "Adresse", value: "address" },
+    { text: "Adresse", value: "deliveryAddress" },
     { text: "Telefon", value: "phone" },
     { text: "Boks", value: "box" },
     { text: "Antall", value: "noOfMeals" },

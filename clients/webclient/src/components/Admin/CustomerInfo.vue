@@ -121,7 +121,7 @@
           </v-col>
           <v-col v-else>
             <p class="font-weight-light">
-              {{ selectedUser.subscription.box === "Engangsboks" ? "Engangs" : "Gjenbruk" }}
+              {{ selectedUser.subscription.box.startsWith("E") ? "Engangs" : "Gjenbruk" }}
             </p>
           </v-col>
         </v-row>
