@@ -280,9 +280,16 @@ export class Api {
     }
   }
 
-  async putDelivery(vendorId: string, userId: string, delivery: dto.DeliveryDto): Promise<interfaces.Delivery> {
+  async postDelivery(vendorId: string, userId: string, delivery: dto.DeliveryDto): Promise<interfaces.Delivery> {
     await this.ensureFreshToken();
     const url = urlPrefix + "/u/delivery?vendorId=" + encodeURIComponent(vendorId) + "&userId=" + encodeURIComponent(userId);
+    const newDelivery = await this.apiAxios.post(url, delivery);
+    return newDelivery.data;
+  }
+
+  async changeNoOfMeals(userId: string, delivery: dto.DeliveryDto): Promise<interfaces.Delivery> {
+    await this.ensureFreshToken();
+    const url = urlPrefix + "/u/delivery?userId=" + encodeURIComponent(userId);
     const newDelivery = await this.apiAxios.put(url, delivery);
     return newDelivery.data;
   }

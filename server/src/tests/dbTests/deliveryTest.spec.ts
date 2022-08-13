@@ -1,6 +1,6 @@
 require('dotenv').config();
 import 'source-map-support/register';
-import { getDeliveryFromDb, putDeliveryInDb, deleteDeliveryInDb, getUsersDeliveries, saveDeliveriesToDb, getAllDeliveriesFromAllSubscribers } from '../../dbUtils';
+import { getDeliveryFromDb, newDeliveryInDb, deleteDeliveryInDb, getUsersDeliveries, saveDeliveriesToDb, getAllDeliveriesFromAllSubscribers } from '../../dbUtils';
 import { expect } from 'chai';
 import 'mocha';
 import { Delivery } from '../../../../common/interfaces';
@@ -56,7 +56,7 @@ describe('Delivery tests', () => {
       noOfMeals: 1
     }
 
-    const putResult = await putDeliveryInDb("testVendorId66", "testUserId16", delivery1);
+    const putResult = await newDeliveryInDb("testVendorId66", "testUserId16", delivery1);
     expect(putResult.deliverytime).to.equal("2021-04-20");
     expect(putResult.menuId).to.equal("1");
     expect(putResult.cancelled).to.equal(false);
@@ -66,7 +66,7 @@ describe('Delivery tests', () => {
     expect(getResult.menuId).to.equal("1");
     expect(getResult.cancelled).to.equal(false);
 
-    await putDeliveryInDb("testVendorId66", "testUserId16", delivery2);
+    await newDeliveryInDb("testVendorId66", "testUserId16", delivery2);
     const getAllUserDel = await getUsersDeliveries("testUserId16", "2021-04-01", "2021-04-30");
     expect(getAllUserDel.length).to.equal(2);
     let res1 = getAllUserDel.find( ({deliverytime}) => deliverytime === "2021-04-01");
@@ -74,8 +74,8 @@ describe('Delivery tests', () => {
     expect(res1.deliverytime).to.equal("2021-04-01");
     expect(res1.menuId).to.equal("1");
 
-    await putDeliveryInDb("testVendorId66", "testUserId26", delivery3);
-    await putDeliveryInDb("testVendorId66", "testUserId26", delivery4);
+    await newDeliveryInDb("testVendorId66", "testUserId26", delivery3);
+    await newDeliveryInDb("testVendorId66", "testUserId26", delivery4);
  
     let getDelsForAllSubs = await getAllDeliveriesFromAllSubscribers("testVendorId66", "2021-04-01", "2021-05-31") as Delivery[];
     expect(getDelsForAllSubs.length).to.equal(4);

@@ -67,8 +67,6 @@ export async function getSubscriptionFromDb(vendorId: string, userId: string): P
     return null;
   }
 
-  console.log(subscriptionResult)
-
   return {
     vendorId,
     userId,
@@ -557,7 +555,7 @@ export async function getDeliveryFromDb(vendorId: string, userId: string, time: 
 }
 
 // Brukes kun av kunde, derfor settes den som ikke godkjent og ikke betalt
-export async function putDeliveryInDb(vendorId: string, userId: string, delivery: DeliveryDto): Promise<Delivery> {
+export async function newDeliveryInDb(vendorId: string, userId: string, delivery: DeliveryDto): Promise<Delivery> {
   let UpdateExpression = "set EntityType = :EntityType";
   let ExpressionAttributeValues: any = {
     ":EntityType": { S: "Delivery" }
@@ -641,6 +639,38 @@ export async function putDeliveryInDb(vendorId: string, userId: string, delivery
   }
 }
 
+export async function changeNoOfMeals(delivery: Delivery, userId: string, vendorId: string): Promise<Delivery> {
+  let UpdateExpression = "set noOfMeals = :no";
+  let ExpressionAttributeValues: any = {
+    ":no": { N: delivery.noOfMeals.toString() }
+  }
+
+  let params = {
+    TableName: settings.TABLENAME,
+    Key: {
+      "pk": { S: "d#" + userId },
+      "sk": { S: "d#" + delivery.deliverytime }
+    },
+    UpdateExpression,
+    ExpressionAttributeValues,
+    ReturnValues: "ALL_NEW"
+  };
+  
+  let dbItem = await database.updateItem(params).promise();
+
+  return {
+    vendorId,
+    userId,
+    deliverytime: dbItem.Attributes.deliverytime.S,
+    menuId: dbItem.Attributes.menuId.S,
+    cancelled: dbItem.Attributes.cancelled.BOOL,
+    deliveryType: delivery.deliveryType,
+    paid: delivery.paid,
+    approved: delivery.approved,
+    noOfMeals: parseInt(dbItem.Attributes.noOfMeals.N)
+  }
+}
+
 export async function deleteDeliveryInDb(userId: string, time: string): Promise<void> {
   let params = {
     TableName: settings.TABLENAME,
@@ -666,6 +696,7 @@ export async function updateDeliveries(deliveries: Delivery[]): Promise<void> {
         menuId: deliveries[i].menuId,
         cancelled: deliveries[i].cancelled,
         deliveryType: deliveries[i].deliveryType,
+        noOfMeals: deliveries[i].noOfMeals,
         paid: deliveries[i].paid,
         approved: deliveries[i].approved,
         userId: deliveries[i].userId,
@@ -1011,6 +1042,7 @@ async function cancelDelivery(delivery: Delivery, cancelledBy: string): Promise<
   // Moving cancelled delivery to the end of period:
   const latestDel = await findLatestDelivery(delivery.vendorId, delivery.userId);
   const date = new Date(latestDel.deliverytime);
+  date.setDate(date.getDate() + 1);
   const movedDels = await generateDeliveriesForSubscribers(date, delivery.userId, delivery.vendorId, 1, dbenv);
   await saveDeliveriesToDb(movedDels);
 

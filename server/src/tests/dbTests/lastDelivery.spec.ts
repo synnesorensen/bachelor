@@ -1,6 +1,6 @@
 require('dotenv').config();
 import 'source-map-support/register';
-import { deleteDeliveryInDb, findLatestDelivery, putDeliveryInDb } from '../../dbUtils';
+import { deleteDeliveryInDb, findLatestDelivery, newDeliveryInDb } from '../../dbUtils';
 import { expect } from 'chai';
 import 'mocha';
 
@@ -26,7 +26,7 @@ describe('Last delivery', () => {
       noOfMeals: 1
     };
 
-    const res1 = await putDeliveryInDb("testVendorId66", "testUserId16", delivery1);
+    const res1 = await newDeliveryInDb("testVendorId66", "testUserId16", delivery1);
     expect(res1.deliverytime).equal("2021-04-20");
 
     let delivery2 = {
@@ -41,7 +41,7 @@ describe('Last delivery', () => {
       noOfMeals: 1
     };
 
-    const res2 = await putDeliveryInDb("testVendorId66", "testUserId16", delivery2);
+    const res2 = await newDeliveryInDb("testVendorId66", "testUserId16", delivery2);
     expect(res2.deliverytime).equal("2021-04-21");
 
     await deleteDeliveryInDb("testUserId16","2021-04-20");

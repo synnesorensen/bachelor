@@ -2,13 +2,16 @@ import 'source-map-support/register'
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { getDeliveryFromDb, deleteDeliveryInDb, putDeliveryInDb, getVendorFromDb, getUserprofileFromDb } from './dbUtils';
+import { getDeliveryFromDb, deleteDeliveryInDb, newDeliveryInDb, getVendorFromDb, getUserprofileFromDb, changeNoOfMeals } from './dbUtils';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   if (event.httpMethod == "GET") {
     return getDelivery(event);
   }
+  if (event.httpMethod == "POST") {
+    return postDelivery(event);
+  }  
   if (event.httpMethod == "PUT") {
     return putDelivery(event);
   }
@@ -60,7 +63,7 @@ async function getDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
   };
 }
 
-async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+async function postDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   if (!event.queryStringParameters) {
     return {
       statusCode: 400,
@@ -88,7 +91,7 @@ async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
   let body = JSON.parse(event.body);
   const user = await getUserprofileFromDb(userId);
   if (user.approved === "approved") {
-    let delivery = await putDeliveryInDb(vendorId, userId, body);
+    let delivery = await newDeliveryInDb(vendorId, userId, body);
     return {
       statusCode: 200,
       body: JSON.stringify(delivery)
@@ -99,7 +102,46 @@ async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
       body: '{ "message" : "Not allowed" }'
     };
   }
+}
 
+async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  if (!event.queryStringParameters) {
+    return {
+      statusCode: 400,
+      body: '{ "message" : "Missing parameters" }'
+    };
+  }
+  let userId = event.queryStringParameters["userId"];
+  let vendor = await getVendorFromDb();
+  const vendorId = vendor.email;
+
+  if (!userId) {
+    return {
+      statusCode: 400,
+      body: '{ "message" : "Missing parameter userId" }'
+    };
+  }  
+
+  if (!vendorId) {
+    return {
+      statusCode: 400,
+      body: '{ "message" : "No such vendor exists" }'
+    };
+  } 
+  let body = JSON.parse(event.body);
+  const user = await getUserprofileFromDb(userId);
+  if (user.approved === "approved") {
+    let delivery = await changeNoOfMeals(body, userId, vendorId);
+    return {
+      statusCode: 200,
+      body: JSON.stringify(delivery)
+    };
+  } else {
+    return {
+      statusCode: 403,
+      body: '{ "message" : "Not allowed" }'
+    };
+  }
 
 }
 

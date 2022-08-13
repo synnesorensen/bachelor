@@ -23,7 +23,8 @@
                 selectedEvent.type === 'request'
             "
           >
-            Denne bestillingen venter på godkjenning av Lunsj på Hjul.
+            Denne bestillingen venter på godkjenning av Lunsj på Hjul. Når den
+            er godkjent endrer den farge fra oransje til grønn.
           </v-card-text>
           <v-card-text
             v-else-if="
@@ -79,7 +80,8 @@
             v-else-if="selectedEvent && selectedEvent.type === 'cancelled'"
           >
             Denne leveransen er kansellert. Dersom du har kansellert en
-            leveranse og angrer, må du sende en mail til Lunsj på Hjul for å rette opp i det.
+            leveranse og angrer, må du sende en mail til Lunsj på Hjul for å
+            rette opp i det.
           </v-card-text>
           <v-card-actions>
             <v-tooltip :disabled="cancelable" bottom>
@@ -250,6 +252,7 @@ export default class CalendarCards extends Vue {
   @Watch("date")
   dateChanged() {
     this.selectedDate = this.date;
+    this.noOfMealsToCancel = this.selectedEvent.delivery.noOfMeals;
   }
 
   get cancelable() {
@@ -281,11 +284,7 @@ export default class CalendarCards extends Vue {
         noOfMeals: newNoOfMeals,
       };
       try {
-        await api.putDelivery(
-          this.$store.getters.vendor.vendorId,
-          this.$store.getters.loggedInUser,
-          del
-        );
+        await api.changeNoOfMeals(this.$store.getters.loggedInUser, del);
         this.cancelDialog = false;
         this.$emit("update");
       } catch (err) {
@@ -306,10 +305,12 @@ export default class CalendarCards extends Vue {
       deliverytime: this.selectedEvent.delivery.deliverytime,
       menuId: this.selectedEvent.delivery.menuId,
       deliveryType: "single",
-      noOfMeals: deliveryInDb ? this.noOfMeals + deliveryInDb.noOfMeals : this.noOfMeals,
+      noOfMeals: deliveryInDb
+        ? this.noOfMeals + deliveryInDb.noOfMeals
+        : this.noOfMeals,
     };
     try {
-      await api.putDelivery(
+      await api.postDelivery(
         this.$store.getters.vendor.vendorId,
         this.$store.getters.loggedInUser,
         delivery

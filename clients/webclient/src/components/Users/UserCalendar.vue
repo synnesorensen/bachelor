@@ -131,7 +131,7 @@ export default class UserCalendar extends Vue {
           let type = "delivery";
           if (
             new Date(del.deliverytime) < new Date(Date.now()) ||
-            (del.deliveryType === "sub" && del.cancelled)
+            (del.cancelled)
           ) {
             color = "grey";
             type = "cancelled";
