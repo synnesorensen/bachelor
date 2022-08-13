@@ -31,11 +31,21 @@
         <v-col>
           <p class="font-weight-light">
             {{
-              isNaN(selectedUser.subscription.lastDeliveryDate)
+              selectedUser.subscription.lastDeliveryDate === undefined
                 ? "Ingen"
                 : localPresentation(selectedUser.subscription.lastDeliveryDate)
             }}
           </p>
+        </v-col>
+      </v-row>
+      <v-row dense>
+        <v-col :xl="4" :lg="5">
+          <p class="font-weight-medium">
+            Leveringsdager
+          </p>
+        </v-col>
+        <v-col>
+          <p class="font-weight-light">{{ selectedUser.subscription.schedule.map(schedule => schedule.day).join(", ") }}</p>
         </v-col>
       </v-row>
       <v-row dense>
@@ -123,6 +133,7 @@
                   <td>{{ localPresentation(item.deliverytime) }}</td>
                   <td>{{ item.menu }}</td>
                   <td>{{ item.cancelled ? "Ja" : "Nei" }}</td>
+                  <td>{{ item.deliveryType === "sub" ? "Abo" : "Singel" }}</td>
                 </tr>
               </template>
             </v-data-table>
@@ -226,6 +237,7 @@ export default class SubscriptionPayment extends Vue {
     { text: "Dato", value: "deliverytime" },
     { text: "Meny", value: "menu" },
     { text: "Kansellert", value: "cancelled" },
+    { text: "Type", value: "deliveryType" }
   ];
 
   get selectedMonth() {
@@ -327,7 +339,6 @@ export default class SubscriptionPayment extends Vue {
             this.endDate
           );
           if (this.deliveries && this.deliveries.length < 1) {
-            console.log(this.deliveries)
             this.noDelMsg = "Ingen leveranser i dette tidsrommet";
           }
         } catch (err) {

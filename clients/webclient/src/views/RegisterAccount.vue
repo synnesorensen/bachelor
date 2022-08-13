@@ -207,7 +207,6 @@ export default class RegisterAccount extends Vue {
   private note = "";
 
   async sendToDb() {
-    console.log(this.note)
     const approved: "new" | "approved" | "denied" = "new";
     const newUserprofile = {
       fullname: this.firstName + " " + this.lastName,
