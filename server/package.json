@@ -24,7 +24,7 @@
     "jwks-rsa": "^2.0.2",
     "middy": "^0.24.0",
     "serverless": "^3.22.0",
-    "serverless-esbuild": "^1.32.8",
+    "serverless-esbuild": "^1.22.0",
     "serverless-offline": "^9.2.5",
     "serverless-s3-sync": "^1.16.1",
     "source-map-support": "^0.5.19",
