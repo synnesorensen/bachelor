@@ -67,14 +67,63 @@
     <v-navigation-drawer v-model="drawer" temporary fixed>
       <v-list nav dense>
         <v-list-item-group>
-          <v-list-item
-            v-for="tab in tabs"
-            :key="tab.title"
-            router
-            :to="tab.route"
-          >
-            <v-list-item-title>{{ tab.title }}</v-list-item-title>
+          <v-list-item to="/admin/calendar">
+            <v-list-item-title>
+              Kalender
+            </v-list-item-title>
           </v-list-item>
+          <v-list-item to="/admin/profile">
+            <v-list-item-title>
+              Profil
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item to="/admin/delivery-list">
+            <v-list-item-title>
+              Leveringsliste
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item to="/admin/subscriptions">
+            <v-list-item-title>
+              Abonnenter
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item to="/admin/single-buy">
+            <v-badge
+              color="red"
+              :value="$store.getters.newDeliveryRequests.length"
+              :content="$store.getters.newDeliveryRequests.length"
+            >
+              <v-list-item-title>
+                Enkeltkjøp
+              </v-list-item-title>
+            </v-badge>
+          </v-list-item>
+          <v-list-item to="/admin/new-customers">
+            <v-badge
+              color="red"
+              :value="$store.getters.newUserRequests.length"
+              :content="$store.getters.newUserRequests.length"
+            >
+              <v-list-item-title>
+                Kunder til godkjenning
+              </v-list-item-title>
+            </v-badge>
+          </v-list-item>
+          <v-list-item to="/admin/sub-customers">
+            <v-list-item-title>
+              Kunder med abo
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item to="/admin/single-customers">
+            <v-list-item-title>
+              Kunder uten abo
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item to="/admin/declined-customers">
+            <v-list-item-title>
+              Avviste kunder
+            </v-list-item-title>
+          </v-list-item>          
         </v-list-item-group>
         <br />
         <v-btn small text color="red" @click="logout"> Logg ut </v-btn>
@@ -104,45 +153,6 @@ import CustomerLists from "../components/Admin/CustomerLists.vue";
 })
 export default class AppBar extends Vue {
   private drawer = false;
-  private tabs = [
-    {
-      title: "Kalender",
-      route: "/admin/calendar"
-    },
-    {
-      title: "Profil",
-      route: "/admin/profile"
-    },
-    {
-      title: "Leveringsliste",
-      route: "/admin/delivery-list"
-    },
-    {
-      title: "Abonnenter",
-      route: "/admin/subscriptions"
-    },
-    {
-      title: "Enkeltkjøp",
-      route: "/admin/single-buy"
-    },
-    {
-      title: "Kunder til godkjenning",
-      route: "/admin/new-customers"
-    },
-    {
-      title: "Kunder med abo",
-      route: "/admin/sub-customers"
-    },
-    {
-      title: "Kunder uten abo",
-      route: "/admin/single-customers"
-    },
-    {
-      title: "Avviste kunder",
-      route: "/admin/declined-customers"
-    }
-
-  ];
 
   logout() {
     this.$store.dispatch("logout");
