@@ -1,7 +1,7 @@
 service: myserver
 useDotenv: true
  
-frameworkVersion: '3'
+frameworkVersion: '2'
  
 plugins:
   - serverless-esbuild
@@ -10,7 +10,7 @@ plugins:
  
 provider:
   name: aws
-  runtime: nodejs16.x
+  runtime: nodejs14.x
   region: eu-north-1
   iam.role.statements:
     - Effect: Allow
