@@ -33,7 +33,7 @@
                 <v-btn icon><v-icon small>mdi-cursor-move</v-icon></v-btn>
               </td>
               <td class="d-block d-sm-table-cell">{{ item.fullname }}</td>
-              <td class="d-block d-sm-table-cell">{{ item.address }}</td>
+              <td class="d-block d-sm-table-cell">{{ item.deliveryAddress }}</td>
               <td class="d-block d-sm-table-cell">{{ item.phone }}</td>
               <td class="d-block d-sm-table-cell">{{ item.box }}</td>
               <td class="d-block d-sm-table-cell">{{ item.noOfMeals }}</td>

@@ -33,6 +33,7 @@ export interface UserSubscription {
   box: string,
   fullname: string,
   address: string,
+  deliveryAddress: string,
   phone: string,
   email: string, 
   allergies: string[],
@@ -58,6 +59,7 @@ export interface DeliveryDetail extends Delivery {
   box: string,
   fullname: string,
   address: string,
+  deliveryAddress: string,
   phone: string,
   email: string, 
   allergies: string[]

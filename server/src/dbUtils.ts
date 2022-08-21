@@ -427,7 +427,7 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
     RequestItems: {
       [settings.TABLENAME]: {
         Keys: keys,
-        ProjectionExpression: "sk, fullname, address, phone, email, allergies, approved"
+        ProjectionExpression: "sk, fullname, address, deliveryAddress, phone, email, allergies, approved"
       }
     }
   };
@@ -469,6 +469,7 @@ export async function getSubscriptionsForVendor(vendorId: string): Promise<UserS
       box: sub.box,
       fullname: user.fullname,
       address: user.address,
+      deliveryAddress: user.deliveryAddress,
       phone: user.phone,
       email: user.email,
       allergies: user.allergies ? user.allergies : [],
@@ -972,6 +973,7 @@ export async function getDeliveryDetails(vendorId: string, startDate: string, en
     const paused = sub ? sub.paused : false;
     const fullname = sub ? sub.fullname : userMap.get(del.userId).fullname;
     const address = sub ? sub.address : userMap.get(del.userId).address;
+    const deliveryAddress = sub ? sub.deliveryAddress : userMap.get(del.userId).deliveryAddress;
     const phone = sub ? sub.phone : userMap.get(del.userId).phone;
     const email = sub ? sub.email : userMap.get(del.userId).email;
     const allergies = sub ? sub.allergies : userMap.get(del.userId).allergies;
@@ -983,6 +985,7 @@ export async function getDeliveryDetails(vendorId: string, startDate: string, en
       box,
       fullname,
       address,
+      deliveryAddress,
       phone,
       email,
       allergies
