@@ -210,9 +210,8 @@ export default class RegisterAccount extends Vue {
     const approved: "new" | "approved" | "denied" = "new";
     const newUserprofile = {
       fullname: this.firstName + " " + this.lastName,
-      address: this.address + " " + this.postNo + " " + this.postPlace,
-      deliveryAddress:
-        this.deliveryAddress + " " + this.delPostNo + " " + this.delPostPlace,
+      address: this.address,
+      deliveryAddress: this.deliveryAddress,
       phone: this.phone.toString(),
       email: this.$store.getters.loggedInUser,
       allergies: this.value,
