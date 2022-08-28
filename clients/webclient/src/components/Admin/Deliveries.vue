@@ -38,7 +38,7 @@
               <td class="d-block d-sm-table-cell">{{ item.box }}</td>
               <td class="d-block d-sm-table-cell">{{ item.noOfMeals }}</td>
               <td class="d-block d-sm-table-cell">
-                {{ item.allergies?.toString() }}
+                {{ item.allergies ? item.allergies.toString() : "" }}
               </td>
             </tr>
           </template>
