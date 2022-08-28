@@ -378,6 +378,12 @@ export class Api {
     const absence = await this.apiAxios.get(urlPrefix + "/u/away?start=" + start + "&end=" + end);
     return absence.data;
   }
+
+  async getCancelledDeliveryCount(userId: string,  yearMonth: string): Promise<number> {
+    await this.ensureFreshToken();
+    const absence = await this.apiAxios.get(urlPrefix + "/cancelledDeliveries?userId=" + encodeURIComponent(userId) + "&yearMonth=" + yearMonth);
+    return absence.data;
+  }
 }
 
 let api = new Api();

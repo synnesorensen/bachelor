@@ -48,10 +48,24 @@
           <p class="font-weight-light">{{ selectedUser.subscription.schedule.map(schedule => schedule.day).join(", ") }}</p>
         </v-col>
       </v-row>
+      
+      
       <v-row dense>
         <v-col :xl="4" :lg="5">
           <p class="font-weight-medium">
-            Ubetalte måltid i {{ selectedMonth }}
+            Antall kansellerte leveranser i {{ selectedMonth }}
+          </p>
+        </v-col>
+        <v-col>
+          <p class="font-weight-light">{{ cancelledDeliveries }}</p>
+        </v-col>
+      </v-row>
+
+
+      <v-row dense>
+        <v-col :xl="4" :lg="5">
+          <p class="font-weight-medium">
+            Antall ubetalte leveranser i {{ selectedMonth }}
           </p>
         </v-col>
         <v-col>
@@ -230,7 +244,8 @@ export default class SubscriptionPayment extends Vue {
   private paidDeliveries = 0;
   private unpaidDeliveries = 0;
   private deliveries: interfaces.Delivery[] | null = [];
-  private monthOffset = 1;
+  private cancelledDeliveries = 0;
+  private monthOffset = (new Date().getDate() < 22 ? 0 : 1);
   private errorMsg = "";
   private noDelMsg = "";
   private headers = [
@@ -251,10 +266,12 @@ export default class SubscriptionPayment extends Vue {
   async prev() {
     this.monthOffset--;
     this.updateUnpaidDeliveries();
+    this.updateCancelledDeliveries();
   }
   async next() {
     this.monthOffset++;
     this.updateUnpaidDeliveries();
+    this.updateCancelledDeliveries();
   }
   toYearMonth(date: Date) {
     let monthNo = date.getMonth() + 1;
@@ -269,6 +286,7 @@ export default class SubscriptionPayment extends Vue {
   async onChange() {
     if (this.selectedUser != null) {
       this.updateUnpaidDeliveries();
+      this.updateCancelledDeliveries();
     }
   }
 
@@ -286,6 +304,12 @@ export default class SubscriptionPayment extends Vue {
 
   localPresentation(time: string) {
     return toLocalPresentation(time);
+  }
+
+  async updateCancelledDeliveries() {
+    if (this.selectedUser?.subscription) {
+      this.cancelledDeliveries = await api.getCancelledDeliveryCount(this.selectedUser.subscription.userId, this.selectedMonth);
+    }
   }
 
   async updateUnpaidDeliveries() {

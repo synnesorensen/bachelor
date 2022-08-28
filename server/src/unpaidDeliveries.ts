@@ -49,9 +49,14 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
 
     const date = new Date(yearMonth + "-01");
     const firstDay = new Date(Date.UTC(date.getFullYear(), date.getMonth(), 1));
+    let startTime = firstDay.toISOString();
     const lastDay = new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, 0));
+    let end = lastDay.toISOString();
+  
+    let endTime = end.substring(0,10);
+    endTime += "T23:59:59.000Z";
 
-    const alreadyPaidForPromise = getUsersDeliveries(userId, firstDay.toISOString(), lastDay.toISOString());
+    const alreadyPaidForPromise = getUsersDeliveries(userId, startTime, endTime);
     const candidatesPromise = getDeliveryDatesQuick(firstDay, lastDay, weekTimes);
 
     const [alreadyPaidFor, candidates] = await Promise.all([alreadyPaidForPromise, candidatesPromise]);
