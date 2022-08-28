@@ -139,7 +139,7 @@ export default class CustomerLists extends Vue {
       value: "fullname",
     },
     { text: "Status", value: "pausedString", sortable: true },
-    { text: "Adresse", value: "deliveryAddress" },
+    { text: "Leveringsadresse", value: "deliveryAddress" },
     { text: "Antall", value: "subscription.noOfMeals" },
     { text: "Allergier", value: "allergiesInTable" },
     { text: "Boks", value: "boxInTable"},
@@ -153,7 +153,7 @@ export default class CustomerLists extends Vue {
       sortable: true,
       value: "fullname",
     },
-    { text: "Adresse", value: "deliveryAddress" },
+    { text: "Leveringsadresse", value: "deliveryAddress" },
     { text: "Allergier", value: "allergiesInTable" },
     { text: "Leveringsdager", value: "days" },
     { text: "", value: "controls", sortable: false },
@@ -165,7 +165,7 @@ export default class CustomerLists extends Vue {
       sortable: true,
       value: "fullname",
     },
-    { text: "Adresse", value: "deliveryAddress" },
+    { text: "Leveringsadresse", value: "deliveryAddress" },
     { text: "Allergier", value: "allergiesInTable" },
   ];
 

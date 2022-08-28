@@ -107,6 +107,7 @@ export default class TabRegister extends Vue {
       if (err instanceof Error) {
         this.errorMsg1 = err.message;
       }
+      this.showCodeVerification = true;  
     }
   }
   async verifyCode() {
