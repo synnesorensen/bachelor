@@ -15,7 +15,7 @@
     </v-card-text>
     <v-card-text v-if="selectedUser">
       <v-row dense>
-        <v-col :xl="4" :lg="5">
+        <v-col :xl="4" :lg="6">
           <p class="font-weight-medium">Navn</p>
         </v-col>
         <v-col>
@@ -25,7 +25,7 @@
         </v-col>
       </v-row>
       <v-row dense>
-        <v-col :xl="4" :lg="5">
+        <v-col :xl="4" :lg="6">
           <p class="font-weight-medium">Siste betalte levering</p>
         </v-col>
         <v-col>
@@ -39,7 +39,7 @@
         </v-col>
       </v-row>
       <v-row dense>
-        <v-col :xl="4" :lg="5">
+        <v-col :xl="4" :lg="6">
           <p class="font-weight-medium">
             Leveringsdager
           </p>
@@ -51,19 +51,21 @@
       
       
       <v-row dense>
-        <v-col :xl="4" :lg="5">
+        <v-col :xl="4" :lg="6">
           <p class="font-weight-medium">
-            Antall kansellerte leveranser i {{ selectedMonth }}
+            Antall kansellerte leveranser i {{ selectedMonthForCancelled }}
           </p>
         </v-col>
         <v-col>
           <p class="font-weight-light">{{ cancelledDeliveries }}</p>
         </v-col>
       </v-row>
-
-
       <v-row dense>
-        <v-col :xl="4" :lg="5">
+        <v-btn class="ma-1" small @click="prevCanc()">Forrige</v-btn>
+        <v-btn class="ma-1" small @click="nextCanc()">Neste</v-btn>
+      </v-row>
+      <v-row dense>
+        <v-col :xl="4" :lg="6">
           <p class="font-weight-medium">
             Antall ubetalte leveranser i {{ selectedMonth }}
           </p>
@@ -245,7 +247,8 @@ export default class SubscriptionPayment extends Vue {
   private unpaidDeliveries = 0;
   private deliveries: interfaces.Delivery[] | null = [];
   private cancelledDeliveries = 0;
-  private monthOffset = (new Date().getDate() < 22 ? 0 : 1);
+  private monthOffset = (new Date().getDate() < 21 ? 0 : 1);
+  private monthOffsetCancelled = (new Date().getDate() < 23 ? 0 : 1);
   private errorMsg = "";
   private noDelMsg = "";
   private headers = [
@@ -256,21 +259,32 @@ export default class SubscriptionPayment extends Vue {
   ];
 
   get selectedMonth() {
-    return this.toYearMonth(this.nextMonth());
+    return this.toYearMonth(this.nextMonth(this.monthOffset));
   }
 
-  nextMonth() {
-    let now = new Date();
-    return new Date(now.getFullYear(), now.getMonth() + this.monthOffset, 1);
+  get selectedMonthForCancelled() {
+    return this.toYearMonth(this.nextMonth(this.monthOffsetCancelled));
   }
+
+  nextMonth(offset: number) {
+    let now = new Date();
+    return new Date(now.getFullYear(), now.getMonth() + offset, 1);
+  }
+
   async prev() {
     this.monthOffset--;
     this.updateUnpaidDeliveries();
-    this.updateCancelledDeliveries();
   }
   async next() {
     this.monthOffset++;
     this.updateUnpaidDeliveries();
+  }
+    async prevCanc() {
+    this.monthOffsetCancelled--;
+    this.updateCancelledDeliveries();
+  }
+  async nextCanc() {
+    this.monthOffsetCancelled++;
     this.updateCancelledDeliveries();
   }
   toYearMonth(date: Date) {
@@ -308,7 +322,7 @@ export default class SubscriptionPayment extends Vue {
 
   async updateCancelledDeliveries() {
     if (this.selectedUser?.subscription) {
-      this.cancelledDeliveries = await api.getCancelledDeliveryCount(this.selectedUser.subscription.userId, this.selectedMonth);
+      this.cancelledDeliveries = await api.getCancelledDeliveryCount(this.selectedUser.subscription.userId, this.selectedMonthForCancelled);
     }
   }
 
@@ -405,8 +419,10 @@ export default class SubscriptionPayment extends Vue {
   async cancelDel() {
     const updatedDeliveries: interfaces.Delivery[] = [];
     this.selectedDeliveries.forEach((del) => {
-      del.cancelled = true;
-      updatedDeliveries.push(del);
+      if (!del.cancelled) {
+        del.cancelled = true;
+        updatedDeliveries.push(del);
+      }
     });
     await api.updateDeliveries(updatedDeliveries);
   }
@@ -414,8 +430,10 @@ export default class SubscriptionPayment extends Vue {
   async activateDel() {
     const updatedDeliveries: interfaces.Delivery[] = [];
     this.selectedDeliveries.forEach((del) => {
-      del.cancelled = false;
-      updatedDeliveries.push(del);
+      if (del.cancelled) {
+        del.cancelled = false;
+        updatedDeliveries.push(del);
+      }
     });
     await api.updateDeliveries(updatedDeliveries);
   }
