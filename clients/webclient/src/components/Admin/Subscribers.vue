@@ -31,7 +31,7 @@ export default class Subscribers extends Vue {
     let subscribers = await api.getUsersAndSubscriptions();
     this.approvedSubscribers = subscribers.filter(
       sub => (sub.approved === "approved") && !!sub.subscription
-    );
+    ).sort((a, b) => a.fullname.localeCompare(b.fullname, "no-NO"));
   }
 
   get selectedSub() {
