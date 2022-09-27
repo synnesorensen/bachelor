@@ -715,13 +715,22 @@ export async function updateDeliveries(deliveries: Delivery[]): Promise<void> {
 
   for (let del of dels) {
     promises.push(documentClient.put(del).promise());
+
+    if (!del.Item.cancelled) {
+      // Un-cancelling: Remove previously moved delivery from end of period:
+      const latestDel = await findLatestDelivery(del.Item.vendorId, del.Item.userId);
+      deleteDeliveryInDb(latestDel.userId, latestDel.deliverytime);
+    } else {
+      // Moving cancelled delivery to the end of period:
+      const latestDel = await findLatestDelivery(del.Item.vendorId, del.Item.userId);
+      const date = new Date(latestDel.deliverytime);
+      date.setDate(date.getDate() + 1);
+      const movedDels = await generateDeliveriesForSubscribers(date, del.Item.userId, del.Item.vendorId, 1, dbenv);
+      await saveDeliveriesToDb(movedDels);
+    }
   }
 
   await Promise.all(promises);
-
-  // Remove previously moved delivery from end of period: 
-  const latestDel = await findLatestDelivery(deliveries[0].vendorId, deliveries[0].userId);
-  deleteDeliveryInDb(latestDel.userId, latestDel.deliverytime);
 }
 
 export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> {
