@@ -8,7 +8,7 @@
               <v-img
                 src="../assets/gul-logo.png"
                 required
-                :height="imageHeight()"
+                style="background-size: 100%; height: auto; width: 100%;"
               >
                 <v-col>
                   <v-row>
@@ -34,23 +34,26 @@
               <v-row no-gutters class="d-flex d-sm-none mt-2">
                 <v-col>
                   <p :class="{ caption: $vuetify.breakpoint.smAndDown }">
-                    GRAUTATYSDAG: Kjøleskapsgraut eller smoothiebowl-ish med skikkelig digg og fruktig toppings
+                    GRAUTATYSDAG: Kjøleskapsgraut eller smoothiebowl-ish med
+                    skikkelig digg og fruktig toppings
                   </p>
                 </v-col>
               </v-row>
               <v-row no-gutters class="d-flex d-sm-none">
                 <v-col>
                   <p :class="{ caption: $vuetify.breakpoint.smAndDown }">
-                    ONSDAGSSALATEN: Digg og mettande salat eller hummus-ish med grønnsaker; med
-                  andre ord meir den originale Lunsj på hjul varianten
+                    ONSDAGSSALATEN: Digg og mettande salat eller hummus-ish med
+                    grønnsaker; med andre ord meir den originale Lunsj på hjul
+                    varianten
                   </p>
                 </v-col>
               </v-row>
               <v-row no-gutters class="d-flex d-sm-none">
                 <v-col>
                   <p :class="{ caption: $vuetify.breakpoint.smAndDown }">
-                    [PÅKEBÅOL] TORSDAG:  Min vri på pokébowl, anten med superfersk fisk eller heilt
-                  vegetarisk; kan nytast til lunsj eller sparast til middag
+                    [PÅKEBÅOL] TORSDAG: Min vri på pokébowl, anten med
+                    superfersk fisk eller heilt vegetarisk; kan nytast til lunsj
+                    eller sparast til middag
                   </p>
                 </v-col>
               </v-row>
@@ -101,7 +104,8 @@
                 }"
               >
                 <p>
-                  Kjøleskapsgraut eller smoothiebowl-ish med skikkelig digg og fruktig toppings
+                  Kjøleskapsgraut eller smoothiebowl-ish med skikkelig digg og
+                  fruktig toppings
                 </p>
               </v-card-text>
             </v-card>
@@ -195,96 +199,53 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-import LoginDialog from "../components/LoginDialog/LoginDialog.vue";
-import RegisterDialog from "../components/LoginDialog/RegisterDialog.vue";
-import Information from "../components/Users/Information.vue";
-import { mdiChevronDown, mdiChevronUp, mdiChevronRight } from "@mdi/js";
+  import Vue from "vue";
+  import Component from "vue-class-component";
+  import LoginDialog from "../components/LoginDialog/LoginDialog.vue";
+  import RegisterDialog from "../components/LoginDialog/RegisterDialog.vue";
+  import Information from "../components/Users/Information.vue";
+  import { mdiChevronDown, mdiChevronUp, mdiChevronRight } from "@mdi/js";
 
-@Component({
-  components: {
-    LoginDialog,
-    RegisterDialog,
-    Information,
-  },
-})
-export default class Welcome extends Vue {
-  private showLogInBox = false;
-  private showRegisterBox = false;
-  private showFaq = false;
-  private mdiChevronDown = mdiChevronDown;
-  private mdiChevronUp = mdiChevronUp;
-  private mdiChevronRight = mdiChevronRight;
+  @Component({
+    components: {
+      LoginDialog,
+      RegisterDialog,
+      Information,
+    },
+  })
+  export default class Welcome extends Vue {
+    private showLogInBox = false;
+    private showRegisterBox = false;
+    private showFaq = false;
+    private mdiChevronDown = mdiChevronDown;
+    private mdiChevronUp = mdiChevronUp;
+    private mdiChevronRight = mdiChevronRight;
 
-  loggedIn(jwt: string) {
-    const self = this;
-    this.$store.dispatch("loggedInUser", {
-      freshLogin: true,
-      jwt,
-      callback: () => {
-        self.showLogInBox = false;
-        self.showRegisterBox = false;
-      },
-    });
-  }
+    loggedIn(jwt: string) {
+      const self = this;
+      this.$store.dispatch("loggedInUser", {
+        freshLogin: true,
+        jwt,
+        callback: () => {
+          self.showLogInBox = false;
+          self.showRegisterBox = false;
+        },
+      });
+    }
 
-  closeDialog() {
-    this.showLogInBox = false;
-    this.showRegisterBox = false;
-  }
+    closeDialog() {
+      this.showLogInBox = false;
+      this.showRegisterBox = false;
+    }
 
-  atChevronClick() {
-    this.showFaq = !this.showFaq;
-  }
-
-  imageHeight() {
-    switch (this.$vuetify.breakpoint.name) {
-      case "xs":
-        return "140px";
-      case "sm":
-        return "280";
-      case "md":
-        return "200px";
-      case "lg":
-        return "400px";
-      case "xl":
-        return "550px";
+    atChevronClick() {
+      this.showFaq = !this.showFaq;
     }
   }
-}
 </script>
 
 <style scoped lang="css">
-.icon {
-  cursor: pointer;
-}
-
-.header {
-  font-family: "Open Sans";
-  font-weight: 500;
-  margin-top: 8px;
-  color: white;
-}
-
-@media screen and (min-width: 600px) {
-  .header {
-    font-size: 24px;
+  .icon {
+    cursor: pointer;
   }
-}
-@media screen and (min-width: 960px) {
-  .header {
-    font-size: 36px;
-  }
-}
-@media screen and (min-width: 1264px) {
-  .header {
-    font-size: 42px;
-  }
-}
-@media screen and (min-width: 1904px) {
-  .header {
-    font-size: 48px;
-  }
-}
 </style>

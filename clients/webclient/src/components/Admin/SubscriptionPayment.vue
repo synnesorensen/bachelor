@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-app-bar dark color="success">
+    <v-app-bar color="#FFDE59">
       <v-card-title>Valgt kunde</v-card-title>
     </v-app-bar>
     <br />

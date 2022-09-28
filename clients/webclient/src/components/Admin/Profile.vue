@@ -3,7 +3,7 @@
     <v-row>
       <v-col>
         <v-card>
-          <v-app-bar dark color="#79b321">
+          <v-app-bar color="#FFDE59">
             <v-card-title> Opplysninger </v-card-title>
             <v-spacer></v-spacer>
             <v-btn icon @click="editProfile">
