@@ -3,17 +3,17 @@
     class="overflow-hidden"
     v-if="$store.getters.userprofile && $store.getters.userprofile.isVendor"
   >
-    <v-app-bar app src="../assets/navbar2.png">
+    <v-app-bar color="white" app>
       <v-app-bar-nav-icon
         @click="drawer = true"
         class="d-flex d-sm-none"
       ></v-app-bar-nav-icon>
       <template v-slot:img="{ props }">
-        <v-img
-          v-bind="props"
+        <v-img 
+          v-bind="props" 
           required
-        >
-        </v-img>
+          class="imgClass"
+        />
       </template>
       <template v-slot:extension>
         <v-tabs align-with-title class="d-none d-sm-flex">
@@ -60,7 +60,7 @@
         </v-tabs>
       </template>
       <v-spacer />
-      <v-btn class="d-none d-sm-flex" color="amber" @click="logout">
+      <v-btn class="d-none d-sm-flex" color="#FFDE59" @click="logout">
         Logg ut
       </v-btn>
     </v-app-bar>
@@ -123,7 +123,7 @@
             <v-list-item-title>
               Avviste kunder
             </v-list-item-title>
-          </v-list-item>          
+          </v-list-item>
         </v-list-item-group>
         <br />
         <v-btn small text color="red" @click="logout"> Logg ut </v-btn>
@@ -157,5 +157,84 @@ export default class AppBar extends Vue {
   logout() {
     this.$store.dispatch("logout");
   }
+
 }
+
 </script>
+
+<style scoped lang="css">
+  .imgClass {
+    height: auto;
+    width: 100%;
+    background-image: url("../assets/navbar2.png");
+  }
+  @media screen and (min-width: 350px) {
+    .imgClass {
+      background-size: 100%;
+      background-image: url("../assets/navbar_mobil.png");
+    }
+  }
+  @media screen and (min-width: 1200px) {
+    .imgClass {
+      height: auto;
+      width: 100%;
+      background-image: url("../assets/navbar2.png");
+    }
+  }
+  @media screen and (min-width: 1400px) {
+    .imgClass {
+      height: auto;
+      width: 90%;
+      background-image: url("../assets/navbar2.png");
+    }
+  }
+  @media screen and (min-width: 1600px) {
+    .imgClass {
+      height: auto;
+      width: 85%;
+      background-image: url("../assets/navbar2.png");
+    }
+  }
+  @media screen and (min-width: 1800px) {
+    .imgClass {
+      height: auto;
+      width: 80%;
+      background-image: url("../assets/navbar2.png");
+    }
+  }
+  @media screen and (min-width: 2000px) {
+    .imgClass {
+      height: auto;
+      width: 70%;
+      background-image: url("../assets/navbar2.png");
+    }
+  }
+  @media screen and (min-width: 2100px) {
+    .imgClass {
+      height: auto;
+      width: 60%;
+      background-image: url("../assets/navbar2.png");
+    }
+  }
+  @media screen and (min-width: 2300px) {
+    .imgClass {
+      height: auto;
+      width: 55%;
+      background-image: url("../assets/navbar2.png");
+    }
+  }
+  @media screen and (min-width: 2600px) {
+    .imgClass {
+      height: auto;
+      width: 50%;
+      background-image: url("../assets/navbar2.png");
+    }
+  }
+  @media screen and (min-width: 2800px) {
+    .imgClass {
+      height: auto;
+      width: 30%;
+      background-image: url("../assets/navbar2.png");
+    }
+  }
+</style>

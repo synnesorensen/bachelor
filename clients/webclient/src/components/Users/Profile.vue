@@ -3,7 +3,7 @@
     <v-row>
       <v-col>
         <v-card>
-          <v-app-bar color="white">
+          <v-app-bar color="#FFDE59">
             <v-card-title> Kundeprofil </v-card-title>
             <v-spacer></v-spacer>
             <v-btn color="white" @click="editProfile">
@@ -172,7 +172,7 @@
       </v-col>
       <v-col>
         <v-card v-if="$store.getters.userprofile.approved !== 'denied'">
-          <v-app-bar color="white">
+          <v-app-bar color="#FFDE59">
             <v-card-title> Abonnement </v-card-title>
             <v-spacer></v-spacer>
             <v-btn color="white" @click="editSub">

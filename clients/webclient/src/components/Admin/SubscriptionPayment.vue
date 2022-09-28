@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-app-bar dark color="success">
+    <v-app-bar color="#FFDE59">
       <v-card-title>Valgt kunde</v-card-title>
     </v-app-bar>
     <br />
@@ -14,6 +14,9 @@
       </v-row>
     </v-card-text>
     <v-card-text v-if="selectedUser">
+      <v-row dense v-if="selectedUser.subscription.paused">
+        <p class="red--text font-weight-bold">Denne kunden har satt abonnementet sitt på pause</p>
+      </v-row>
       <v-row dense>
         <v-col :xl="4" :lg="6">
           <p class="font-weight-medium">Navn</p>
@@ -48,9 +51,7 @@
           <p class="font-weight-light">{{ selectedUser.subscription.schedule.map(schedule => schedule.day).join(", ") }}</p>
         </v-col>
       </v-row>
-      
-      
-      <v-row dense>
+      <v-row dense v-if="!selectedUser.subscription.paused">
         <v-col :xl="4" :lg="6">
           <p class="font-weight-medium">
             Antall kansellerte leveranser i {{ selectedMonthForCancelled }}
@@ -60,11 +61,11 @@
           <p class="font-weight-light">{{ cancelledDeliveries }}</p>
         </v-col>
       </v-row>
-      <v-row dense>
+      <v-row dense v-if="!selectedUser.subscription.paused">
         <v-btn class="ma-1" small @click="prevCanc()">Forrige</v-btn>
         <v-btn class="ma-1" small @click="nextCanc()">Neste</v-btn>
       </v-row>
-      <v-row dense>
+      <v-row dense v-if="!selectedUser.subscription.paused">
         <v-col :xl="4" :lg="6">
           <p class="font-weight-medium">
             Antall ubetalte leveranser i {{ selectedMonth }}
@@ -74,13 +75,13 @@
           <p class="font-weight-light">{{ unpaidDeliveries }}</p>
         </v-col>
       </v-row>
-      <v-row dense>
+      <v-row dense v-if="!selectedUser.subscription.paused">
         <v-btn class="ma-1" small @click="prev()">Forrige</v-btn>
         <v-btn class="ma-1" small @click="next()">Neste</v-btn>
       </v-row>
     </v-card-text>
     <v-card-actions v-if="selectedUser">
-      <v-btn @click="showPaymentDialog" color="success">
+      <v-btn @click="showPaymentDialog" color="success" v-if="!selectedUser.subscription.paused">
         Registrer betaling
       </v-btn>
       <v-spacer></v-spacer>
