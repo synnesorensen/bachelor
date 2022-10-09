@@ -13,39 +13,56 @@
     </v-dialog>
     <v-row class="justify-center ma-4">
       <v-col>
-        <p class="headline">Leveringer {{ localPresentation(deliveryDate) }}</p>
+        <p 
+          :class="{
+            'h-6': $vuetify.breakpoint.smAndDown,
+            'headline': $vuetify.breakpoint.mdAndUp,
+          }"
+        >Leveringer {{ localPresentation(deliveryDate) }}</p>
       </v-col>
     </v-row>
     <v-row class="justify-center ma-4">
       <v-col cols="12">
         <v-data-table
+          v-if="$vuetify.breakpoint.smAndUp"
           :loading="loading"
           dense
           :headers="headers"
           :items="deliveryDetails"
-          class="elevation-1"
-          mobile-breakpoint="600"
           fixed-header
+          @current-items="currentItems"
         >
           <template v-slot:item="{ item }">
             <tr :key="item.userId">
               <td class="handle">
                 <v-btn icon><v-icon small>mdi-cursor-move</v-icon></v-btn>
               </td>
-              <td class="d-block d-sm-table-cell">{{ item.fullname }}</td>
-              <td class="d-block d-sm-table-cell">{{ item.deliveryAddress }}</td>
-              <td class="d-block d-sm-table-cell">{{ item.phone }}</td>
-              <td class="d-block d-sm-table-cell">{{ item.box }}</td>
-              <td class="d-block d-sm-table-cell">{{ item.noOfMeals }}</td>
-              <td class="d-block d-sm-table-cell">
+              <td>{{ item.fullname }}</td>
+              <td>{{ item.deliveryAddress }}</td>
+              <td>{{ item.phone }}</td>
+              <td>{{ item.box }}</td>
+              <td>{{ item.noOfMeals }}</td>
+              <td>
                 {{ item.allergies ? item.allergies.toString() : "" }}
               </td>
             </tr>
           </template>
         </v-data-table>
+
+        <v-data-table
+          v-if="$vuetify.breakpoint.xs"
+          :loading="loading"
+          dense
+          :headers="mobileHeaders"
+          :items="deliveryDetails"
+          fixed-header
+        >
+        </v-data-table>
+
       </v-col>
     </v-row>
-    <v-row class="justify-center">
+    <v-row class="justify-center" v-if="$vuetify.breakpoint.smAndUp">
+      <v-btn class="mr-4" color="primary" :disabled="!deliveryDetails.length" @click="saveOrder()">Lagre rekkefølge</v-btn>
       <v-btn color="error" :disabled="isAllCancelled()" @click="cancelDialog = true">Kanseller alle</v-btn>
       <v-dialog v-model="cancelDialog" persistent max-width="300">
         <v-card>
@@ -72,7 +89,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import api from "../../api/api";
 import { DeliveryDetail } from "../../../../../common/interfaces";
-import { Prop, Watch } from "vue-property-decorator";
+import { Watch } from "vue-property-decorator";
 import Sortable from "sortablejs";
 import { toLocalPresentation } from "../../utils/utils";
 
@@ -87,13 +104,13 @@ export default class Deliveries extends Vue {
   private start = "";
   private end = "";
   private deliveryDetails: DeliveryDetail[] = [];
+  private sortedDeliveries: DeliveryDetail[] = [];
   @Watch("deliveryDate", { immediate: true })
   async onDateChanged() {
     if (this.deliveryDate) {
-      let startDate = new Date(this.deliveryDate + "T00:00:00");
-      let endDate = new Date(this.deliveryDate + "T23:59:59");
+      let startDate = new Date(this.deliveryDate);
       let UTCStartDate = startDate.toISOString();
-      let UTCEndDate = endDate.toISOString();
+      let UTCEndDate = UTCStartDate.substr(0, 10) + "T23:59:59.000Z";
       this.loading = true;
       try {
         this.deliveryDetails = await api.getDeliveryDetails(
@@ -135,6 +152,18 @@ export default class Deliveries extends Vue {
     { text: "Allergier", value: "allergies" },
   ];
 
+    private mobileHeaders = [
+    {
+      text: "Navn",
+      align: "start",
+      sortable: false,
+      value: "fullname",
+    },
+    { text: "Adresse", value: "deliveryAddress",  sortable: false},
+    { text: "Boks", value: "box", sortable: false },
+    { text: "Antall", value: "noOfMeals", sortable: false },
+  ];
+
   mounted() {
     let table = document.querySelector(
       ".v-data-table__wrapper tbody"
@@ -152,6 +181,10 @@ export default class Deliveries extends Vue {
         },
       });
     }
+  }
+
+  currentItems(value: any) {
+    this.sortedDeliveries = value;
   }
 
   async cancelDeliveries() {
@@ -176,6 +209,11 @@ export default class Deliveries extends Vue {
 
   localPresentation(time: string) {
     return toLocalPresentation(time);
+  }
+
+  async saveOrder() {
+    let sortedKeys = this.sortedDeliveries.map(user => user.userId);
+    await api.updateOrder(sortedKeys, new Date(this.deliveryDate));
   }
 }
 </script>

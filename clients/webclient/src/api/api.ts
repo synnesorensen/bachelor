@@ -47,7 +47,7 @@ export class Api {
     } else {
       throw (error);
     }
-  }
+  } 
 
   async getUserprofile(): Promise<interfaces.Userprofile | null> {
     await this.ensureFreshToken();
@@ -363,8 +363,7 @@ export class Api {
 
   async deleteAbsence(time: string): Promise<void> {
     await this.ensureFreshToken();
-    const absence = await this.apiAxios.delete(urlPrefix + "/v/absence?time=" + time);
-    return absence.data;
+    await this.apiAxios.delete(urlPrefix + "/v/absence?time=" + time);
   }
 
   async setAway(start: string, end: string): Promise<number> {
@@ -383,6 +382,15 @@ export class Api {
     await this.ensureFreshToken();
     const absence = await this.apiAxios.get(urlPrefix + "/cancelledDeliveries?userId=" + encodeURIComponent(userId) + "&yearMonth=" + yearMonth);
     return absence.data;
+  }
+
+  async updateOrder(userIds: string[], date: Date): Promise<void> {
+    await this.ensureFreshToken();
+    const body = {
+      userIds,
+      date
+    };
+    await this.apiAxios.put(urlPrefix + "/deliveryOrder", body);
   }
 }
 
