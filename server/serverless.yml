@@ -211,6 +211,14 @@ functions:
           path: /lastDelivery
           method: get
           cors: true
+  deliveryOrder: 
+    handler: src/deliveryOrder.mainHandler
+    events: 
+      - http: 
+          authorizer: authorizer
+          path: /deliveryOrder
+          method: any
+          cors: true
 
 resources:
   Resources:

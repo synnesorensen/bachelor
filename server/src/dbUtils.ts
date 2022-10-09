@@ -255,7 +255,8 @@ export async function getUserprofileFromDb(userId: string): Promise<Userprofile>
     allergies: dbResult.Items[0].allergies,
     approved: dbResult.Items[0].approved ? dbResult.Items[0].approved : "new",
     isVendor: dbResult.Items[0].isVendor,
-    note: dbResult.Items[0].note
+    note: dbResult.Items[0].note,
+    order: dbResult.Items[0].deliveryOrder ? JSON.parse(dbResult.Items[0].deliveryOrder) : undefined
   };
 }
 
@@ -294,17 +295,21 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
     UpdateExpression += ", email = :email";
     ExpressionAttributeValues[":email"] = { S: userprofile.email };
   }
-  if (userprofile.allergies.length > 0) {
+  if (userprofile.allergies?.length > 0) {
     UpdateExpression += ", allergies = :allergies";
     ExpressionAttributeValues[":allergies"] = { SS: userprofile.allergies };
   }
-  if (userprofile.note.length > 0) {
+  if (userprofile.note?.length > 0) {
     UpdateExpression += ", note = :note";
     ExpressionAttributeValues[":note"] = { S: userprofile.note };
   }
   if (userprofile.isVendor != undefined) {
     UpdateExpression += ", isVendor = :isVendor";
     ExpressionAttributeValues[":isVendor"] = { BOOL: userprofile.isVendor };
+  }
+  if (userprofile.order != undefined) {
+    UpdateExpression += ", deliveryOrder = :deliveryOrder";
+    ExpressionAttributeValues[":deliveryOrder"] = { S: JSON.stringify(userprofile.order) };
   }
   UpdateExpression += ", GSI1_pk = :user";
   ExpressionAttributeValues[":user"] = { S: "user" };
@@ -335,7 +340,8 @@ export async function putUserprofileInDb(userprofile: Userprofile, userId: strin
     allergies: dbItem.Attributes.allergies?.SS,
     approved,
     isVendor: dbItem.Attributes.isVendor.BOOL,
-    note: dbItem.Attributes.note?.S
+    note: dbItem.Attributes.note?.S,
+    order: dbItem.Attributes.order ? JSON.parse(dbItem.Attributes.order?.S) : undefined
   }
 }
 
@@ -986,6 +992,7 @@ export async function getDeliveryDetails(vendorId: string, startDate: string, en
     const phone = sub ? sub.phone : userMap.get(del.userId).phone;
     const email = sub ? sub.email : userMap.get(del.userId).email;
     const allergies = sub ? sub.allergies : userMap.get(del.userId).allergies;
+    const order = userMap.get(del.userId).order;
 
     const deliveryDetail: DeliveryDetail = {
       ...del,
@@ -997,11 +1004,23 @@ export async function getDeliveryDetails(vendorId: string, startDate: string, en
       deliveryAddress,
       phone,
       email,
-      allergies
+      allergies,
+      order
     }
     deliveryDetails.push(deliveryDetail);
-
   });
+  const day = new Date(startDate).getDay();
+
+  deliveryDetails.sort((a, b) => {
+    if (!a.order) {
+      return -1;
+    }
+    if (!b.order) {
+      return 1;
+    }
+    return a.order[day] - b.order[day]
+  });
+
   return deliveryDetails;
 }
 
@@ -1311,4 +1330,22 @@ export async function getUserAbsence(start: string, end?: string): Promise<Date[
   const dbResult = await documentClient.query(params).promise();
 
   return dbResult.Items.map(res => new Date(res.sk.substr(2)));
+}
+
+export async function updateDeliveryOrder(userIds: string[], date: string): Promise<void> {
+  let day = new Date(date).getDay();
+  let promises = [];
+
+  for (let i = 0; i < userIds.length; i++ ) {
+    let user = await getUserprofileFromDb(userIds[i]);
+    let { order } = user;
+    if (!order) {
+      order = [0,0,0,0,0,0,0];
+    }
+    order[day] = i;
+    user.order = order;
+    promises.push(putUserprofileInDb(user, user.email, user.isVendor));
+  };
+
+  await Promise.all(promises);
 }

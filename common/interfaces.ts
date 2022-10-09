@@ -7,7 +7,8 @@ export interface Userprofile {
   allergies: string[], 
   approved: UserStatus,
   isVendor: boolean, 
-  note?: string
+  note?: string,
+  order?: number[],
 }
 
 export interface Subscription {
@@ -62,7 +63,8 @@ export interface DeliveryDetail extends Delivery {
   deliveryAddress: string,
   phone: string,
   email: string, 
-  allergies: string[]
+  allergies: string[],
+  order: number[]
 }
 
 export interface Vendor {
