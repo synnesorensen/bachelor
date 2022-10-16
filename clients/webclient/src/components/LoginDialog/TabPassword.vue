@@ -57,6 +57,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import getAuth from "./auth";
+import {converteUsername} from "./TabLogin.vue";
 
 @Component
 export default class TabPassword extends Vue {
@@ -81,7 +82,7 @@ export default class TabPassword extends Vue {
   }
 
   sendPassword() {
-    this.Auth.forgotPassword(this.username);
+    this.Auth.forgotPassword(converteUsername(this.username));
     this.showVerification = true;
   }
 
@@ -90,11 +91,11 @@ export default class TabPassword extends Vue {
       this.errorMsg = "";
       this.$emit("showSpinner", true);
       await this.Auth.forgotPasswordSubmit(
-        this.username,
+        converteUsername(this.username),
         this.code,
         this.password2
       );
-      let signedInUser = await this.Auth.signIn(this.username, this.password2);
+      let signedInUser = await this.Auth.signIn(converteUsername(this.username), this.password2);
       this.$emit("loggedIn", signedInUser.signInUserSession.idToken.jwtToken);
       this.$emit("showSpinner", false);
     } catch (err) {
