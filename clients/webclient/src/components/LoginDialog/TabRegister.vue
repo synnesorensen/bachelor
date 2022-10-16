@@ -96,7 +96,7 @@ export default class TabRegister extends Vue {
 
   async register() {
     let params = {
-      username: this.username,
+      username: this.username.toLowerCase(),
       password: this.password2,
     };
     try {
@@ -115,12 +115,12 @@ export default class TabRegister extends Vue {
       this.errorMsg1 = "";
       this.$emit("showSpinner", true);
       let confirmedSignUp = await this.Auth.confirmSignUp(
-        this.username,
+        this.username.toLowerCase(),
         this.code
       );
       if (confirmedSignUp === "SUCCESS") {
         let signedInUser = await this.Auth.signIn(
-          this.username,
+          this.username.toLowerCase(),
           this.password2
         );
         this.$emit("loggedIn", signedInUser.signInUserSession.idToken.jwtToken);

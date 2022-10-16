@@ -47,7 +47,7 @@ export default class TabLogin extends Vue {
     try {
       this.errorMsg = "";
       this.$emit("showSpinner", true);
-      let signedInUser = await Auth.signIn(this.username, this.password);
+      let signedInUser = await Auth.signIn(converteUsername(this.username), this.password);
       this.$emit("loggedIn", signedInUser.signInUserSession.idToken.jwtToken);
       this.$emit("showSpinner", false);
     } catch (err) {
@@ -59,5 +59,13 @@ export default class TabLogin extends Vue {
   cancel() {
     this.$emit("closeDialog", true);
   }
+}
+export function converteUsername(username: string) {
+  if (username.toLowerCase() === "bgramstad@gmail.com") return "Bgramstad@gmail.com";
+  if (username.toLowerCase() === "annalenajammer@gmail.com") return "Annalenajammer@gmail.com";
+  if (username.toLowerCase() === "judith.dalsgard@gmail.com") return "Judith.dalsgard@gmail.com"; 
+  if (username.toLowerCase() === "stineo@gmail.com") return "Stineo@gmail.com";
+  if (username.toLowerCase() === "synnescool+test9@gmail.com") return "SYNNEScool+Test9@gmail.com";
+  return username.toLowerCase();
 }
 </script>
