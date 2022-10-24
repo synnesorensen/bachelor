@@ -25,7 +25,8 @@ export async function getDeliveryDatesQuick(startDate: Date, endDate: Date, week
   let deliveryDates: DateWithMenuId[] = [];
 
   while (nextDelivery.date <= endDate) {
-    deliveryDates.push(nextDelivery);
+    deliveryDates.push({date: new Date(nextDelivery.date), menuId: nextDelivery.menuId});
+    nextDelivery.date.setDate(nextDelivery.date.getDate() + 1);
     nextDelivery = nextDeliveryDateQuick(nextDelivery.date, weekTimes, absenceDateStrings);
   }
   return deliveryDates;
@@ -82,6 +83,7 @@ export function nextDeliveryDateQuick(date: Date, weekTimes: WeekTime[], absentD
   let delivery = getDeliveryBeforeMidnight(result, weekTimes);
 
   while (delivery === null) {
+    result.setDate(result.getDate() + 1);
     result = findNextWorkDayQuick(result, absentDates);
     delivery = getDeliveryBeforeMidnight(result, weekTimes);
   }
@@ -129,8 +131,7 @@ export async function findNextWorkDay(date: Date, env: LunchEnvironment): Promis
 
 export function findNextWorkDayQuick(date: Date, absentDates: string[]): Date {
   let currentDate = new Date(date);
-
-  currentDate.setDate(date.getDate() + 1);
+  currentDate.setDate(date.getDate());
 
   while (absentDates.includes(currentDate.toISOString())) {
     currentDate.setDate(currentDate.getDate() + 1);
