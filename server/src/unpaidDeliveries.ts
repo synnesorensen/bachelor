@@ -52,17 +52,16 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     let startTime = firstDay.toISOString();
     const lastDay = new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, 0));
     let end = lastDay.toISOString();
-  
     let endTime = end.substring(0,10);
     endTime += "T23:59:59.000Z";
 
     const alreadyPaidForPromise = getUsersDeliveries(userId, startTime, endTime);
-    const candidatesPromise = getDeliveryDatesQuick(firstDay, lastDay, weekTimes);
+    const candidatesPromise = getDeliveryDatesQuick(firstDay, new Date(endTime), weekTimes);
 
     const [alreadyPaidFor, candidates] = await Promise.all([alreadyPaidForPromise, candidatesPromise]);
     const alreadyPaidForAndSub = alreadyPaidFor.filter(del => del.deliveryType === "sub")
-        
     const result = candidates.length - alreadyPaidForAndSub.length;
+    
   
     return {
       statusCode: 200,
