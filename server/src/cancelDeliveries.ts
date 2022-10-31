@@ -1,11 +1,13 @@
-import 'source-map-support/register'
+import 'source-map-support/register';
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { cancelDeliveries } from './dbUtils'
-import { getUserInfoFromEvent } from './auth/getUserFromJwt'
+import { cancelDeliveries } from './dbUtils';
+import { getUserInfoFromEvent } from './auth/getUserFromJwt';
+import { logEvent } from './helpers';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  logEvent(event);
   let userId = getUserInfoFromEvent(event);
   let { deliveries, cancelledBy } = JSON.parse(event.body);
 

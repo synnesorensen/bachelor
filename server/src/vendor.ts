@@ -4,8 +4,10 @@ import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getVendorFromDb, putVendorInDb } from './dbUtils';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
+import { logEvent } from './helpers';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  logEvent(event);
   if (event.httpMethod == "GET") {
     return getVendor();
   }

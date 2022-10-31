@@ -5,8 +5,10 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { deleteAbsenceInDb, getUserprofileFromDb, getVendorAbsence } from './dbUtils';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 import { generateVendorsAbsentDates } from './timeHandling';
+import { logEvent } from './helpers';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  logEvent(event);
   if (event.httpMethod === "GET") {
     return getAbsence(event);
   }

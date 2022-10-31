@@ -5,8 +5,10 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { findLatestDelivery, getVendorFromDb, pauseSubscription, unPauseSubscription } from './dbUtils'
 import { MenuItems } from '../../common/interfaces';
 import { SubscriptionDto } from '../../common/dto';
+import { logEvent } from './helpers';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  logEvent(event);
   if (event.httpMethod == "POST") {
     return postUserSubscription(event);
   }
