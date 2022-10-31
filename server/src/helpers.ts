@@ -6,5 +6,5 @@ export function logEvent(event: APIGatewayProxyEvent) {
   const user = getUserInfoFromEvent(event);
   console.log("UserId:" + user);
   console.log("Body:" + event.body);
-  console.log("Params:" + event.queryStringParameters);
+  console.log("Params:" + JSON.stringify(event.queryStringParameters));
 }
