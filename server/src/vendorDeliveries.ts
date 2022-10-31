@@ -1,16 +1,19 @@
-import 'source-map-support/register'
+import 'source-map-support/register';
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { deleteDeliveryInDb, getAllDeliveriesFromAllSubscribers, getUserprofileFromDb, getUsersDeliveries, saveDeliveriesToDb, updateDeliveries } from './dbUtils'
-import { getUserInfoFromEvent } from './auth/getUserFromJwt'
+import { deleteDeliveryInDb, getAllDeliveriesFromAllSubscribers, getUserprofileFromDb, getUsersDeliveries, saveDeliveriesToDb, updateDeliveries } from './dbUtils';
+import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 import { generateDeliveriesForSubscribers } from './addDeliveries';
 import { Delivery, Summary } from '../../common/interfaces';
 import { dbenv } from './DbEnvironment';
+import { logEvent } from './helpers';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  logEvent(event);
   let vendorId = getUserInfoFromEvent(event);
   let vendor = await getUserprofileFromDb(vendorId);
+
   if (!vendor.isVendor) {
     return {
       statusCode: 403,
@@ -63,9 +66,10 @@ async function getVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGate
 
   if (userId) {
     let deliveries = await getUsersDeliveries(userId, start, end);
+    let approved = deliveries.filter(del => del.approved === "approved")
     return {
       statusCode: 200,
-      body: JSON.stringify(deliveries)
+      body: JSON.stringify(approved)
     };
 
   } else {
@@ -111,6 +115,7 @@ function generateSummary(deliveries: Delivery[]):Summary[] {
 async function putVendorDeliveries(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   let body = JSON.parse(event.body);
   let deliveries = await updateDeliveries(body);
+  
 
   return {
     statusCode: 200,

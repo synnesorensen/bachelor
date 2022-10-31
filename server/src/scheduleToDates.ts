@@ -1,11 +1,14 @@
-import 'source-map-support/register'
+import 'source-map-support/register';
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { generateDeliveriesForVendor } from './addDeliveries';
 import { getVendorFromDb } from './dbUtils';
+import { logEvent } from './helpers';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  logEvent(event);
+  
   if (!event.queryStringParameters) {
     return {
       statusCode: 400,

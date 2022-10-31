@@ -4,8 +4,10 @@ import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getUserAbsence } from './dbUtils';
 import { generateUsersAbsentDates } from './timeHandling';
+import { logEvent } from './helpers';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  logEvent(event);
   if (event.httpMethod === "GET") {
     return getAway(event);
   }

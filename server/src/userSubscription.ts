@@ -1,13 +1,15 @@
-import 'source-map-support/register'
+import 'source-map-support/register';
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { deleteSubscriptionInDb, findLatestDelivery, getSubscriptionFromDb, getVendorFromDb, pauseSubscription, putSubscriptionInDb, unPauseSubscription } from './dbUtils'
+import { deleteSubscriptionInDb, findLatestDelivery, getSubscriptionFromDb, getVendorFromDb, pauseSubscription, putSubscriptionInDb, unPauseSubscription } from './dbUtils';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 import { MenuItems } from '../../common/interfaces';
 import { SubscriptionDto } from '../../common/dto';
+import { logEvent } from './helpers';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  logEvent(event);
   if (event.httpMethod == "GET") {
     return getUserSubscription(event);
   }

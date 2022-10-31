@@ -1,12 +1,14 @@
-import 'source-map-support/register'
+import 'source-map-support/register';
 import middy from 'middy';
 import cors from '@middy/http-cors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getUserprofileFromDb, getDeliveryFromDb, updateDeliveries } from './dbUtils';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
 import { Delivery } from '../../common/interfaces';
+import { logEvent } from './helpers';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  logEvent(event);
   const vendorId = getUserInfoFromEvent(event);
   const vendor = await getUserprofileFromDb(vendorId);
   if (!vendor.isVendor) {
