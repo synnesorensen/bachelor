@@ -12,7 +12,6 @@
                 selectedEvent.name + " " + localPresentation(selectedDate)
             }}
           </v-card-title>
-
           <v-card-text v-if="selectedEvent && selectedEvent.type === 'absence'">
             Lunsj på Hjul tilbyr ingen levering på denne dato.
           </v-card-text>
@@ -48,7 +47,6 @@
           <v-card-text
             v-if="
               selectedEvent &&
-                selectedEvent.type === 'delivery' &&
                 !selectedEvent.ordered &&
                 !cancelable
             "
@@ -58,7 +56,6 @@
           <v-card-text
             v-else-if="
               selectedEvent &&
-                selectedEvent.type === 'delivery' &&
                 selectedEvent.delivery.approved === 'denied'
             "
           >
@@ -88,7 +85,7 @@
               <template v-slot:activator="{ on }">
                 <div v-on="on">
                   <v-btn
-                    v-if="selectedEvent && selectedEvent.type !== 'absence'"
+                    v-if="selectedEvent && selectedEvent.type === 'vendor' && !selectedEvent.ordered"
                     :disabled="!cancelable"
                     color="primary"
                     small
@@ -102,7 +99,7 @@
                     v-if="
                       selectedEvent &&
                         selectedEvent.ordered &&
-                        selectedEvent.type !== 'vendor'
+                        selectedEvent.type === 'delivery'
                     "
                     :disabled="!cancelable"
                     color="primary"
@@ -247,7 +244,7 @@ export default class CalendarCards extends Vue {
       { length: this.selectedEvent.delivery.noOfMeals },
       (_, i) => i
     ).map((num) => num + 1);
-  }
+  } 
 
   @Watch("date")
   dateChanged() {
