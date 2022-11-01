@@ -63,16 +63,16 @@
     </v-row>
     <v-row class="justify-center" v-if="$vuetify.breakpoint.smAndUp">
       <v-btn class="mr-4" color="primary" :disabled="!deliveryDetails.length" @click="saveOrder()">Lagre rekkefølge</v-btn>
-      <v-btn color="error" :disabled="isAllCancelled()" @click="cancelDialog = true">Kanseller alle</v-btn>
+      <v-btn color="error" :disabled="isAllCancelled()" @click="cancelDialog = true">Utsette alle</v-btn>
       <v-dialog v-model="cancelDialog" persistent max-width="300">
         <v-card>
-          <v-card-title class="headline">Kansellering</v-card-title>
+          <v-card-title class="headline">Utsette</v-card-title>
           <v-card-text>
-            Er du sikker på at du vil kansellere alle leveranser denne dagen?
+            Er du sikker på at du vil utsette alle leveranser denne dagen?
           </v-card-text>
           <v-card-actions>
             <v-btn color="success" @click="cancelDeliveries">
-              Kanseller
+              Utsette
             </v-btn>
             <v-btn color="error" @click="cancelDialog = false">
               Avbryt

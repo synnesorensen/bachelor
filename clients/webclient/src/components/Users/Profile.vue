@@ -608,7 +608,7 @@ export default class CustomerProfile extends Vue {
     Sjekk din kalender for å se når leveranser du eventuelt har til gode \
     vil bli levert. ";
     }
-    return "Ved å sette ditt abonnement på pause vil dine kommende leveranser bli avbestilt.\
+    return "Ved å sette ditt abonnement på pause vil dine kommende leveranser bli utsatt.\
   Disse vil du få tilbake når du starter opp igjen abonnementet ditt. \
   Hvis du setter abonnementet ditt på pause etter klokken 10:00 dagen før du har en levering, \
   vil denne leveransen fortsatt bli levert. \

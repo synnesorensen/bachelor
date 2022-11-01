@@ -65,19 +65,19 @@
         </p>
         <p class="font-weight-medium">Hvilke tidsfrister gjelder?</p>
         <p class="font-weight-light">
-          Dersom du ønsker å kjøpe en leveranse, kansellere en leveranse eller
+          Dersom du ønsker å kjøpe en leveranse, utsette en leveranse eller
           sette abonnementet på pause må du gjøre dette før klokken 10:00 dagen
-          før den aktuelle leveransen. Ønsker du altså å kansellere en leveranse
+          før den aktuelle leveransen. Ønsker du altså å utsette en leveranse
           torsdag, må du gjøre dette før klokken 10:00 onsdag samme uke. Det
           samme gjelder for bestilling og pause.
         </p>
         <p class="font-weight-medium">
-          Hvordan kan jeg avbestille en leveranse?
+          Hvordan kan jeg utsette en leveranse?
         </p>
         <p class="font-weight-light">
-          I kalenderen kan du avbestille leveranser, én og én. Du trykker på
-          leveransen du vil avbestille og velger så <strong>Kanseller</strong>. 
-          Dersom du angrer en kansellering så må du ta kontakt med Anne Lill 
+          I kalenderen kan du utsette leveranser, én og én. Du trykker på
+          leveransen du vil utsette og velger så <strong>Utsette</strong>. 
+          Dersom du angrer en utsettelse så må du ta kontakt med Anne Lill 
           for å få endret det tilbake.
         </p>
         <p class="font-weight-medium">

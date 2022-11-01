@@ -151,7 +151,7 @@ export default class UserCalendar extends Vue {
 
           events.push({
             name: del.cancelled
-              ? "Kansellert"
+              ? "Utsatt"
               : menu!.menu + " (" + del.noOfMeals + ")",
             start: delStart,
             end: delEnd,

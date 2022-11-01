@@ -54,7 +54,7 @@
       <v-row dense v-if="!selectedUser.subscription.paused">
         <v-col :xl="4" :lg="6">
           <p class="font-weight-medium">
-            Antall kansellerte leveranser i {{ selectedMonthForCancelled }}
+            Antall utsatte (eller byttet) leveranser i {{ selectedMonthForCancelled }}
           </p>
         </v-col>
         <v-col>
@@ -170,7 +170,7 @@
               text
               color="orange"
             >
-              Kanseller
+              Utsette
             </v-btn>
             <v-btn
               v-if="selectedDeliveries.length > 0"
@@ -255,7 +255,7 @@ export default class SubscriptionPayment extends Vue {
   private headers = [
     { text: "Dato", value: "deliverytime" },
     { text: "Meny", value: "menu" },
-    { text: "Kansellert", value: "cancelled" },
+    { text: "Utsatt", value: "cancelled" },
     { text: "Type", value: "deliveryType" }
   ];
 
