@@ -1068,15 +1068,16 @@ async function cancelDelivery(delivery: Delivery, cancelledBy: string): Promise<
     ExpressionAttributeValues
   };
 
+  // If subscription delivery, moving cancelled delivery to the end of period:
+  if (dbDel.deliveryType === "sub") {
+    const latestDel = await findLatestDelivery(delivery.vendorId, delivery.userId);
+    const date = new Date(latestDel.deliverytime);
+    date.setDate(date.getDate() + 1);
+    const movedDels = await generateDeliveriesForSubscribers(date, delivery.userId, delivery.vendorId, 1, dbenv);
+    await saveDeliveriesToDb(movedDels);
+  }
+
   await database.updateItem(params).promise();
-
-  // Moving cancelled delivery to the end of period:
-  const latestDel = await findLatestDelivery(delivery.vendorId, delivery.userId);
-  const date = new Date(latestDel.deliverytime);
-  date.setDate(date.getDate() + 1);
-  const movedDels = await generateDeliveriesForSubscribers(date, delivery.userId, delivery.vendorId, 1, dbenv);
-  await saveDeliveriesToDb(movedDels);
-
   return true;
 }
 
