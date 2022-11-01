@@ -68,15 +68,15 @@
                 !selectedEvent.delivery.cancelled
             "
           >
-            Det er mulig å avbestille et måltid frem til klokken 10:00 dagen før
-            levering. Kansellerte måltid vil bli flyttet til neste måned, og
+            Det er mulig å utsette et måltid frem til klokken 10:00 dagen før
+            levering. Utsatte måltid vil bli flyttet til neste måned, og
             faktura for neste periode vil bli justert i henhold til antall
-            avbestillinger.
+            utsettelser.
           </v-card-text>
           <v-card-text
             v-else-if="selectedEvent && selectedEvent.type === 'cancelled'"
           >
-            Denne leveransen er kansellert. Dersom du har kansellert en
+            Denne leveransen er utsatt. Dersom du har utsatt en
             leveranse og angrer, må du sende en mail til Lunsj på Hjul for å
             rette opp i det.
           </v-card-text>
@@ -107,7 +107,7 @@
                     v-on="on"
                     @click="cancelDialog = true"
                   >
-                    Avbestill
+                    Utsett levering
                   </v-btn>
                 </div>
               </template>
@@ -161,9 +161,9 @@
             </v-dialog>
             <v-dialog v-model="cancelDialog" persistent max-width="500">
               <v-card>
-                <v-card-title class="headline">Avbestilling</v-card-title>
+                <v-card-title class="headline">Utsettelse</v-card-title>
                 <v-card-text>
-                  Velg antall måltid du ønsker å avbestille
+                  Velg antall måltid du ønsker å utsette
                   {{ localPresentation(selectedDate) }}
                 </v-card-text>
                 <v-row no-gutters>
@@ -183,7 +183,7 @@
                         class="mr-2"
                         color="primary"
                         @click="cancelDelivery()"
-                        >Avbestill levering</v-btn
+                        >Utsett levering</v-btn
                       >
                       <v-btn color="#D3D3D3" @click="cancelDialog = false">
                         Avbryt
