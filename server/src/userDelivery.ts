@@ -1,6 +1,6 @@
 import 'source-map-support/register';
 import middy from 'middy';
-import cors from '@middy/http-cors';
+import { cors } from 'middy/middlewares';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getDeliveryFromDb, deleteDeliveryInDb, newDeliveryInDb, getVendorFromDb, getUserprofileFromDb, changeNoOfMeals } from './dbUtils';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';

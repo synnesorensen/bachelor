@@ -9,3 +9,4 @@ node_modules/@types
 server/.build
 set_env.bat
 server/.env.*.local
+set_env.sh

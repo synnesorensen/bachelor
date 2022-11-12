@@ -1,4 +1,4 @@
-import { DatabaseMock } from "./tests/newTests/databaseMock";
+import { DatabaseMock } from "./tests/newTests/DatabaseMock";
 
 export class TestEnvironment implements LunchEnvironment {
   private db: DatabaseMock;
