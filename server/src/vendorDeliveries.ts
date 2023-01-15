@@ -100,7 +100,7 @@ function generateSummary(deliveries: Delivery[]):Summary[] {
       }
       hash.set(del.deliverytime, summary);
     }
-    summary.count++;
+    summary.count += del.noOfMeals;
     if (del.cancelled) {
       summary.cancelled++;
     }

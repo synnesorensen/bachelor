@@ -4,7 +4,7 @@ import { getDeliveryDates, getDeliveryDatesQuick } from './timeHandling';
 import { getSubscriptionFromDb, getVendorFromDb } from './dbUtils';
 import { LunchEnvironment } from './LunchEnvironment';
 
-export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, userId: string, vendorId: string, noOfDeliveries: number, env:LunchEnvironment): Promise<Delivery[]> {
+export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, userId: string, vendorId: string, noOfDeliveries: number, env: LunchEnvironment): Promise<Delivery[]> {
   const subscriptionFromDb = await getSubscriptionFromDb(vendorId, userId);
   if (!subscriptionFromDb) {
     throw "User " + userId + " does not exist"
@@ -12,12 +12,11 @@ export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, 
   const vendor = await getVendorFromDb();
   let subSchedule: MenuItems[] = [];
   subscriptionFromDb.schedule.forEach((item) => {
-    subSchedule.push(vendor.schedule.find(({id}) => id === item));
+    subSchedule.push(vendor.schedule.find(({ id }) => id === item));
   });
 
-  let weekTimes:WeekTime[] = scheduleToWeekTimes(subSchedule);
+  let weekTimes: WeekTime[] = scheduleToWeekTimes(subSchedule);
 
-  // TODO: Endre til quick
   let deliveryDates = await getDeliveryDates(EarliestStartDate, weekTimes, noOfDeliveries, env);
   const deliveryType: "sub" | "single" = "sub";
   return deliveryDates.map((date) => {
@@ -26,7 +25,7 @@ export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, 
       userId,
       deliverytime: date.date.toISOString(),
       menuId: date.menuId!,
-      cancelled: false, 
+      cancelled: false,
       deliveryType,
       paid: "paid",
       approved: "approved",
@@ -37,7 +36,7 @@ export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, 
 
 // Deliveries offered by vendor (yellow events in user's calendar)
 export async function generateDeliveriesForVendor(EarliestStartDate: Date, endDate: Date, vendor: Vendor): Promise<Delivery[]> {
-  let weekTimes:WeekTime[] = scheduleToWeekTimes(vendor.schedule)
+  let weekTimes: WeekTime[] = scheduleToWeekTimes(vendor.schedule)
 
   let deliveryDates = await getDeliveryDatesQuick(EarliestStartDate, endDate, weekTimes);
   const deliveryType: "sub" | "single" = "single";
@@ -57,8 +56,8 @@ export async function generateDeliveriesForVendor(EarliestStartDate: Date, endDa
   });
 }
 
-export function scheduleToWeekTimes(menuItems: MenuItems[]):WeekTime[] {
-  return menuItems.map((item) => { 
+export function scheduleToWeekTimes(menuItems: MenuItems[]): WeekTime[] {
+  return menuItems.map((item) => {
     const day = dayStringToInt(item.day);
     if (day < 0) {
       throw ("Ugyldig dag")
@@ -72,7 +71,7 @@ export function scheduleToWeekTimes(menuItems: MenuItems[]):WeekTime[] {
 }
 
 function dayStringToInt(day: string) {
-  switch(day) {
+  switch (day) {
     case 'Søndag':
       return 0;
     case 'Mandag':

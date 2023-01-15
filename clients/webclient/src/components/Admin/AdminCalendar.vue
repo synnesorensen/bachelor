@@ -250,10 +250,8 @@ export default class AdminCalendar extends Vue {
         deliveries.forEach((del) => {
           const delStart = new Date(`${del.date.substring(0, 10)}T00:00:00`);
           const delEnd = new Date(`${del.date.substring(0, 10)}T23:59:59`);
-          const menu = schedule.find(({ id }) => id === del.menuId);
           events.push({
-            name:
-              (del.count - del.cancelled) + "/" + del.count,
+            name: del.count.toString() + " porsjoner",
             start: delStart,
             end: delEnd,
             color:
