@@ -1,7 +1,8 @@
 import 'source-map-support/register'
 import { Delivery, MenuItems, Vendor, WeekTime } from '../../common/interfaces';
-import { getDeliveryDates, getDeliveryDatesQuick } from './timeHandling'
-import { getSubscriptionFromDb, getVendorFromDb } from './dbUtils'
+import { getDeliveryDates, getDeliveryDatesQuick } from './timeHandling';
+import { getSubscriptionFromDb, getVendorFromDb } from './dbUtils';
+import { LunchEnvironment } from './LunchEnvironment';
 
 export async function generateDeliveriesForSubscribers(EarliestStartDate: Date, userId: string, vendorId: string, noOfDeliveries: number, env:LunchEnvironment): Promise<Delivery[]> {
   const subscriptionFromDb = await getSubscriptionFromDb(vendorId, userId);

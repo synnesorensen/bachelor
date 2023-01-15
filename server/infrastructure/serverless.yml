@@ -38,7 +38,7 @@ resources:
             RequireNumbers: false
             RequireSymbols: false
             RequireUppercase: false
-        UserPoolName: lph-user-pool # lower case and hyphens only
+        UserPoolName: lph-test-user-pool # lower case and hyphens only
     MyCognitoUserPoolClient:
       Type: AWS::Cognito::UserPoolClient          
       Properties:

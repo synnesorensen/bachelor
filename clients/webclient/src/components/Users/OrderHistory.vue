@@ -77,7 +77,7 @@ export default class OrderHistory extends Vue {
       value: "localTime"
     },
     {text: "Meny", value: "menu"},
-    {text: "Kansellert", value: "cancelled"},
+    {text: "Utsatt", value: "cancelled"},
     {text: "Type", value: "type"},
     {text: "Status", value: "status"},
     {text: "Betalt", value: "payment"}
