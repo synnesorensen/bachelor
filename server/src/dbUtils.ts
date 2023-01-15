@@ -735,8 +735,37 @@ export async function updateDeliveries(deliveries: Delivery[]): Promise<void> {
       await saveDeliveriesToDb(movedDels);
     }
   }
-
   await Promise.all(promises);
+}
+
+export async function updateSingleDelivery(delivery: Delivery): Promise<void> {
+  let UpdateExpression = "";
+  let ExpressionAttributeValues: any = ""
+
+  if (delivery.paid) {
+    UpdateExpression += "SET paid = :paid";
+    ExpressionAttributeValues = {
+      ":paid": { S: "paid" }
+    }
+  } else {
+    UpdateExpression += "SET paid = :paid";
+    ExpressionAttributeValues = {
+      ":paid": { S: "unpaid" }
+    }
+  }
+
+  let params = {
+    TableName: settings.TABLENAME,
+    Key: {
+      "pk": { S: "d#" + delivery.userId },
+      "sk": { S: "d#" + delivery.deliverytime }
+    },
+    UpdateExpression,
+    ExpressionAttributeValues,
+    ReturnValues: "ALL_NEW"
+  };
+
+  await database.updateItem(params).promise();
 }
 
 export async function saveDeliveriesToDb(deliveries: Delivery[]): Promise<void> {
