@@ -1,82 +1,82 @@
 require('dotenv').config();
 import 'source-map-support/register';
 import { putSubscriptionInDb, putUserprofileInDb, putVendorInDb } from '../dbUtils';
-import {dbUser1, dbUser2, dbUser3, dbUser4, dbUser5, dbUser6, dbVendor} from '../../../common/settings';
+import {dbUser1, dbUser2, dbUser3, dbUser4, dbUser5, dbUser6, dbUser7, dbVendor} from '../../../common/settings';
 
 const approved: "new" | "approved" | "denied" = "new";
 
-// const userprofile1 = {
-//   fullname: "Ole Olsen",
-//   address: "Smauet 110 5000 Sentrum",
-//   deliveryAddress: "Smauet 110 5000 Sentrum",
-//   phone: "12345678",
-//   email: dbUser1,
-//   allergies: ["Melk"],
-//   approved,
-//   isVendor: false
-// }
-// const userprofile2 = {
-//   fullname: "Olga Karidotter",
-//   address: "Sollien 8 5001 Lien",
-//   deliveryAddress: "Sollien 8 5001 Lien",
-//   phone: "23456789",
-//   email: dbUser2,
-//   allergies: [],
-//   approved,
-//   isVendor: false
-// }
-// const userprofile3 = {
-//   fullname: "Stig Hugo",
-//   address: "Lauvstien 31 5000 Sentrum",
-//   deliveryAddress: "Lauvstien 31 5000 Sentrum",
-//   phone: "34567890",
-//   email: dbUser3,
-//   allergies: ["Løk", "Svovel"],
-//   approved,
-//   isVendor: false
-// }
-// const userprofile4 = {
-//   fullname: "Katy Sekken",
-//   address: "Oppoverbakken 17 5000 Sentrum",
-//   deliveryAddress: "Oppoverbakken 17 5000 Sentrum",
-//   phone: "45678901",
-//   email: dbUser4,
-//   allergies: ["Gluten"],
-//   approved,
-//   isVendor: false
-// }
-// const userprofile5 = {
-//   fullname: "Jan Jankovich",
-//   address: "Lykkegata 8 5002 Øvreåsen",
-//   deliveryAddress: "Lykkegata 8 5002 Øvreåsen",
-//   phone: "56789012",
-//   email: dbUser5,
-//   allergies: [],
-//   approved,
-//   isVendor: false
-// }
+const userprofile1 = {
+  fullname: "Ole Olsen",
+  address: "Smauet 110 5000 Sentrum",
+  deliveryAddress: "Smauet 110 5000 Sentrum",
+  phone: "12345678",
+  email: dbUser1,
+  allergies: ["Melk"],
+  approved,
+  isVendor: false
+}
+const userprofile2 = {
+  fullname: "Olga Karidotter",
+  address: "Sollien 8 5001 Lien",
+  deliveryAddress: "Sollien 8 5001 Lien",
+  phone: "23456789",
+  email: dbUser2,
+  allergies: [],
+  approved,
+  isVendor: false
+}
+const userprofile3 = {
+  fullname: "Stig Hugo",
+  address: "Lauvstien 31 5000 Sentrum",
+  deliveryAddress: "Lauvstien 31 5000 Sentrum",
+  phone: "34567890",
+  email: dbUser3,
+  allergies: ["Løk", "Svovel"],
+  approved,
+  isVendor: false
+}
+const userprofile4 = {
+  fullname: "Katy Sekken",
+  address: "Oppoverbakken 17 5000 Sentrum",
+  deliveryAddress: "Oppoverbakken 17 5000 Sentrum",
+  phone: "45678901",
+  email: dbUser4,
+  allergies: ["Gluten"],
+  approved,
+  isVendor: false
+}
+const userprofile5 = {
+  fullname: "Jan Jankovich",
+  address: "Lykkegata 8 5002 Øvreåsen",
+  deliveryAddress: "Lykkegata 8 5002 Øvreåsen",
+  phone: "56789012",
+  email: dbUser5,
+  allergies: [],
+  approved,
+  isVendor: false
+}
 
-// const userprofile6 = {
-//   fullname: "Penny Pøbel",
-//   address: "Kroken 3 5000 Sentrum",
-//   deliveryAddress: "Kroken 3 5000 Sentrum",
-//   phone: "67890123",
-//   email: dbUser6,
-//   allergies: ["Melk"],
-//   approved,
-//   isVendor: false
-// }
+const userprofile6 = {
+  fullname: "Penny Pøbel",
+  address: "Kroken 3 5000 Sentrum",
+  deliveryAddress: "Kroken 3 5000 Sentrum",
+  phone: "67890123",
+  email: dbUser6,
+  allergies: ["Melk"],
+  approved,
+  isVendor: false
+}
 
-// const userprofile7 = {
-//   fullname: "Kristin Lavransdatter",
-//   address: "Sel 14 2670 Gudbrandsdalen",
-//   deliveryAddress: "Sel 14 2670 Gudbrandsdalen",
-//   phone: "22113344",
-//   email: dbUser7,
-//   allergies: ["Gluten", "Egg"],
-//   approved,
-//   isVendor: false
-// }
+const userprofile7 = {
+  fullname: "Kristin Lavransdatter",
+  address: "Sel 14 2670 Gudbrandsdalen",
+  deliveryAddress: "Sel 14 2670 Gudbrandsdalen",
+  phone: "22113344",
+  email: dbUser7,
+  allergies: ["Gluten", "Egg"],
+  approved,
+  isVendor: false
+}
 
 const userprofileVendor = {
   fullname: "Anne Lill Stene",
@@ -90,13 +90,13 @@ const userprofileVendor = {
 }
 
 export async function addUsersToDb() {
-  // await putUserprofileInDb(userprofile1, dbUser1, false);
-  // await putUserprofileInDb(userprofile2, dbUser2, false);
-  // await putUserprofileInDb(userprofile3, dbUser3, false);
-  // await putUserprofileInDb(userprofile4, dbUser4, false);
-  // await putUserprofileInDb(userprofile5, dbUser5, false);
-  // await putUserprofileInDb(userprofile6, dbUser6, false);
-  // await putUserprofileInDb(userprofile7, dbUser7, false);
+  await putUserprofileInDb(userprofile1, dbUser1, false);
+  await putUserprofileInDb(userprofile2, dbUser2, false);
+  await putUserprofileInDb(userprofile3, dbUser3, false);
+  await putUserprofileInDb(userprofile4, dbUser4, false);
+  await putUserprofileInDb(userprofile5, dbUser5, false);
+  await putUserprofileInDb(userprofile6, dbUser6, false);
+  await putUserprofileInDb(userprofile7, dbUser7, false);
   await putUserprofileInDb(userprofileVendor, dbVendor, true);
 }
 

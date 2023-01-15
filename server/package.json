@@ -11,6 +11,7 @@
     "testhttp": "ts-mocha -p ./tsconfig.json src/**/*.test.ts -w --extension ts --timeout 20000",
     "testDate": "ts-mocha -p ./tsconfig.json src/**/dateTest.spec.ts -w --extension ts --timeout 20000",
     "dbSetup": "npx tsc-watch --onSuccess \"node .build\\server\\src\\cmds\\setupdb.js\"",
+    "dbSetup2": "npx ts-node src\\cmds\\setupdb.ts",
     "newTest": "ts-mocha -p ./tsconfig.json src/**/timeTest.spec.ts -w --extension ts --timeout 20000"
   },
   "author": "",
