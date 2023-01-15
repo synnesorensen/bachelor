@@ -2,9 +2,8 @@ import 'source-map-support/register';
 import middy from 'middy';
 import { cors } from 'middy/middlewares';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { getUserprofileFromDb, getDeliveryFromDb, updateDeliveries } from './dbUtils';
+import { getUserprofileFromDb, getDeliveryFromDb, updateSingleDelivery } from './dbUtils';
 import { getUserInfoFromEvent } from './auth/getUserFromJwt';
-import { Delivery } from '../../common/interfaces';
 import { logEvent } from './helpers';
 
 async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
@@ -64,8 +63,6 @@ async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
   }
 
   let delivery = await getDeliveryFromDb(vendorId, userId, time);
-  const dels: Delivery[] = []
-
   if (payed === "unpaid") {
     delivery.paid = "paid";
   } else if (payed === "paid") {
@@ -76,8 +73,7 @@ async function putDelivery(event: APIGatewayProxyEvent): Promise<APIGatewayProxy
       body: '{ "message" : "Unknown payment status" }'
     }
   }
-  dels.push(delivery);
-  await updateDeliveries(dels);
+  await updateSingleDelivery(delivery);
 
   return {
     statusCode: 200,
