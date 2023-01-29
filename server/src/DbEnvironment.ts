@@ -1,4 +1,5 @@
 import { getVendorAbsence, getUserAbsence } from "./dbUtils";
+import { LunchEnvironment } from "./LunchEnvironment";
 
 export class DbEnvironment implements LunchEnvironment {
 
