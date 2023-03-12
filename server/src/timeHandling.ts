@@ -34,7 +34,7 @@ export async function getDeliveryDatesQuick(startDate: Date, endDate: Date, week
 }
 
 export async function noOfDeliveriesInMonth(startDate: Date, weekTimes: WeekTime[], env:LunchEnvironment):Promise<number> {
-  let nextDelivery = await nextDeliveryDate(startDate, weekTimes, env);
+  let nextDelivery = nextDeliveryDateQuick(startDate, weekTimes, []);
   let count = 0;
 
   while (nextDelivery.date.getUTCMonth() == startDate.getUTCMonth()) {
