@@ -1,6 +1,6 @@
 import 'source-map-support/register'
 import middy from 'middy';
-import cors from '@middy/http-cors';
+import { cors } from 'middy/middlewares';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { findLatestDelivery, getVendorFromDb, pauseSubscription, unPauseSubscription } from './dbUtils'
 import { MenuItems } from '../../common/interfaces';
