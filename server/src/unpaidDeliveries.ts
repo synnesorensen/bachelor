@@ -61,7 +61,7 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     const candidatesPromise = getDeliveryDatesQuick(firstDay, new Date(endTime), weekTimes);
 
     const [alreadyPaidFor, candidates] = await Promise.all([alreadyPaidForPromise, candidatesPromise]);
-    const alreadyPaidForAndSub = alreadyPaidFor.filter(del => del.deliveryType === "sub")
+    const alreadyPaidForAndSub = alreadyPaidFor.filter(del => del.deliveryType === "sub");
     const result = candidates.length - alreadyPaidForAndSub.length;
     
   
