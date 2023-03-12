@@ -46,6 +46,7 @@ export async function noOfDeliveriesInMonth(startDate: Date, weekTimes: WeekTime
 
 function getDeliveryBeforeMidnight(date: Date, weekTimes: WeekTime[]) {
   let weekTime = toWeekTime(date);
+  weekTime.time = 0;
   let i = 0;
 
   while (i < weekTimes.length && lessThanOrEqual(weekTimes[i], weekTime)) {
@@ -106,7 +107,7 @@ export function toWeekTime(date: Date): WeekTime {
   return {
     day: date.getUTCDay(),
     time: date.getUTCHours() * 3600000 + date.getUTCMinutes() * 60000 + date.getUTCSeconds() * 1000 + date.getUTCMilliseconds()
-  }
+  };
 }
 
 export async function isVendorAbsent(date: Date, env: LunchEnvironment) {
