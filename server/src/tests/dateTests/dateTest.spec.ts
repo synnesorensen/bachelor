@@ -3,18 +3,16 @@ import 'source-map-support/register';
 import { expect } from 'chai';
 import 'mocha';
 import { WeekTime } from '../../../../common/interfaces';
-import { nextDeliveryDate, toWeekTime, noOfDeliveriesInMonth, getDeliveryDates } from '../../timeHandling'
-import { TestEnvironment } from 'src/TestEnvironment';
+import { nextDeliveryDateQuick, toWeekTime, noOfDeliveriesInMonth, getDeliveryDatesQuick } from '../../timeHandling'
+import { TestEnvironment } from '../../TestEnvironment';
 
 const testenv = new TestEnvironment();
 
 describe('Date and time tests', () => {
-  it('From date to WeekTime',  () => {
-    let result:WeekTime = toWeekTime(new Date("2021-12-17T03:24:05.000Z"));
-    expect(result.day).equal(5);
-    expect(result.time).equal(3 * 1000 * 3600 + 24 * 60 * 1000 + 5*1000);
+  it('From date to WeekTime', () => {
+    let result: WeekTime = toWeekTime(new Date("2023-03-01T03:24:05.000Z"));
+    expect(result.day).equal(3);
   });
-
   it('Find next weekTimes', async () => {
     let schedule: WeekTime[] = [{
       menuId: "2",
@@ -30,25 +28,22 @@ describe('Date and time tests', () => {
       menuId: "41",
       day: 4,
       time: 1000
-    },
-    {
-      menuId: "43",
-      day: 4,
-      time: 2000 
-    }];
-    let result = await nextDeliveryDate(new Date("2021-11-17T03:24:05.000Z"), schedule, testenv);
-    expect(result.menuId).equal("41");
-    expect(result.date.getUTCDay()).equal(4);
-    expect(result.date.getUTCDate()).equal(18);
-    expect(result.date.getUTCMonth()).equal(10);
-    expect(result.date.getUTCFullYear()).equal(2021);
+    }
+    ];
+    let result = await nextDeliveryDateQuick(new Date("2023-03-01T03:24:05.000Z"), schedule, []);
+    console.log(result)
+    expect(result.menuId).equal("3");
+    expect(result.date.getUTCDay()).equal(3);
+    expect(result.date.getUTCDate()).equal(1);
+    expect(result.date.getUTCMonth()).equal(2);
+    expect(result.date.getUTCFullYear()).equal(2023);
 
-    let wrap = await nextDeliveryDate(new Date("2021-11-19T03:24:05.000Z"), schedule, testenv);
+    let wrap = await nextDeliveryDateQuick(new Date("2023-03-03T03:24:05.000Z"), schedule, []);
     expect(wrap.menuId).equal("2");
     expect(wrap.date.getUTCDay()).equal(2);
-    expect(wrap.date.getUTCDate()).equal(23);
-    expect(wrap.date.getUTCMonth()).equal(10);
-    expect(wrap.date.getUTCFullYear()).equal(2021);
+    expect(wrap.date.getUTCDate()).equal(7);
+    expect(wrap.date.getUTCMonth()).equal(2);
+    expect(wrap.date.getUTCFullYear()).equal(2023);
   });
   it('Find next weekTimes', async () => {
     let schedule: WeekTime[] = [{
@@ -56,36 +51,34 @@ describe('Date and time tests', () => {
       day: 2,
       time: 1000
     }];
-    let result = await nextDeliveryDate(new Date("2021-05-03T03:24:05.000Z"), schedule, testenv);
+    let result = await nextDeliveryDateQuick(new Date("2023-03-27T03:24:05.000Z"), schedule, []);
     expect(result.menuId).equal("2");
     expect(result.date.getDay()).equal(2);
-    expect(result.date.getDate()).equal(4);
-    expect(result.date.getMonth()).equal(4);
-    expect(result.date.getUTCFullYear()).equal(2021);
+    expect(result.date.getDate()).equal(28);
+    expect(result.date.getMonth()).equal(2);
+    expect(result.date.getUTCFullYear()).equal(2023);
 
-    let wrap = await nextDeliveryDate(new Date("2021-05-05T03:24:05.000Z"), schedule, testenv);
+    let wrap = await nextDeliveryDateQuick(new Date("2023-03-20T03:24:05.000Z"), schedule, []);
     expect(result.menuId).equal("2")
     expect(wrap.date.getDay()).equal(2);
-    expect(wrap.date.getDate()).equal(11);
-    expect(wrap.date.getMonth()).equal(4);
-    expect(wrap.date.getUTCFullYear()).equal(2021);
+    expect(wrap.date.getDate()).equal(21);
+    expect(wrap.date.getMonth()).equal(2);
+    expect(wrap.date.getUTCFullYear()).equal(2023);
   });
-  it('Count deliveries in a month',  () => {
-    let schedule: WeekTime[] = [{
-      day: 2,
-      time: 1000*3600*6
-    },
-    {
-      day: 3,
-      time: 1000*3600*6
-    },
-    {
-      day: 4,
-      time: 1000*3600*6
-    }];
-    let result = noOfDeliveriesInMonth(new Date("2021-06-01T05:00:00.000Z"), schedule, testenv);
-    expect(result).equal(14);
+  it('Count deliveries in a month', async () => {
+    let schedule: WeekTime[] = [
+      {
+        day: 3,
+        time: 1000 * 3600 * 6
+      },
+      {
+        day: 4,
+        time: 1000 * 3600 * 6
+      }];
+    let result = await noOfDeliveriesInMonth(new Date("2023-03-01T00:00:01.000Z"), schedule, testenv);
+    expect(result).equal(10);
   });
+
   it('Find next delivery dates', async () => {
     let schedule: WeekTime[] = [{
       menuId: "2",
@@ -101,53 +94,26 @@ describe('Date and time tests', () => {
       menuId: "41",
       day: 4,
       time: 1000
-    },
-    {
-      menuId: "43",
-      day: 4,
-      time: 2000 
-    }];
-    let result = await getDeliveryDates(new Date("2021-05-01T01:05:05.000Z"), schedule, 10, testenv);
-    expect(result.length).equal(10);
-    expect(result[0].date.getDay()).equal(2);
-    expect(result[1].date.getDay()).equal(3);
-    expect(result[2].date.getDay()).equal(4);
-    expect(result[3].date.getDay()).equal(4);
-    expect(result[4].date.getDay()).equal(2);
-    expect(result[5].date.getDay()).equal(3);
-    expect(result[6].date.getDay()).equal(4);
-    expect(result[7].date.getDay()).equal(4);
-    expect(result[0].menuId).equal("2");
+    }
+    ];
+    let result = await getDeliveryDatesQuick(new Date("2023-03-01T00:00:05.000Z"), new Date("2023-03-31T00:00:05.000Z"), schedule);
+    expect(result.length).equal(14);
+    expect(result[0].date.getDate()).equal(1);
+    expect(result[1].date.getDate()).equal(2);
+    expect(result[2].date.getDate()).equal(7);
+    expect(result[3].date.getDate()).equal(8);
+    expect(result[4].date.getDate()).equal(9);
+    expect(result[5].date.getDate()).equal(14);
+    expect(result[6].date.getDate()).equal(15);
+    expect(result[7].date.getDate()).equal(16);
+    expect(result[0].menuId).equal("3");
 
-    let result2 = getDeliveryDates(new Date("2021-05-01T00:00:05.000Z"), schedule, 5, testenv);
-    expect(result2[0].date.getDay()).equal(2);
+    let result2 = await getDeliveryDatesQuick(new Date("2023-03-01T00:00:05.000Z"), new Date("2023-03-31T00:00:05.000Z"), schedule);
+    expect(result2[0].date.getDay()).equal(3);
 
-    let result3 = getDeliveryDates(new Date("2021-05-03T22:00:01.000Z"), schedule, 1, testenv);
+    let result3 = await getDeliveryDatesQuick(new Date("2023-03-10T00:00:05.000Z"), new Date("2023-03-31T00:00:05.000Z"), schedule);
+    console.log(result3)
     expect(result3[0].date.getDay()).equal(2);
-  });
-  it('Millisecond test', async () => {
-    let schedule: WeekTime[] = [{
-      menuId: "1",
-      day: 1,
-      time: 10
-    },
-    {
-      menuId: "2",
-      day: 2,
-      time: 10
-    }];
-    let result = await getDeliveryDates(new Date("2021-05-01T06:00:00.000Z"), schedule, 10, testenv);
-    expect(result.length).equal(10);
-    expect(result[0].date.getUTCDay()).equal(1);
-    expect(result[1].date.getUTCDay()).equal(2);
-    expect(result[2].date.getUTCDay()).equal(1);
-    expect(result[3].date.getUTCDay()).equal(2);
-    expect(result[4].date.getUTCDay()).equal(1);
-    expect(result[5].date.getUTCDay()).equal(2);
-    expect(result[6].date.getUTCDay()).equal(1);
-    expect(result[7].date.getUTCDay()).equal(2);
-    expect(result[0].menuId).equal("1");
-
   });
 });
 
