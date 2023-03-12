@@ -522,6 +522,7 @@ export async function getUsersDeliveries(userId: string, startDate: string, endD
       deliverytime: del.deliverytime,
       menuId: del.menuId,
       cancelled: del.cancelled,
+      cancelledBy: del.cancelledBy,
       deliveryType: del.deliveryType,
       paid: del.paid,
       approved: del.approved,
